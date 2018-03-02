@@ -1,7 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
-#include <QtWebEngine>
 #include <QtWebView>
 
 int main(int argc, char *argv[])
