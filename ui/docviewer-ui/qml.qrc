@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainWindow.qml</file>
+        <file>MainWindowForm.ui.qml</file>
+        <file>TabsPanel.qml</file>
+        <file>TabsPanelForm.ui.qml</file>
+        <file>Browser.qml</file>
+        <file>BrowserForm.ui.qml</file>
+        <file>TabsList.qml</file>
+        <file>TabsListForm.ui.qml</file>
+    </qresource>
+</RCC>
