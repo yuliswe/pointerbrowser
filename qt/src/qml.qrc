@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>TabsPanel.qml</file>
+        <file>Browser.qml</file>
+        <file>TabsList.qml</file>
+        <file>BrowserWebViews.qml</file>
+        <file>BrowserWebViewsForm.ui.qml</file>
+        <file>TabsListTab.qml</file>
+        <file>BrowserAddressBar.qml</file>
+        <file>BrowserWindow.qml</file>
+        <file>BrowserSearch.qml</file>
+        <file>BrowserSearchForm.ui.qml</file>
+        <file>icon/cross.svg</file>
+        <file>icon/cycle.svg</file>
+        <file>icon/left.svg</file>
+        <file>icon/right.svg</file>
+        <file>icon/star.svg</file>
+        <file>icon/down.svg</file>
+        <file>icon/up.svg</file>
+        <file>icon/book.svg</file>
+        <file>icon/bookmark.svg</file>
+        <file>icon/list.svg</file>
+        <file>icon/banner.svg</file>
+        <file>icon/plus.svg</file>
+        <file>icon/refresh.svg</file>
+        <file>icon/plus-thin.svg</file>
+        <file>icon/plus-mid.svg</file>
+        <file>theme/ios.json</file>
+        <file>theme/macos.json</file>
+        <file>theme/windows.json</file>
+        <file>icon/loading.svg</file>
+    </qresource>
+</RCC>

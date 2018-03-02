@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>mac/cursor/Bonus/Beachball variations/!Bonus - BigBusyOld.ani</file>
+        <file>mac/cursor/Bonus/Beachball variations/!Bonus - BigBusySlow.ani</file>
+        <file>mac/cursor/Bonus/Beachball variations/!Bonus - Busy 21px.ani</file>
+        <file>mac/cursor/Bonus/Beachball variations/!Bonus - Busy 22px.ani</file>
+        <file>mac/cursor/Bonus/Beachball variations/Busy-new-21.ani</file>
+        <file>mac/cursor/Bonus/Beachball variations/Busy_old.ani</file>
+        <file>mac/cursor/Bonus/!Bonus - Move.cur</file>
+        <file>mac/cursor/Bonus/!Bonus - Precision.cur</file>
+        <file>mac/cursor/Bonus/!Bonus - Text.cur</file>
+        <file>mac/cursor/Bonus/!Bonus - Unavailable.cur</file>
+        <file>mac/cursor/Alternate.cur</file>
+        <file>mac/cursor/Busy.ani</file>
+        <file>mac/cursor/Diagonal Resize 1.cur</file>
+        <file>mac/cursor/Diagonal Resize 2.cur</file>
+        <file>mac/cursor/ElCap.png</file>
+        <file>mac/cursor/Handwriting.cur</file>
+        <file>mac/cursor/Help.cur</file>
+        <file>mac/cursor/Horizontal Resize.cur</file>
+        <file>mac/cursor/Install.inf</file>
+        <file>mac/cursor/Link.cur</file>
+        <file>mac/cursor/Move.cur</file>
+        <file>mac/cursor/Normal.cur</file>
+        <file>mac/cursor/Precision.cur</file>
+        <file>mac/cursor/Preview.png</file>
+        <file>mac/cursor/Text.cur</file>
+        <file>mac/cursor/Unavailable.cur</file>
+        <file>mac/cursor/Vertical Resize.cur</file>
+        <file>mac/cursor/Working.ani</file>
+        <file alias="WebUI.qml">mac/WebUI.qml</file>
+    </qresource>
+</RCC>
