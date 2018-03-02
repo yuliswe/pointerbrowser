@@ -1,0 +1,19 @@
+{
+    "window_background": ["#faf5f5f5"],
+    "window_base_background": ["#f0f0f0"],
+    "window_text": ["#000"],
+    "text": ["#000","#fff","000","000"],
+    "text_background": ["transparent","#509eed","transparent","transparent"],
+    "button_text": ["#555"],
+    "button_icon": ["#555","#509eed","#509eed","#ccc"],
+    "button_background": ["transparent","transparent","transparent","transparent"],
+    "button_border": ["#ccc","#9bc0ff","#9bc0ff","#ddd"],
+    "input_text": ["#000"],
+    "input_font_size": [13],
+    "input_placeholder_text": ["#888","#888","#888","#ddd"],
+    "input_background": ["transparent","#fff","#fff","#fff"],
+    "input_border": ["#ccc","#84b3ff","#ccc","#ddd"],
+    "list_item_text": ["#333","#eee","#333","#333"],
+    "list_item_background": ["transparent","#509eed","#eee","transparent"],
+    "label_text": ["#555"]
+}

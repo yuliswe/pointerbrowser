@@ -1,0 +1,2 @@
+DELETE FROM webpage_symbol WHERE webpage NOT IN (SELECT id from webpage);
+DELETE FROM symbol WHERE id NOT IN (SELECT symbol from webpage_symbol);
