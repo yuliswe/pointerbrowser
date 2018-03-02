@@ -7,15 +7,14 @@ Rectangle {
 
     TextField {
         id: textField
-        x: -100
-        y: 19
         height: 30
         text: qsTr("Text Field")
         anchors.top: parent.top
-        anchors.topMargin: 10
+        anchors.topMargin: 5
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.left: parent.left
         anchors.leftMargin: 10
+        selectByMouse: true
     }
 }

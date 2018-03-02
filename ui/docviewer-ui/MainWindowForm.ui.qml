@@ -1,22 +1,20 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.3
+import QtQuick.Controls 1.5
+import QtQuick.Layouts 1.3
 
-Item {
+SplitView {
     property alias tabsPanel: tabsPanel
 
-    Browser {
-        id: browser
-        anchors.left: tabsPanel.right
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.top: parent.top
+    handleDelegate: Item {
     }
 
     TabsPanel {
         id: tabsPanel
-        width: 200
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.top: parent.top
+        Layout.minimumWidth: 200
+    }
+
+    Browser {
+        id: browser
     }
 }
