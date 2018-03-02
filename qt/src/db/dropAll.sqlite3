@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS webpage_symbol;
+DROP TABLE IF EXISTS webpage;
+DROP TABLE IF EXISTS symbol;
+DROP TABLE IF EXISTS webpage_referer;

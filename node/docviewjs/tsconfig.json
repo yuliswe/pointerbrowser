@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": [ "es7", "dom" ],
+    "types": [ "node" ],
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es5",
+    "allowJs": true,
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

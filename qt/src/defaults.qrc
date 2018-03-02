@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>defaults/search.db</file>
+        <file>defaults/version</file>
+        <file>defaults/bookmarks.json</file>
+    </qresource>
+</RCC>
