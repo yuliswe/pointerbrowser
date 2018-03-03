@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtWebView 1.1
-import QtWebEngine 1.6
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 
