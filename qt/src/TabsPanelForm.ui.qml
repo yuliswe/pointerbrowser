@@ -12,9 +12,21 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 5
         anchors.right: parent.right
-        anchors.rightMargin: 10
+        anchors.rightMargin: 5
         anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.leftMargin: 5
         selectByMouse: true
+    }
+
+    TabsList {
+        id: tabsList
+        anchors.top: textField.bottom
+        anchors.topMargin: 41
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 5
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.left: parent.left
+        anchors.leftMargin: 5
     }
 }

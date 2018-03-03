@@ -53,29 +53,47 @@ BrowserForm {
     Connections {
         target: browserRefreshButton
         onClicked: {
-            browserWebView.reload()
+            TabsModel.addTab(url)
         }
     }
 
     Connections {
         target: browserBookmarkButton
         onClicked: {
-            browserWebView.reload()
+            var js = FileManager.readFileQrc("docview.js")
+            function callback(jsOut) {
+                TabsModel.insertTab(0, browserWebView.url,
+                                    browserWebView.title, jsOut)
+            }
+            browserWebView.runJavaScript(js, callback)
         }
     }
 
     Connections {
-        target: browserDocviewButton
+        target: browserDocviewSwitch
         onClicked: {
+            browserDocviewSwitch.inDocview = !browserDocviewSwitch.inDocview
             var js = FileManager.readFileQrc("docview.js")
-            console.log(js)
-            browserWebView.runJavaScript(js, function (output) {
-                print(output)
-            })
+            if (browserDocviewSwitch.inDocview) {
+                browserWebView.runJavaScript(js + "Docview.turnOn()",
+                                             function (result) {
+                                                 print(result)
+                                             })
+            } else {
+                browserWebView.runJavaScript(js + "Docview.turnOff()",
+                                             function (result) {
+                                                 print(result)
+                                             })
+            }
         }
     }
 
     Component.onCompleted: {
         browserWebView.url = "https://google.ca"
+        var js = FileManager.readFileQrc("docview.js")
+        // load framework // doesn't work!
+        browserWebView.runJavaScript(js, function (result) {
+            print(result)
+        })
     }
 }

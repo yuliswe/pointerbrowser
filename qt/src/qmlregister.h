@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "filemanager.h"
+#include "tabsmodel.h"
 
 class QMLRegister : public QObject
 {
@@ -11,6 +12,7 @@ class QMLRegister : public QObject
     public:
         explicit QMLRegister(QObject *parent = nullptr);
         static FileManager* fileManager;
+        static TabsModel* tabsModel;
         static void registerToQML();
 
     signals:

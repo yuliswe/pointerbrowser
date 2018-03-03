@@ -1,3 +1,4 @@
 build-docviewer-ui*/
 .DS_Store
+node_modules/
 
