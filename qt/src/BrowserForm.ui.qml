@@ -10,6 +10,7 @@ Rectangle {
     property alias browserForwardButton: next
     property alias browserRefreshButton: refresh
     property alias browserBookmarkButton: bookmark
+    property alias browserDocviewButton: docview
 
     WebView {
         id: webView
@@ -57,8 +58,14 @@ Rectangle {
         }
 
         Button {
+            id: docview
+            text: qsTr("Docview")
+            Layout.maximumHeight: toolbar.height
+        }
+
+        Button {
             id: bookmark
-            text: qsTr("Button")
+            text: qsTr("Bookmark")
             Layout.maximumHeight: toolbar.height
         }
     }

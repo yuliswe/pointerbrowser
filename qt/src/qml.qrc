@@ -9,5 +9,7 @@
         <file>BrowserForm.ui.qml</file>
         <file>TabsList.qml</file>
         <file>TabsListForm.ui.qml</file>
+        <file>docview.js</file>
+        <file>jquery-3.3.1.slim.min.js</file>
     </qresource>
 </RCC>
