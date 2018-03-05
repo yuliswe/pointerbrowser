@@ -5,38 +5,36 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: listView
 
-    Shortcut {
-        sequence: "Ctrl+Q"
-        onActivated: {
-
-            var idx = TabsModel.appendTab("loadRequest.url", "", "")
-        }
-    }
-
     Component.onCompleted: {
         for (var i = 0; i < TabsModel.tabs.length; i++) {
             repeaterListModel.append(TabsModel.tabs[i])
         }
+        setCurrentIndex(0)
     }
 
     Connections {
         target: TabsModel
         onTabInserted: {
             console.log(webpage)
-            repeaterListModel.append(webpage)
+            repeaterListModel.insert(index, webpage)
+            if (listView.stackLayout.currentIndex >= index) {
+                listView.stackLayout.currentIndex++
+            }
         }
     }
 
     repeaterDelegate: WebView {
         id: webview
+        property bool success: false
         focus: true
-        url: repeaterListModel.get(index).url
+        url: model.url
         Keys.onPressed: main.currentKeyPress = event.key
         Keys.onReleased: main.currentKeyPress = -1
         onLoadingChanged: {
-            if (index === getCurrentIndex()) {
-                if (loadRequest.status === WebView.LoadStartedStatus) {
-                    console.log(index, loadRequest, loadRequest.url)
+            console.log(index, loadRequest, loadRequest.url)
+            switch (loadRequest.status) {
+            case WebView.LoadStartedStatus:
+                if (index === getCurrentIndex()) {
                     // if control key is held, then stop loading
                     // and open a new tab. If the tab already exists,
                     // do nothing
@@ -44,10 +42,16 @@ BrowserWebViewsForm {
                         this.stop()
                         var idx = TabsModel.findTab(loadRequest.url)
                         if (idx === -1) {
-                            TabsModel.appendTab(loadRequest.url, "", "")
+                            idx = TabsModel.insertTab(0,
+                                                      loadRequest.url, "", "")
+                            getWebViewAt(idx).stop()
                         }
                     }
                 }
+                break
+            case WebView.LoadSucceededStatus:
+                this.success = true
+                break
             }
         }
     }
@@ -67,6 +71,9 @@ BrowserWebViewsForm {
     property string title: getCurrentWebView() ? getCurrentWebView().title : ""
     function setCurrentIndex(idx) {
         listView.stackLayout.currentIndex = idx
+        if (!getWebViewAt(idx).success) {
+            getWebViewAt(idx).reload()
+        }
     }
     function getWebViewAt(idx) {
         return listView.repeater.itemAt(idx)

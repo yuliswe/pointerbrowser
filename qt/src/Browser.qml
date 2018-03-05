@@ -32,21 +32,20 @@ BrowserForm {
             browserAddressBar.horizontalAlignment = Text.AlignHCenter
             browserAddressBar.ensureVisible(0)
         }
-        onUrlChanged: {
-            var idx = TabsModel.findTab(browserWebViews.url)
-            if (main.currentKeyPress === Qt.Key_Control) {
-                if (idx > -1) {
+        //        onUrlChanged: {
+        //            var idx = TabsModel.findTab(browserWebViews.url)
+        //            if (main.currentKeyPress === Qt.Key_Control) {
+        //                if (idx > -1) {
 
-
-                    // To do: move tab to top
-                } else {
-                    //                var js = FileManager.readFileQrc("docview.js")
-                    browserWebView.runJavaScript(js)
-                    TabsModel.appendTab(browserWebViews.url,
-                                        browserWebViews.title, "")
-                }
-            }
-        }
+        //                    // To do: move tab to top
+        //                } else {
+        //                    //                var js = FileManager.readFileQrc("docview.js")
+        //                    browserWebView.runJavaScript(js)
+        //                    TabsModel.insertTab(0, browserWebViews.url,
+        //                                        browserWebViews.title, "")
+        //                }
+        //            }
+        //        }
     }
 
     Connections {
