@@ -3,21 +3,15 @@ import QtWebView 1.1
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 
-Rectangle {
-    property alias browserWebView: webView
+Item {
+    id: root
     property alias browserAddressBar: addressBar
     property alias browserBackButton: prev
     property alias browserForwardButton: next
     property alias browserRefreshButton: refresh
     property alias browserBookmarkButton: bookmark
     property alias browserDocviewSwitch: docview
-
-    WebView {
-        id: webView
-        anchors.topMargin: 40
-        url: addressBar.text
-        anchors.fill: parent
-    }
+    property alias browserWebViews: browserWebViews
 
     RowLayout {
         id: toolbar
@@ -33,27 +27,27 @@ Rectangle {
             id: prev
             text: qsTr("Button")
             Layout.maximumWidth: toolbar.height
-            Layout.maximumHeight: toolbar.height
+            Layout.fillHeight: true
         }
 
         Button {
             id: next
             text: qsTr("Button")
             Layout.maximumWidth: toolbar.height
-            Layout.maximumHeight: toolbar.height
+            Layout.fillHeight: true
         }
 
         Button {
             id: refresh
             text: qsTr("Button")
             Layout.maximumWidth: toolbar.height
-            Layout.maximumHeight: toolbar.height
+            Layout.fillHeight: true
         }
 
         TextField {
             id: addressBar
             Layout.fillWidth: true
-            Layout.maximumHeight: toolbar.height
+            Layout.fillHeight: true
             selectByMouse: true
         }
 
@@ -61,13 +55,26 @@ Rectangle {
             id: docview
             property bool inDocview: false
             text: inDocview ? qsTr("Original") : qsTr("Docview")
-            Layout.maximumHeight: toolbar.height
+            Layout.fillHeight: true
         }
 
         Button {
             id: bookmark
+            property bool browserWebView: false
             text: qsTr("Bookmark")
+            Layout.fillWidth: false
+            Layout.fillHeight: true
             Layout.maximumHeight: toolbar.height
+            background: Rectangle {
+                anchors.fill: parent
+                color: this.browserWebView ? main.theme.control_on : (this.hovered ? main.theme.control_hover : main.theme.control_normal)
+            }
         }
+    }
+
+    BrowserWebViews {
+        id: browserWebViews
+        anchors.topMargin: 40
+        anchors.fill: parent
     }
 }

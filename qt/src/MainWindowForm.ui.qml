@@ -5,6 +5,8 @@ import QtQuick.Layouts 1.3
 
 SplitView {
     property alias tabsPanel: tabsPanel
+    property alias browserWebViews: browser.browserWebViews
+    property alias tabsList: tabsPanel.tabsList
 
     handleDelegate: Item {
     }

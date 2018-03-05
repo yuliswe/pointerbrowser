@@ -1,5 +1,5 @@
 #include <QQmlEngine>
-#include <QUrl>
+#include <QString>
 #include "qmlregister.h"
 #include "filemanager.h"
 #include "tabsmodel.h"

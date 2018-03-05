@@ -1,13 +1,51 @@
-import QtQuick 2.4
 import Backend 1.0
+import QtQuick 2.7
+import QtWebView 1.1
+import QtQuick.Controls 2.3
 
 BrowserForm {
+    id: browser
+    readonly property var browserWebView: browser.browserWebViews.getCurrentWebView()
+    function showWebpageAt(idx) {
+        browser.browserWebViews.setCurrentIndex(idx)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Space"
+        onActivated: {
+            browserAddressBar.focus = true
+            browserAddressBar.selectAll()
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+R"
+        onActivated: browserWebView.reload()
+    }
+
     Connections {
-        target: browserWebView
+        target: browserWebViews
         onTitleChanged: {
+            console.log(browserWebViews.getCurrentIndex(),
+                        browserWebViews.getCurrentWebView())
             browserAddressBar.text = browserWebView.title
             browserAddressBar.horizontalAlignment = Text.AlignHCenter
             browserAddressBar.ensureVisible(0)
+        }
+        onUrlChanged: {
+            var idx = TabsModel.findTab(browserWebViews.url)
+            if (main.currentKeyPress === Qt.Key_Control) {
+                if (idx > -1) {
+
+
+                    // To do: move tab to top
+                } else {
+                    //                var js = FileManager.readFileQrc("docview.js")
+                    browserWebView.runJavaScript(js)
+                    TabsModel.appendTab(browserWebViews.url,
+                                        browserWebViews.title, "")
+                }
+            }
         }
     }
 
@@ -21,6 +59,7 @@ BrowserForm {
             }
             browserWebView.url = url
             browserAddressBar.focus = false
+            browserWebView.focus = true
         }
         onFocusChanged: {
             if (browserAddressBar.activeFocus) {
@@ -53,7 +92,7 @@ BrowserForm {
     Connections {
         target: browserRefreshButton
         onClicked: {
-            TabsModel.addTab(url)
+            browserWebView.reload()
         }
     }
 
@@ -62,8 +101,15 @@ BrowserForm {
         onClicked: {
             var js = FileManager.readFileQrc("docview.js")
             function callback(jsOut) {
-                TabsModel.insertTab(0, browserWebView.url,
-                                    browserWebView.title, jsOut)
+                var idx = TabsModel.findTab(browserWebView.url)
+                if (idx === -1) {
+                    browserBookmarkButton.text = "Bookmarked"
+                    TabsModel.insertTab(0, browserWebView.url,
+                                        browserWebView.title, jsOut)
+                } else {
+                    browserBookmarkButton.text = "Bookmark"
+                    TabsModel.removeTab(idx)
+                }
             }
             browserWebView.runJavaScript(js, callback)
         }
@@ -86,14 +132,5 @@ BrowserForm {
                                              })
             }
         }
-    }
-
-    Component.onCompleted: {
-        browserWebView.url = "https://google.ca"
-        var js = FileManager.readFileQrc("docview.js")
-        // load framework // doesn't work!
-        browserWebView.runJavaScript(js, function (result) {
-            print(result)
-        })
     }
 }

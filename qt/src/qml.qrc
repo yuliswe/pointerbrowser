@@ -10,5 +10,9 @@
         <file>TabsList.qml</file>
         <file>TabsListForm.ui.qml</file>
         <file>docview.js</file>
+        <file>BrowserWebViews.qml</file>
+        <file>BrowserWebViewsForm.ui.qml</file>
+        <file>TabsListTab.qml</file>
+        <file>TabsListTabForm.ui.qml</file>
     </qresource>
 </RCC>

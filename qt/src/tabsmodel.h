@@ -16,10 +16,14 @@ class TabsModel : public QObject
 
     signals:
         void tabsChanged();
+        void tabInserted(int index, Webpage* webpage);
+        void tabRemoved(Webpage* webpage);
 
     public slots:
-        void insertTab(int i, QUrl url, QString title, QString html);
+        void insertTab(int i, QString url, QString title, QString html);
+        int appendTab(QString url, QString title, QString html);
         void removeTab(int idx);
+        int findTab(QString url);
 
     private:
         QList<Webpage*> _tabs;

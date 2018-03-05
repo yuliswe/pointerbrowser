@@ -2,7 +2,7 @@
 #define FILEMANAGER_H
 
 #include <QObject>
-#include <QUrl>
+#include <QString>
 
 class FileManager : public QObject
 {
