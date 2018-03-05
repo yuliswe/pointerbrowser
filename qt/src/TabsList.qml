@@ -1,15 +1,18 @@
 import QtQuick 2.4
 import Backend 1.0
+import QtQuick.Controls 2.3
 
 TabsListForm {
     id: tabsList
     property int selected: -1
-    function userOpensTab(idx) {
-        browserWebViews.setCurrentIndex(idx)
+    signal userOpensTab(int index)
+    delegate: TabsListTab {
+        id: tab
+        height: 30
+        onClicked: {
+            console.log(index)
+            userOpensTab(index)
+        }
     }
-    Component.onCompleted: {
-        tabsListModel = Qt.binding(function () {
-            return TabsModel.tabs
-        })
-    }
+    model: TabsModel.tabs
 }

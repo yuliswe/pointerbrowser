@@ -8,29 +8,11 @@ ListView {
     property alias tabsListModel: listview.model
     anchors.fill: parent
     model: [{
-            title: "site 1"
+            url: "test",
+            title: "test"
         }, {
-            title: "site 2"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
-        }, {
-            title: "site 3"
+            url: "test",
+            title: "test"
         }]
     delegate: TabsListTab {
     }

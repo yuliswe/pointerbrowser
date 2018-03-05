@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>MainWindow.qml</file>
-        <file>MainWindowForm.ui.qml</file>
         <file>TabsPanel.qml</file>
         <file>TabsPanelForm.ui.qml</file>
         <file>Browser.qml</file>
@@ -14,5 +12,7 @@
         <file>BrowserWebViewsForm.ui.qml</file>
         <file>TabsListTab.qml</file>
         <file>TabsListTabForm.ui.qml</file>
+        <file>BrowserAddressBar.qml</file>
+        <file>BrowserAddressBarForm.ui.qml</file>
     </qresource>
 </RCC>

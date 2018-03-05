@@ -5,17 +5,19 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: listView
 
+    signal userOpensLinkInCurrentWebView(string url)
+    signal webViewLoadingSucceeded(string index)
+
     Component.onCompleted: {
         for (var i = 0; i < TabsModel.tabs.length; i++) {
             repeaterListModel.append(TabsModel.tabs[i])
         }
-        setCurrentIndex(0)
     }
 
     Connections {
         target: TabsModel
         onTabInserted: {
-            console.log(webpage)
+            console.log("onTabInserted", webpage)
             repeaterListModel.insert(index, webpage)
             if (listView.stackLayout.currentIndex >= index) {
                 listView.stackLayout.currentIndex++
@@ -47,10 +49,12 @@ BrowserWebViewsForm {
                             getWebViewAt(idx).stop()
                         }
                     }
+                    userOpensLinkInCurrentWebView(loadRequest.url)
                 }
                 break
             case WebView.LoadSucceededStatus:
                 this.success = true
+                webViewLoadingSucceeded(index)
                 break
             }
         }
@@ -84,5 +88,10 @@ BrowserWebViewsForm {
     function getCurrentWebView() {
         var idx = listView.getCurrentIndex()
         return listView.getWebViewAt(idx)
+    }
+    function reloadCurrentWebView() {
+        // ignore Ctrl in this function
+        main.currentKeyPress = -1
+        getCurrentWebView().reload()
     }
 }

@@ -9,12 +9,13 @@ Window {
     title: qsTr("Hello World")
     property int currentKeyPress: -1
 
-    MainWindow {
+    Browser {
         anchors.fill: parent
         focus: true
         Keys.onPressed: main.currentKeyPress = event.key
         Keys.onReleased: main.currentKeyPress = -1
     }
+
     onActiveFocusItemChanged: {
         console.log("focus:", activeFocusItem)
     }

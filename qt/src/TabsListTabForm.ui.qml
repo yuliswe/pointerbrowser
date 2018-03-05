@@ -3,6 +3,7 @@ import QtQuick.Controls 2.3
 
 Button {
     id: tab
+    width: 500
     height: 30
     anchors.right: parent.right
     anchors.rightMargin: 0
@@ -10,6 +11,7 @@ Button {
     anchors.leftMargin: 0
     background: Rectangle {
         color: index === tabsList.selected ? main.theme.control_on : (tab.hovered ? main.theme.control_hover : "transparent")
+        anchors.fill: parent
         Text {
             color: index === tabsList.selected ? "#ffffff" : "default"
             text: modelData.title + " - " + modelData.url
