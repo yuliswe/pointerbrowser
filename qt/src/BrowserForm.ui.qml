@@ -3,6 +3,7 @@ import QtWebView 1.1
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.5 as C1
+import "controls" as C
 
 C1.SplitView {
     property alias tabsPanel: tabsPanel
@@ -36,20 +37,22 @@ C1.SplitView {
 
             Button {
                 id: prev
-                text: qsTr("Button")
+                text: "Button"
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
             }
 
-            Button {
+            C.Button {
                 id: next
-                text: qsTr("Button")
+                width: 30
+                text: "Button"
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
             }
 
-            Button {
+            C.Button {
                 id: refresh
+                width: 30
                 text: qsTr("Button")
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -64,14 +67,14 @@ C1.SplitView {
                 progress: browserWebView.loadProgress
             }
 
-            Button {
+            C.Button {
                 id: docview
                 property bool inDocview: false
                 text: inDocview ? qsTr("Original") : qsTr("Docview")
                 Layout.fillHeight: true
             }
 
-            Button {
+            C.Button {
                 id: bookmark
                 property bool browserWebView: false
                 text: qsTr("Bookmark")

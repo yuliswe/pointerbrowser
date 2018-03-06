@@ -13,7 +13,7 @@ BrowserAddressBarForm {
             textField.ensureVisible(0)
         }
     }
-    signal userEnterUrl(string url)
+    signal userEntersUrl(string url)
     onProgressChanged: {
         console.log("progress", progress)
         if (progress == 0) {
@@ -45,13 +45,13 @@ BrowserAddressBarForm {
     Connections {
         target: textField
         onAccepted: {
-            var url = textField.url
+            var url = textField.text
             var exp = new RegExp("http://|https://")
             if (!exp.test(url)) {
                 url = "http://www.google.com/search?query=" + url
             }
             textField.focus = false
-            userEnterUrl(url)
+            userEntersUrl(url)
         }
         onFocusChanged: {
             if (textField.activeFocus) {

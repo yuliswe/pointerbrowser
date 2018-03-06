@@ -6,7 +6,6 @@ import Backend 1.0
 ListView {
     id: listview
     property alias tabsListModel: listview.model
-    anchors.fill: parent
     model: [{
             url: "test",
             title: "test"
@@ -14,6 +13,4 @@ ListView {
             url: "test",
             title: "test"
         }]
-    delegate: TabsListTab {
-    }
 }

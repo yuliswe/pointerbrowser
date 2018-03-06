@@ -16,11 +16,22 @@ Rectangle {
         text: qsTr("Text Field")
         anchors.top: parent.top
         anchors.topMargin: 5
-        anchors.right: parent.right
+        anchors.right: newTabButton.left
         anchors.rightMargin: 5
         anchors.left: parent.left
         anchors.leftMargin: 5
         selectByMouse: true
+    }
+
+    Button {
+        id: newTabButton
+        x: 550
+        y: 5
+        width: 30
+        height: 30
+        text: qsTr("+")
+        anchors.right: parent.right
+        anchors.rightMargin: 5
     }
 
     TabsList {
@@ -28,7 +39,7 @@ Rectangle {
         anchors.bottom: docviewSwitch.top
         anchors.top: parent.top
         anchors.topMargin: 40
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: 10
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.left: parent.left

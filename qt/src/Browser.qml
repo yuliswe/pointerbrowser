@@ -58,7 +58,7 @@ BrowserForm {
 
     Connections {
         target: browserAddressBar
-        onUserEnterUrl: {
+        onUserEntersUrl: {
             browserWebView.url = url
         }
     }

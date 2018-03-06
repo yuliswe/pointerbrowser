@@ -14,5 +14,8 @@
         <file>TabsListTabForm.ui.qml</file>
         <file>BrowserAddressBar.qml</file>
         <file>BrowserAddressBarForm.ui.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>controls/TextField.qml</file>
+        <file>controls/Button.qml</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@ TabsListForm {
     delegate: TabsListTab {
         id: tab
         height: 30
+        width: parent.width
         onClicked: {
             console.log(index)
             userOpensTab(index)
