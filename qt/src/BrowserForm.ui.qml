@@ -6,6 +6,7 @@ import QtQuick.Controls 1.5 as C1
 import "controls" as C
 
 C1.SplitView {
+    id: splitView
     property alias tabsPanel: tabsPanel
     property alias tabsList: tabsPanel.tabsList
     property alias browserAddressBar: addressBar
@@ -16,27 +17,39 @@ C1.SplitView {
     property alias browserDocviewSwitch: docview
     property alias browserWebViews: browserWebViews
 
-    TabsPanel {
-        id: tabsPanel
-        Layout.minimumWidth: 200
-    }
-
     handleDelegate: Item {
     }
 
-    Item {
+    TabsPanel {
+        id: tabsPanel
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        Layout.minimumWidth: 200
+    }
+
+    Rectangle {
+        id: rectangle
+        y: 0
+        color: ctl.palette.button
         RowLayout {
             id: toolbar
-            height: 30
-            anchors.top: parent.top
+            x: -835
+            y: 5
+            height: 25
             anchors.right: parent.right
             anchors.left: parent.left
-            anchors.rightMargin: 10
-            anchors.leftMargin: 10
+            anchors.top: parent.top
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
             anchors.topMargin: 5
 
-            Button {
+            C.Button {
                 id: prev
+                width: 25
                 text: "Button"
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -44,7 +57,7 @@ C1.SplitView {
 
             C.Button {
                 id: next
-                width: 30
+                width: height
                 text: "Button"
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -52,7 +65,7 @@ C1.SplitView {
 
             C.Button {
                 id: refresh
-                width: 30
+                width: height
                 text: qsTr("Button")
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -70,6 +83,7 @@ C1.SplitView {
             C.Button {
                 id: docview
                 property bool inDocview: false
+                width: height
                 text: inDocview ? qsTr("Original") : qsTr("Docview")
                 Layout.fillHeight: true
             }
@@ -77,21 +91,27 @@ C1.SplitView {
             C.Button {
                 id: bookmark
                 property bool browserWebView: false
+                width: height
                 text: qsTr("Bookmark")
                 Layout.fillWidth: false
                 Layout.fillHeight: true
                 Layout.maximumHeight: toolbar.height
-                background: Rectangle {
-                    anchors.fill: parent
-                    color: this.browserWebView ? main.theme.control_on : (this.hovered ? main.theme.control_hover : main.theme.control_normal)
-                }
             }
         }
 
         BrowserWebViews {
             id: browserWebViews
-            anchors.topMargin: 40
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.topMargin: 34
+        }
+
+        Control {
+            id: ctl
+            x: 0
+            y: 0
         }
     }
 }

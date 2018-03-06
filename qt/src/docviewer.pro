@@ -17,7 +17,8 @@ SOURCES += \
     tabsmodel.cpp \
     filemanager.cpp \
     qmlregister.cpp \
-    webpage.cpp
+    webpage.cpp \
+    palette.cpp
 
 RESOURCES += \
     qml.qrc
@@ -37,6 +38,7 @@ HEADERS += \
     tabsmodel.h \
     filemanager.h \
     qmlregister.h \
-    webpage.h
+    webpage.h \
+    palette.h
 
 DISTFILES +=

@@ -5,16 +5,20 @@ import "controls" as C
 
 Rectangle {
     id: form
-    color: "#f6f6f6"
+    color: ctl.palette.button
     border.width: 0
     property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy
     property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch
 
+    Control {
+        id: ctl
+    }
+
     C.TextField {
         id: tabsSearch
-        height: 30
-        placeholderText: qsTr("Search Tabs")
+        height: 25
+        placeholderText: "Search Tabs"
         anchors.top: parent.top
         anchors.topMargin: 5
         anchors.right: newTabButton.left
@@ -24,12 +28,12 @@ Rectangle {
         selectByMouse: true
     }
 
-    Button {
+    C.Button {
         id: newTabButton
         x: 550
         y: 5
-        width: 30
-        height: 30
+        width: 25
+        height: 25
         text: qsTr("+")
         anchors.right: parent.right
         anchors.rightMargin: 5
@@ -38,9 +42,9 @@ Rectangle {
     TabsList {
         id: tabsList
         anchors.bottom: docviewSwitch.top
-        anchors.top: parent.top
-        anchors.topMargin: 40
-        anchors.bottomMargin: 10
+        anchors.top: tabsSearch.bottom
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.left: parent.left

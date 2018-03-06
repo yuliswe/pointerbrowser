@@ -12,40 +12,40 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebView {
         id: webview
-        property bool success: false
+        property bool success: true
         focus: true
         url: model.url
         Keys.onPressed: main.currentKeyPress = event.key
         Keys.onReleased: main.currentKeyPress = -1
         onLoadingChanged: {
             console.log(index, loadRequest, loadRequest.url)
-//            switch (loadRequest.status) {
-//            case WebView.LoadStartedStatus:
-//                if (index === getCurrentIndex()) {
-//                    // if control key is held, then stop loading
-//                    // and open a new tab. If the tab already exists,
-//                    // do nothing
-//                    if (main.currentKeyPress === Qt.Key_Control) {
-//                        this.stop()
-//                        var idx = TabsModel.findTab(loadRequest.url)
-//                        if (idx === -1) {
-//                            idx = TabsModel.insertTab(0,
-//                                                      loadRequest.url, "", "")
+            switch (loadRequest.status) {
+            case WebView.LoadStartedStatus:
+                if (index === getCurrentIndex()) {
+                    // if control key is held, then stop loading
+                    // and open a new tab. If the tab already exists,
+                    // do nothing
+                    if (main.currentKeyPress === Qt.Key_Control) {
+                        this.stop()
+                        var idx = TabsModel.findTab(loadRequest.url)
+                        if (idx === -1) {
+                            idx = TabsModel.insertTab(0,
+                                                      loadRequest.url, "Loading", "")
 //                            getWebViewAt(idx).stop()
-//                        }
-//                    } else {
-//                        userOpensLinkInCurrentWebView(loadRequest.url)
-//                    }
-//                }
-//                break
-//            case WebView.LoadSucceededStatus:
-//                this.success = true
-//                var wp = getWebViewAt(index)
-//                tabsModel.setProperty(index, "title", wp.title)
+                        }
+                    } else {
+                        userOpensLinkInCurrentWebView(loadRequest.url)
+                    }
+                }
+                break
+            case WebView.LoadSucceededStatus:
+                this.success = true
+                var wp = getWebViewAt(index)
+                tabsModel.setProperty(index, "title", wp.title)
 //                tabsModel.setProperty(index, "url", wp.url.toString())
-//                webViewLoadingSucceeded(index)
-//                break
-//            }
+                webViewLoadingSucceeded(index)
+                break
+            }
         }
     }
 

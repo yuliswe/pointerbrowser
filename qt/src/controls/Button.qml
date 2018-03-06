@@ -12,13 +12,15 @@ T.Button {
         text: button.text
         font: button.font
         opacity: enabled ? 1.0 : 0.3
-        color: button.down ? "#17a81a" : "#21be2b"
+        color: palette.buttonText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
     background: Rectangle {
         opacity: enabled ? 1 : 0.3
-        color: button.down ? palette.mid : palette.button
+        color: button.down ? palette.mid: palette.button
+        border.color: palette.mid
+        radius: 3
     }
 }

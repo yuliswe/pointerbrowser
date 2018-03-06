@@ -6,11 +6,14 @@ import Backend 1.0
 ListView {
     id: listview
     property alias tabsListModel: listview.model
-    model: [{
-            url: "test",
+    model: ListModel {
+        ListElement {
+            url: "test"
             title: "test"
-        }, {
-            url: "test",
-            title: "test"
-        }]
+        }
+        ListElement {
+            url: "longlonglonglonglonglonglonglong"
+            title: "longlonglonglonglonglonglonglong"
+        }
+    }
 }

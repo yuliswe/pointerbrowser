@@ -5,7 +5,23 @@ ItemDelegate {
     id: tabButton
     highlighted: true
     background: Rectangle {
+        id: rectangle
         color: tabButton.hovered ? palette.midlight : "transparent"
+        width: parent.width
+        Text {
+            color: index === tabsList.selected ? palette.highlightedText : palette.buttonText
+            text: model.title + " - " + model.url
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            font.pointSize: 10
+            textFormat: Text.PlainText
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            verticalAlignment: Text.AlignTop
+            horizontalAlignment: Text.AlignLeft
+            elide: Text.ElideRight
+        }
     }
     RoundButton {
         id: closeButton
@@ -16,17 +32,6 @@ ItemDelegate {
         anchors.leftMargin: 1
         anchors.verticalCenter: parent.verticalCenter
         z: 2
-    }
-    Text {
-        color: index === tabsList.selected ? "#ffffff" : "default"
-        text: model.title + " - " + model.url
-        font.pointSize: 10
-        font.family: "Segoe UI"
-        textFormat: Text.PlainText
-        anchors.left: parent.left
-        anchors.leftMargin: 20
-        anchors.verticalCenter: parent.verticalCenter
-        verticalAlignment: Text.AlignTop
-        horizontalAlignment: Text.AlignLeft
+        visible: tabButton.hovered
     }
 }

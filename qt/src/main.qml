@@ -6,9 +6,17 @@ Window {
     visible: true
     width: 1280
     height: 900
-    title: qsTr("Hello World")
+    title: qsTr("DOCVIEWER")
     property int currentKeyPress: -1
-
+    x: (Screen.width - width) / 2
+        y: (Screen.height - height) / 2
+//    color: "transparent"
+//    flags: Qt.Window |
+//           Qt.FramelessWindowHint |
+//           Qt.CustomizeWindowHint |
+//           Qt.WindowTitleHint |
+//           Qt.WindowCloseButtonHint
+////           Qt.WA_TranslucentBackground
     Browser {
         anchors.fill: parent
         focus: true

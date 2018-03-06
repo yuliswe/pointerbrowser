@@ -17,10 +17,9 @@ BrowserAddressBarForm {
     onProgressChanged: {
         console.log("progress", progress)
         if (progress == 0) {
-            barWidthAnimation.enabled = false
         } else if (progress == 100) {
-            barWidthAnimation.enabled = true
-            progressBar.opacity = 0
+            //            progressBar.opacity = 0
+            fadeProgress.start()
         } else {
             progressBar.opacity = 0.3
         }
@@ -28,10 +27,19 @@ BrowserAddressBarForm {
 
     Behavior on progressBarWidth {
         id: barWidthAnimation
-        enabled: false
+        enabled: true
         SmoothedAnimation {
-            duration: 1000
+            duration: 100
         }
+    }
+
+
+    PropertyAnimation {
+        id: fadeProgress
+        target: progressBar
+        properties: "opacity"
+        to: 0
+        duration: 1000
     }
 
     Shortcut {
