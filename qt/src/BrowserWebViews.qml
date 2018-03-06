@@ -42,6 +42,7 @@ BrowserWebViewsForm {
                 this.success = true
                 var wp = getWebViewAt(index)
                 tabsModel.setProperty(index, "title", wp.title)
+                tabsModel.setProperty(index, "url", wp.url.toString())
                 webViewLoadingSucceeded(index)
                 break
             }
