@@ -9,7 +9,10 @@ T.TextField {
     }
     background: Rectangle {
         border.width: 1
-        anchors.fill: textField
+        border.color: ctl.palette.button
+        color: ctl.palette.light
+        anchors.fill: textfield
+        radius: 3
     }
     topPadding: 5
     leftPadding: 5

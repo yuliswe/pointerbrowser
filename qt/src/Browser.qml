@@ -80,7 +80,7 @@ BrowserForm {
     Connections {
         target: browserRefreshButton
         onClicked: {
-            browserWebView.reload()
+            browserWebViews.reloadCurrentWebView()
         }
     }
 
@@ -99,7 +99,7 @@ BrowserForm {
                     TabsModel.removeTab(idx)
                 }
             }
-            browserWebView.runJavaScript(js, callback)
+//            browserWebView.runJavaScript(js, callback)
         }
     }
 
@@ -109,15 +109,15 @@ BrowserForm {
             browserDocviewSwitch.inDocview = !browserDocviewSwitch.inDocview
             var js = FileManager.readFileQrc("docview.js")
             if (browserDocviewSwitch.inDocview) {
-                browserWebView.runJavaScript(js + "Docview.turnOn()",
-                                             function (result) {
-                                                 print(result)
-                                             })
+//                browserWebView.runJavaScript(js + "Docview.turnOn()",
+//                                             function (result) {
+//                                                 print(result)
+//                                             })
             } else {
-                browserWebView.runJavaScript(js + "Docview.turnOff()",
-                                             function (result) {
-                                                 print(result)
-                                             })
+//                browserWebView.runJavaScript(js + "Docview.turnOff()",
+//                                             function (result) {
+//                                                 print(result)
+//                                             })
             }
         }
     }
