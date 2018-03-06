@@ -5,25 +5,10 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: listView
 
+    property alias tabsModel: listView.repeaterModel
+
     signal userOpensLinkInCurrentWebView(string url)
     signal webViewLoadingSucceeded(string index)
-
-    Component.onCompleted: {
-        for (var i = 0; i < TabsModel.tabs.length; i++) {
-            repeaterListModel.append(TabsModel.tabs[i])
-        }
-    }
-
-    Connections {
-        target: TabsModel
-        onTabInserted: {
-            console.log("onTabInserted", webpage)
-            repeaterListModel.insert(index, webpage)
-            if (listView.stackLayout.currentIndex >= index) {
-                listView.stackLayout.currentIndex++
-            }
-        }
-    }
 
     repeaterDelegate: WebView {
         id: webview
@@ -48,12 +33,15 @@ BrowserWebViewsForm {
                                                       loadRequest.url, "", "")
                             getWebViewAt(idx).stop()
                         }
+                    } else {
+                        userOpensLinkInCurrentWebView(loadRequest.url)
                     }
-                    userOpensLinkInCurrentWebView(loadRequest.url)
                 }
                 break
             case WebView.LoadSucceededStatus:
                 this.success = true
+                var wp = getWebViewAt(index)
+                tabsModel.setProperty(index, "title", wp.title)
                 webViewLoadingSucceeded(index)
                 break
             }

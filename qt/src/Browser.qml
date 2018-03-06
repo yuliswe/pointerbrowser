@@ -6,6 +6,29 @@ import QtQuick.Controls 2.3
 BrowserForm {
     readonly property var browserWebView: browserWebViews.getCurrentWebView()
 
+    ListModel {
+        id: tabsModel
+    }
+
+    Component.onCompleted: {
+        for (var i = 0; i < TabsModel.tabs.length; i++) {
+            tabsModel.append(TabsModel.tabs[i])
+        }
+    }
+
+    browserWebViews.tabsModel: tabsModel
+    tabsList.tabsModel: tabsModel
+
+    Connections {
+        target: TabsModel
+        onTabInserted: {
+            console.log("onTabInserted", webpage)
+            var idx = browserWebViews.getCurrentIndex()
+            tabsModel.insert(index, webpage)
+            browserWebViews.setCurrentIndex(idx + 1)
+        }
+    }
+
     Shortcut {
         sequence: "Ctrl+R"
         onActivated: browserWebViews.reloadCurrentWebView()
@@ -15,6 +38,8 @@ BrowserForm {
         target: tabsList
         onUserOpensTab: {
             browserWebViews.setCurrentIndex(index)
+            var wp = browserWebViews.getWebViewAt(index)
+            browserAddressBar.update(wp.url, wp.title)
         }
     }
 
@@ -26,6 +51,8 @@ BrowserForm {
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.getWebViewAt(index)
             browserAddressBar.update(wp.url, wp.title)
+            TabsModel.tabs[index].title = wp.title
+            console.log(TabsModel.tabs[index].title)
         }
     }
 

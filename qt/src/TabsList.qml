@@ -4,6 +4,7 @@ import QtQuick.Controls 2.3
 
 TabsListForm {
     id: tabsList
+    property alias tabsModel: tabsList.model
     property int selected: -1
     signal userOpensTab(int index)
     delegate: TabsListTab {
@@ -14,5 +15,4 @@ TabsListForm {
             userOpensTab(index)
         }
     }
-    model: TabsModel.tabs
 }

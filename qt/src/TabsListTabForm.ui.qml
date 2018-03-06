@@ -14,7 +14,7 @@ Button {
         anchors.fill: parent
         Text {
             color: index === tabsList.selected ? "#ffffff" : "default"
-            text: modelData.title + " - " + modelData.url
+            text: model.title + " - " + model.url
             font.pointSize: 10
             font.family: "Segoe UI"
             textFormat: Text.PlainText

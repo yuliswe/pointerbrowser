@@ -3,7 +3,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 2.3
 
 Rectangle {
-    id: item1
+    id: form
     color: "#f6f6f6"
     border.width: 0
     property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy

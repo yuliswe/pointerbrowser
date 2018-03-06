@@ -7,7 +7,7 @@ import Backend 1.0
 Item {
     property alias stackLayout: stackLayout
     property alias repeater: repeater
-    property alias repeaterListModel: listModel
+    property alias repeaterModel: repeater.model
     property alias repeaterDelegate: repeater.delegate
     StackLayout {
         id: stackLayout
@@ -15,9 +15,6 @@ Item {
 
         Repeater {
             id: repeater
-            model: ListModel {
-                id: listModel
-            }
         }
     }
 }
