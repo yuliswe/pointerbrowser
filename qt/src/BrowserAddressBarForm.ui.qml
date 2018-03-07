@@ -6,34 +6,33 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4 as C1
 
 Item {
-    id: browserAddressBar
+    id: form
     property alias textField: textField
-    property alias text: textField.text
-    property alias progress: progressBar.value
     property alias progressBar: progressBar
-    property string url: "url"
-    property string title: "title"
-    property alias progressBarOpacity: progressBar.opacity
-    property alias progressBarWidth: green.width
 
     C.TextField {
         id: textField
         anchors.fill: parent
-
-        ProgressBar {
+        Rectangle {
             id: progressBar
-            anchors.fill: parent
-            value: 10
-            from: 0
-            to: 100
-            contentItem: Rectangle {
-                id: green
-                color: "green"
-                width: progressBar.visualPosition * textField.width
-                height: progressBar.height
-            }
-            background: Item {
-            }
+            color: "green"
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            width: 0.2 * textField.width // preview
+            //                width: progressBar.value/100 * textField.width
         }
+
+        //        ProgressBar {
+        //            id: progressBar
+        //            anchors.fill: parent
+        //            value: 10
+        //            from: 0
+        //            to: 100
+        //            contentItem:
+        //            background: Item {
+        //            }
+        //        }
     }
 }

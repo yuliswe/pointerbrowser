@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     // set properties
-    QMLRegister::tabsModel->insertTab(0,QString("https://google.ca"),QString("google"),QString(""));
+    QMLRegister::tabsModel->insertTab(0,QString("https://google.com"),QString(""),QString(""));
 //    Palette pal{};
 //    QGuiApplication::setPalette(pal);
     QPalette pal = QGuiApplication::palette();

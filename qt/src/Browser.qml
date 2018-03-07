@@ -46,13 +46,13 @@ BrowserForm {
     Connections {
         target: browserWebViews
         onUserOpensLinkInCurrentWebView: {
-            browserAddressBar.update(url, url)
+            browserAddressBar.update(url, "")
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.getWebViewAt(index)
             browserAddressBar.update(wp.url, wp.title)
             TabsModel.tabs[index].title = wp.title
-            console.log(TabsModel.tabs[index].title)
+            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
     }
 
