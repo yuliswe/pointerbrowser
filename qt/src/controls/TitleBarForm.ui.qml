@@ -26,21 +26,47 @@ Item {
         drag.target: titleBar
     }
 
+
     Rectangle {
         id: topRec
         radius: 3
+        border.width: 0
         color: activePalette.mid
         anchors.fill: titleBar
-    }
 
-    Rectangle {
-        height: topRec.radius / 2
-        width: topRec.radius / 2
-        anchors.bottom: titleBar.bottom
-        color: topRec.color
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        opacity: topRec.opacity
+        Rectangle {
+            id: leftRec
+            x: 397
+            y: 399
+            height: topRec.radius
+            width: topRec.radius
+            color: topRec.color
+            smooth: false
+            enabled: false
+            anchors.bottomMargin: 0
+            anchors.bottom: parent.bottom
+            border.width: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            opacity: topRec.opacity
+            z:2
+        }
+
+        Rectangle {
+            id: rightRec
+            width: topRec.radius
+            height: topRec.radius
+            color: topRec.color
+            enabled: false
+            smooth: false
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            border.width: 0
+            opacity: topRec.opacity
+            z:2
+        }
     }
 
     RowLayout {
@@ -73,13 +99,5 @@ Item {
         }
     }
 
-    Rectangle {
-        height: topRec.radius / 2
-        width: topRec.radius / 2
-        anchors.bottom: titleBar.bottom
-        color: topRec.color
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        opacity: topRec.opacity
-    }
+
 }

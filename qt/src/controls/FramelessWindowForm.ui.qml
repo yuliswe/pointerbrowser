@@ -6,9 +6,12 @@ Item {
     id: form
     //            color: "black"
     property alias titleBar: titleBar
-    property alias resizer: resizer
+    property alias rightResizer: rightSizer
+    property alias bottomResizer: bottomSizer
+    property alias diagnalResizer: diagSizer
     property alias sourceComponent: loader.sourceComponent
     property bool active: false
+    property int resizerThreshold: 5
 
     TitleBar {
         id: titleBar
@@ -30,15 +33,49 @@ Item {
         anchors.bottomMargin: 0
         anchors.top: titleBar.bottom
         anchors.topMargin: 0
-        z: 1
+        z: 0
     }
 
     Item {
+        id: item1
         anchors.fill: parent
         Draggable {
-            id: resizer
-            anchors.fill: parent
-            z: 0
+            id: rightSizer
+            width: resizerThreshold
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: resizerThreshold
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            z: 1
+            cursorShape: Qt.SplitHCursor
+            hoverEnabled: true
+        }
+        Draggable {
+            id: bottomSizer
+            height: resizerThreshold
+            anchors.right: parent.right
+            anchors.rightMargin: resizerThreshold
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            z: 1
+            cursorShape: Qt.SplitVCursor
+            hoverEnabled: true
+        }
+        Draggable {
+            id: diagSizer
+            width: resizerThreshold
+            height: resizerThreshold
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            z: 1
+            cursorShape: Qt.SizeFDiagCursor
+            hoverEnabled: true
         }
     }
 }

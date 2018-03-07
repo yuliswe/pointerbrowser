@@ -10,15 +10,14 @@ Window {
     minimumWidth: 50
     minimumHeight: 50
     property alias titleBar: form.titleBar
-    property alias resizer: form.resizer
     property int startX: -1
     property int startY: -1
     property int startW: -1
     property int startH: -1
     property bool draggingResetted: false
     property alias sourceComponent: form.sourceComponent
-//    property var delegate: null
-//    color: "black"
+    //    property var delegate: null
+    //    color: "black"
     color: "#00000000"
 
     FramelessWindowForm {
@@ -66,16 +65,32 @@ Window {
                     | Qt.WindowCloseButtonHint
                     | Qt.WindowMinimizeButtonHint
         }
-        property int resizeThreshold: 10
-        resizer.onDraggingStarts: {
+        property int resizeThreshold: 1
+        function resetDragging() {
             mainWindow.startW = mainWindow.width
             mainWindow.startH = mainWindow.height
             mainWindow.draggingResetted = true
         }
-        resizer.onDraggingStops: {
-            mainWindow.draggingResetted = false
+        rightResizer.onDraggingStarts: resetDragging()
+        bottomResizer.onDraggingStarts: resetDragging()
+        diagnalResizer.onDraggingStarts: resetDragging()
+        rightResizer.onDraggingStops: mainWindow.draggingResetted = false
+        bottomResizer.onDraggingStops: mainWindow.draggingResetted = false
+        diagnalResizer.onDraggingStops: mainWindow.draggingResetted = false
+        rightResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW + deltaX >= minimumWidth) {
+                    mainWindow.width = startW + deltaX
+                }
+            }
         }
-        resizer.onDragging: {
+        bottomResizer.onDragging: {
+            if (startH + deltaY >= minimumHeight) {
+                mainWindow.height = startH + deltaY
+            }
+
+        }
+        diagnalResizer.onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
                     mainWindow.width = startW + deltaX
@@ -85,21 +100,6 @@ Window {
                 }
             }
         }
-        resizer.cursorShape: {
-            if (Math.abs(resizer.mouseY - resizer.height) < resizeThreshold
-                  && Math.abs(resizer.mouseY - resizer.height) < resizeThreshold) {
-              return Qt.SizeFDiagCursor
-          }
-            if (Math.abs(resizer.mouseX - resizer.width) < resizeThreshold
-                    || Math.abs(resizer.mouseX) < resizeThreshold) {
-                return Qt.SplitHCursor
-            }
-            if (Math.abs(resizer.mouseY - resizer.height) < resizeThreshold
-                  || Math.abs(resizer.mouseY) < resizeThreshold) {
-              return Qt.SplitVCursor
-          }
-        }
-        resizer.hoverEnabled: true
     }
 
     flags: Qt.Window
@@ -108,6 +108,6 @@ Window {
            | Qt.WindowTitleHint
            | Qt.WindowCloseButtonHint
            | Qt.WindowMinimizeButtonHint
-//           | Qt.WA_TranslucentBackground
-//           | Qt.WA_OpaquePaintEvent
+    //           | Qt.WA_TranslucentBackground
+    //           | Qt.WA_OpaquePaintEvent
 }
