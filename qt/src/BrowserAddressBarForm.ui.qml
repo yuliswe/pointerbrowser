@@ -23,7 +23,6 @@ Item {
         ProgressBar {
             id: progressBar
             anchors.fill: parent
-            opacity: 0.3
             value: 10
             from: 0
             to: 100

@@ -7,9 +7,12 @@ import QtQuick.Layouts 1.3
 
 Item {
     id: form
+
+    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
+
     Rectangle {
         id: background
-        color: ctl.palette.button
+        color: actPal.button
         border.width: 0
         anchors.fill: form
         opacity: 0.95
@@ -18,52 +21,60 @@ Item {
     property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch
 
-    Control {
-        id: ctl
-    }
 
+    ColumnLayout {
+        id: columnLayout
+        anchors.rightMargin: 0
+        spacing: 0
+        anchors.fill: parent
 
-    RowLayout {
-        id: rowLayout
-        height: 25
-        anchors.top: parent.top
-        anchors.topMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        anchors.left: parent.left
-        anchors.leftMargin: 5
-
-        C.Button {
-            id: newTabButton
-            x: 550
-            width: 25
+        RowLayout {
+            id: topControls
             height: 25
-            text: qsTr("+")
-            Layout.fillHeight: true
+            Layout.maximumHeight: 25
+            Layout.fillWidth: true
+            Layout.margins: 5
+
+            C.Button {
+                id: newTabButton
+                x: 550
+                width: 25
+                height: 25
+                text: qsTr("+")
+                Layout.fillHeight: true
+            }
+
+            C.TextField {
+                id: tabsSearch
+                height: 25
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                placeholderText: "Search Tabs"
+                selectByMouse: true
+            }
+
         }
 
-        C.TextField {
-            id: tabsSearch
-            height: 25
+        TabsList {
+            id: tabsList
             Layout.fillHeight: true
             Layout.fillWidth: true
-            placeholderText: "Search Tabs"
-            selectByMouse: true
+        }
+
+        RowLayout {
+            id: bottomControls
+            Layout.maximumHeight: 25
+            Layout.fillWidth: true
+            Layout.margins: 5
+
+            Switch {
+                id: docviewSwitch
+                checked: true
+            }
         }
 
     }
 
-    TabsList {
-        id: tabsList
-    }
 
-    Switch {
-        id: docviewSwitch
-        anchors.left: parent.left
-        anchors.leftMargin: 10
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
-        checked: true
-    }
 
 }
