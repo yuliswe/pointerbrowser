@@ -1,27 +1,25 @@
 import QtQuick 2.9
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.3
-import "controls" as C
 
 Item {
     id: item1
+    //            color: "black"
     property alias titleBar: titleBar
     property alias resizer: resizer
+    property alias sourceComponent: loader.sourceComponent
 
     TitleBar {
         id: titleBar
-        height: 30
-        anchors.right: parent.right
-        anchors.rightMargin: 0
+        height: 20
+                anchors.right: parent.right
         anchors.left: parent.left
-        anchors.leftMargin: 0
         anchors.top: parent.top
-        anchors.topMargin: 0
         z: 1
     }
 
-    Browser {
-        id: browser
+    Loader {
+        id: loader
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
@@ -33,9 +31,12 @@ Item {
         z: 1
     }
 
-    C.Draggable {
-        id: resizer
+    Item {
         anchors.fill: parent
-        z: 0
+        Draggable {
+            id: resizer
+            anchors.fill: parent
+            z: 0
+        }
     }
 }

@@ -6,16 +6,42 @@ import QtGraphicalEffects 1.0
 Item {
     id: main
     visible: true
-    width: 800
-    height: 600
 //    title: qsTr("DOCVIEWER")
     property int currentKeyPress: -1
 //    color: "transparent"
 //    flags: Qt.Desktop
 
 
-    MainWindow {}
+    BrowserWindow {}
+    Window {
+        id: ww
+        visible: true
+        color: "transparent"
+        width: 50
+        height: 30
+        flags: Qt.FramelessWindowHint
+        Behavior on width {
+            SmoothedAnimation {
+                duration: 1000
+            }
+        }
+        Rectangle {
+            color: "grey"
+            anchors.fill: parent
+            radius: 100
 
+            MouseArea {
+                anchors.fill: parent
+                onDoubleClicked: {
+//                    console.log('test')
+                    ww.showMaximized()
+                }
+                onClicked: {
+                    ww.showNormal()
+                }
+            }
+        }
+    }
 
 //    onActiveFocusItemChanged: {
 //        console.log("focus:", activeFocusItem)

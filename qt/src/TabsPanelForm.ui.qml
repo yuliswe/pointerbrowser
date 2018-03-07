@@ -11,7 +11,7 @@ Item {
         color: ctl.palette.button
         border.width: 0
         anchors.fill: form
-        opacity: 0.97
+        opacity: 0.98
     }
     property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy
     property alias tabsList: tabsList
