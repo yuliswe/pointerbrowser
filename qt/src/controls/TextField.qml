@@ -4,14 +4,14 @@ import QtQuick.Controls 2.3
 
 T.TextField {
     id: textfield
-    Control {
-        id: ctl
-    }
-    color: ctl.palette.text
+
+    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
+    focus: false
+    color: actPal.text
     background: Rectangle {
         border.width: 1
-        border.color: ctl.palette.mid
-        color: ctl.palette.button
+        border.color: actPal.mid
+        color: textfield.focus ? actPal.light : actPal.midlight
         anchors.fill: textfield
         radius: 3
     }
@@ -20,15 +20,14 @@ T.TextField {
     onFocusChanged: {
         if (! focus && ! text) {
             text = placeholderText
-            console.log(ctl.palette.buttonText)
-            color = ctl.palette.buttonText
+            color = actPal.buttonText
         } else {
             text = ""
-            color = ctl.palette.text
+            color = actPal.text
         }
     }
     Component.onCompleted: {
         text = placeholderText
-        color = ctl.palette.buttonText
+        color = actPal.buttonText
     }
 }

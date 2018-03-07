@@ -3,6 +3,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 2.3
 import "controls" as C
 import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 Item {
     id: form
@@ -21,40 +22,39 @@ Item {
         id: ctl
     }
 
-    C.TextField {
-        id: tabsSearch
+
+    RowLayout {
+        id: rowLayout
         height: 25
-        placeholderText: "Search Tabs"
         anchors.top: parent.top
         anchors.topMargin: 5
-        anchors.right: newTabButton.left
+        anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.left: parent.left
         anchors.leftMargin: 5
-        selectByMouse: true
-    }
 
-    C.Button {
-        id: newTabButton
-        x: 550
-        y: 5
-        width: 25
-        height: 25
-        text: qsTr("+")
-        anchors.right: parent.right
-        anchors.rightMargin: 5
+        C.Button {
+            id: newTabButton
+            x: 550
+            width: 25
+            height: 25
+            text: qsTr("+")
+            Layout.fillHeight: true
+        }
+
+        C.TextField {
+            id: tabsSearch
+            height: 25
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            placeholderText: "Search Tabs"
+            selectByMouse: true
+        }
+
     }
 
     TabsList {
         id: tabsList
-        anchors.bottom: docviewSwitch.top
-        anchors.top: tabsSearch.bottom
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        anchors.left: parent.left
-        anchors.leftMargin: 5
     }
 
     Switch {
@@ -65,4 +65,5 @@ Item {
         anchors.bottomMargin: 10
         checked: true
     }
+
 }

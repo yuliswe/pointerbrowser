@@ -18,24 +18,21 @@ C1.SplitView {
     property alias browserDocviewSwitch: docview
     property alias browserWebViews: browserWebViews
 
-    handleDelegate: Item {
-    }
+    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
 
-    TabsPanel {
-        id: tabsPanel
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        Layout.minimumWidth: 200
+    handleDelegate: Item {
     }
 
     Rectangle {
         id: rectangle
-        y: 0
-        color: ctl.palette.button
+        width: 600
+        color: actPal.button
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
         RowLayout {
             id: toolbar
             x: -835
@@ -109,10 +106,14 @@ C1.SplitView {
             anchors.topMargin: 34
         }
 
-        Control {
-            id: ctl
-            x: 0
-            y: 0
-        }
+        Layout.minimumWidth: 300
+        Layout.fillWidth: true
     }
+
+    TabsPanel {
+        id: tabsPanel
+        width: 150
+        Layout.minimumWidth: 150
+    }
+
 }
