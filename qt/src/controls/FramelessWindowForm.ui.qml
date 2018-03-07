@@ -3,11 +3,12 @@ import QtQuick.Window 2.3
 import QtQuick.Controls 2.3
 
 Item {
-    id: item1
+    id: form
     //            color: "black"
     property alias titleBar: titleBar
     property alias resizer: resizer
     property alias sourceComponent: loader.sourceComponent
+    property bool active: false
 
     TitleBar {
         id: titleBar
@@ -16,6 +17,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         z: 1
+        active: form.active
     }
 
     Loader {

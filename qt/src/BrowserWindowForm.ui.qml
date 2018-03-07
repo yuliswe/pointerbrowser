@@ -6,4 +6,11 @@ import "controls" as C
 C.FramelessWindow {
     id: mainWindow
     sourceComponent: c
+    SystemPalette {
+        id: activePalette
+        colorGroup: SystemPalette.Active
+    }
+
+    titleBar.rectangle.color: activePalette.button
+    titleBar.rectangle.opacity: 0.95
 }

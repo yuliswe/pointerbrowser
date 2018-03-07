@@ -24,5 +24,7 @@
         <file>controls/FramelessWindowForm.ui.qml</file>
         <file>controls/TitleBar.qml</file>
         <file>controls/TitleBarForm.ui.qml</file>
+        <file>controls/TitleBarButton.qml</file>
+        <file>controls/TitleBarButtonForm.ui.qml</file>
     </qresource>
 </RCC>

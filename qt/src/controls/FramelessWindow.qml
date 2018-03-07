@@ -23,6 +23,7 @@ Window {
 
     FramelessWindowForm {
         id: form
+        active: mainWindow.active
         Keys.onPressed: main.currentKeyPress = event.key
         Keys.onReleased: main.currentKeyPress = -1
         width: mainWindow.width
@@ -46,11 +47,24 @@ Window {
         titleBar.onUserMaximizesWindow: {
             mainWindow.showMaximized()
         }
+        titleBar.onUserFullscreensWindow: {
+            mainWindow.showFullScreen()
+        }
+        titleBar.onUserClosesWindow: {
+            mainWindow.close()
+        }
         titleBar.onUserNormalizesWindow: {
             mainWindow.showNormal()
         }
         titleBar.onUserMinimizesWindow: {
+            mainWindow.flags = Qt.Window
             mainWindow.showMinimized()
+            mainWindow.flags = Qt.Window
+                    | Qt.FramelessWindowHint
+                    | Qt.CustomizeWindowHint
+                    | Qt.WindowTitleHint
+                    | Qt.WindowCloseButtonHint
+                    | Qt.WindowMinimizeButtonHint
         }
         property int resizeThreshold: 10
         resizer.onDraggingStarts: {
@@ -90,9 +104,10 @@ Window {
 
     flags: Qt.Window
            | Qt.FramelessWindowHint
-//           | Qt.CustomizeWindowHint
-//           | Qt.WindowTitleHint
-//           | Qt.WindowCloseButtonHint
+           | Qt.CustomizeWindowHint
+           | Qt.WindowTitleHint
+           | Qt.WindowCloseButtonHint
+           | Qt.WindowMinimizeButtonHint
 //           | Qt.WA_TranslucentBackground
 //           | Qt.WA_OpaquePaintEvent
 }
