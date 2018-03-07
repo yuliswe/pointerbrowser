@@ -41,4 +41,6 @@ HEADERS += \
     webpage.h \
     palette.h
 
-DISTFILES +=
+DISTFILES += \
+    TitleBarForm.ui.qml \
+    TitleBar.qml

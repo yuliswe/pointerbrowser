@@ -1,12 +1,18 @@
-import QtQuick 2.4
+import QtQuick 2.9
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 2.3
 import "controls" as C
+import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
     id: form
-    color: ctl.palette.button
-    border.width: 0
+    Rectangle {
+        id: background
+        color: ctl.palette.button
+        border.width: 0
+        anchors.fill: form
+        opacity: 0.97
+    }
     property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy
     property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch

@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.9
 import QtWebView 1.1
 import Backend 1.0
 
