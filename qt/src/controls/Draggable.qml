@@ -19,6 +19,8 @@ MouseArea {
             draggingStarts()
         } else {
             draggingStops()
+            startX = -1
+            startY = -1
         }
     }
     onPositionChanged: {

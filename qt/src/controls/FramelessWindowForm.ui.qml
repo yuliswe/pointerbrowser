@@ -16,7 +16,7 @@ Item {
     TitleBar {
         id: titleBar
         height: 20
-                anchors.right: parent.right
+        anchors.right: parent.right
         anchors.left: parent.left
         anchors.top: parent.top
         z: 1
@@ -50,7 +50,6 @@ Item {
             anchors.rightMargin: 0
             z: 1
             cursorShape: Qt.SplitHCursor
-            hoverEnabled: true
         }
         Draggable {
             id: bottomSizer
@@ -63,7 +62,6 @@ Item {
             anchors.bottomMargin: 0
             z: 1
             cursorShape: Qt.SplitVCursor
-            hoverEnabled: true
         }
         Draggable {
             id: diagSizer
@@ -75,7 +73,6 @@ Item {
             anchors.bottomMargin: 0
             z: 1
             cursorShape: Qt.SizeFDiagCursor
-            hoverEnabled: true
         }
     }
 }
