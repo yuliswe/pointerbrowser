@@ -5,15 +5,23 @@ import QtQuick.Controls 2.3
 TabsListForm {
     id: tabsList
     property alias tabsModel: tabsList.model
-    property int selected: -1
-    signal userOpensTab(int index)
+    signal userClicksTab(int index)
+    signal userClosesTab(int index)
+    function setHighlightAt(index) {
+        tabsList.currentIndex = index
+    }
+
     delegate: TabsListTab {
         id: tab
         height: 30
+        highlighted: index === currentIndex
         width: parent.width
         onClicked: {
-            console.log(index)
-            userOpensTab(index)
+            userClicksTab(index)
+            currentIndex = index
+        }
+        onUserClosesTab: {
+            tabsList.userClosesTab(index)
         }
     }
 }

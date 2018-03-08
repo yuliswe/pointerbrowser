@@ -8,7 +8,7 @@ BrowserWebViewsForm {
     property alias tabsModel: listView.repeaterModel
 
     signal userOpensLinkInCurrentWebView(string url)
-    signal webViewLoadingSucceeded(string index)
+    signal webViewLoadingSucceeded(int index)
 
     repeaterDelegate: WebView {
         id: webview
@@ -18,7 +18,6 @@ BrowserWebViewsForm {
         Keys.onPressed: main.currentKeyPress = event.key
         Keys.onReleased: main.currentKeyPress = -1
         onLoadingChanged: {
-            console.log(index, loadRequest, loadRequest.url)
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
                 if (index === getCurrentIndex()) {

@@ -6,9 +6,14 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
 
 Item {
+    property alias currentIndex: tabsList.currentIndex
+
     id: form
 
-    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
+    SystemPalette {
+        id: actPal
+        colorGroup: SystemPalette.Active
+    }
 
     Rectangle {
         id: background
@@ -20,7 +25,7 @@ Item {
     property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy
     property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch
-
+    property alias newTabButton: newTabButton
 
     ColumnLayout {
         id: columnLayout
@@ -41,6 +46,7 @@ Item {
                 width: 25
                 height: 25
                 text: qsTr("+")
+                font.bold: true
                 Layout.fillHeight: true
             }
 
@@ -52,7 +58,18 @@ Item {
                 placeholderText: "Search Tabs"
                 selectByMouse: true
             }
+        }
 
+        Text {
+            id: text1
+            text: qsTr("Open Tabs")
+            topPadding: 5
+            bottomPadding: 5
+            leftPadding: 5
+            font.bold: false
+            font.capitalization: Font.AllUppercase
+            font.pixelSize: 9
+            color: actPal.mid
         }
 
         TabsList {
@@ -73,8 +90,6 @@ Item {
             }
         }
 
+
     }
-
-
-
 }

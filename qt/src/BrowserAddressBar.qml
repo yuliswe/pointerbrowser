@@ -11,9 +11,9 @@ BrowserAddressBarForm {
     progressBar.width: 0
 
     function update(url, title) {
-        textField.focus = false
         form.url = url
         form.title = title
+        console.log("update", url, title)
         if (title !== "") {
             textField.text = title
             textField.horizontalAlignment = Text.AlignHCenter
@@ -23,6 +23,7 @@ BrowserAddressBarForm {
 //            textField.horizontalAlignment = Text.AlignLeft
             textField.ensureVisible(0)
         }
+        textField.focus = false
     }
 
     textField.onAccepted: {
@@ -38,13 +39,13 @@ BrowserAddressBarForm {
     textField.onFocusChanged: {
         if (textField.focus) {
             textField.horizontalAlignment = Text.AlignHCenter
-            textField.text = this.url
+            textField.text = form.url
             textField.ensureVisible(0)
             textField.selectAll()
         } else {
             textField.deselect()
             textField.horizontalAlignment = Text.AlignHCenter
-            textField.text = this.title
+            textField.text = form.title
         }
     }
 

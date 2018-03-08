@@ -48,7 +48,8 @@ C1.SplitView {
             C.Button {
                 id: prev
                 width: 25
-                text: "Button"
+                text: "<"
+                font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
             }
@@ -56,7 +57,8 @@ C1.SplitView {
             C.Button {
                 id: next
                 width: height
-                text: "Button"
+                text: ">"
+                font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
             }
@@ -64,7 +66,8 @@ C1.SplitView {
             C.Button {
                 id: refresh
                 width: height
-                text: qsTr("Button")
+                text: qsTr("@")
+                font.bold: false
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
             }
@@ -80,9 +83,9 @@ C1.SplitView {
 
             C.Button {
                 id: docview
-                property bool inDocview: false
                 width: height
-                text: inDocview ? qsTr("Original") : qsTr("Docview")
+                text: "#"
+                checkable: true
                 Layout.fillHeight: true
             }
 
@@ -90,11 +93,12 @@ C1.SplitView {
                 id: bookmark
                 property bool browserWebView: false
                 width: height
-                text: qsTr("Bookmark")
-                Layout.fillWidth: false
+                text: "!"
+                font.bold: true
                 Layout.fillHeight: true
-                Layout.maximumHeight: toolbar.height
+                checkable: true
             }
+
         }
 
         BrowserWebViews {

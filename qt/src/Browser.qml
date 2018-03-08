@@ -5,6 +5,7 @@ import QtQuick.Controls 2.3
 
 BrowserForm {
     readonly property var browserWebView: browserWebViews.getCurrentWebView()
+    property int currentWebpageIndex: 0
 
     ListModel {
         id: tabsModel
@@ -19,28 +20,61 @@ BrowserForm {
     browserWebViews.tabsModel: tabsModel
     tabsList.tabsModel: tabsModel
 
+    function newTab(url) {
+        url = url || "https://google.ca"
+        currentWebpageIndex = 0
+        TabsModel.insertTab(currentWebpageIndex, url, "", "")
+        browserWebViews.setCurrentIndex(currentWebpageIndex)
+        tabsPanel.currentIndex = currentWebpageIndex
+        browserAddressBar.update(url, "")
+    }
+
+    Connections {
+        target: tabsPanel
+        onUserOpensNewTab: browser.newTab()
+    }
+
     Connections {
         target: TabsModel
         onTabInserted: {
             console.log("onTabInserted", webpage)
-            var idx = browserWebViews.getCurrentIndex()
-            tabsModel.insert(index, webpage)
-            browserWebViews.setCurrentIndex(idx + 1)
+            tabsModel.insert(currentWebpageIndex, webpage)
+            browserWebViews.setCurrentIndex(currentWebpageIndex + 1) // view does not change
+        }
+        onTabRemoved: {
+            console.log("onTabRemoved")
+            tabsModel.remove(index)
         }
     }
 
-    Shortcut {
-        sequence: "Ctrl+R"
-        onActivated: browserWebViews.reloadCurrentWebView()
+    function openTab(index) {
+        console.log("browser.openTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        browserWebViews.setCurrentIndex(index)
+        var wp = browserWebViews.getWebViewAt(index)
+        browserAddressBar.update(wp.url, wp.title)
+        browserBookmarkButton.checked = true
+        tabsList.setHighlightAt(index)
+    }
+
+    function closeTab(index) {
+        var indexToOpen;
+        var lastIndex = tabsModel.count - 2
+        if (browser.currentWebpageIndex > index) {
+            indexToOpen = index - 1 // move view backward
+        } else {
+            indexToOpen = index // move view forward
+        }
+        console.log("browser.closeTab", "index=", index, "indexToOpen=", indexToOpen, "tabsModel.count=", tabsModel.count)
+        tabsModel.remove(index)
+        if (indexToOpen > lastIndex) {
+            browser.newTab()
+        }
     }
 
     Connections {
         target: tabsList
-        onUserOpensTab: {
-            browserWebViews.setCurrentIndex(index)
-            var wp = browserWebViews.getWebViewAt(index)
-            browserAddressBar.update(wp.url, wp.title)
-        }
+        onUserClicksTab: browser.openTab(index)
+        onUserClosesTab: browser.closeTab(index)
     }
 
     Connections {
@@ -50,8 +84,11 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.getWebViewAt(index)
-            browserAddressBar.update(wp.url, wp.title)
             TabsModel.tabs[index].title = wp.title
+            if (index === currentWebpageIndex) {
+                browserBookmarkButton.checked = true
+                browserAddressBar.update(wp.url, wp.title)
+            }
             console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
     }
@@ -85,40 +122,27 @@ BrowserForm {
     }
 
     Connections {
-        target: browserBookmarkButton
-        onClicked: {
+        target: browserDocviewSwitch
+        onCheckedChanged: {
             var js = FileManager.readFileQrc("docview.js")
-            function callback(jsOut) {
-                var idx = TabsModel.findTab(browserWebView.url)
-                if (idx === -1) {
-                    browserBookmarkButton.text = "Bookmarked"
-                    TabsModel.insertTab(0, browserWebView.url,
-                                        browserWebView.title, jsOut)
-                } else {
-                    browserBookmarkButton.text = "Bookmark"
-                    TabsModel.removeTab(idx)
-                }
+            if (browserDocviewSwitch.checked) {
+                browserWebView.runJavaScript(js + "Docview.turnOn()",
+                                             function (result) {
+                                                 print(result)
+                                             })
+            } else {
+                browserWebView.runJavaScript(js + "Docview.turnOff()",
+                                             function (result) {
+                                                 print(result)
+                                             })
             }
-//            browserWebView.runJavaScript(js, callback)
+
         }
     }
 
-    Connections {
-        target: browserDocviewSwitch
-        onClicked: {
-            browserDocviewSwitch.inDocview = !browserDocviewSwitch.inDocview
-            var js = FileManager.readFileQrc("docview.js")
-            if (browserDocviewSwitch.inDocview) {
-//                browserWebView.runJavaScript(js + "Docview.turnOn()",
-//                                             function (result) {
-//                                                 print(result)
-//                                             })
-            } else {
-//                browserWebView.runJavaScript(js + "Docview.turnOff()",
-//                                             function (result) {
-//                                                 print(result)
-//                                             })
-            }
-        }
+    Shortcut {
+        sequence: "Ctrl+R"
+        onActivated: browserWebViews.reloadCurrentWebView()
     }
+
 }

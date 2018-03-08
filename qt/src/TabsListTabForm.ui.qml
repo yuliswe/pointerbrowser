@@ -3,20 +3,28 @@ import QtQuick.Controls 2.3
 
 ItemDelegate {
     id: tabButton
-    highlighted: true
+    property alias closeButton: closeButton
+
+    SystemPalette {
+        id: actPal
+        colorGroup: SystemPalette.Active
+    }
+
+    highlighted: true // preview
     background: Rectangle {
         id: rectangle
-        color: tabButton.hovered ? palette.midlight : "transparent"
+        color: tabButton.highlighted ? actPal.highlight : (tabButton.hovered ? actPal.midlight : "transparent")
         width: parent.width
+        radius: 2
         Text {
-            color: index === tabsList.selected ? palette.highlightedText : palette.buttonText
-            text: model.title + " - " + model.url
+            color: tabButton.highlighted ? actPal.highlightedText : actPal.buttonText
+            text: (model.title || "Loading") + " - " + model.url
             anchors.right: parent.right
-            anchors.rightMargin: 5
+            anchors.rightMargin: 10
             font.pointSize: 10
             textFormat: Text.PlainText
             anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.leftMargin: 14
             anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignTop
             horizontalAlignment: Text.AlignLeft
@@ -29,9 +37,11 @@ ItemDelegate {
         height: 15
         text: "x"
         anchors.left: parent.left
-        anchors.leftMargin: 1
+        anchors.leftMargin: 0
         anchors.verticalCenter: parent.verticalCenter
         z: 2
-        visible: tabButton.hovered
+        visible: true // preview
+        background: Item {
+        }
     }
 }

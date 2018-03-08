@@ -4,10 +4,12 @@ import QtQuick.Controls 2.3
 
 T.TextField {
     id: textfield
-
     SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
     focus: false
     color: actPal.text
+    selectByMouse: true
+    selectionColor: actPal.highlight
+    selectedTextColor: actPal.highlightedText
     background: Rectangle {
         border.width: 1
         border.color: actPal.mid

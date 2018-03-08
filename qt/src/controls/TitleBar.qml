@@ -32,7 +32,11 @@ TitleBarForm {
     signal userFullscreensWindow()
     maxBtn.onClicked: {
         if (fullscreened) {
-            userNormalizesWindow()
+            if (maximized) {
+                userMaximizesWindow()
+            } else {
+                userNormalizesWindow()
+            }
             fullscreened = false
         } else {
             userFullscreensWindow()
