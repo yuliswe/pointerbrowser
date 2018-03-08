@@ -4,7 +4,8 @@ import QtWebView 1.1
 import QtQuick.Controls 2.3
 
 BrowserForm {
-    readonly property var browserWebView: browserWebViews.getCurrentWebView()
+    id: browser
+    readonly property var browserWebView: browser.browserWebViews.currentWebView
     property int currentWebpageIndex: 0
 
     ListModel {
@@ -19,6 +20,7 @@ BrowserForm {
 
     browserWebViews.tabsModel: tabsModel
     tabsList.tabsModel: tabsModel
+    browserAddressBar.progress: browserWebViews.loadProgress
 
     function newTab(url) {
         url = url || "https://google.ca"
@@ -54,21 +56,25 @@ BrowserForm {
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
         tabsList.setHighlightAt(index)
+        browser.currentWebpageIndex = index
     }
 
     function closeTab(index) {
-        var indexToOpen;
-        var lastIndex = tabsModel.count - 2
-        if (browser.currentWebpageIndex > index) {
-            indexToOpen = index - 1 // move view backward
-        } else {
-            indexToOpen = index // move view forward
-        }
-        console.log("browser.closeTab", "index=", index, "indexToOpen=", indexToOpen, "tabsModel.count=", tabsModel.count)
+        console.log(browser.currentWebpageIndex , index )
+        // todo: remove from backend
         tabsModel.remove(index)
-        if (indexToOpen > lastIndex) {
-            browser.newTab()
+        if (browser.currentWebpageIndex === index) {
+            if (index - 1 >= 0) {
+                browser.openTab(index - 1)
+            } else if (index < tabsModel.count) {
+                browser.openTab(index)
+            } else {
+                browser.newTab()
+            }
+        } else if (browser.currentWebpageIndex > index) {
+            browser.openTab(index)
         }
+        console.log("browser.closeTab", "index=", index, "tabsModel.count=", tabsModel.count)
     }
 
     Connections {
