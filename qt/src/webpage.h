@@ -3,6 +3,11 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariantMap>
+#include <QSharedPointer>
+class Webpage;
+typedef QSharedPointer<Webpage> Webpage_;
+typedef QList<Webpage_> WebpageList;
 
 class Webpage : public QObject
 {
@@ -24,6 +29,10 @@ class Webpage : public QObject
         void setHtml(QString);
         void setUrl(QString);
         void setStoreFile(QString);
+        QVariantMap toQVariantMap();
+        static Webpage_ fromQVariantMap(QVariantMap&);
+        QJsonObject toQJsonObject();
+        static Webpage_ fromQJsonObject(QJsonObject&);
 
     signals:
         void titleChanged(QString);
@@ -40,6 +49,6 @@ class Webpage : public QObject
         QString _html;
 };
 
-Q_DECLARE_METATYPE(Webpage*)
+Q_DECLARE_METATYPE(Webpage_)
 
 #endif // WEBPAGE_H

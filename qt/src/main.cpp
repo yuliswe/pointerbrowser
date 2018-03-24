@@ -2,9 +2,10 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QtWebView>
+#include <QPalette>
+#include <QDebug>
 #include "qmlregister.h"
 #include "palette.h"
-#include <QPalette>
 int main(int argc, char *argv[])
 {
     // init ui
@@ -12,9 +13,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     // set properties
-    QMLRegister::tabsModel->insertTab(0,QString("https://google.com"),QString(""),QString(""));
-//    Palette pal{};
-//    QGuiApplication::setPalette(pal);
+    QMLRegister::tabsModel->loadTabs();
+
     QPalette pal = QGuiApplication::palette();
 //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
     QMLRegister::registerToQML();
@@ -31,8 +31,10 @@ int main(int argc, char *argv[])
     // load qmls
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
+    if (engine.rootObjects().isEmpty()) {
         return -1;
+    }
 
+    QMLRegister::fileManager->setupDirectories();
     return app.exec();
 }

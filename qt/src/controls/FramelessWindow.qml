@@ -19,7 +19,6 @@ Window {
     //    property var delegate: null
     //    color: "black"
     color: "#00000000"
-
     FramelessWindowForm {
         id: form
         active: mainWindow.active

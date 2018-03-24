@@ -31,24 +31,6 @@ BrowserForm {
         browserAddressBar.update(url, "")
     }
 
-    Connections {
-        target: tabsPanel
-        onUserOpensNewTab: browser.newTab()
-    }
-
-    Connections {
-        target: TabsModel
-        onTabInserted: {
-            console.log("onTabInserted", webpage)
-            tabsModel.insert(currentWebpageIndex, webpage)
-            browserWebViews.setCurrentIndex(currentWebpageIndex + 1) // view does not change
-        }
-        onTabRemoved: {
-            console.log("onTabRemoved")
-            tabsModel.remove(index)
-        }
-    }
-
     function openTab(index) {
         console.log("browser.openTab", "index=", index, "tabsModel.count=", tabsModel.count)
         browserWebViews.setCurrentIndex(index)
@@ -60,9 +42,9 @@ BrowserForm {
     }
 
     function closeTab(index) {
-        console.log(browser.currentWebpageIndex , index )
+        console.log(browser.currentWebpageIndex , index)
         // todo: remove from backend
-        tabsModel.remove(index)
+        TabsModel.removeTab(index)
         if (browser.currentWebpageIndex === index) {
             if (index - 1 >= 0) {
                 browser.openTab(index - 1)
@@ -78,6 +60,24 @@ BrowserForm {
     }
 
     Connections {
+        target: tabsPanel
+        onUserOpensNewTab: browser.newTab()
+    }
+
+    Connections {
+        target: TabsModel
+        onTabInserted: {
+            console.log("onTabInserted:", webpage.title, webpage.url)
+            tabsModel.insert(currentWebpageIndex, webpage)
+            browserWebViews.setCurrentIndex(currentWebpageIndex + 1) // view does not change
+        }
+        onTabRemoved: {
+            console.log("onTabRemoved")
+            tabsModel.remove(index)
+        }
+    }
+
+    Connections {
         target: tabsList
         onUserClicksTab: browser.openTab(index)
         onUserClosesTab: browser.closeTab(index)
@@ -90,12 +90,12 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.getWebViewAt(index)
-            TabsModel.tabs[index].title = wp.title
+//            TabsModel.tabs[index].title = wp.title
             if (index === currentWebpageIndex) {
                 browserBookmarkButton.checked = true
                 browserAddressBar.update(wp.url, wp.title)
             }
-            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
+//            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
     }
 

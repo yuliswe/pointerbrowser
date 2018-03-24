@@ -1,5 +1,8 @@
 #include "webpage.h"
 #include <QString>
+#include <QVariantMap>
+#include <QSharedPointer>
+#include <QJsonObject>
 
 Webpage::Webpage(QObject *parent) : QObject(parent)
 {
@@ -23,3 +26,35 @@ void Webpage::setUrl(QString x) { _url = x; }
 void Webpage::setStoreFile(QString x) { _storeFile = x; }
 void Webpage::setHtml(QString x) { _html = x; }
 
+
+QVariantMap Webpage::toQVariantMap()
+{
+    QVariantMap map;
+    map.insert("title", title());
+    map.insert("url", url());
+    return map;
+}
+
+Webpage_ Webpage::fromQVariantMap(QVariantMap& map)
+{
+    QSharedPointer<Webpage> webpage(new Webpage());
+    webpage->setTitle(map["title"].value<QString>());
+    webpage->setUrl(map["url"].value<QString>());
+    return webpage;
+}
+
+QJsonObject Webpage::toQJsonObject()
+{
+    QJsonObject map;
+    map.insert("title", title());
+    map.insert("url", url());
+    return map;
+}
+
+Webpage_ Webpage::fromQJsonObject(QJsonObject& map)
+{
+    Webpage_ webpage = QSharedPointer<Webpage>::create();
+    webpage->setTitle(map["title"].toString());
+    webpage->setUrl(map["url"].toString());
+    return webpage;
+}
