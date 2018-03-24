@@ -13,11 +13,11 @@ ItemDelegate {
     highlighted: true // preview
     background: Rectangle {
         id: rectangle
-        color: tabButton.highlighted ? actPal.highlight : (tabButton.hovered ? actPal.midlight : "transparent")
+        color: tabButton.highlighted ? actPal.highlight : (tabButton.hovered ? actPal.midlight : actPal.button)
         width: parent.width
         radius: 2
         Text {
-            color: tabButton.highlighted ? actPal.highlightedText : actPal.buttonText
+            color: actPal.buttonText
             text: (model.title || "Loading") + " - " + model.url
             anchors.right: parent.right
             anchors.rightMargin: 10

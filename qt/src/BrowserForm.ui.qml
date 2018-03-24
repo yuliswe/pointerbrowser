@@ -18,7 +18,10 @@ C1.SplitView {
     property alias browserDocviewSwitch: docview
     property alias browserWebViews: browserWebViews
 
-    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
+    SystemPalette {
+        id: actPal
+        colorGroup: SystemPalette.Active
+    }
 
     handleDelegate: Item {
     }
@@ -78,7 +81,6 @@ C1.SplitView {
                 Layout.fillHeight: true
                 url: browserWebViews.url
                 title: browserWebViews.title
-                progress: browserWebView.loadProgress
             }
 
             C.Button {
@@ -91,14 +93,12 @@ C1.SplitView {
 
             C.Button {
                 id: bookmark
-                property bool browserWebView: false
                 width: height
                 text: "!"
                 font.bold: true
                 Layout.fillHeight: true
                 checkable: true
             }
-
         }
 
         BrowserWebViews {
@@ -119,5 +119,4 @@ C1.SplitView {
         width: 150
         Layout.minimumWidth: 150
     }
-
 }
