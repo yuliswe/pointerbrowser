@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
     QMLRegister::registerToQML();
     QtWebView::initialize();
-    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 
     // set window transparent
 //    QSurfaceFormat surfaceFormat;

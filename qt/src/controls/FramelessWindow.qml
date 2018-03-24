@@ -7,8 +7,8 @@ Window {
     visible: true
     width: 800
     height: 600
-    minimumWidth: 50
-    minimumHeight: 50
+    minimumWidth: 200
+    minimumHeight: 200
     property alias titleBar: form.titleBar
     property int startX: -1
     property int startY: -1
@@ -58,39 +58,59 @@ Window {
         titleBar.onUserMinimizesWindow: {
             mainWindow.flags = Qt.Window
             mainWindow.showMinimized()
-            mainWindow.flags = Qt.Window
-                    | Qt.FramelessWindowHint
-                    | Qt.CustomizeWindowHint
-                    | Qt.WindowTitleHint
-                    | Qt.WindowCloseButtonHint
-                    | Qt.WindowMinimizeButtonHint
+            mainWindow.flags = Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
+                    | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
         }
         property int resizeThreshold: 1
         function resetDragging() {
             mainWindow.startW = mainWindow.width
             mainWindow.startH = mainWindow.height
+            mainWindow.startX = mainWindow.x
+            mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
         }
-        rightResizer.onDraggingStarts: resetDragging()
-        bottomResizer.onDraggingStarts: resetDragging()
-        diagnalResizer.onDraggingStarts: resetDragging()
-        rightResizer.onDraggingStops: mainWindow.draggingResetted = false
-        bottomResizer.onDraggingStops: mainWindow.draggingResetted = false
-        diagnalResizer.onDraggingStops: mainWindow.draggingResetted = false
-        rightResizer.onDragging: {
+        rResizer.onDraggingStarts: resetDragging()
+        bResizer.onDraggingStarts: resetDragging()
+        tResizer.onDraggingStarts: resetDragging()
+        lResizer.onDraggingStarts: resetDragging()
+        brResizer.onDraggingStarts: resetDragging()
+        trResizer.onDraggingStarts: resetDragging()
+        tlResizer.onDraggingStarts: resetDragging()
+        blResizer.onDraggingStarts: resetDragging()
+        rResizer.onDraggingStops: mainWindow.draggingResetted = false
+        bResizer.onDraggingStops: mainWindow.draggingResetted = false
+        brResizer.onDraggingStops: mainWindow.draggingResetted = false
+        rResizer.onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
                     mainWindow.width = startW + deltaX
                 }
             }
         }
-        bottomResizer.onDragging: {
-            if (startH + deltaY >= minimumHeight) {
-                mainWindow.height = startH + deltaY
+        bResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startH + deltaY >= minimumHeight) {
+                    mainWindow.height = startH + deltaY
+                }
             }
-
         }
-        diagnalResizer.onDragging: {
+        tResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startH + deltaY >= minimumHeight) {
+                    mainWindow.height = startH - deltaY
+                    mainWindow.y = startY + deltaY
+                }
+            }
+        }
+        lResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW - deltaX >= minimumWidth) {
+                    mainWindow.x = startX + deltaX
+                    mainWindow.width = startW - deltaX
+                }
+            }
+        }
+        brResizer.onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
                     mainWindow.width = startW + deltaX
@@ -100,14 +120,44 @@ Window {
                 }
             }
         }
+        tlResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW - deltaX >= minimumWidth) {
+                    mainWindow.x = startX + deltaX
+                    mainWindow.width = startW - deltaX
+                }
+                if (startH - deltaY >= minimumHeight) {
+                    mainWindow.height = startH - deltaY
+                    mainWindow.y = startY + deltaY
+                }
+            }
+        }
+        blResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW - deltaX >= minimumWidth) {
+                    mainWindow.width = startW - deltaX
+                    mainWindow.x = startX + deltaX
+                }
+                if (startH + deltaY >= minimumHeight) {
+                    mainWindow.height = startH + deltaY
+                }
+            }
+        }
+        trResizer.onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW + deltaX >= minimumWidth) {
+                    mainWindow.width = startW + deltaX
+                }
+                if (startH - deltaY >= minimumHeight) {
+                    mainWindow.height = startH - deltaY
+                    mainWindow.y = startY + deltaY
+                }
+            }
+        }
     }
 
-    flags: Qt.Window
-           | Qt.FramelessWindowHint
-           | Qt.CustomizeWindowHint
-           | Qt.WindowTitleHint
-           | Qt.WindowCloseButtonHint
-           | Qt.WindowMinimizeButtonHint
+    flags: Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
+           | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
     //           | Qt.WA_TranslucentBackground
     //           | Qt.WA_OpaquePaintEvent
 }
