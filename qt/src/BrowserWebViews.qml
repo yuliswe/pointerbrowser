@@ -20,13 +20,13 @@ BrowserWebViewsForm {
         id: webview
         url: model.url
         Keys.onPressed: {
-            console.log("Keys.onPressed:", event.key, Qt.Key_Control)
+            console.log("Keys.onPressed:", event.key)
             if (event.key === Qt.Key_Control) {
                 browser.ctrlKeyPressing = true
             }
         }
         Keys.onReleased: {
-            console.log("Keys.onReleased:", event.key, Qt.Key_Control)
+            console.log("Keys.onReleased:", event.key)
             if (event.key === Qt.Key_Control) {
                 browser.ctrlKeyPressing = false
             }

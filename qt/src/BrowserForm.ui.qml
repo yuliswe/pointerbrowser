@@ -52,6 +52,7 @@ C1.SplitView {
                 id: prev
                 width: 25
                 text: "<"
+                enabled: browserWebViews.currentWebView.canGoBack
                 font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -61,6 +62,7 @@ C1.SplitView {
                 id: next
                 width: height
                 text: ">"
+                enabled: browserWebViews.currentWebView.canGoForward
                 font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true

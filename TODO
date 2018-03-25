@@ -1,0 +1,26 @@
+Deadlines:
+
+March     - FEATURE: symbol extractor
+March     - Bug: Cmd+link does not always open a new tab
+March     - Bug: tabs are not updated when the tab's url is changed by opening a link
+
+April:
+  FEATURE: search symbols in the tab
+  BUG: cannot drag on extended screen
+  Bug: address bar display loads when cmd+link click opens a new tab
+
+May:
+  FEATURE: docview mode
+
+June:
+  FEATURE: offline mode
+
+July:
+  FEATURE: software settings
+
+August:
+  FEATURE: drag and sort tabs
+
+September:
+  FEATURE: prettify button icons
+
