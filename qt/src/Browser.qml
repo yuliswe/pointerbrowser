@@ -7,14 +7,30 @@ BrowserForm {
     id: browser
     readonly property var browserWebView: browser.browserWebViews.currentWebView
     property int currentWebpageIndex: 0
+    property bool ctrlKeyPressing: false
 
     ListModel {
         id: tabsModel
     }
 
+    Keys.onPressed: {
+        console.log("Keys.onPressed:", event.key, Qt.Key_Control)
+        if (event.key === Qt.Key_Control) {
+            browser.ctrlKeyPressing = true
+        }
+    }
+    Keys.onReleased: {
+        console.log("Keys.onReleased:", event.key, Qt.Key_Control)
+        if (event.key === Qt.Key_Control) {
+            browser.ctrlKeyPressing = false
+        }
+    }
     Component.onCompleted: {
         for (var i = 0; i < TabsModel.tabs.length; i++) {
             tabsModel.append(TabsModel.tabs[i])
+        }
+        if (TabsModel.tabs.length > 0) {
+            openTab(0)
         }
     }
 

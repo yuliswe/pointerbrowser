@@ -22,7 +22,6 @@ Item {
         anchors.fill: form
         opacity: 0.95
     }
-    property alias docviewSwitchFocusPolicy: docviewSwitch.focusPolicy
     property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch
     property alias newTabButton: newTabButton

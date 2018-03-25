@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     // init ui
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
     // set properties

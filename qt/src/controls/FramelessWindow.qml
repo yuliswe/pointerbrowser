@@ -22,11 +22,8 @@ Window {
     FramelessWindowForm {
         id: form
         active: mainWindow.active
-        Keys.onPressed: main.currentKeyPress = event.key
-        Keys.onReleased: main.currentKeyPress = -1
         width: mainWindow.width
         height: mainWindow.height
-        focus: true
         titleBar.onUserStartsDraggingTitleBar: {
             mainWindow.startX = mainWindow.x
             mainWindow.startY = mainWindow.y

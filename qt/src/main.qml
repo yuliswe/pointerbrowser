@@ -8,7 +8,6 @@ Item {
     id: main
     visible: true
 //    title: qsTr("DOCVIEWER")
-    property int currentKeyPress: -1
 //    color: "transparent"
 //    flags: Qt.Desktop
 
@@ -44,12 +43,6 @@ Item {
 //        }
 //    }
 
-//    onActiveFocusItemChanged: {
-//        console.log("focus:", activeFocusItem)
-//    }
-//    onCurrentKeyPressChanged: {
-//        console.log(currentKeyPress)
-//    }
     property var theme: {
         return {
             control_on: "#2576f9",

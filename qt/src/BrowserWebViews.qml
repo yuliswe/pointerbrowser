@@ -18,28 +18,39 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebView {
         id: webview
-        //        property bool success: true
-        focus: true
         url: model.url
-        Keys.onPressed: main.currentKeyPress = event.key
-        Keys.onReleased: main.currentKeyPress = -1
+        Keys.onPressed: {
+            console.log("Keys.onPressed:", event.key, Qt.Key_Control)
+            if (event.key === Qt.Key_Control) {
+                browser.ctrlKeyPressing = true
+            }
+        }
+        Keys.onReleased: {
+            console.log("Keys.onReleased:", event.key, Qt.Key_Control)
+            if (event.key === Qt.Key_Control) {
+                browser.ctrlKeyPressing = false
+            }
+        }
+        onUrlChanged: {
+        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
                 if (index === currentIndex) {
+                    var url = loadRequest.url
                     // if control key is held, then stop loading
                     // and open a new tab. If the tab already exists,
                     // do nothing
-                    if (main.currentKeyPress === Qt.Key_Control) {
+                    if (browserWindow.ctrlKeyPressing) {
                         this.stop()
-                        var idx = TabsModel.findTab(loadRequest.url)
+                        var idx = TabsModel.findTab(url)
                         if (idx === -1) {
                             idx = TabsModel.insertTab(0,
-                                                      loadRequest.url, "Loading", "")
+                                                      url, "Loading", "")
                             //                            getWebViewAt(idx).stop()
                         }
                     } else {
-                        userOpensLinkInCurrentWebView(loadRequest.url)
+                        userOpensLinkInCurrentWebView(url)
                     }
                 }
                 break
@@ -64,11 +75,11 @@ BrowserWebViewsForm {
 
     function setCurrentIndex(idx) {
         listView.stackLayout.currentIndex = idx
+        getWebViewAt(idx).forceActiveFocus()
     }
 
     function reloadWebViewAt(index) {
         console.log("reloadWebViewAt", index)
-        main.currentKeyPress = -1
         getWebViewAt(index).reload()
     }
     function reloadCurrentWebView() {

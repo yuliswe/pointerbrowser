@@ -20,7 +20,6 @@ RoundButton {
     width: 10
     height: 10
     text: hovered ? hoverText : ""
-    focusPolicy: Qt.StrongFocus
     font.bold: true
     font.pointSize: 10
     Layout.maximumHeight: 14

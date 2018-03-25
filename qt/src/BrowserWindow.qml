@@ -17,5 +17,8 @@ BrowserWindowForm {
         onClosing: {
             TabsModel.saveTabs()
         }
+        onActiveFocusItemChanged: {
+            console.log("onActiveFocusItemChanged:", activeFocusItem)
+        }
     }
 }
