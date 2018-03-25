@@ -13,6 +13,9 @@ BrowserWebViewsForm {
     signal userOpensLinkInWebView(int index, string url)
     signal userOpensLinkInNewTab(string url)
     signal webViewLoadingSucceeded(int index)
+    signal webViewLoadingStarted(int index)
+    signal webViewLoadingStopped(int index)
+    signal webViewLoadingFailed(int index)
 
     function currentWebView() {
         return webViewAt(currentIndex())
@@ -79,6 +82,7 @@ BrowserWebViewsForm {
                         userOpensLinkInWebView(index, url)
                     }
                 }
+                webViewLoadingStarted(index)
                 break
             case WebView.LoadSucceededStatus:
                 //                this.success = true
@@ -86,6 +90,14 @@ BrowserWebViewsForm {
                 tabsModel.setProperty(index, "title", wp.title)
                 //                tabsModel.setProperty(index, "url", wp.url.toString())
                 webViewLoadingSucceeded(index)
+                webViewLoadingStopped(index)
+                break
+            case WebView.LoadFailedStatus:
+                webViewLoadingFailed(index)
+                webViewLoadingStopped(index)
+                break
+            case WebView.LoadStoppedStatus:
+                webViewLoadingStopped(index)
                 break
             }
         }

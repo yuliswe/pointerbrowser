@@ -6,6 +6,11 @@ import Backend 1.0
 ListView {
     id: listview
     property alias tabsListModel: listview.model
+    highlightFollowsCurrentItem: true
+    snapMode: ListView.NoSnap
+    boundsBehavior: Flickable.StopAtBounds
+    interactive: true
+    highlightRangeMode: ListView.NoHighlightRange
     model: ListModel {
         ListElement {
             url: "test"

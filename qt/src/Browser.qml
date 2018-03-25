@@ -13,8 +13,6 @@ BrowserForm {
     }
 
     property bool ctrlKeyPressing: false
-    prevEnabled: currentWebView() && currentWebView().canGoBack
-    nextEnabled: currentWebView() && currentWebView().canGoForward
 
     ListModel {
         id: tabsModel
@@ -69,6 +67,8 @@ BrowserForm {
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
         tabsList.setHighlightAt(index)
+        prevEnabled = currentWebView() && currentWebView().canGoBack
+        nextEnabled = currentWebView() && currentWebView().canGoForward
     }
 
     function closeTab(index) {
@@ -91,6 +91,8 @@ BrowserForm {
             }
         } else if (currentIndex() > index) {
             browser.openTab(currentIndex() - 1)
+            TabsModel.removeTab(index)
+        } else {
             TabsModel.removeTab(index)
         }
     }
@@ -125,6 +127,8 @@ BrowserForm {
         onUserOpensLinkInWebView: {
             browserAddressBar.update(url, "")
             currentWebView().forceActiveFocus()
+//            prevEnabled = true
+//            nextEnabled = false
         }
         onUserOpensLinkInNewTab: {
             newTab(url)
@@ -137,6 +141,10 @@ BrowserForm {
                 browserAddressBar.update(wp.url, wp.title)
             }
             //            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
+        }
+        onWebViewLoadingStopped: {
+            prevEnabled = currentWebView() && currentWebView().canGoBack
+            nextEnabled = currentWebView() && currentWebView().canGoForward
         }
     }
 
