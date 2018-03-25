@@ -17,6 +17,8 @@ C1.SplitView {
     property alias browserBookmarkButton: bookmark
     property alias browserDocviewSwitch: docview
     property alias browserWebViews: browserWebViews
+    property alias prevEnabled: prev.enabled
+    property alias nextEnabled: next.enabled
 
     SystemPalette {
         id: actPal
@@ -52,7 +54,6 @@ C1.SplitView {
                 id: prev
                 width: 25
                 text: "<"
-                enabled: browserWebViews.currentWebView.canGoBack
                 font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true
@@ -62,7 +63,6 @@ C1.SplitView {
                 id: next
                 width: height
                 text: ">"
-                enabled: browserWebViews.currentWebView.canGoForward
                 font.bold: true
                 Layout.maximumWidth: toolbar.height
                 Layout.fillHeight: true

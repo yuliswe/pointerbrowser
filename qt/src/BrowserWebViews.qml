@@ -7,14 +7,40 @@ BrowserWebViewsForm {
 
     property alias tabsModel: listView.repeaterModel
 
-    readonly property var currentWebView: getWebViewAt(currentIndex)
-    readonly property int loadProgress: currentWebView ? currentWebView.loadProgress : 0
-    readonly property string url: currentWebView ? currentWebView.url : ""
-    readonly property string title: currentWebView ? currentWebView.title : ""
-    readonly property var getWebViewAt: listView.repeater.itemAt
-    readonly property int currentIndex: listView.stackLayout.currentIndex
-    signal userOpensLinkInCurrentWebView(string url)
+    readonly property int loadProgress: currentWebView() ? currentWebView().loadProgress : 0
+    readonly property string url: currentWebView() ? currentWebView().url : ""
+    readonly property string title: currentWebView() ? currentWebView().title : ""
+    signal userOpensLinkInWebView(int index, string url)
+    signal userOpensLinkInNewTab(string url)
     signal webViewLoadingSucceeded(int index)
+
+    function currentWebView() {
+        return webViewAt(currentIndex())
+    }
+
+    function currentIndex() {
+        return listView.stackLayout.currentIndex
+    }
+
+    function setCurrentIndex(idx) {
+        console.log("setCurrentIndex", idx)
+        listView.stackLayout.currentIndex = idx
+    }
+
+    function reloadWebViewAt(index) {
+        console.log("reloadWebViewAt", index)
+        webViewAt(index).reload()
+    }
+
+    function webViewAt(i) {
+        return listView.repeater.itemAt(i)
+    }
+
+    function reloadCurrentWebView() {
+        // ignore Ctrl in this function
+        reloadWebViewAt(currentIndex)
+    }
+
 
     repeaterDelegate: WebView {
         id: webview
@@ -36,27 +62,27 @@ BrowserWebViewsForm {
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
-                if (index === currentIndex) {
+                if (index === currentIndex()) {
                     var url = loadRequest.url
                     // if control key is held, then stop loading
                     // and open a new tab. If the tab already exists,
                     // do nothing
-                    if (browserWindow.ctrlKeyPressing) {
+                    if (browser.ctrlKeyPressing) {
                         this.stop()
                         var idx = TabsModel.findTab(url)
                         if (idx === -1) {
-                            idx = TabsModel.insertTab(0,
-                                                      url, "Loading", "")
-                            //                            getWebViewAt(idx).stop()
+                            console.log("userOpensLinkInNewTab:", url);
+                            userOpensLinkInNewTab(url)
                         }
                     } else {
-                        userOpensLinkInCurrentWebView(url)
+                        console.log("userOpensLinkInWebView:", url, webview)
+                        userOpensLinkInWebView(index, url)
                     }
                 }
                 break
             case WebView.LoadSucceededStatus:
                 //                this.success = true
-                var wp = getWebViewAt(index)
+                var wp = webViewAt(index)
                 tabsModel.setProperty(index, "title", wp.title)
                 //                tabsModel.setProperty(index, "url", wp.url.toString())
                 webViewLoadingSucceeded(index)
@@ -73,18 +99,5 @@ BrowserWebViewsForm {
         }
     }
 
-    function setCurrentIndex(idx) {
-        listView.stackLayout.currentIndex = idx
-        getWebViewAt(idx).forceActiveFocus()
-    }
-
-    function reloadWebViewAt(index) {
-        console.log("reloadWebViewAt", index)
-        getWebViewAt(index).reload()
-    }
-    function reloadCurrentWebView() {
-        // ignore Ctrl in this function
-        reloadWebViewAt(currentIndex)
-    }
 }
 

@@ -5,12 +5,23 @@ import QtQuick.Controls 2.3
 
 BrowserForm {
     id: browser
-    readonly property var browserWebView: browser.browserWebViews.currentWebView
-    property int currentWebpageIndex: 0
+    function currentWebView() {
+        return browserWebViews.currentWebView()
+    }
+    function currentIndex() {
+        return browserWebViews.currentIndex()
+    }
+
     property bool ctrlKeyPressing: false
+    prevEnabled: currentWebView() && currentWebView().canGoBack
+    nextEnabled: currentWebView() && currentWebView().canGoForward
 
     ListModel {
         id: tabsModel
+    }
+
+    onCtrlKeyPressingChanged: {
+        console.log("onCtrlKeyPressingChanged", ctrlKeyPressing)
     }
 
     Keys.onPressed: {
@@ -38,57 +49,67 @@ BrowserForm {
     tabsList.tabsModel: tabsModel
     browserAddressBar.progress: browserWebViews.loadProgress
 
-    function newTab(url) {
+    function newTab(url, switchToView) {
+        console.log("newTab:", url, switchToView)
         url = url || "https://google.ca"
-        currentWebpageIndex = 0
-        TabsModel.insertTab(currentWebpageIndex, url, "", "")
-        browserWebViews.setCurrentIndex(currentWebpageIndex)
-        tabsPanel.currentIndex = currentWebpageIndex
-        browserAddressBar.update(url, "")
+        TabsModel.insertTab(0, url, "", "")
+        if (switchToView) {
+            openTab(0)
+        } else {
+            openTab(currentIndex() + 1)
+        }
     }
 
     function openTab(index) {
-        console.log("browser.openTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        console.log("openTab", "index=", index, "tabsModel.count=", tabsModel.count)
+
         browserWebViews.setCurrentIndex(index)
-        var wp = browserWebViews.getWebViewAt(index)
+        var wp = browserWebViews.webViewAt(index)
+        wp.forceActiveFocus()
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
         tabsList.setHighlightAt(index)
-        browser.currentWebpageIndex = index
     }
 
     function closeTab(index) {
-        console.log(browser.currentWebpageIndex , index)
-        // todo: remove from backend
-        TabsModel.removeTab(index)
-        if (browser.currentWebpageIndex === index) {
-            if (index - 1 >= 0) {
-                browser.openTab(index - 1)
-            } else if (index < tabsModel.count) {
-                browser.openTab(index)
-            } else {
-                browser.newTab()
-            }
-        } else if (browser.currentWebpageIndex > index) {
-            browser.openTab(index)
-        }
         console.log("browser.closeTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        // todo: remove from backend
+        if (currentIndex() === index) {
+            // when removing current tab
+            // if there's one before, open that
+            if (index >= 1) {
+                TabsModel.removeTab(index)
+                browser.openTab(index - 1)
+                // if there's one after, open that
+            } else if (index + 1 < tabsModel.count) {
+                TabsModel.removeTab(index)
+                browser.openTab(index)
+                // if this is the only one
+            } else {
+                browser.newTab("",true)
+                TabsModel.removeTab(index+1)
+            }
+        } else if (currentIndex() > index) {
+            browser.openTab(currentIndex() - 1)
+            TabsModel.removeTab(index)
+        }
     }
 
     Connections {
         target: tabsPanel
-        onUserOpensNewTab: browser.newTab()
+        onUserOpensNewTab: browser.newTab("", true)
     }
 
+    // Warning: only use this to semi-sync TabsModel and tabsModel
+    // do not take any ui actions here
     Connections {
         target: TabsModel
         onTabInserted: {
             console.log("onTabInserted:", webpage.title, webpage.url)
-            tabsModel.insert(currentWebpageIndex, webpage)
-            browserWebViews.setCurrentIndex(currentWebpageIndex + 1) // view does not change
+            tabsModel.insert(index, webpage)
         }
         onTabRemoved: {
-            console.log("onTabRemoved")
+            console.log("onTabRemoved", index, webpage.title, webpage.url)
             tabsModel.remove(index)
         }
     }
@@ -101,38 +122,42 @@ BrowserForm {
 
     Connections {
         target: browserWebViews
-        onUserOpensLinkInCurrentWebView: {
+        onUserOpensLinkInWebView: {
             browserAddressBar.update(url, "")
+            currentWebView().forceActiveFocus()
+        }
+        onUserOpensLinkInNewTab: {
+            newTab(url)
         }
         onWebViewLoadingSucceeded: {
-            var wp = browserWebViews.getWebViewAt(index)
-//            TabsModel.tabs[index].title = wp.title
-            if (index === currentWebpageIndex) {
+            var wp = browserWebViews.webViewAt(index)
+            //            TabsModel.tabs[index].title = wp.title
+            if (index === currentIndex()) {
                 browserBookmarkButton.checked = true
                 browserAddressBar.update(wp.url, wp.title)
             }
-//            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
+            //            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
     }
 
     Connections {
         target: browserAddressBar
         onUserEntersUrl: {
-            browserWebView.url = url
+            currentWebView().url = url
         }
     }
 
     Connections {
         target: browserBackButton
         onClicked: {
-            browserWebView.goBack()
+            currentWebView().goBack()
         }
     }
 
     Connections {
         target: browserForwardButton
         onClicked: {
-            browserWebView.goForward()
+            currentWebView().goForward()
         }
     }
 
@@ -148,12 +173,12 @@ BrowserForm {
         onCheckedChanged: {
             var js = FileManager.readFileQrc("docview.js")
             if (browserDocviewSwitch.checked) {
-                browserWebView.runJavaScript(js + "Docview.turnOn()",
+                currentWebView().runJavaScript(js + "Docview.turnOn()",
                                              function (result) {
                                                  print(result)
                                              })
             } else {
-                browserWebView.runJavaScript(js + "Docview.turnOff()",
+                currentWebView().runJavaScript(js + "Docview.turnOff()",
                                              function (result) {
                                                  print(result)
                                              })
@@ -164,7 +189,17 @@ BrowserForm {
 
     Shortcut {
         sequence: "Ctrl+R"
-        onActivated: browserWebViews.reloadCurrentWebView()
+        onActivated: {
+            browser.ctrlKeyPressing = false
+            browserWebViews.reloadCurrentWebView()
+        }
     }
 
+    Shortcut {
+        sequence: "Ctrl+W"
+        onActivated: {
+            browser.ctrlKeyPressing = false
+            closeTab(currentIndex())
+        }
+    }
 }
