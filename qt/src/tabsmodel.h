@@ -28,8 +28,7 @@ class TabsModel : public QAbstractListModel
 
     public slots:
         void insertTab(int i, QString url, QString title, QString html);
-        void updateTab(int i, QString property, QVariant value, bool reload = false);
-        void updateTabTitle(int i, QString title);
+        void updateTab(int i, QString property, QVariant value);
         int appendTab(QString url, QString title, QString html);
         void removeTab(int idx);
         int findTab(QString url);

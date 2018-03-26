@@ -45,25 +45,16 @@ void TabsModel::insertTab(int i, QString url, QString title, QString html)
     setData(idx, v);
 }
 
-void TabsModel::updateTab(int index, QString property, QVariant value, bool reload)
+void TabsModel::updateTab(int index, QString property, QVariant value)
 {
     Webpage_ page = _tabs[index];
-    const char* str = property.toStdString().c_str();
-    page->setProperty(str, value);
+    QByteArray ba = property.toLocal8Bit();
+    const char *str = ba.data();
+    page.data()->setProperty(str, value);
     QModelIndex i = TabsModel::index(index);
-    if (reload) {
-        emit dataChanged(i,i);
-    }
-}
-
-void TabsModel::updateTabTitle(int index, QString title)
-{
-    _tabs[index]->setTitle(title);
-    QModelIndex i = TabsModel::index(index);
-    QVector<int> roles;
-    roles << 1;
-    qDebug() << "updateTabTitle:" << title << endl;
-    emit dataChanged(i,i, roles);
+//    QVector<int> roles;
+//    roles << 0;
+    emit dataChanged(i,i);
 }
 
 int TabsModel::appendTab(QString url, QString title, QString html)
@@ -139,9 +130,6 @@ QVariant TabsModel::data(const QModelIndex& idx, int role) const
         return QVariant();
     }
     Webpage_ p = _tabs[row];
-    if (role == 1) {
-        return p->title();
-    }
     QVariant v;
     v.setValue(p.data());
     return v;
@@ -191,6 +179,5 @@ bool TabsModel::insertRows(int row, int count, const QModelIndex &parent)
 QHash<int, QByteArray> TabsModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[0] = "model";
-    roles[1] = "modelTitle";
     return roles;
 }

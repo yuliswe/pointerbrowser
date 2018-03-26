@@ -47,7 +47,12 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebView {
         id: webview
-        url: model.url
+        property string modelUrl: model.url
+        onModelUrlChanged: {
+            if (url !== modelUrl) {
+                url = modelUrl
+            }
+        }
         Keys.onPressed: {
             console.log("Keys.onPressed:", event.key)
             if (event.key === Qt.Key_Control) {
@@ -86,7 +91,7 @@ BrowserWebViewsForm {
                 break
             case WebView.LoadSucceededStatus:
                 var wp = webViewAt(index)
-                TabsModel.updateTabTitle(index, wp.title)
+                TabsModel.updateTab(index, "title", wp.title)
                 webViewLoadingSucceeded(index)
                 webViewLoadingStopped(index)
                 break
