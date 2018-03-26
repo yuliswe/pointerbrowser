@@ -3,9 +3,13 @@ import QtQuick.Controls 2.3
 
 TabsPanelForm {
     id: tabsPanel
-    property alias tabsList: tabsPanel.tabsList
     signal userOpensNewTab
     signal userClosesTab(int index)
+    signal userOpensTab(int index)
+
+    function setCurrentIndex(i) {
+        tabsList.setHighlightAt(i)
+    }
 
     Connections {
         target: newTabButton
@@ -18,6 +22,9 @@ TabsPanelForm {
         target: tabsList
         onUserClosesTab: {
             userClosesTab(index)
+        }
+        onUserClicksTab: {
+            userOpensTab(index)
         }
     }
 

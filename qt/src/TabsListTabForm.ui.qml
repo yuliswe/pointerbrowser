@@ -18,7 +18,7 @@ ItemDelegate {
         radius: 2
         Text {
             color: actPal.buttonText
-            text: (model.title || "Loading") + " - " + model.url
+            text: (modelTitle || "Loading") + " - " + model.url
             anchors.right: parent.right
             anchors.rightMargin: 10
             font.pointSize: 10

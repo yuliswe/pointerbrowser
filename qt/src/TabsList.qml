@@ -4,7 +4,6 @@ import QtQuick.Controls 2.3
 
 TabsListForm {
     id: tabsList
-    property alias tabsModel: tabsList.model
     signal userClicksTab(int index)
     signal userClosesTab(int index)
     function setHighlightAt(index) {

@@ -14,23 +14,56 @@ TabsModel::TabsModel(QObject *parent) : QAbstractListModel(parent)
 
 }
 
-QVariantList TabsModel::tabs() const
+int TabsModel::count()
 {
-    QVariantList ls;
-    for (Webpage_ tab : _tabs) {
-        QVariant v;
-        v.setValue(tab.data());
-        ls << v;
-    }
-    return ls;
+    return _tabs.length();
 }
+
+Webpage* TabsModel::tab(int i)
+{
+    return _tabs[i].data();
+}
+
+//QVariantList TabsModel::tabs() const
+//{
+//    QVariantList ls;
+//    for (Webpage_ tab : _tabs) {
+//        QVariant v;
+//        v.setValue(tab.data());
+//        ls << v;
+//    }
+//    return ls;
+//}
 
 void TabsModel::insertTab(int i, QString url, QString title, QString html)
 {
-    Webpage_ page = QSharedPointer<Webpage>::create(url, title, html);
-    _tabs.insert(i, page);
-    emit tabsChanged();
-    emit tabInserted(i, page.data());
+    Webpage* page = new Webpage(url);
+    QVariant v;
+    v.setValue(page);
+    insertRow(i);
+    QModelIndex idx = TabsModel::index(i);
+    setData(idx, v);
+}
+
+void TabsModel::updateTab(int index, QString property, QVariant value, bool reload)
+{
+    Webpage_ page = _tabs[index];
+    const char* str = property.toStdString().c_str();
+    page->setProperty(str, value);
+    QModelIndex i = TabsModel::index(index);
+    if (reload) {
+        emit dataChanged(i,i);
+    }
+}
+
+void TabsModel::updateTabTitle(int index, QString title)
+{
+    _tabs[index]->setTitle(title);
+    QModelIndex i = TabsModel::index(index);
+    QVector<int> roles;
+    roles << 1;
+    qDebug() << "updateTabTitle:" << title << endl;
+    emit dataChanged(i,i, roles);
 }
 
 int TabsModel::appendTab(QString url, QString title, QString html)
@@ -45,10 +78,7 @@ int TabsModel::appendTab(QString url, QString title, QString html)
 
 void TabsModel::removeTab(int idx)
 {
-    Webpage_ page = _tabs.at(idx);
-    _tabs.removeAt(idx);
-    emit tabsChanged();
-    emit tabRemoved(idx, page.data());
+    removeRow(idx);
 }
 
 int TabsModel::findTab(QString url) {
@@ -82,10 +112,6 @@ void TabsModel::loadTabs(void) {
     for (QJsonValue jval : jarr) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
-        qDebug() << "tab "
-                 << page_->title()
-                 << " "
-                 << page_->url() << endl;
         Webpage* page = page_.data();
         _tabs << Webpage::fromQJsonObject(jobj);
         emit tabInserted(idx, page);
@@ -108,7 +134,14 @@ void TabsModel::syncTabs(QVariantList tabs) {
 
 QVariant TabsModel::data(const QModelIndex& idx, int role) const
 {
-    Webpage_ p = _tabs[idx.row()];
+    int row = idx.row();
+    if (row < 0 || row >=_tabs.length()) {
+        return QVariant();
+    }
+    Webpage_ p = _tabs[row];
+    if (role == 1) {
+        return p->title();
+    }
     QVariant v;
     v.setValue(p.data());
     return v;
@@ -153,4 +186,11 @@ bool TabsModel::insertRows(int row, int count, const QModelIndex &parent)
     _tabs.insert(row, page);
     emit endInsertRows();
     return true;
+}
+
+QHash<int, QByteArray> TabsModel::roleNames() const {
+    QHash<int, QByteArray> roles;
+    roles[0] = "model";
+    roles[1] = "modelTitle";
+    return roles;
 }

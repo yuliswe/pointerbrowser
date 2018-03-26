@@ -5,7 +5,7 @@ import Backend 1.0
 
 ListView {
     id: listview
-    property alias tabsListModel: listview.model
+    property alias tabsModel: listview.model
     highlightFollowsCurrentItem: true
     snapMode: ListView.NoSnap
     boundsBehavior: Flickable.StopAtBounds

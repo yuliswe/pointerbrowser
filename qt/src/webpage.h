@@ -19,6 +19,7 @@ class Webpage : public QObject
 
     public:
         explicit Webpage(QObject *parent = nullptr);
+        Webpage(QString url);
         Webpage(QString url, QString title, QString html);
 
         QString title() const;
@@ -50,5 +51,5 @@ class Webpage : public QObject
 };
 
 Q_DECLARE_METATYPE(Webpage_)
-
+Q_DECLARE_METATYPE(Webpage*)
 #endif // WEBPAGE_H

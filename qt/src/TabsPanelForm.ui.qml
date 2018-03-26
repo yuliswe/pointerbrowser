@@ -6,8 +6,6 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
 
 Item {
-    property alias currentIndex: tabsList.currentIndex
-
     id: form
 
     SystemPalette {
@@ -22,9 +20,10 @@ Item {
         anchors.fill: form
         opacity: 0.95
     }
-    property alias tabsList: tabsList
     property alias tabsSearch: tabsSearch
     property alias newTabButton: newTabButton
+    property alias tabsList: tabsList
+    property alias tabsModel: tabsList.tabsModel
 
     ColumnLayout {
         id: columnLayout
@@ -88,7 +87,5 @@ Item {
                 checked: true
             }
         }
-
-
     }
 }

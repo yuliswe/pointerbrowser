@@ -9,6 +9,11 @@ Webpage::Webpage(QObject *parent) : QObject(parent)
 
 }
 
+Webpage::Webpage(QString url)
+{
+    _url = url;
+}
+
 Webpage::Webpage(QString url, QString title, QString html)
 {
     _url = url;

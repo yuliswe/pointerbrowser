@@ -8,17 +8,18 @@
 class TabsModel : public QAbstractListModel
 {
         Q_OBJECT
-        Q_PROPERTY(QVariantList tabs READ tabs NOTIFY tabsChanged)
+//        Q_PROPERTY(QVariantList tabs READ tabs NOTIFY tabsChanged)
 
     public:
         explicit TabsModel(QObject *parent = nullptr);
-        QVariantList tabs() const;
+//        QVariantList tabs() const;
         QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
         int rowCount(const QModelIndex &parent) const;
-        bool setData(const QModelIndex &index, const QVariant &value, int role);
+        bool setData(const QModelIndex &index, const QVariant &value, int role = 0);
         Qt::ItemFlags flags(const QModelIndex &index) const;
         bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
         bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+        QHash<int, QByteArray> roleNames() const;
 
     signals:
         void tabsChanged();
@@ -27,12 +28,16 @@ class TabsModel : public QAbstractListModel
 
     public slots:
         void insertTab(int i, QString url, QString title, QString html);
+        void updateTab(int i, QString property, QVariant value, bool reload = false);
+        void updateTabTitle(int i, QString title);
         int appendTab(QString url, QString title, QString html);
         void removeTab(int idx);
         int findTab(QString url);
+        int count();
         void saveTabs();
         void loadTabs();
         void syncTabs(QVariantList);
+        Webpage* tab(int index);
 
     private:
         WebpageList _tabs;

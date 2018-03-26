@@ -85,10 +85,8 @@ BrowserWebViewsForm {
                 webViewLoadingStarted(index)
                 break
             case WebView.LoadSucceededStatus:
-                //                this.success = true
                 var wp = webViewAt(index)
-                tabsModel.setProperty(index, "title", wp.title)
-                //                tabsModel.setProperty(index, "url", wp.url.toString())
+                TabsModel.updateTabTitle(index, wp.title)
                 webViewLoadingSucceeded(index)
                 webViewLoadingStopped(index)
                 break

@@ -22,7 +22,7 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::tabsModel;
     });
-    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
+//    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
 }
 
 

@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
     // set properties
     QMLRegister::tabsModel->loadTabs();
+    QMLRegister::fileManager->setupDirectories();
 
     QPalette pal = QGuiApplication::palette();
 //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
@@ -35,6 +36,5 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    QMLRegister::fileManager->setupDirectories();
     return app.exec();
 }

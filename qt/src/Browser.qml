@@ -14,10 +14,6 @@ BrowserForm {
 
     property bool ctrlKeyPressing: false
 
-    ListModel {
-        id: tabsModel
-    }
-
     onCtrlKeyPressingChanged: {
         console.log("onCtrlKeyPressingChanged", ctrlKeyPressing)
     }
@@ -35,16 +31,13 @@ BrowserForm {
         }
     }
     Component.onCompleted: {
-        for (var i = 0; i < TabsModel.tabs.length; i++) {
-            tabsModel.append(TabsModel.tabs[i])
-        }
-        if (TabsModel.tabs.length > 0) {
+        if (TabsModel.count() > 0) {
             openTab(0)
         }
     }
 
-    browserWebViews.tabsModel: tabsModel
-    tabsList.tabsModel: tabsModel
+    browserWebViews.tabsModel: TabsModel
+    tabsPanel.tabsModel: TabsModel
     browserAddressBar.progress: browserWebViews.loadProgress
 
     function newTab(url, switchToView) {
@@ -59,20 +52,20 @@ BrowserForm {
     }
 
     function openTab(index) {
-        console.log("openTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        console.log("openTab", "index=", index, "TabsModel.count()=", TabsModel.count())
 
         browserWebViews.setCurrentIndex(index)
+        tabsPanel.setCurrentIndex(index)
         var wp = currentWebView()
         wp.forceActiveFocus()
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
-        tabsList.setHighlightAt(index)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
     }
 
     function closeTab(index) {
-        console.log("closeTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        console.log("closeTab", "index=", index, "TabsModel.count()=", TabsModel.count())
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
@@ -81,7 +74,7 @@ BrowserForm {
                 TabsModel.removeTab(index)
                 openTab(index - 1)
                 // if there's one after, open that
-            } else if (index + 1 < tabsModel.count) {
+            } else if (index + 1 < TabsModel.count()) {
                 TabsModel.removeTab(index)
                 openTab(index)
                 // if this is the only one
@@ -108,17 +101,17 @@ BrowserForm {
         target: TabsModel
         onTabInserted: {
             console.log("onTabInserted:", webpage.title, webpage.url)
-            tabsModel.insert(index, webpage)
+            TabsModel.insert(index, webpage)
         }
         onTabRemoved: {
             console.log("onTabRemoved", index, webpage.title, webpage.url)
-            tabsModel.remove(index)
+            TabsModel.remove(index)
         }
     }
 
     Connections {
-        target: tabsList
-        onUserClicksTab: openTab(index)
+        target: tabsPanel
+        onUserOpensTab: openTab(index)
         onUserClosesTab: closeTab(index)
     }
 
@@ -135,12 +128,10 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.webViewAt(index)
-            //            TabsModel.tabs[index].title = wp.title
             if (index === currentIndex()) {
                 browserBookmarkButton.checked = true
                 browserAddressBar.update(wp.url, wp.title)
             }
-            //            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
