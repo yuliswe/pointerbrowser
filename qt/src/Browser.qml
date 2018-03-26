@@ -25,13 +25,13 @@ BrowserForm {
     Keys.onPressed: {
         console.log("Keys.onPressed:", event.key, Qt.Key_Control)
         if (event.key === Qt.Key_Control) {
-            browser.ctrlKeyPressing = true
+            ctrlKeyPressing = true
         }
     }
     Keys.onReleased: {
         console.log("Keys.onReleased:", event.key, Qt.Key_Control)
         if (event.key === Qt.Key_Control) {
-            browser.ctrlKeyPressing = false
+            ctrlKeyPressing = false
         }
     }
     Component.onCompleted: {
@@ -62,35 +62,35 @@ BrowserForm {
         console.log("openTab", "index=", index, "tabsModel.count=", tabsModel.count)
 
         browserWebViews.setCurrentIndex(index)
-        var wp = browserWebViews.webViewAt(index)
+        var wp = currentWebView()
         wp.forceActiveFocus()
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
         tabsList.setHighlightAt(index)
-        prevEnabled = currentWebView() && currentWebView().canGoBack
-        nextEnabled = currentWebView() && currentWebView().canGoForward
+        prevEnabled = wp && wp.canGoBack
+        nextEnabled = wp && wp.canGoForward
     }
 
     function closeTab(index) {
-        console.log("browser.closeTab", "index=", index, "tabsModel.count=", tabsModel.count)
+        console.log("closeTab", "index=", index, "tabsModel.count=", tabsModel.count)
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
             // if there's one before, open that
             if (index >= 1) {
                 TabsModel.removeTab(index)
-                browser.openTab(index - 1)
+                openTab(index - 1)
                 // if there's one after, open that
             } else if (index + 1 < tabsModel.count) {
                 TabsModel.removeTab(index)
-                browser.openTab(index)
+                openTab(index)
                 // if this is the only one
             } else {
-                browser.newTab("",true)
+                newTab("",true)
                 TabsModel.removeTab(index+1)
             }
         } else if (currentIndex() > index) {
-            browser.openTab(currentIndex() - 1)
+            openTab(currentIndex() - 1)
             TabsModel.removeTab(index)
         } else {
             TabsModel.removeTab(index)
@@ -99,7 +99,7 @@ BrowserForm {
 
     Connections {
         target: tabsPanel
-        onUserOpensNewTab: browser.newTab("", true)
+        onUserOpensNewTab: newTab("", true)
     }
 
     // Warning: only use this to semi-sync TabsModel and tabsModel
@@ -118,8 +118,8 @@ BrowserForm {
 
     Connections {
         target: tabsList
-        onUserClicksTab: browser.openTab(index)
-        onUserClosesTab: browser.closeTab(index)
+        onUserClicksTab: openTab(index)
+        onUserClosesTab: closeTab(index)
     }
 
     Connections {
@@ -143,8 +143,9 @@ BrowserForm {
             //            console.log("onWebViewLoadingSucceeded", TabsModel.tabs[index].title)
         }
         onWebViewLoadingStopped: {
-            prevEnabled = currentWebView() && currentWebView().canGoBack
-            nextEnabled = currentWebView() && currentWebView().canGoForward
+            var cw = currentWebView()
+            prevEnabled = cw && cw.canGoBack
+            nextEnabled = cw && cw.canGoForward
         }
     }
 
@@ -198,7 +199,7 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+R"
         onActivated: {
-            browser.ctrlKeyPressing = false
+            ctrlKeyPressing = false
             browserWebViews.reloadCurrentWebView()
         }
     }
@@ -206,7 +207,7 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+W"
         onActivated: {
-            browser.ctrlKeyPressing = false
+            ctrlKeyPressing = false
             closeTab(currentIndex())
         }
     }

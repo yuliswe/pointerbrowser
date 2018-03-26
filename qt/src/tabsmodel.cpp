@@ -5,10 +5,11 @@
 #include <QJsonObject>
 #include <QUrl>
 #include <QDebug>
+#include <QAbstractListModel>
 #include "qmlregister.h"
 #include "tabsmodel.h"
 
-TabsModel::TabsModel(QObject *parent) : QObject(parent)
+TabsModel::TabsModel(QObject *parent) : QAbstractListModel(parent)
 {
 
 }
@@ -48,7 +49,6 @@ void TabsModel::removeTab(int idx)
     _tabs.removeAt(idx);
     emit tabsChanged();
     emit tabRemoved(idx, page.data());
-    page.clear();
 }
 
 int TabsModel::findTab(QString url) {
@@ -104,4 +104,53 @@ void TabsModel::syncTabs(QVariantList tabs) {
         idx++;
     }
     emit tabsChanged();
+}
+
+QVariant TabsModel::data(const QModelIndex& idx, int role) const
+{
+    Webpage_ p = _tabs[idx.row()];
+    QVariant v;
+    v.setValue(p.data());
+    return v;
+}
+
+int TabsModel::rowCount(const QModelIndex &parent) const
+{
+    return _tabs.length();
+}
+
+bool TabsModel::setData(const QModelIndex &i, const QVariant &v, int role)
+{
+    if (i.row() >= _tabs.length()) { return false; }
+    Webpage_ sptr = QSharedPointer<Webpage>(v.value<Webpage*>());
+    _tabs[i.row()] = sptr;
+    emit dataChanged(i,i);
+    return true;
+}
+
+Qt::ItemFlags TabsModel::flags(const QModelIndex &index) const
+{
+    return Qt::ItemIsSelectable
+            | Qt::ItemIsEditable
+            | Qt::ItemIsEditable
+            | Qt::ItemNeverHasChildren;
+}
+
+bool TabsModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    if (row >= _tabs.length()) { return false; }
+    emit beginRemoveRows(parent, row, row);
+    _tabs.removeAt(row);
+    emit endRemoveRows();
+    return true;
+}
+
+bool TabsModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+    if (row > _tabs.length()) { return false; }
+    emit beginInsertRows(parent, row, row);
+    Webpage_ page = QSharedPointer<Webpage>(nullptr);
+    _tabs.insert(row, page);
+    emit endInsertRows();
+    return true;
 }
