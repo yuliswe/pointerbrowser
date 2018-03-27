@@ -52,10 +52,10 @@ Window {
             mainWindow.showNormal()
         }
         titleBar.onUserMinimizesWindow: {
-            mainWindow.flags = Qt.Window
+//            mainWindow.flags = Qt.Window
             mainWindow.showMinimized()
-            mainWindow.flags = Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
-                    | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
+//            mainWindow.flags = Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
+//                    | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
         }
         property int resizeThreshold: 1
         function resetDragging() {

@@ -49,6 +49,7 @@ BrowserWebViewsForm {
         id: webview
         property string modelUrl: model.url
         onModelUrlChanged: {
+            console.log("onModelUrlChanged:", model.url)
             if (url !== modelUrl) {
                 url = modelUrl
             }
