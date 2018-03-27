@@ -12,10 +12,10 @@ BrowserWebViewsForm {
     readonly property string title: currentWebView() ? currentWebView().title : ""
     signal userOpensLinkInWebView(int index, string url)
     signal userOpensLinkInNewTab(string url)
-    signal webViewLoadingSucceeded(int index)
-    signal webViewLoadingStarted(int index)
-    signal webViewLoadingStopped(int index)
-    signal webViewLoadingFailed(int index)
+    signal webViewLoadingSucceeded(int index, string url)
+    signal webViewLoadingStarted(int index, string url)
+    signal webViewLoadingStopped(int index, string url)
+    signal webViewLoadingFailed(int index, string url)
 
     function currentWebView() {
         return webViewAt(currentIndex())
@@ -49,8 +49,10 @@ BrowserWebViewsForm {
         id: webview
         property string modelUrl: model.url
         onModelUrlChanged: {
-            console.log("onModelUrlChanged:", model.url)
-            if (url !== modelUrl) {
+            // must compare with ==
+            // the two string types might be different!
+            console.log("onModelUrlChanged:", url, model.url, url == modelUrl)
+            if (url != modelUrl) {
                 url = modelUrl
             }
         }
@@ -74,18 +76,18 @@ BrowserWebViewsForm {
                         userOpensLinkInWebView(index, url)
                     }
                 }
-                webViewLoadingStarted(index)
+                webViewLoadingStarted(index, loadRequest.url)
                 break
             case WebView.LoadSucceededStatus:
-                webViewLoadingSucceeded(index)
-                webViewLoadingStopped(index)
+                webViewLoadingSucceeded(index, loadRequest.url)
+                webViewLoadingStopped(index, loadRequest.url)
                 break
             case WebView.LoadFailedStatus:
-                webViewLoadingFailed(index)
-                webViewLoadingStopped(index)
+                webViewLoadingFailed(index, loadRequest.url)
+                webViewLoadingStopped(index, loadRequest.url)
                 break
             case WebView.LoadStoppedStatus:
-                webViewLoadingStopped(index)
+                webViewLoadingStopped(index, loadRequest.url)
                 break
             }
         }

@@ -116,9 +116,8 @@ BrowserForm {
             }
         }
         onWebViewLoadingStarted: {
-            var wp = browserWebViews.webViewAt(index)
-//            TabsModel.updateTab(index, "title", wp.title)
-//            TabsModel.updateTab(index, "url", wp.url)
+            TabsModel.updateTab(index, "title", "")
+            TabsModel.updateTab(index, "url", url)
         }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
