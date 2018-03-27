@@ -4,6 +4,7 @@
 #include <QObject>
 #include "filemanager.h"
 #include "tabsmodel.h"
+#include "eventfilter.h"
 
 class QMLRegister : public QObject
 {
@@ -13,6 +14,7 @@ class QMLRegister : public QObject
         explicit QMLRegister(QObject *parent = nullptr);
         static FileManager* fileManager;
         static TabsModel* tabsModel;
+        static EventFilter* eventFilter;
         static void registerToQML();
 
     signals:

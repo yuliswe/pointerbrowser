@@ -8,28 +8,11 @@ BrowserForm {
     function currentWebView() {
         return browserWebViews.currentWebView()
     }
+
     function currentIndex() {
         return browserWebViews.currentIndex()
     }
 
-    property bool ctrlKeyPressing: false
-
-    onCtrlKeyPressingChanged: {
-        console.log("onCtrlKeyPressingChanged", ctrlKeyPressing)
-    }
-
-    Keys.onPressed: {
-        console.log("Keys.onPressed:", event.key, Qt.Key_Control)
-        if (event.key === Qt.Key_Control) {
-            ctrlKeyPressing = true
-        }
-    }
-    Keys.onReleased: {
-        console.log("Keys.onReleased:", event.key, Qt.Key_Control)
-        if (event.key === Qt.Key_Control) {
-            ctrlKeyPressing = false
-        }
-    }
     Component.onCompleted: {
         if (TabsModel.count() > 0) {
             openTab(0)

@@ -24,8 +24,7 @@ int main(int argc, char *argv[])
     QtWebView::initialize();
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 
-    KeyPressEater keyPressEater;
-    app.installEventFilter(&keyPressEater);
+    app.installEventFilter(QMLRegister::eventFilter);
 
     // set window transparent
     //    QSurfaceFormat surfaceFormat;

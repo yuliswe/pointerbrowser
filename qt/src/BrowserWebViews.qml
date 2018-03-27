@@ -53,20 +53,6 @@ BrowserWebViewsForm {
                 url = modelUrl
             }
         }
-        Keys.onPressed: {
-            console.log("Keys.onPressed:", event.key)
-            if (event.key === Qt.Key_Control) {
-                browser.ctrlKeyPressing = true
-            }
-        }
-        Keys.onReleased: {
-            console.log("Keys.onReleased:", event.key)
-            if (event.key === Qt.Key_Control) {
-                browser.ctrlKeyPressing = false
-            }
-        }
-        onUrlChanged: {
-        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
@@ -75,7 +61,7 @@ BrowserWebViewsForm {
                     // if control key is held, then stop loading
                     // and open a new tab. If the tab already exists,
                     // do nothing
-                    if (browser.ctrlKeyPressing) {
+                    if (EventFilter.ctrlKeyDown) {
                         this.stop()
                         var idx = TabsModel.findTab(url)
                         if (idx === -1) {
