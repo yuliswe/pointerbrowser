@@ -40,7 +40,6 @@ BrowserForm {
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
         var wp = currentWebView()
-        wp.forceActiveFocus()
         browserAddressBar.update(wp.url, wp.title)
         browserBookmarkButton.checked = true
         prevEnabled = wp && wp.canGoBack
@@ -188,8 +187,14 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+W"
         onActivated: {
-            ctrlKeyPressing = false
+            EventFilter.ctrlKeyDown = false
             closeTab(currentIndex())
+        }
+    }
+    Shortcut {
+        sequence: "Ctrl"
+        onActivated: {
+            console.log("test")
         }
     }
 }
