@@ -6,10 +6,12 @@
 #include <QDebug>
 #include "qmlregister.h"
 #include "palette.h"
+#include "eventfilter.h"
+
 int main(int argc, char *argv[])
 {
     // init ui
-//    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
     // set properties
@@ -17,17 +19,20 @@ int main(int argc, char *argv[])
     QMLRegister::fileManager->setupDirectories();
 
     QPalette pal = QGuiApplication::palette();
-//            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
+    //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
     QMLRegister::registerToQML();
     QtWebView::initialize();
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 
+    KeyPressEater keyPressEater;
+    app.installEventFilter(&keyPressEater);
+
     // set window transparent
-//    QSurfaceFormat surfaceFormat;
-//    surfaceFormat.setAlphaBufferSize(8);
-//    QSurfaceFormat::setDefaultFormat(surfaceFormat);
-//    viewer.setClearBeforeRendering(true);
-//    viewer.setColor(QColor(Qt::transparent));
+    //    QSurfaceFormat surfaceFormat;
+    //    surfaceFormat.setAlphaBufferSize(8);
+    //    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+    //    viewer.setClearBeforeRendering(true);
+    //    viewer.setColor(QColor(Qt::transparent));
 
     // load qmls
     QQmlApplicationEngine engine;

@@ -50,4 +50,11 @@ Item {
             control_normal: "#ddd"
         }
     }
+
+    Shortcut {
+        sequence: "Ctrl"
+        onActivated: {
+            console.log("test")
+        }
+    }
 }

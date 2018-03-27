@@ -18,7 +18,8 @@ SOURCES += \
     filemanager.cpp \
     qmlregister.cpp \
     webpage.cpp \
-    palette.cpp
+    palette.cpp \
+    eventfilter.cpp
 
 RESOURCES += \
     qml.qrc
@@ -39,7 +40,8 @@ HEADERS += \
     filemanager.h \
     qmlregister.h \
     webpage.h \
-    palette.h
+    palette.h \
+    eventfilter.h
 
 DISTFILES += \
     TitleBarForm.ui.qml \

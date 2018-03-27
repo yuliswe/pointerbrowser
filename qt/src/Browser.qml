@@ -83,8 +83,8 @@ BrowserForm {
                 TabsModel.removeTab(index+1)
             }
         } else if (currentIndex() > index) {
-            openTab(currentIndex() - 1)
             TabsModel.removeTab(index)
+            openTab(currentIndex() - 1)
         } else {
             TabsModel.removeTab(index)
         }
