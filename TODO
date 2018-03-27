@@ -2,7 +2,7 @@ Deadlines:
 
 March     - FEATURE: symbol extractor
 March     - Bug: Cmd+link does not always open a new tab
-March     - Bug: tabs are not updated when the tab's url is changed by opening a link
+March     - Bug: tabs are not updated when the tab's url is changed by opening a link (done)
 
 April:
   FEATURE: search symbols in the tab

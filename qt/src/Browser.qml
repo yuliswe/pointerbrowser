@@ -116,10 +116,17 @@ BrowserForm {
                 browserAddressBar.update(wp.url, wp.title)
             }
         }
+        onWebViewLoadingStarted: {
+            var wp = browserWebViews.webViewAt(index)
+            TabsModel.updateTab(index, "title", wp.title)
+            TabsModel.updateTab(index, "url", wp.url)
+        }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
             prevEnabled = cw && cw.canGoBack
             nextEnabled = cw && cw.canGoForward
+            var wp = browserWebViews.webViewAt(index)
+            TabsModel.updateTab(index, "title", wp.title)
         }
     }
 
