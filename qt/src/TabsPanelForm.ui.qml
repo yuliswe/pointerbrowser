@@ -53,7 +53,7 @@ Item {
 
     Flickable {
         id: flickable
-        boundsBehavior: Flickable.DragAndOvershootBounds
+        boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         clip: true
         anchors.bottomMargin: 5
