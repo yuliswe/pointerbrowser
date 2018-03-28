@@ -110,6 +110,8 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.webViewAt(index)
+            var js = FileManager.readQrcFileS("docview.js")
+            wp.runJavaScript(js)
             if (index === currentIndex()) {
                 browserBookmarkButton.checked = true
                 browserAddressBar.update(wp.url, wp.title)
@@ -160,14 +162,15 @@ BrowserForm {
     Connections {
         target: browserDocviewSwitch
         onCheckedChanged: {
-            var js = FileManager.readFileQrc("docview.js")
             if (browserDocviewSwitch.checked) {
-                currentWebView().runJavaScript(js + "Docview.turnOn()",
+                console.log("Docview.turnOn()")
+                currentWebView().runJavaScript("Docview.turnOn()",
                                              function (result) {
                                                  print(result)
                                              })
             } else {
-                currentWebView().runJavaScript(js + "Docview.turnOff()",
+                console.log("Docview.turnOff()")
+                currentWebView().runJavaScript("Docview.turnOff()",
                                              function (result) {
                                                  print(result)
                                              })
@@ -179,7 +182,7 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+R"
         onActivated: {
-            ctrlKeyPressing = false
+            EventFilter.ctrlKeyDown = false
             browserWebViews.reloadCurrentWebView()
         }
     }

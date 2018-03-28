@@ -1,4 +1,4 @@
-QT += quick webview
+QT += quick webview sql
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -19,10 +19,13 @@ SOURCES += \
     qmlregister.cpp \
     webpage.cpp \
     palette.cpp \
-    eventfilter.cpp
+    eventfilter.cpp \
+    searchdb.cpp
 
 RESOURCES += \
-    qml.qrc
+    qml.qrc \
+    db.qrc \
+    js.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -41,7 +44,8 @@ HEADERS += \
     qmlregister.h \
     webpage.h \
     palette.h \
-    eventfilter.h
+    eventfilter.h \
+    searchdb.h
 
 DISTFILES += \
     TitleBarForm.ui.qml \

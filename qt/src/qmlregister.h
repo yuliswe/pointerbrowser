@@ -5,6 +5,7 @@
 #include "filemanager.h"
 #include "tabsmodel.h"
 #include "eventfilter.h"
+#include "searchdb.h"
 
 class QMLRegister : public QObject
 {
@@ -15,6 +16,7 @@ class QMLRegister : public QObject
         static FileManager* fileManager;
         static TabsModel* tabsModel;
         static EventFilter* eventFilter;
+        static SearchDB* searchDB;
         static void registerToQML();
 
     signals:

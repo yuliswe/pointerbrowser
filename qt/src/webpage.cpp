@@ -63,3 +63,9 @@ Webpage_ Webpage::fromQJsonObject(QJsonObject& map)
     webpage->setUrl(map["url"].toString());
     return webpage;
 }
+
+Webpage_ Webpage::create(const QString& url)
+{
+    Webpage_ webpage = QSharedPointer<Webpage>::create(url);
+    return webpage;
+}

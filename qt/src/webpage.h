@@ -34,6 +34,7 @@ class Webpage : public QObject
         static Webpage_ fromQVariantMap(QVariantMap&);
         QJsonObject toQJsonObject();
         static Webpage_ fromQJsonObject(QJsonObject&);
+        static Webpage_ create(const QString& url);
 
     signals:
         void titleChanged(QString);

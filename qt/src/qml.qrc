@@ -7,7 +7,6 @@
         <file>BrowserForm.ui.qml</file>
         <file>TabsList.qml</file>
         <file>TabsListForm.ui.qml</file>
-        <file>docview.js</file>
         <file>BrowserWebViews.qml</file>
         <file>BrowserWebViewsForm.ui.qml</file>
         <file>TabsListTab.qml</file>

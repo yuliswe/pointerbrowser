@@ -41,7 +41,7 @@ BrowserWebViewsForm {
 
     function reloadCurrentWebView() {
         // ignore Ctrl in this function
-        reloadWebViewAt(currentIndex)
+        reloadWebViewAt(currentIndex())
     }
 
 

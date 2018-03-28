@@ -22,10 +22,10 @@ void FileManager::setupDirectories()
 
 QString FileManager::dataPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
 }
 
-QString FileManager::readFileQrc(QString file)
+QString FileManager::readQrcFileS(QString file)
 {
     QFile input(":/" + file);
     input.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -33,9 +33,16 @@ QString FileManager::readFileQrc(QString file)
     return ts.readAll();
 }
 
+QByteArray FileManager::readQrcFileB(QString file)
+{
+    QFile input(":/" + file);
+    input.open(QIODevice::ReadOnly);
+    return input.readAll();
+}
+
 void FileManager::saveFile(QString filename, QByteArray contents)
 {
-    QString path = FileManager::dataPath() + "/" + filename;
+    QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.write(contents);
@@ -45,7 +52,7 @@ void FileManager::saveFile(QString filename, QByteArray contents)
 
 QString FileManager::readFileS(QString filename)
 {
-    QString path = FileManager::dataPath() + "/" + filename;
+    QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     qDebug() << "readFileS: reading file " << path;
@@ -54,7 +61,7 @@ QString FileManager::readFileS(QString filename)
 
 QByteArray FileManager::readFileB(QString filename)
 {
-    QString path = FileManager::dataPath() + "/" + filename;
+    QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly);
     qDebug() << "readFileB: reading file " << path;

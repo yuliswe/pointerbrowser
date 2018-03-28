@@ -12,10 +12,12 @@ BrowserWindowForm {
             z: 1
         }
     }
+
     Connections {
         target: browserWindow
         onClosing: {
             TabsModel.saveTabs()
+            SearchDB.disconnect()
         }
         onActiveFocusItemChanged: {
             console.log("onActiveFocusItemChanged:", activeFocusItem)

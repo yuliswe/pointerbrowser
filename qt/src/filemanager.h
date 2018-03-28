@@ -16,10 +16,11 @@ class FileManager : public QObject
     signals:
 
     public slots:
-        QString readFileQrc(QString file);
-        void saveFile(QString file, QByteArray contents);
-        QString readFileS(QString file);
-        QByteArray readFileB(QString file);
+        static QString readQrcFileS(QString file);
+        static QByteArray readQrcFileB(QString file);
+        static void saveFile(QString file, QByteArray contents);
+        static QString readFileS(QString file);
+        static QByteArray readFileB(QString file);
 };
 
 #endif // FILEMANAGER_H
