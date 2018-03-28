@@ -6,18 +6,22 @@ TabsListForm {
     id: tabsList
     signal userClicksTab(int index)
     signal userClosesTab(int index)
+    property bool showCloseButton: true;
+
     function setHighlightAt(index) {
         tabsList.currentIndex = index
     }
 
+    property int tabHeight: 0;
+
     delegate: TabsListTab {
         id: tab
-        height: 30
+        height: tabsList.tabHeight
+        showCloseButton: tabsList.showCloseButton
         highlighted: index === currentIndex
         width: parent.width
         onClicked: {
             userClicksTab(index)
-            currentIndex = index
         }
         onUserClosesTab: {
             tabsList.userClosesTab(index)

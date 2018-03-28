@@ -163,6 +163,7 @@ bool TabsModel::removeRows(int row, int count, const QModelIndex &parent)
     emit beginRemoveRows(parent, row, row);
     _tabs.removeAt(row);
     emit endRemoveRows();
+    emit countChanged();
     return true;
 }
 
@@ -173,6 +174,7 @@ bool TabsModel::insertRows(int row, int count, const QModelIndex &parent)
     Webpage_ page = QSharedPointer<Webpage>(nullptr);
     _tabs.insert(row, page);
     emit endInsertRows();
+    emit countChanged();
     return true;
 }
 

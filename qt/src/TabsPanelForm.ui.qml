@@ -8,11 +8,6 @@ import QtQuick.Layouts 1.3
 Item {
     id: form
 
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
-
     Rectangle {
         id: background
         color: actPal.button
@@ -20,72 +15,134 @@ Item {
         anchors.fill: form
         opacity: 0.95
     }
+
+    RowLayout {
+        id: topControls
+        x: 5
+        y: 5
+        height: 25
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        Layout.maximumHeight: 25
+        Layout.fillWidth: true
+        Layout.margins: 5
+
+        C.Button {
+            id: newTabButton
+            width: 25
+            height: 25
+            text: qsTr("+")
+            font.bold: true
+            Layout.fillHeight: true
+        }
+
+        C.TextField {
+            id: tabsSearch
+            height: 25
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            placeholderText: "Search Tabs"
+            selectByMouse: true
+        }
+    }
+
+    Text {
+        id: text1
+        color: actPal.mid
+        text: qsTr("Open Tabs")
+        anchors.top: topControls.bottom
+        anchors.topMargin: 5
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        topPadding: 5
+        bottomPadding: 5
+        leftPadding: 5
+        font.bold: false
+        font.capitalization: Font.AllUppercase
+        font.pixelSize: 9
+    }
+
+    TabsList {
+        id: tabsList
+        height: 100
+        tabHeight: form.tabHeight
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: text1.bottom
+        anchors.topMargin: 0
+        interactive: false
+        highlightFollowsCurrentItem: false
+        Layout.fillHeight: false
+        Layout.fillWidth: true
+    }
+
+    Text {
+        id: text2
+        color: actPal.mid
+        text: qsTr("Saved")
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: tabsList.bottom
+        anchors.topMargin: 0
+        bottomPadding: 5
+        leftPadding: 5
+        topPadding: 5
+        font.capitalization: Font.AllUppercase
+        font.bold: false
+        font.pixelSize: 9
+    }
+
+    TabsList {
+        id: searchList
+        tabHeight: form.tabHeight
+        anchors.top: text2.bottom
+        anchors.topMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        showCloseButton: false
+    }
+
+    RowLayout {
+        id: bottomControls
+        x: 0
+        y: 452
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        Layout.maximumHeight: 25
+        Layout.fillWidth: true
+        Layout.margins: 5
+
+        Switch {
+            id: docviewSwitch
+            checked: true
+        }
+    }
+
+    SystemPalette {
+        id: actPal
+        colorGroup: SystemPalette.Active
+    }
+
     property alias tabsSearch: tabsSearch
     property alias newTabButton: newTabButton
     property alias tabsList: tabsList
+    property alias searchList: searchList
     property alias tabsModel: tabsList.tabsModel
-
-    ColumnLayout {
-        id: columnLayout
-        anchors.rightMargin: 0
-        spacing: 0
-        anchors.fill: parent
-
-        RowLayout {
-            id: topControls
-            height: 25
-            Layout.maximumHeight: 25
-            Layout.fillWidth: true
-            Layout.margins: 5
-
-            C.Button {
-                id: newTabButton
-                x: 550
-                width: 25
-                height: 25
-                text: qsTr("+")
-                font.bold: true
-                Layout.fillHeight: true
-            }
-
-            C.TextField {
-                id: tabsSearch
-                height: 25
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                placeholderText: "Search Tabs"
-                selectByMouse: true
-            }
-        }
-
-        Text {
-            id: text1
-            text: qsTr("Open Tabs")
-            topPadding: 5
-            bottomPadding: 5
-            leftPadding: 5
-            font.bold: false
-            font.capitalization: Font.AllUppercase
-            font.pixelSize: 9
-            color: actPal.mid
-        }
-
-        TabsList {
-            id: tabsList
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
-
-        RowLayout {
-            id: bottomControls
-            Layout.maximumHeight: 25
-            Layout.fillWidth: true
-            Layout.margins: 5
-
-            Switch {
-                id: docviewSwitch
-                checked: true
-            }
-        }
-    }
+    property alias searchListHeight: searchList.height
+    property int tabHeight: 30
+    property alias tabsListHeight: tabsList.height
 }

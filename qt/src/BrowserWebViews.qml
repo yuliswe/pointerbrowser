@@ -5,8 +5,6 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: listView
 
-    property alias tabsModel: listView.repeaterModel
-
     readonly property int loadProgress: currentWebView() ? currentWebView().loadProgress : 0
     readonly property string url: currentWebView() ? currentWebView().url : ""
     readonly property string title: currentWebView() ? currentWebView().title : ""
@@ -16,6 +14,8 @@ BrowserWebViewsForm {
     signal webViewLoadingStarted(int index, string url)
     signal webViewLoadingStopped(int index, string url)
     signal webViewLoadingFailed(int index, string url)
+
+    repeaterModel: TabsModel
 
     function currentWebView() {
         return webViewAt(currentIndex())

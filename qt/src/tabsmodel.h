@@ -9,6 +9,7 @@ class TabsModel : public QAbstractListModel
 {
         Q_OBJECT
 //        Q_PROPERTY(QVariantList tabs READ tabs NOTIFY tabsChanged)
+        Q_PROPERTY(int count READ count NOTIFY countChanged)
 
     public:
         explicit TabsModel(QObject *parent = nullptr);
@@ -22,6 +23,7 @@ class TabsModel : public QAbstractListModel
         QHash<int, QByteArray> roleNames() const;
 
     signals:
+        void countChanged();
         void tabsChanged();
         void tabInserted(int index, Webpage* webpage);
         void tabRemoved(int index, Webpage* webpage);

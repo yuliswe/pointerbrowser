@@ -14,13 +14,11 @@ BrowserForm {
     }
 
     Component.onCompleted: {
-        if (TabsModel.count() > 0) {
+        if (TabsModel.count > 0) {
             openTab(0)
         }
     }
 
-    browserWebViews.tabsModel: TabsModel
-    tabsPanel.tabsModel: TabsModel
     browserAddressBar.progress: browserWebViews.loadProgress
 
     function newTab(url, switchToView) {
@@ -35,7 +33,7 @@ BrowserForm {
     }
 
     function openTab(index) {
-        console.log("openTab", "index=", index, "TabsModel.count()=", TabsModel.count())
+        console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
 
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
@@ -47,7 +45,7 @@ BrowserForm {
     }
 
     function closeTab(index) {
-        console.log("closeTab", "index=", index, "TabsModel.count()=", TabsModel.count())
+        console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
@@ -56,7 +54,7 @@ BrowserForm {
                 TabsModel.removeTab(index)
                 openTab(index - 1)
                 // if there's one after, open that
-            } else if (index + 1 < TabsModel.count()) {
+            } else if (index + 1 < TabsModel.count) {
                 TabsModel.removeTab(index)
                 openTab(index)
                 // if this is the only one
