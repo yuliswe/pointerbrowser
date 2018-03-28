@@ -7,30 +7,43 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRelationalTableModel>
+#include <QSharedPointer>
 #include "webpage.h"
+#include "tabsmodel.h"
+
+typedef QSharedPointer<QSqlRelationalTableModel> QRelTable_;
 
 class SearchDB : public QObject
 {
         Q_OBJECT
+        Q_PROPERTY(QSqlRelationalTableModel* webpageTable READ webpageTable NOTIFY webpageTableChanged)
+        Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged)
+
+
     public:
         explicit SearchDB();
+
     signals:
+        void webpageTableChanged();
+        void searchResultChanged();
 
     public slots:
         bool connect();
         void disconnect();
         bool execMany(const QStringList& lines);
-        bool addWebpage(const Webpage_& webpage);
+        bool addWebpage(const QString& url);
         Webpage_ findWebpage(const QString& url);
         void removeWebpage(const QString& url);
-        QList<Webpage_> search(const QString& word) const;
+        void search(const QString& word);
+        QSqlRelationalTableModel* webpageTable() const;
+        TabsModel* searchResult();
 
     protected:
         QString _dbPath;
         QSqlDatabase _db;
-        QSqlRelationalTableModel _indexTable;
-        QSqlRelationalTableModel _webpageTable;
-
+        QRelTable_ _indexTable;
+        QRelTable_ _webpageTable;
+        TabsModel _searchResult; // cache search function
 };
 
 #endif // SEARCHDB_H

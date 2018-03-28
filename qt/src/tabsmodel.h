@@ -31,13 +31,14 @@ class TabsModel : public QAbstractListModel
     public slots:
         void insertTab(int i, QString url, QString title, QString html);
         void updateTab(int i, QString property, QVariant value);
-        int appendTab(QString url, QString title, QString html);
+//        int appendTab(QString url, QString title, QString html);
         void removeTab(int idx);
         int findTab(QString url);
         int count();
         void saveTabs();
         void loadTabs();
         void syncTabs(QVariantList);
+        void clear();
         Webpage* tab(int index);
 
     private:

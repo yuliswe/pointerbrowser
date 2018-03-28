@@ -11,9 +11,9 @@ TabsPanelForm {
     tabHeight: 30
 
     tabsListHeight: TabsModel.count * tabHeight
-    searchListHeight: TabsModel.count * tabHeight
+    searchListHeight: SearchDB.searchResult.count * tabHeight
     tabsList.model: TabsModel
-    searchList.model: TabsModel
+    searchList.model: SearchDB.searchResult
 
     function setCurrentIndex(i) {
         tabsList.setHighlightAt(i)
@@ -21,6 +21,8 @@ TabsPanelForm {
 
     Component.onCompleted: {
         searchList.setHighlightAt(-1);
+//        SearchDB.search("")
+        console.log("searchList.model", searchList.model, searchList.model.count)
     }
 
     Connections {

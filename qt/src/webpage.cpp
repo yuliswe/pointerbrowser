@@ -3,15 +3,17 @@
 #include <QVariantMap>
 #include <QSharedPointer>
 #include <QJsonObject>
+#include <QQmlEngine>
 
 Webpage::Webpage(QObject *parent) : QObject(parent)
 {
-
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 Webpage::Webpage(QString url)
 {
     _url = url;
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 Webpage::Webpage(QString url, QString title, QString html)
@@ -19,6 +21,7 @@ Webpage::Webpage(QString url, QString title, QString html)
     _url = url;
     _title = title;
     _html = html;
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 QString Webpage::title() const { return _title; }
@@ -42,9 +45,8 @@ QVariantMap Webpage::toQVariantMap()
 
 Webpage_ Webpage::fromQVariantMap(QVariantMap& map)
 {
-    QSharedPointer<Webpage> webpage(new Webpage());
+    Webpage_ webpage = Webpage::create(map["url"].value<QString>());
     webpage->setTitle(map["title"].value<QString>());
-    webpage->setUrl(map["url"].value<QString>());
     return webpage;
 }
 

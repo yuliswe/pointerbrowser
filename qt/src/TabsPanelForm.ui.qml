@@ -4,6 +4,7 @@ import QtQuick.Controls 2.3
 import "controls" as C
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
+import QtQuick.Controls 1.4 as C1
 
 Item {
     id: form
@@ -50,76 +51,86 @@ Item {
         }
     }
 
-    Text {
-        id: text1
-        color: actPal.mid
-        text: qsTr("Open Tabs")
+    Flickable {
+        id: flickable
+        boundsBehavior: Flickable.DragAndOvershootBounds
+        flickableDirection: Flickable.VerticalFlick
+        clip: true
+        anchors.bottomMargin: 5
         anchors.top: topControls.bottom
+        anchors.right: parent.right
+        anchors.bottom: bottomControls.top
+        anchors.left: parent.left
         anchors.topMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        topPadding: 5
-        bottomPadding: 5
-        leftPadding: 5
-        font.bold: false
-        font.capitalization: Font.AllUppercase
-        font.pixelSize: 9
+        contentWidth: contentItem.childrenRect.width
+        contentHeight: contentItem.childrenRect.height
+
+        Text {
+            id: text1
+            x: 0
+            width: form.width
+            color: actPal.mid
+            text: qsTr("Open Tabs")
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            topPadding: 5
+            bottomPadding: 5
+            leftPadding: 5
+            font.bold: false
+            font.capitalization: Font.AllUppercase
+            font.pixelSize: 9
+        }
+
+        TabsList {
+            id: tabsList
+            x: 0
+            width: form.width
+            anchors.top: text1.bottom
+            anchors.topMargin: -21
+            implicitHeight: 100
+            tabHeight: form.tabHeight
+            interactive: false
+            highlightFollowsCurrentItem: false
+            Layout.fillHeight: false
+            Layout.fillWidth: true
+        }
+
+
+        Text {
+            id: text2
+            x: 0
+            width: form.width
+            color: actPal.mid
+            text: qsTr("Saved")
+            anchors.top: tabsList.bottom
+            anchors.topMargin: 0
+            bottomPadding: 5
+            leftPadding: 5
+            topPadding: 5
+            font.capitalization: Font.AllUppercase
+            font.bold: false
+            font.pixelSize: 9
+        }
+
+        TabsList {
+            id: searchList
+            x: 0
+            width: form.width
+            height: 100
+            anchors.top: text2.bottom
+            anchors.topMargin: 0
+            tabHeight: form.tabHeight
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            showCloseButton: false
+        }
     }
 
-    TabsList {
-        id: tabsList
-        height: 100
-        tabHeight: form.tabHeight
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.top: text1.bottom
-        anchors.topMargin: 0
-        interactive: false
-        highlightFollowsCurrentItem: false
-        Layout.fillHeight: false
-        Layout.fillWidth: true
-    }
-
-    Text {
-        id: text2
-        color: actPal.mid
-        text: qsTr("Saved")
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.top: tabsList.bottom
-        anchors.topMargin: 0
-        bottomPadding: 5
-        leftPadding: 5
-        topPadding: 5
-        font.capitalization: Font.AllUppercase
-        font.bold: false
-        font.pixelSize: 9
-    }
-
-    TabsList {
-        id: searchList
-        tabHeight: form.tabHeight
-        anchors.top: text2.bottom
-        anchors.topMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-        showCloseButton: false
-    }
 
     RowLayout {
         id: bottomControls
         x: 0
-        y: 452
+        y: 177
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         Layout.maximumHeight: 25
@@ -136,6 +147,9 @@ Item {
         id: actPal
         colorGroup: SystemPalette.Active
     }
+
+
+
 
     property alias tabsSearch: tabsSearch
     property alias newTabButton: newTabButton

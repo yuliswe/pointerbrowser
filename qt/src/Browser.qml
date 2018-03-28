@@ -75,20 +75,6 @@ BrowserForm {
         onUserOpensNewTab: newTab("", true)
     }
 
-    // Warning: only use this to semi-sync TabsModel and tabsModel
-    // do not take any ui actions here
-    Connections {
-        target: TabsModel
-        onTabInserted: {
-            console.log("onTabInserted:", webpage.title, webpage.url)
-            TabsModel.insert(index, webpage)
-        }
-        onTabRemoved: {
-            console.log("onTabRemoved", index, webpage.title, webpage.url)
-            TabsModel.remove(index)
-        }
-    }
-
     Connections {
         target: tabsPanel
         onUserOpensTab: openTab(index)

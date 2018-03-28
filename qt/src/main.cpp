@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     QPalette pal = QGuiApplication::palette();
     //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
     QMLRegister::registerToQML();
+    QMLRegister::searchDB->connect();
     QtWebView::initialize();
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 
@@ -40,7 +41,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    QMLRegister::searchDB->connect();
 
     return app.exec();
 }

@@ -16,7 +16,7 @@ TabsListForm {
 
     delegate: TabsListTab {
         id: tab
-        height: tabsList.tabHeight
+        implicitHeight: tabsList.tabHeight
         showCloseButton: tabsList.showCloseButton
         highlighted: index === currentIndex
         width: parent.width

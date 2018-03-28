@@ -6,12 +6,13 @@
 #include <QUrl>
 #include <QDebug>
 #include <QAbstractListModel>
+#include <QQmlEngine>
 #include "qmlregister.h"
 #include "tabsmodel.h"
 
 TabsModel::TabsModel(QObject *parent) : QAbstractListModel(parent)
 {
-
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 int TabsModel::count()
@@ -35,14 +36,15 @@ Webpage* TabsModel::tab(int i)
 //    return ls;
 //}
 
-void TabsModel::insertTab(int i, QString url, QString title, QString html)
+void TabsModel::insertTab(int idx, QString url, QString title, QString html)
 {
-    Webpage* page = new Webpage(url);
+    Webpage_ page = Webpage::create(url);
     QVariant v;
-    v.setValue(page);
-    insertRow(i);
-    QModelIndex idx = TabsModel::index(i);
-    setData(idx, v);
+    v.setValue(page.data());
+    insertRow(idx);
+    _tabs[idx] = page;
+    QModelIndex i = TabsModel::index(idx);
+    emit dataChanged(i,i);
 }
 
 void TabsModel::updateTab(int index, QString property, QVariant value)
@@ -57,15 +59,15 @@ void TabsModel::updateTab(int index, QString property, QVariant value)
     emit dataChanged(i,i);
 }
 
-int TabsModel::appendTab(QString url, QString title, QString html)
-{
-    Webpage_ page = QSharedPointer<Webpage>::create(url, title, html);
-    _tabs.append(page);
-    emit tabsChanged();
-    int idx = _tabs.length() - 1;
-    emit tabInserted(idx, page.data());
-    return idx;
-}
+//int TabsModel::appendTab(QString url, QString title, QString html)
+//{
+//    Webpage_ page = QSharedPointer<Webpage>::create(url, title, html);
+//    _tabs.append(page);
+//    emit tabsChanged();
+//    int idx = _tabs.length() - 1;
+//    emit tabInserted(idx, page.data());
+//    return idx;
+//}
 
 void TabsModel::removeTab(int idx)
 {
@@ -182,4 +184,11 @@ QHash<int, QByteArray> TabsModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[0] = "model";
     return roles;
+}
+
+void TabsModel::clear() {
+    emit beginRemoveRows(QModelIndex(), 0, count());
+    _tabs.clear();
+    emit endRemoveRows();
+    emit countChanged();
 }

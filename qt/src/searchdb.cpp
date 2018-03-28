@@ -3,14 +3,17 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QSqlField>
 #include <QDebug>
 #include <QCoreApplication>
 #include <QSqlRelationalTableModel>
+#include <QSharedPointer>
 #include <algorithm>
 #include "searchdb.h"
 #include "filemanager.h"
 #include "webpage.h"
 #include "qmlregister.h"
+#include "tabsmodel.h"
 
 SearchDB::SearchDB()
 {
@@ -30,7 +33,16 @@ bool SearchDB::connect() {
     QString script = FileManager::readQrcFileS("searchDB.setup");
     QStringList lines = script.split(";");
     execMany(lines);
-    _webpageTable.setTable("webpage");
+    _webpageTable = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
+    _webpageTable->setTable("webpage");
+    _webpageTable->setEditStrategy(QSqlTableModel::OnFieldChange);
+    if (! _webpageTable->select()) {
+        qDebug() << "cannot find table webpage";
+    } else {
+        qDebug() << "found table webpage";
+    };
+    emit webpageTableChanged();
+    search("");
 }
 
 void SearchDB::disconnect() {
@@ -53,39 +65,52 @@ bool SearchDB::execMany(const QStringList& lines)
 }
 
 
-bool SearchDB::addWebpage(const Webpage_& webpage)
+bool SearchDB::addWebpage(const QString& url)
 {
-    QSqlRecord record;
-    record.setValue("url", webpage->url());
-    return _webpageTable.insertRecord(-1, record);
+    QSqlRecord record = _webpageTable->record();
+    record.setGenerated("id", true);
+    record.setValue("url", url);
+    qDebug() << record;
+    qDebug() << _webpageTable->insertRecord(-1, record);
+    return _webpageTable->submitAll();
 }
 
 void SearchDB::removeWebpage(const QString& url)
 {
     const QString query = "url = " + url;
-    _webpageTable.setFilter(query);
-    _webpageTable.removeRow(0);
-    _webpageTable.submitAll();
+    _webpageTable->setFilter(query);
+    _webpageTable->removeRow(0);
+    _webpageTable->submitAll();
 }
 
 Webpage_ SearchDB::findWebpage(const QString& url)
 {
     const QString query = "url = " + url;
-    _webpageTable.setFilter(query);
-    QSqlRecord record = _webpageTable.record(0);
+    _webpageTable->setFilter(query);
+    QSqlRecord record = _webpageTable->record(0);
     Webpage_ webpage = Webpage::create(url);
     return webpage;
 }
 
-QList<Webpage_> SearchDB::search(const QString& word) const
+void SearchDB::search(const QString& word)
 {
-    int upper = std::min(10, _webpageTable.rowCount());
-    QList<Webpage_> pages;
+    int upper = std::min(10, _webpageTable->rowCount());
+    _searchResult.clear();
     for (int i = 0; i < upper; i++) {
-        QSqlRecord record = _webpageTable.record(0);
+        QSqlRecord record = _webpageTable->record(0);
         QString url = record.value("url").value<QString>();
-        Webpage_ page = Webpage::create(url);
-        pages << page;
+//        Webpage_ page = Webpage::create(url);
+        _searchResult.insertTab(0, url, "", "");
     }
-    return pages;
+    emit searchResultChanged();
+}
+
+QSqlRelationalTableModel* SearchDB::webpageTable() const
+{
+    return _webpageTable.data();
+}
+
+TabsModel* SearchDB::searchResult()
+{
+    return &_searchResult;
 }

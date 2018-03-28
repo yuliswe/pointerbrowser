@@ -47,7 +47,7 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebView {
         id: webview
-        property string modelUrl: model.url
+        property string modelUrl: model ? model.url : ""
         onModelUrlChanged: {
             // must compare with ==
             // the two string types might be different!
