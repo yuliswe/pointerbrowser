@@ -19,6 +19,18 @@ Window {
     //    property var delegate: null
     //    color: "black"
     color: "#00000000"
+
+    readonly property int customFlags: Qt.Window | Qt.FramelessWindowHint
+
+    flags: customFlags
+
+    onVisibilityChanged: {
+        console.log("onVisibilityChanged", visibility)
+        if (visibility != Window.Minimized) {
+            mainWindow.flags = customFlags
+        }
+    }
+
     FramelessWindowForm {
         id: form
         active: mainWindow.active
@@ -30,11 +42,9 @@ Window {
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
         }
-        titleBar.onUserStopsDraggingTitleBar: {
-            mainWindow.draggingResetted = false
-        }
+        titleBar.onUserStopsDraggingTitleBar: stopDragging()
         titleBar.onUserDraggingTitleBar: {
-//            console.log("onUserDraggingTitleBar", deltaX, deltaY)
+            //            console.log("onUserDraggingTitleBar", deltaX, deltaY)
             if (mainWindow.draggingResetted) {
                 mainWindow.x = startX + deltaX
                 mainWindow.y = startY + deltaY
@@ -42,6 +52,7 @@ Window {
         }
         titleBar.onUserMaximizesWindow: {
             mainWindow.showMaximized()
+            macosRenderBugFix()
         }
         titleBar.onUserFullscreensWindow: {
             mainWindow.showFullScreen()
@@ -51,12 +62,13 @@ Window {
         }
         titleBar.onUserNormalizesWindow: {
             mainWindow.showNormal()
+            macosRenderBugFix()
         }
         titleBar.onUserMinimizesWindow: {
-//            mainWindow.flags = Qt.Window
+            if (Qt.platform.os === 'osx') {
+                mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowMinMaxButtonsHint
+            }
             mainWindow.showMinimized()
-//            mainWindow.flags = Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
-//                    | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
         }
         property int resizeThreshold: 1
         function resetDragging() {
@@ -66,6 +78,14 @@ Window {
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
         }
+        function macosRenderBugFix() {
+            mainWindow.visible = false
+            mainWindow.visible = true
+        }
+        function stopDragging() {
+            mainWindow.draggingResetted = false
+            macosRenderBugFix()
+        }
         rResizer.onDraggingStarts: resetDragging()
         bResizer.onDraggingStarts: resetDragging()
         tResizer.onDraggingStarts: resetDragging()
@@ -74,9 +94,14 @@ Window {
         trResizer.onDraggingStarts: resetDragging()
         tlResizer.onDraggingStarts: resetDragging()
         blResizer.onDraggingStarts: resetDragging()
-        rResizer.onDraggingStops: mainWindow.draggingResetted = false
-        bResizer.onDraggingStops: mainWindow.draggingResetted = false
-        brResizer.onDraggingStops: mainWindow.draggingResetted = false
+        rResizer.onDraggingStops: stopDragging()
+        lResizer.onDraggingStops: stopDragging()
+        tResizer.onDraggingStops: stopDragging()
+        bResizer.onDraggingStops: stopDragging()
+        blResizer.onDraggingStops: stopDragging()
+        brResizer.onDraggingStops: stopDragging()
+        tlResizer.onDraggingStops: stopDragging()
+        trResizer.onDraggingStops: stopDragging()
         rResizer.onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
@@ -153,8 +178,4 @@ Window {
         }
     }
 
-    flags: Qt.Window | Qt.FramelessWindowHint | Qt.CustomizeWindowHint
-           | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint
-    //           | Qt.WA_TranslucentBackground
-    //           | Qt.WA_OpaquePaintEvent
 }
