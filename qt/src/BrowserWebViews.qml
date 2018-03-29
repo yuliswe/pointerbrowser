@@ -56,6 +56,9 @@ BrowserWebViewsForm {
                 url = modelUrl
             }
         }
+        onTitleChanged: {
+            TabsModel.updateTab(index, "title", title)
+        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
@@ -66,11 +69,8 @@ BrowserWebViewsForm {
                     // do nothing
                     if (EventFilter.ctrlKeyDown) {
                         this.stop()
-                        var idx = TabsModel.findTab(url)
-                        if (idx === -1) {
-                            console.log("userOpensLinkInNewTab:", url);
-                            userOpensLinkInNewTab(url)
-                        }
+                        console.log("userOpensLinkInNewTab:", url);
+                        userOpensLinkInNewTab(url)
                     } else {
                         console.log("userOpensLinkInWebView:", url, webview)
                         userOpensLinkInWebView(index, url)
@@ -79,10 +79,12 @@ BrowserWebViewsForm {
                 webViewLoadingStarted(index, loadRequest.url)
                 break
             case WebView.LoadSucceededStatus:
+                TabsModel.updateTab(index, "url", loadRequest.url)
                 webViewLoadingSucceeded(index, loadRequest.url)
                 webViewLoadingStopped(index, loadRequest.url)
                 break
             case WebView.LoadFailedStatus:
+                TabsModel.updateTab(index, "url", loadRequest.url)
                 webViewLoadingFailed(index, loadRequest.url)
                 webViewLoadingStopped(index, loadRequest.url)
                 break

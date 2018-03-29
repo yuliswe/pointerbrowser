@@ -1,4 +1,5 @@
 import QtQuick 2.9
+import Backend 1.0
 
 BrowserAddressBarForm {
     id: form
@@ -10,10 +11,10 @@ BrowserAddressBarForm {
     progressBar.opacity: 0.3
     progressBar.width: 0
 
-    function update(url, title) {
-        form.url = url
-        form.title = title
-        console.log("update", url, title)
+    function update(index) {
+        form.url = TabsModel.tab(index).url
+        form.title = TabsModel.tab(index).title
+        console.log("update", form.url, form.title)
         if (title !== "") {
             textField.text = title
             textField.horizontalAlignment = Text.AlignHCenter

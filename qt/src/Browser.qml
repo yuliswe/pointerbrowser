@@ -38,7 +38,7 @@ BrowserForm {
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
         var wp = currentWebView()
-        browserAddressBar.update(wp.url, wp.title)
+        browserAddressBar.update(currentIndex())
         browserBookmarkButton.checked = true
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
@@ -102,16 +102,16 @@ BrowserForm {
             }
         }
         onWebViewLoadingStarted: {
-            TabsModel.updateTab(index, "title", "")
-            TabsModel.updateTab(index, "url", url)
+//            TabsModel.updateTab(index, "title", "")
+//            TabsModel.updateTab(index, "url", url)
         }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
             prevEnabled = cw && cw.canGoBack
             nextEnabled = cw && cw.canGoForward
             var wp = browserWebViews.webViewAt(index)
-            TabsModel.updateTab(index, "title", wp.title)
-            TabsModel.updateTab(index, "url", wp.url)
+//            TabsModel.updateTab(index, "title", wp.title)
+//            TabsModel.updateTab(index, "url", wp.url)
         }
     }
 
