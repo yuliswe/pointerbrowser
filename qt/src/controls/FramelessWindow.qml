@@ -24,11 +24,35 @@ Window {
 
     flags: customFlags
 
+    property int prevVisibility: Window.Hidden
+
+    Timer {
+        id: onExitFromFullscreen
+        repeat: false
+        triggeredOnStart: false
+        interval: 50
+        onTriggered: {
+            console.log("Exited from fullscreen")
+            mainWindow.visible = false
+            mainWindow.visible = true
+        }
+    }
+
     onVisibilityChanged: {
         console.log("onVisibilityChanged", visibility)
-        if (visibility != Window.Minimized) {
+        if (visibility !== Window.Minimized && visibility !== Window.FullScreen) {
             mainWindow.flags = customFlags
         }
+        if (visibility === Window.FullScreen) {
+            mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowFullscreenButtonHint | Qt.WindowCloseButtonHint
+        } else {
+            titleBar.showTitleBar()
+        }
+        if (prevVisibility === Window.FullScreen) {
+            prevVisibility = visibility
+            onExitFromFullscreen.start()
+        }
+        prevVisibility = visibility
     }
 
     FramelessWindowForm {
@@ -36,33 +60,60 @@ Window {
         active: mainWindow.active
         width: mainWindow.width
         height: mainWindow.height
+        // title bar dragging
+        titleBar.onUserStopsDraggingTitleBar: stopDragging()
         titleBar.onUserStartsDraggingTitleBar: {
             console.log("onUserStartsDraggingTitleBar")
             mainWindow.startX = mainWindow.x
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
         }
-        titleBar.onUserStopsDraggingTitleBar: stopDragging()
         titleBar.onUserDraggingTitleBar: {
-            //            console.log("onUserDraggingTitleBar", deltaX, deltaY)
+            // console.log("onUserDraggingTitleBar", deltaX, deltaY)
             if (mainWindow.draggingResetted) {
                 mainWindow.x = startX + deltaX
                 mainWindow.y = startY + deltaY
             }
         }
-        titleBar.onUserMaximizesWindow: {
-            mainWindow.showMaximized()
-            macosRenderBugFix()
+        function macosRenderBugFix() {
+            if (Qt.platform.os === "osx") {
+                mainWindow.visible = false
+                mainWindow.visible = true
+            }
         }
-        titleBar.onUserFullscreensWindow: {
-            mainWindow.showFullScreen()
+        // control buttons
+        Timer {
+            id: afterFullscreened
+            triggeredOnStart: false
+            interval: 500
+            repeat: false
+            running: (mainWindow.visibility == Window.FullScreen)
+            onTriggered: {
+                titleBar.hideTitleBar()
+            }
+        }
+        titleBar.onUserMaximizesWindow: {
+            switch (mainWindow.visibility) {
+            case Window.FullScreen:
+                mainWindow.showNormal()
+                //                macosRenderBugFix()
+                break
+            default:
+                mainWindow.showFullScreen()
+            }
+        }
+        titleBar.onUserDoubleClicksTitleBar: {
+            switch (mainWindow.visibility) {
+            case Window.Maximized:
+                mainWindow.showNormal()
+                break
+            default:
+                mainWindow.showMaximized()
+            }
+            macosRenderBugFix()
         }
         titleBar.onUserClosesWindow: {
             mainWindow.close()
-        }
-        titleBar.onUserNormalizesWindow: {
-            mainWindow.showNormal()
-            macosRenderBugFix()
         }
         titleBar.onUserMinimizesWindow: {
             if (Qt.platform.os === 'osx') {
@@ -70,6 +121,8 @@ Window {
             }
             mainWindow.showMinimized()
         }
+
+        // Resizers
         property int resizeThreshold: 1
         function resetDragging() {
             mainWindow.startW = mainWindow.width
@@ -77,10 +130,6 @@ Window {
             mainWindow.startX = mainWindow.x
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
-        }
-        function macosRenderBugFix() {
-            mainWindow.visible = false
-            mainWindow.visible = true
         }
         function stopDragging() {
             mainWindow.draggingResetted = false

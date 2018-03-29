@@ -48,7 +48,7 @@ C1.SplitView {
             anchors.top: parent.top
             anchors.rightMargin: 5
             anchors.leftMargin: 5
-            anchors.topMargin: 5
+            anchors.topMargin: 3
 
             C.Button {
                 id: prev
@@ -105,11 +105,11 @@ C1.SplitView {
 
         BrowserWebViews {
             id: browserWebViews
-            anchors.top: parent.top
+            anchors.top: toolbar.bottom
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            anchors.topMargin: 34
+            anchors.topMargin: 3
         }
 
         Layout.minimumWidth: 300

@@ -23,7 +23,7 @@ Item {
         y: 5
         height: 25
         anchors.top: parent.top
-        anchors.topMargin: 5
+        anchors.topMargin: 3
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.left: parent.left
@@ -61,7 +61,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
-        anchors.topMargin: 5
+        anchors.topMargin: 3
 
 
         //        contentWidth: contentItem.childrenRect.width

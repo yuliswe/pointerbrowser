@@ -12,24 +12,22 @@ Item {
     property alias maxBtn: maxBtn
     property bool maximized: false
     property bool fullscreened: false
+    clip: true
 
     SystemPalette {
         id: activePalette
         colorGroup: SystemPalette.Active
     }
 
-    width: 400
-    height: 400
     Draggable {
         id: mouseArea
         anchors.fill: parent
         drag.target: titleBar
     }
 
-
     Rectangle {
         id: topRec
-        radius: 3
+        radius: 5
         border.width: 0
         color: activePalette.mid
         anchors.fill: titleBar
@@ -49,7 +47,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 0
             opacity: topRec.opacity
-            z:2
+            z: 2
         }
 
         Rectangle {
@@ -65,7 +63,7 @@ Item {
             anchors.bottomMargin: 0
             border.width: 0
             opacity: topRec.opacity
-            z:2
+            z: 2
         }
     }
 
@@ -73,6 +71,7 @@ Item {
         id: rowLayout
         width: 54
         height: 100
+        anchors.verticalCenterOffset: 1
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.verticalCenter: parent.verticalCenter
@@ -98,6 +97,4 @@ Item {
             hoverText: titleBar.fullscreened ? "*" : "+"
         }
     }
-
-
 }

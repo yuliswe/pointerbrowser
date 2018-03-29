@@ -97,7 +97,7 @@ Item {
 
         TitleBar {
             id: titleBar
-            height: 25
+            height: 20
             anchors.topMargin: form.loaderMargin
             anchors.rightMargin: form.loaderMargin
             anchors.leftMargin: form.loaderMargin
