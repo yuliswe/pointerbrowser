@@ -62,9 +62,10 @@ Item {
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 5
-        contentWidth: contentItem.childrenRect.width
-        contentHeight: contentItem.childrenRect.height
 
+
+        //        contentWidth: contentItem.childrenRect.width
+        //        contentHeight: contentItem.childrenRect.height
         Text {
             id: text1
             x: 0
@@ -86,7 +87,7 @@ Item {
             x: 0
             width: form.width
             anchors.top: text1.bottom
-            anchors.topMargin: -21
+            anchors.topMargin: 0
             implicitHeight: 100
             tabHeight: form.tabHeight
             interactive: false
@@ -94,7 +95,6 @@ Item {
             Layout.fillHeight: false
             Layout.fillWidth: true
         }
-
 
         Text {
             id: text2
@@ -126,7 +126,6 @@ Item {
         }
     }
 
-
     RowLayout {
         id: bottomControls
         x: 0
@@ -147,9 +146,6 @@ Item {
         id: actPal
         colorGroup: SystemPalette.Active
     }
-
-
-
 
     property alias tabsSearch: tabsSearch
     property alias newTabButton: newTabButton

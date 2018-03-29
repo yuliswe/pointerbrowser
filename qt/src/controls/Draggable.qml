@@ -3,30 +3,31 @@ import QtQuick.Controls 2.2
 
 MouseArea {
     id: mouseArea
-    property int startX: -1
-    property int startY: -1
+    property int startX: 0
+    property int startY: 0
+    property bool isDragging: false
     signal dragging(int deltaX, int deltaY)
     signal draggingStarts()
     signal draggingStops()
     drag.target: this
     drag.threshold: 1
     drag.onActiveChanged: {
-        console.log("mouseArea.drag.active", drag.active)
+//        console.log("mouseArea.drag.active", drag.active)
         if (drag.active) {
             var pos = mapToGlobal(mouseX, mouseY)
             startX = pos.x
             startY = pos.y
             draggingStarts()
+            isDragging = true
         } else {
             draggingStops()
-            startX = -1
-            startY = -1
+            isDragging = false;
         }
     }
     onPositionChanged: {
-//        console.log(mouseX, mouseY)
+//        console.log(mouseX, mouseY, startX, startY)
         var pos = mapToGlobal(mouseX, mouseY)
-        if (startX >= 0 && startY >= 0) {
+        if (isDragging) {
             dragging(pos.x - startX, pos.y - startY)
         }
     }

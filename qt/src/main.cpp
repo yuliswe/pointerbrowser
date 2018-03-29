@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     QMLRegister::registerToQML();
     QMLRegister::searchDB->connect();
     QtWebView::initialize();
-    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+//    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 
     app.installEventFilter(QMLRegister::eventFilter);
 

@@ -25,15 +25,16 @@ Window {
         width: mainWindow.width
         height: mainWindow.height
         titleBar.onUserStartsDraggingTitleBar: {
+            console.log("onUserStartsDraggingTitleBar")
             mainWindow.startX = mainWindow.x
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
         }
         titleBar.onUserStopsDraggingTitleBar: {
             mainWindow.draggingResetted = false
-            console.log("here", titleBar.width, "vs", mainWindow.width)
         }
         titleBar.onUserDraggingTitleBar: {
+//            console.log("onUserDraggingTitleBar", deltaX, deltaY)
             if (mainWindow.draggingResetted) {
                 mainWindow.x = startX + deltaX
                 mainWindow.y = startY + deltaY
