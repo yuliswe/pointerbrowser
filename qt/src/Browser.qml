@@ -86,8 +86,8 @@ BrowserForm {
         onUserOpensLinkInWebView: {
             browserAddressBar.update(url, "")
             currentWebView().forceActiveFocus()
-//            prevEnabled = true
-//            nextEnabled = false
+            //            prevEnabled = true
+            //            nextEnabled = false
         }
         onUserOpensLinkInNewTab: {
             newTab(url)
@@ -102,16 +102,16 @@ BrowserForm {
             }
         }
         onWebViewLoadingStarted: {
-//            TabsModel.updateTab(index, "title", "")
-//            TabsModel.updateTab(index, "url", url)
+            //            TabsModel.updateTab(index, "title", "")
+            //            TabsModel.updateTab(index, "url", url)
         }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
             prevEnabled = cw && cw.canGoBack
             nextEnabled = cw && cw.canGoForward
             var wp = browserWebViews.webViewAt(index)
-//            TabsModel.updateTab(index, "title", wp.title)
-//            TabsModel.updateTab(index, "url", wp.url)
+            //            TabsModel.updateTab(index, "title", wp.title)
+            //            TabsModel.updateTab(index, "url", wp.url)
         }
     }
 
@@ -149,15 +149,15 @@ BrowserForm {
             if (browserDocviewSwitch.checked) {
                 console.log("Docview.turnOn()")
                 currentWebView().runJavaScript("Docview.turnOn()",
-                                             function (result) {
-                                                 print(result)
-                                             })
+                                               function (result) {
+                                                   print(result)
+                                               })
             } else {
                 console.log("Docview.turnOff()")
                 currentWebView().runJavaScript("Docview.turnOff()",
-                                             function (result) {
-                                                 print(result)
-                                             })
+                                               function (result) {
+                                                   print(result)
+                                               })
             }
 
         }
@@ -165,23 +165,37 @@ BrowserForm {
 
     Shortcut {
         sequence: "Ctrl+R"
+        autoRepeat: false
         onActivated: {
             EventFilter.ctrlKeyDown = false
             browserWebViews.reloadCurrentWebView()
         }
     }
 
-    Shortcut {
-        sequence: "Ctrl+W"
-        onActivated: {
-            EventFilter.ctrlKeyDown = false
-            closeTab(currentIndex())
+    Timer {
+        id: ctrl_w_timeout
+        interval: 500
+        triggeredOnStart: false
+        onTriggered: {
+            ctrl_w.guard = true
         }
+        repeat: false
     }
+
     Shortcut {
-        sequence: "Ctrl"
+        id: ctrl_w
+        property bool guard: true
+        autoRepeat: true
+        sequence: "Ctrl+W"
+        context: Qt.ApplicationShortcut
         onActivated: {
-            console.log("test")
+            if (guard) {
+                guard = false
+                EventFilter.ctrlKeyDown = false
+                console.log("Ctrl+W", ctrl_w)
+                closeTab(currentIndex())
+                ctrl_w_timeout.start()
+            }
         }
     }
 }
