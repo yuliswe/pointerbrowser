@@ -4,6 +4,7 @@
 #include <QtWebView>
 #include <QPalette>
 #include <QDebug>
+#include <QCursor>
 #include "qmlregister.h"
 #include "palette.h"
 #include "eventfilter.h"
@@ -13,7 +14,6 @@ int main(int argc, char *argv[])
     // init ui
     //    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
-
     // set properties
     QMLRegister::tabsModel->loadTabs();
     QMLRegister::fileManager->setupDirectories();

@@ -25,7 +25,9 @@ SOURCES += \
 RESOURCES += \
     qml.qrc \
     db.qrc \
-    js.qrc
+    js.qrc \
+    osx.qrc \
+    controls.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

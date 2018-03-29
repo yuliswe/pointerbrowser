@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>osx/cursor/Vertical Resize.cur</file>
+        <file>osx/cursor/Diagonal Resize 1.cur</file>
+        <file>osx/cursor/Diagonal Resize 2.cur</file>
+        <file>osx/cursor/Horizontal Resize.cur</file>
+    </qresource>
+</RCC>

@@ -28,25 +28,26 @@ Item {
         Draggable {
             id: vertiTSizer
             height: form.resizerThreshold
-            anchors.rightMargin: resizerThreshold * 2
-            anchors.leftMargin: resizerThreshold * 2
-            z: 3
+            hoverEnabled: true
+            anchors.rightMargin: 0
+            anchors.leftMargin: 0
+            z: 2
             cursorShape: Qt.SplitVCursor
-            anchors.right: parent.right
-            anchors.left: parent.left
+            anchors.right: diagTRSizer.left
+            anchors.left: diagTLSizer.right
             anchors.top: parent.top
         }
 
         Draggable {
             id: horiLSizer
             width: form.resizerThreshold
-            anchors.topMargin: resizerThreshold * 2
-            anchors.bottomMargin: resizerThreshold * 2
-            hoverEnabled: false
-            z: 1
+            anchors.bottomMargin: 0
+            anchors.topMargin: 0
+            hoverEnabled: true
+            z: 2
             cursorShape: Qt.SplitHCursor
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            anchors.top: diagTLSizer.bottom
+            anchors.bottom: diagBLSizer.top
             anchors.left: parent.left
         }
 
@@ -55,12 +56,13 @@ Item {
             x: 0
             y: 475
             height: resizerThreshold
-            anchors.leftMargin: resizerThreshold * 2
-            anchors.rightMargin: resizerThreshold * 2
-            anchors.right: parent.right
-            anchors.left: parent.left
+            hoverEnabled: true
+            anchors.rightMargin: 0
+            anchors.leftMargin: 0
+            anchors.right: diagBRSizer.left
+            anchors.left: diagBLSizer.right
             anchors.bottom: parent.bottom
-            z: 1
+            z: 2
             cursorShape: Qt.SplitVCursor
         }
 
@@ -69,12 +71,13 @@ Item {
             x: 635
             y: 0
             width: resizerThreshold
-            anchors.bottomMargin: resizerThreshold * 2
-            anchors.topMargin: resizerThreshold * 2
-            anchors.bottom: parent.bottom
-            anchors.top: parent.top
+            hoverEnabled: true
+            anchors.bottomMargin: 0
+            anchors.topMargin: 0
+            anchors.bottom: diagBRSizer.top
+            anchors.top: diagTRSizer.bottom
             anchors.right: parent.right
-            z: 1
+            z: 2
             cursorShape: Qt.SplitHCursor
         }
 
@@ -111,9 +114,10 @@ Item {
             y: 475
             width: resizerThreshold * 2
             height: resizerThreshold * 2
+            hoverEnabled: true
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            z: 1
+            z: 2
             cursorShape: Qt.SizeFDiagCursor
         }
 
@@ -121,6 +125,8 @@ Item {
             id: diagTLSizer
             width: resizerThreshold * 2
             height: resizerThreshold * 2
+            hoverEnabled: true
+            z: 2
             cursorShape: Qt.SizeFDiagCursor
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -132,6 +138,8 @@ Item {
             id: diagBLSizer
             width: resizerThreshold * 2
             height: resizerThreshold * 2
+            hoverEnabled: true
+            z: 2
             cursorShape: Qt.SizeBDiagCursor
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -143,6 +151,8 @@ Item {
             id: diagTRSizer
             width: resizerThreshold * 2
             height: resizerThreshold * 2
+            hoverEnabled: true
+            z: 2
             cursorShape: Qt.SizeBDiagCursor
             anchors.right: parent.right
             anchors.rightMargin: 0
