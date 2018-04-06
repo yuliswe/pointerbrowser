@@ -40,8 +40,6 @@ C1.SplitView {
         anchors.leftMargin: 0
         RowLayout {
             id: toolbar
-            x: -835
-            y: 5
             height: 25
             anchors.right: parent.right
             anchors.left: parent.left
@@ -52,29 +50,39 @@ C1.SplitView {
 
             C.Button {
                 id: prev
-                width: 25
-                text: "<"
-                font.bold: true
+                rightPadding: 7
+                Layout.preferredHeight: 25
+                Layout.preferredWidth: 25
+                padding: 6
                 Layout.maximumWidth: toolbar.height
-                Layout.fillHeight: true
+                icon {
+                    source: "icon/left.svg"
+                }
             }
 
             C.Button {
                 id: next
                 width: height
-                text: ">"
-                font.bold: true
+                leftPadding: 7
+                Layout.preferredHeight: 25
+                Layout.preferredWidth: 25
+                padding: 6
                 Layout.maximumWidth: toolbar.height
-                Layout.fillHeight: true
+                icon {
+                    source: "icon/right.svg"
+                }
             }
 
             C.Button {
                 id: refresh
                 width: height
-                text: qsTr("@")
-                font.bold: false
+                Layout.preferredHeight: 25
+                Layout.preferredWidth: 25
+                padding: 3
                 Layout.maximumWidth: toolbar.height
-                Layout.fillHeight: true
+                icon {
+                    source: "icon/cycle.svg"
+                }
             }
 
             BrowserAddressBar {
@@ -88,18 +96,29 @@ C1.SplitView {
             C.Button {
                 id: docview
                 width: height
-                text: "#"
+                leftPadding: 2
+                rightPadding: 2
+                topPadding: 4
+                bottomPadding: 4
+                padding: 3
+                Layout.preferredHeight: 25
+                Layout.preferredWidth: 25
                 checkable: true
-                Layout.fillHeight: true
+                icon {
+                    source: "icon/list.svg"
+                }
             }
 
             C.Button {
                 id: bookmark
                 width: height
-                text: "!"
+                Layout.preferredHeight: 25
+                Layout.preferredWidth: 25
                 font.bold: true
-                Layout.fillHeight: true
                 checkable: true
+                icon {
+                    source: checked ? "icon/bookmark.svg" : "icon/book.svg"
+                }
             }
         }
 

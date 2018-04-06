@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.3
 
 RoundButton {
+    id: btn
 
     SystemPalette {
         id: inactPal
@@ -13,21 +14,24 @@ RoundButton {
     property string activeBorderColor: "#dc0000"
     property string inactiveColor: inactPal.button
     property string inactiveBorderColor: inactPal.mid
-    property string hoverText: "x"
     property bool active: false
     hoverEnabled: true
-    id: btn
-    width: 10
-    height: 10
-    text: hovered ? hoverText : ""
-    font.bold: true
-    font.pointSize: 10
+    padding: 3
     Layout.maximumHeight: 14
     Layout.maximumWidth: 14
     background: Rectangle {
         id: bk
-        radius: 14
+        radius: parent.height / 2
+        //        height: width
+        //        width: 10
         color: active ? activeColor : inactiveColor
         border.color: active ? activeBorderColor : inactiveBorderColor
+    }
+
+    icon {
+        source: "icon/cross.svg"
+        color: btn.hovered ? "#000" : btn.background.color
+        height: 5
+        width: 5
     }
 }

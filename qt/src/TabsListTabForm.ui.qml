@@ -33,7 +33,7 @@ ItemDelegate {
             z: 2
             visible: true // preview
             icon {
-                source: "icon/delete.svg"
+                source: "icon/cross.svg"
                 color: tabButton.highlighted ? pal.light : pal.dark
             }
             background: Item {

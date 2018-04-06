@@ -37,7 +37,7 @@ Item {
                 Layout.maximumHeight: 15
                 Layout.maximumWidth: 15
                 icon {
-                    source: "icon/delete.svg"
+                    source: "icon/cross.svg"
                     color: inaPal.dark
                 }
                 onClicked: form.visible = false
@@ -58,7 +58,7 @@ Item {
                 Layout.maximumHeight: 15
                 Layout.maximumWidth: 15
                 icon {
-                    source: "icon/delete.svg"
+                    source: "icon/down.svg"
                     color: inaPal.dark
                 }
                 background: Item {
@@ -70,7 +70,7 @@ Item {
                 Layout.maximumHeight: 15
                 Layout.maximumWidth: 15
                 icon {
-                    source: "icon/delete.svg"
+                    source: "icon/up.svg"
                     color: inaPal.dark
                 }
                 background: Item {

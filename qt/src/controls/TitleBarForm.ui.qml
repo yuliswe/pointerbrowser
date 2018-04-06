@@ -80,13 +80,18 @@ Item {
         TitleBarButton {
             id: closeBtn
             active: titleBar.active
+            icon {
+                source: "icon/cross2.svg"
+            }
         }
         TitleBarButton {
             id: minBtn
             active: titleBar.active
             activeColor: "#ffcc00"
             activeBorderColor: "#ffcc00"
-            hoverText: "-"
+            icon {
+                source: "icon/minus2.svg"
+            }
         }
 
         TitleBarButton {
@@ -94,7 +99,9 @@ Item {
             active: titleBar.active
             activeColor: "#00cc44"
             activeBorderColor: "#00aa33"
-            hoverText: titleBar.fullscreened ? "*" : "+"
+            icon {
+                source: "icon/plus2.svg"
+            }
         }
     }
 }

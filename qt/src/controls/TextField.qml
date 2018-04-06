@@ -6,9 +6,6 @@ T.TextField {
     id: textfield
     SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
     SystemPalette { id: inactPal; colorGroup: SystemPalette.Inactive }
-    Component.onCompleted: {
-        console.log(inactPal.text)
-    }
     readonly property var palette: {
         if (activeFocus) { return actPal }
         return inactPal

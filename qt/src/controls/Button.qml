@@ -1,21 +1,23 @@
 import QtQuick 2.9
-import QtQuick.Templates 2.3 as T
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.3 as C
 import QtQuick.Layouts 1.3
 
-T.Button {
+C.Button {
     id: button
     SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
     SystemPalette { id: inaPal; colorGroup: SystemPalette.Inactive }
     SystemPalette { id: disPal; colorGroup: SystemPalette.Disabled }
-    contentItem: Text {
-        text: button.text
-        font: button.font
-        color: pal.buttonText
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-    }
+//    contentItem: Text {
+//        text: button.text
+//        font: button.font
+//        color: pal.buttonText
+//        horizontalAlignment: Text.AlignHCenter
+//        verticalAlignment: Text.AlignVCenter
+//        elide: Text.ElideRight
+//    }
+//    contentItem: Image {
+//        source: button.icon.source
+//    }
     readonly property var pal: {
         if (! enabled) { return disPal }
         if (button.down || checked) { return actPal }
@@ -25,5 +27,8 @@ T.Button {
         color: pal.button
         border.color: pal.shadow
         radius: 3
+    }
+    icon {
+        color: pal.buttonText
     }
 }

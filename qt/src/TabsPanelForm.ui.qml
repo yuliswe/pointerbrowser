@@ -34,11 +34,17 @@ Item {
 
         C.Button {
             id: newTabButton
-            width: 25
-            height: 25
-            text: qsTr("+")
-            font.bold: true
+            bottomPadding: 4
+            topPadding: 4
+            rightPadding: 7
+            leftPadding: 7
+            Layout.preferredWidth: 25
+            Layout.preferredHeight: 25
+            padding: 5
             Layout.fillHeight: true
+            icon {
+                source: "icon/plus.svg"
+            }
         }
 
         C.TextField {

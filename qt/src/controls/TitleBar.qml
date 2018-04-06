@@ -12,12 +12,12 @@ TitleBarForm {
         userStopsDraggingTitleBar()
     }
     mouseArea.onDraggingStarts: {
-//        console.log("userStartsDraggingTitleBar()")
+        //        console.log("userStartsDraggingTitleBar()")
         userStartsDraggingTitleBar()
     }
 
     mouseArea.onDragging: {
-//        console.log("userDraggingTitleBar(%d,%d)", deltaX, deltaY)
+        //        console.log("userDraggingTitleBar(%d,%d)", deltaX, deltaY)
         userDraggingTitleBar(deltaX, deltaY)
     }
 
@@ -25,7 +25,7 @@ TitleBarForm {
     signal userMinimizesWindow()
     signal userNormalizesWindow()
     signal userDoubleClicksTitleBar()
-//    signal userFullscreensWindow()
+    //    signal userFullscreensWindow()
     signal userClosesWindow()
 
     mouseArea.onDoubleClicked: userDoubleClicksTitleBar()
@@ -35,28 +35,28 @@ TitleBarForm {
 
     function showTitleBar() {
         show.restart()
-//        titleBar.height = 25
-//        titleBar.visible = true
+        //        titleBar.height = 25
+        //        titleBar.visible = true
     }
 
     function hideTitleBar() {
-//        titleBar.height = 0
+        //        titleBar.height = 0
         hide.restart()
-//        titleBar.visible = false
+        //        titleBar.visible = false
     }
 
-        SmoothedAnimation {
-            id: show
-            duration: 1000
-            target: titleBar
-            property: "height"
-            to: 20
-        }
-        SmoothedAnimation {
-            id: hide
-            duration: 1000
-            target: titleBar
-            property: "height"
-            to: 0
-        }
+    SmoothedAnimation {
+        id: show
+        duration: 1000
+        target: titleBar
+        property: "height"
+        to: 20
+    }
+    SmoothedAnimation {
+        id: hide
+        duration: 1000
+        target: titleBar
+        property: "height"
+        to: 0
+    }
 }

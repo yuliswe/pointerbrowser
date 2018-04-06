@@ -17,7 +17,7 @@ Window {
     property bool draggingResetted: false
     property alias sourceComponent: form.sourceComponent
     //    property var delegate: null
-//        color: "green"
+    //        color: "green"
     color: "#00000000"
 
     readonly property int customFlags: Qt.Window | Qt.FramelessWindowHint
@@ -39,20 +39,22 @@ Window {
     }
 
     onVisibilityChanged: {
-        console.log("onVisibilityChanged", visibility)
-        if (visibility !== Window.Minimized && visibility !== Window.FullScreen) {
-            mainWindow.flags = customFlags
-        }
-        if (visibility === Window.FullScreen) {
-            mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowFullscreenButtonHint | Qt.WindowCloseButtonHint
-        } else {
-            titleBar.showTitleBar()
-        }
-        if (prevVisibility === Window.FullScreen) {
+        if (Qt.platform.os == 'osx') {
+            console.log("onVisibilityChanged", visibility)
+            if (visibility !== Window.Minimized && visibility !== Window.FullScreen) {
+                mainWindow.flags = customFlags
+            }
+            if (visibility === Window.FullScreen) {
+                mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowFullscreenButtonHint | Qt.WindowCloseButtonHint
+            } else {
+                titleBar.showTitleBar()
+            }
+            if (prevVisibility === Window.FullScreen) {
+                prevVisibility = visibility
+                onExitFromFullscreen.start()
+            }
             prevVisibility = visibility
-            onExitFromFullscreen.start()
         }
-        prevVisibility = visibility
     }
 
     FramelessWindowForm {
@@ -87,7 +89,7 @@ Window {
             triggeredOnStart: false
             interval: 500
             repeat: false
-            running: (mainWindow.visibility == Window.FullScreen)
+            running: (Qt.platform.os == 'osx') && (mainWindow.visibility == Window.FullScreen)
             onTriggered: {
                 titleBar.hideTitleBar()
             }
