@@ -5,14 +5,25 @@ import QtQuick.Controls 2.3
 T.TextField {
     id: textfield
     SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
-    color: actPal.text
+    SystemPalette { id: inactPal; colorGroup: SystemPalette.Inactive }
+    Component.onCompleted: {
+        console.log(inactPal.text)
+    }
+    readonly property var palette: {
+        if (activeFocus) { return actPal }
+        return inactPal
+    }
+    color: activeFocus ? palette.text : palette.buttonText
+    property alias rectangle: rectangle
     selectByMouse: true
-    selectionColor: actPal.highlight
-    selectedTextColor: actPal.highlightedText
+    selectionColor: palette.highlight
+    selectedTextColor: palette.highlightedText
+    text: placeholderText
     background: Rectangle {
+        id: rectangle
         border.width: 1
-        border.color: actPal.mid
-        color: textfield.focus ? actPal.light : actPal.midlight
+        border.color: palette.shadow
+        color: textfield.activeFocus ? palette.light : palette.button
         anchors.fill: textfield
         radius: 3
     }
@@ -21,14 +32,8 @@ T.TextField {
     onFocusChanged: {
         if (! focus && ! text) {
             text = placeholderText
-            color = actPal.buttonText
-        } else {
+        } else if (focus && text == placeholderText) {
             text = ""
-            color = actPal.text
         }
-    }
-    Component.onCompleted: {
-        text = placeholderText
-        color = actPal.buttonText
     }
 }

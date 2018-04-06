@@ -29,7 +29,7 @@ Item {
         id: topRec
         radius: 5
         border.width: 0
-        color: activePalette.mid
+        color: activePalette.window
         anchors.fill: titleBar
 
         Rectangle {

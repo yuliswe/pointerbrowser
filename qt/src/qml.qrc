@@ -16,5 +16,9 @@
         <file>qtquickcontrols2.conf</file>
         <file>BrowserWindow.qml</file>
         <file>BrowserWindowForm.ui.qml</file>
+        <file>BrowserSearch.qml</file>
+        <file>BrowserSearchForm.ui.qml</file>
+        <file>icon/close.svg</file>
+        <file>icon/delete.svg</file>
     </qresource>
 </RCC>

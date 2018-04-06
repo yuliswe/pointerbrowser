@@ -6,19 +6,24 @@ import QtQuick.Layouts 1.3
 T.Button {
     id: button
     SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
+    SystemPalette { id: inaPal; colorGroup: SystemPalette.Inactive }
+    SystemPalette { id: disPal; colorGroup: SystemPalette.Disabled }
     contentItem: Text {
         text: button.text
         font: button.font
-        opacity: enabled ? 1.0 : 0.3
-        color: checked ? actPal.highlightedText : actPal.buttonText
+        color: pal.buttonText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
+    readonly property var pal: {
+        if (! enabled) { return disPal }
+        if (button.down || checked) { return actPal }
+        return inaPal
+    }
     background: Rectangle {
-        opacity: enabled ? 1 : 0.3
-        color: (button.down || checked) ? palette.mid: palette.button
-        border.color: palette.mid
+        color: pal.button
+        border.color: pal.shadow
         radius: 3
     }
 }

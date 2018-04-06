@@ -11,10 +11,10 @@ Item {
 
     Rectangle {
         id: background
-        color: actPal.button
+        color: splitView.resizing ? actPal.window : "#00000000"
+        //        color: "#00000000"
         border.width: 0
         anchors.fill: form
-        opacity: 0.95
     }
 
     RowLayout {
@@ -62,7 +62,6 @@ Item {
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
-
 
         //        contentWidth: contentItem.childrenRect.width
         //        contentHeight: contentItem.childrenRect.height
@@ -155,4 +154,5 @@ Item {
     property alias searchListHeight: searchList.height
     property int tabHeight: 30
     property alias tabsListHeight: tabsList.height
+    clip: true
 }

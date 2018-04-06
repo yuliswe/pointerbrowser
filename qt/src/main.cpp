@@ -12,18 +12,22 @@
 int main(int argc, char *argv[])
 {
     // init ui
-    //    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     // set properties
     QMLRegister::tabsModel->loadTabs();
     QMLRegister::fileManager->setupDirectories();
 
-    QPalette pal = QGuiApplication::palette();
-    //            pal.setColor(QPalette::Inactive, QPalette::Button, QColor("#000"));
+    Palette customPal;
+    app.setPalette(customPal);
+
     QMLRegister::registerToQML();
     QMLRegister::searchDB->connect();
     QtWebView::initialize();
-//    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+
+#ifdef Q_OS_WIN
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+#endif
 
     app.installEventFilter(QMLRegister::eventFilter);
 

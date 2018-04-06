@@ -13,6 +13,20 @@ BrowserForm {
         return browserWebViews.currentIndex()
     }
 
+    function showBrowserSearch() {
+        browserSearch.visible = true
+        browserSearch.textfield.focus = true
+        browserSearch.textfield.selectAll()
+    }
+
+    function searchCurrentWebview(text) {
+
+    }
+
+    function hideBrowserSearch() {
+        browserSearch.visible = false
+    }
+
     Component.onCompleted: {
         if (TabsModel.count > 0) {
             openTab(0)
@@ -49,16 +63,18 @@ BrowserForm {
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
-            // if there's one before, open that
-            if (index >= 1) {
-                TabsModel.removeTab(index)
-                openTab(index - 1)
-                // if there's one after, open that
-            } else if (index + 1 < TabsModel.count) {
+            // if there's one after, open that
+            if (index + 1 < TabsModel.count) {
                 TabsModel.removeTab(index)
                 openTab(index)
-                // if this is the only one
-            } else {
+            }
+            // if there's one before, open that
+            else if (index >= 1) {
+                TabsModel.removeTab(index)
+                openTab(index - 1)
+            }
+            // if this is the only one
+            else {
                 newTab("",true)
                 TabsModel.removeTab(index+1)
             }
@@ -197,5 +213,14 @@ BrowserForm {
                 ctrl_w_timeout.start()
             }
         }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+F"
+        onActivated: showBrowserSearch()
+    }
+    Shortcut {
+        sequence: "Esc"
+        onActivated: hideBrowserSearch()
     }
 }

@@ -19,6 +19,7 @@ C1.SplitView {
     property alias browserWebViews: browserWebViews
     property alias prevEnabled: prev.enabled
     property alias nextEnabled: next.enabled
+    property alias browserSearch: browserSearch
 
     SystemPalette {
         id: actPal
@@ -30,8 +31,7 @@ C1.SplitView {
 
     Rectangle {
         id: rectangle
-        width: 600
-        color: actPal.button
+        color: "#00000000"
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         anchors.top: parent.top
@@ -110,6 +110,15 @@ C1.SplitView {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.topMargin: 3
+
+            BrowserSearch {
+                id: browserSearch
+                width: 150
+                height: 25
+                visible: false
+                anchors.right: parent.right
+                anchors.top: parent.top
+            }
         }
 
         Layout.minimumWidth: 300

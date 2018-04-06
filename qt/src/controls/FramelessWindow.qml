@@ -17,7 +17,7 @@ Window {
     property bool draggingResetted: false
     property alias sourceComponent: form.sourceComponent
     //    property var delegate: null
-    //    color: "black"
+//        color: "green"
     color: "#00000000"
 
     readonly property int customFlags: Qt.Window | Qt.FramelessWindowHint
