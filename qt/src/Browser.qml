@@ -17,14 +17,27 @@ BrowserForm {
         browserSearch.visible = true
         browserSearch.textfield.focus = true
         browserSearch.textfield.selectAll()
+        if (browserSearch.textfield.text) {
+            var cur = browserSearch.current()
+            highlightWordInCurrentWebview(browserSearch.textfield.text, function() {
+                scrollToNthHighlightInCurrentWebview(cur)
+            })
+        }
     }
 
-    function searchCurrentWebview(text) {
+    function scrollToNthHighlightInCurrentWebview(n) {
+        currentWebView().runJavaScript("Docview.scrollToNthHighlight("+n+")", function() {
+            browserSearch.updateCurrent(n)
+        })
+    }
 
+    function highlightWordInCurrentWebview(word, callback) {
+        currentWebView().runJavaScript("Docview.highlightWord('"+word+"')", callback)
     }
 
     function hideBrowserSearch() {
         browserSearch.visible = false
+        currentWebView().runJavaScript("Docview.clearHighlight()");
     }
 
     Component.onCompleted: {
@@ -110,7 +123,7 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.webViewAt(index)
-            var js = FileManager.readQrcFileS("docview.js")
+            var js = FileManager.readQrcFileS("js/docview.js")
             wp.runJavaScript(js)
             if (index === currentIndex()) {
                 browserBookmarkButton.checked = true
@@ -118,16 +131,38 @@ BrowserForm {
             }
         }
         onWebViewLoadingStarted: {
-            //            TabsModel.updateTab(index, "title", "")
-            //            TabsModel.updateTab(index, "url", url)
         }
         onWebViewLoadingStopped: {
             var cw = currentWebView()
             prevEnabled = cw && cw.canGoBack
             nextEnabled = cw && cw.canGoForward
             var wp = browserWebViews.webViewAt(index)
-            //            TabsModel.updateTab(index, "title", wp.title)
-            //            TabsModel.updateTab(index, "url", wp.url)
+        }
+    }
+
+    Connections {
+        target: browserSearch
+        onUserSearchesWordInBrowser: {
+            highlightWordInCurrentWebview(word, function(count) {
+                browserSearch.updateCount(count)
+                if (count > 0) {
+                    browserSearch.updateCurrent(0)
+                }
+            })
+        }
+        onUserSearchesNextInBrowser: {
+            var cur = browserSearch.current()
+            var cnt = browserSearch.count()
+            console.log(cur+1, cnt)
+            if (cur+1 < cnt) {
+                scrollToNthHighlightInCurrentWebview(cur+1)
+            }
+        }
+        onUserSearchesPreviousInBrowser: {
+            var cur = browserSearch.current()
+            if (cur-1 >= 0) {
+                scrollToNthHighlightInCurrentWebview(cur-1)
+            }
         }
     }
 
@@ -190,7 +225,7 @@ BrowserForm {
 
     Timer {
         id: ctrl_w_timeout
-        interval: 500
+        interval: 100
         triggeredOnStart: false
         onTriggered: {
             ctrl_w.guard = true

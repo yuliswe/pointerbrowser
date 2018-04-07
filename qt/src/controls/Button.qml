@@ -18,12 +18,14 @@ C.Button {
 //    contentItem: Image {
 //        source: button.icon.source
 //    }
+    property alias rectangle: rect
     readonly property var pal: {
         if (! enabled) { return disPal }
-        if (button.down || checked) { return actPal }
+        if (down || checked || hovered) { return actPal }
         return inaPal
     }
     background: Rectangle {
+        id: rect
         color: pal.button
         border.color: pal.shadow
         radius: 3

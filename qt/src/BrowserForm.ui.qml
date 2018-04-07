@@ -132,8 +132,8 @@ C1.SplitView {
 
             BrowserSearch {
                 id: browserSearch
-                width: 150
-                height: 25
+                width: 300
+                height: 30
                 visible: false
                 anchors.right: parent.right
                 anchors.top: parent.top

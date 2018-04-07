@@ -1,15 +1,17 @@
 Deadlines:
 
-March     - FEATURE: symbol extractor
-March     - Bug: Cmd+link does not always open a new tab (done)
-March     - Bug: tabs are not updated when the tab's url is changed by opening a link (done)
-March     - Bug: when ctrl+click a #sym url link, a new tab should open
-March     - Bug: when a #sym url link is open, title is not updated
+March:
+  (done) FEATURE: symbol extractor
+  (done) Bug: Cmd+link does not always open a new tab (done)
+  (done) Bug: tabs are not updated when the tab's url is changed by opening a link 
+  (wontfix) Bug: when ctrl+click a #sym url link, a new tab should open
+  (done) Bug: when a #sym url link is open, title is not updated
 
 April:
+  (done) BUG: cannot drag on extended screen 
+  (done) Bug: address bar display loads when cmd+link click opens a new tab
+  (done) FEATURE: search in current webview
   FEATURE: search symbols in the tab
-  BUG: cannot drag on extended screen
-  Bug: address bar display loads when cmd+link click opens a new tab
 
 May:
   FEATURE: docview mode
