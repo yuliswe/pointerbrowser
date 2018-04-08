@@ -21,8 +21,8 @@ TabsListForm {
         highlighted: index === currentIndex
         width: parent.width
         onClicked: {
-            userClicksTab(index)
             tab.forceActiveFocus()
+            userClicksTab(index)
         }
         onUserClosesTab: {
             tabsList.userClosesTab(index)

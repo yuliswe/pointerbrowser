@@ -37,8 +37,8 @@ BrowserAddressBarForm {
         userEntersUrl(url)
     }
 
-    textField.onFocusChanged: {
-        if (textField.focus) {
+    textField.onActiveFocusChanged: {
+        if (textField.activeFocus) {
 //            textField.horizontalAlignment = Text.AlignHCenter
             textField.text = form.url
             textField.ensureVisible(0)
