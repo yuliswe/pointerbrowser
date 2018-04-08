@@ -1,4 +1,4 @@
-QT += quick webview sql
+QT += quick webview sql svg
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
