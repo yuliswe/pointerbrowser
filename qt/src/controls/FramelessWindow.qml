@@ -22,6 +22,8 @@ Window {
 
     readonly property int customFlags: Qt.Window | Qt.FramelessWindowHint
 
+    property bool resizing: false
+
     flags: customFlags
 
     property int prevVisibility: Window.Hidden
@@ -132,9 +134,11 @@ Window {
             mainWindow.startX = mainWindow.x
             mainWindow.startY = mainWindow.y
             mainWindow.draggingResetted = true
+            mainWindow.resizing = true
         }
         function stopDragging() {
             mainWindow.draggingResetted = false
+            mainWindow.resizing = false
             macosRenderBugFix()
         }
         rResizer.onDraggingStarts: resetDragging()

@@ -11,7 +11,8 @@ Item {
 
     Rectangle {
         id: background
-        color: splitView.resizing ? actPal.window : "#00000000"
+        color: (splitView.resizing
+                || browserWindow.resizing) ? actPal.window : "#00000000"
         //        color: "#00000000"
         border.width: 0
         anchors.fill: form
