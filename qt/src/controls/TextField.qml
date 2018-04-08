@@ -26,6 +26,7 @@ T.TextField {
     }
     verticalAlignment: TextInput.AlignVCenter
     leftPadding: 5
+    rightPadding: 5
     onFocusChanged: {
         if (! focus && ! text) {
             text = placeholderText

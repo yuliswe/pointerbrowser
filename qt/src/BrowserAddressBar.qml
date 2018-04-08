@@ -16,15 +16,15 @@ BrowserAddressBarForm {
         form.title = TabsModel.tab(index).title
         console.log("update", form.url, form.title)
         if (title !== "") {
-            textField.text = title
-            textField.horizontalAlignment = Text.AlignHCenter
+            titleDisplay.text = title
+//            textField.horizontalAlignment = Text.AlignHCenter
         } else {
-            textField.text = url
-            textField.horizontalAlignment = Text.AlignHCenter
+            titleDisplay.text = url
+//            textField.horizontalAlignment = Text.AlignHCenter
 //            textField.horizontalAlignment = Text.AlignLeft
-            textField.ensureVisible(0)
+            titleDisplay.ensureVisible(0)
         }
-        textField.focus = false
+//        textField.focus = false
     }
 
     textField.onAccepted: {
@@ -39,14 +39,14 @@ BrowserAddressBarForm {
 
     textField.onFocusChanged: {
         if (textField.focus) {
-            textField.horizontalAlignment = Text.AlignHCenter
+//            textField.horizontalAlignment = Text.AlignHCenter
             textField.text = form.url
             textField.ensureVisible(0)
             textField.selectAll()
         } else {
             textField.deselect()
-            textField.horizontalAlignment = Text.AlignHCenter
-            textField.text = form.title
+//            textField.horizontalAlignment = Text.AlignHCenter
+            textField.text = ""
         }
     }
 
