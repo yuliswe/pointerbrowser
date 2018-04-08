@@ -14,7 +14,7 @@ RoundButton {
     property string activeBorderColor: "#dc0000"
     property string inactiveColor: inactPal.button
     property string inactiveBorderColor: inactPal.mid
-    property bool active: false
+    property bool active: true
     hoverEnabled: true
     padding: 3
     Layout.maximumHeight: 14

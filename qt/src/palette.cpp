@@ -5,6 +5,8 @@ Palette::Palette() : QPalette()
 {
     // Window
     this->setColor(QPalette::Active, QPalette::Window, QColor("#faf5f5f5"));
+//    this->setColor(QPalette::Active, QPalette::Window, QColor("#00000000"));
+    this->setColor(QPalette::Inactive, QPalette::Window, QColor("#faf5f5f5"));
     this->setColor(QPalette::Active, QPalette::WindowText, QColor("#000"));
     // Text
     this->setColor(QPalette::Active, QPalette::Text, QColor("#555"));

@@ -15,9 +15,16 @@ Item {
     clip: true
 
     SystemPalette {
-        id: activePalette
+        id: actPal
         colorGroup: SystemPalette.Active
     }
+
+    SystemPalette {
+        id: inaPal
+        colorGroup: SystemPalette.Inactive
+    }
+
+    readonly property var pal: active ? actPal : inaPal
 
     Draggable {
         id: mouseArea
@@ -29,7 +36,7 @@ Item {
         id: topRec
         radius: 5
         border.width: 0
-        color: activePalette.window
+        color: pal.window
         anchors.fill: titleBar
 
         Rectangle {
@@ -79,14 +86,14 @@ Item {
 
         TitleBarButton {
             id: closeBtn
-            active: titleBar.active
+            active: true
             icon {
                 source: "icon/cross2.svg"
             }
         }
         TitleBarButton {
             id: minBtn
-            active: titleBar.active
+            active: true
             activeColor: "#ffcc00"
             activeBorderColor: "#ffcc00"
             icon {
@@ -96,7 +103,7 @@ Item {
 
         TitleBarButton {
             id: maxBtn
-            active: titleBar.active
+            active: true
             activeColor: "#00cc44"
             activeBorderColor: "#00aa33"
             icon {
