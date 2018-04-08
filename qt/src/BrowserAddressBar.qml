@@ -22,7 +22,7 @@ BrowserAddressBarForm {
             titleDisplay.text = url
 //            textField.horizontalAlignment = Text.AlignHCenter
 //            textField.horizontalAlignment = Text.AlignLeft
-            titleDisplay.ensureVisible(0)
+//            titleDisplay.ensureVisible(0)
         }
 //        textField.focus = false
     }
