@@ -34,16 +34,13 @@ Item {
 
         C.Button {
             id: newTabButton
-            bottomPadding: 4
-            topPadding: 4
-            rightPadding: 7
-            leftPadding: 7
+            font.bold: true
             Layout.preferredWidth: 25
             Layout.preferredHeight: 25
-            padding: 5
+            padding: 1
             Layout.fillHeight: true
             icon {
-                source: "icon/plus.svg"
+                source: "icon/plus-mid.svg"
             }
         }
 

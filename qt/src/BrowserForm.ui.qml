@@ -50,38 +50,38 @@ C1.SplitView {
 
             C.Button {
                 id: prev
-                rightPadding: 7
-                Layout.preferredHeight: 25
-                Layout.preferredWidth: 25
-                padding: 6
+                leftPadding: 5
+                padding: 7
                 Layout.maximumWidth: toolbar.height
                 icon {
                     source: "icon/left.svg"
+                    width: 25
+                    height: 25
                 }
             }
 
             C.Button {
                 id: next
                 width: height
-                leftPadding: 7
-                Layout.preferredHeight: 25
-                Layout.preferredWidth: 25
-                padding: 6
+                rightPadding: 5
+                padding: 7
                 Layout.maximumWidth: toolbar.height
                 icon {
                     source: "icon/right.svg"
+                    width: 25
+                    height: 25
                 }
             }
 
             C.Button {
                 id: refresh
-                width: height
-                Layout.preferredHeight: 25
-                Layout.preferredWidth: 25
+                topPadding: 4
                 padding: 3
                 Layout.maximumWidth: toolbar.height
                 icon {
-                    source: "icon/cycle.svg"
+                    source: "icon/refresh.svg"
+                    width: 25
+                    height: 25
                 }
             }
 
@@ -95,29 +95,24 @@ C1.SplitView {
 
             C.Button {
                 id: docview
-                width: height
-                leftPadding: 2
-                rightPadding: 2
                 topPadding: 4
                 bottomPadding: 4
-                padding: 3
-                Layout.preferredHeight: 25
-                Layout.preferredWidth: 25
+                padding: 0
                 checkable: true
                 icon {
                     source: "icon/list.svg"
+                    width: 25
+                    height: 25
                 }
             }
 
             C.Button {
                 id: bookmark
-                width: height
-                Layout.preferredHeight: 25
-                Layout.preferredWidth: 25
-                font.bold: true
                 checkable: true
                 icon {
                     source: checked ? "icon/bookmark.svg" : "icon/book.svg"
+                    width: 25
+                    height: 25
                 }
             }
         }

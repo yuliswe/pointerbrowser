@@ -24,13 +24,20 @@ C.Button {
         if (down || checked || hovered) { return actPal }
         return inaPal
     }
+    antialiasing: true
     background: Rectangle {
         id: rect
         color: pal.button
         border.color: pal.shadow
         radius: 3
+        width: button.width
+        height: button.height
     }
+    implicitHeight: 25
+    implicitWidth: 25
     icon {
         color: pal.buttonText
+        width: button.width
+        height: button.height
     }
 }

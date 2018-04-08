@@ -78,7 +78,6 @@ Item {
                     color: inaPal.dark
                 }
                 rectangle.border.width: 0
-
                 topPadding: 10
                 bottomPadding: 8
             }
