@@ -11,6 +11,7 @@ Item {
     property int highlightCount: 0
     property alias prevBtn: prev
     property alias nextBtn: next
+    property alias closeBtn: close
 
     SystemPalette {
         id: actPal

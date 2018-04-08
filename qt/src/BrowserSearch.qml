@@ -4,6 +4,8 @@ BrowserSearchForm {
     signal userSearchesWordInBrowser(string word)
     signal userSearchesNextInBrowser()
     signal userSearchesPreviousInBrowser()
+    signal userClosesSearch()
+    signal userRetypesInSearch()
     function updateCount(count) {
         highlightCount = count
         console.log("updateCount " + highlightCount)
@@ -18,12 +20,12 @@ BrowserSearchForm {
     function count() {
         return highlightCount;
     }
-//    function lock() {
-//        locked = true
-//    }
-//    function unlock() {
-//        locked = false
-//    }
+    //    function lock() {
+    //        locked = true
+    //    }
+    //    function unlock() {
+    //        locked = false
+    //    }
     property bool locked: false
     id: form
     textfield.onAccepted: {
@@ -38,9 +40,12 @@ BrowserSearchForm {
         console.log("userSearchesWordInBrowser", textfield.text)
     }
     textfield.onTextEdited: {
-        locked = false
-        updateCount(0)
-        updateCurrent(-1)
+        if (locked) {
+            userRetypesInSearch()
+            updateCount(0)
+            updateCurrent(-1)
+            locked = false
+        }
     }
     prevBtn.onClicked: {
         userSearchesPreviousInBrowser()
@@ -49,5 +54,8 @@ BrowserSearchForm {
     nextBtn.onClicked: {
         userSearchesNextInBrowser()
         console.log("userSearchesNextInBrowser")
+    }
+    closeBtn.onClicked: {
+        userClosesSearch()
     }
 }

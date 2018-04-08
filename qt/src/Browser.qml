@@ -35,9 +35,13 @@ BrowserForm {
         currentWebView().runJavaScript("Docview.highlightWord('"+word+"')", callback)
     }
 
+    function clearBrowserSearchHightlights() {
+        currentWebView().runJavaScript("Docview.clearHighlight()");
+    }
+
     function hideBrowserSearch() {
         browserSearch.visible = false
-        currentWebView().runJavaScript("Docview.clearHighlight()");
+        clearBrowserSearchHightlights()
     }
 
     Component.onCompleted: {
@@ -164,6 +168,8 @@ BrowserForm {
                 scrollToNthHighlightInCurrentWebview(cur-1)
             }
         }
+        onUserClosesSearch: hideBrowserSearch()
+        onUserRetypesInSearch: clearBrowserSearchHightlights()
     }
 
     Connections {

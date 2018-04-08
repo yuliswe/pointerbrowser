@@ -84,7 +84,7 @@ BrowserAddressBarForm {
     }
 
     Shortcut {
-        sequence: "Ctrl+Space"
+        sequence: "Ctrl+E"
         autoRepeat: false
         onActivated: {
             textField.focus = true
