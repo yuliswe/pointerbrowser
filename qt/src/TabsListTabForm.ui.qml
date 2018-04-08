@@ -19,7 +19,7 @@ ItemDelegate {
     highlighted: true // preview
     background: Rectangle {
         id: rectangle
-        color: tabButton.highlighted ? actPal.highlight : (tabButton.hovered ? actPal.midlight : "#00000000")
+        color: tabButton.highlighted ? pal.button : "#00000000"
         width: parent.width
         radius: 2
         RoundButton {
@@ -34,13 +34,13 @@ ItemDelegate {
             visible: true // preview
             icon {
                 source: "icon/cross.svg"
-                color: tabButton.highlighted ? pal.light : pal.dark
+                color: pal.buttonText
             }
             background: Item {
             }
         }
         Text {
-            color: tabButton.highlighted ? pal.highlightedText : pal.buttonText
+            color: pal.buttonText
             text: (model.title || "Loading") + " - " + model.url
             anchors.rightMargin: 5
             anchors.right: parent.right

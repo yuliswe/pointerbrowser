@@ -23,5 +23,12 @@ Palette::Palette() : QPalette()
     this->setColor(QPalette::Active, QPalette::Shadow, QColor("#ccc"));
     this->setColor(QPalette::Inactive, QPalette::Shadow, QColor("#ccc"));
     this->setColor(QPalette::Disabled, QPalette::Shadow, QColor("#ccc"));
+    // Dark and Bright
+    this->setColor(QPalette::Active, QPalette::Dark, QColor("#ddd"));
+    this->setColor(QPalette::Inactive, QPalette::Dark, QColor("#ddd"));
+    this->setColor(QPalette::Active, QPalette::BrightText, QColor("blue"));
+    this->setColor(QPalette::Inactive, QPalette::BrightText, QColor("blue"));
+    // Highlight
+//    this->setColor(QPalette::Active, QPalette::Highlight, QColor("#aaaaaaff"));
 }
 
