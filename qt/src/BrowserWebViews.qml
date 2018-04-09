@@ -47,6 +47,8 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebView {
         id: webview
+        implicitHeight: listView.height
+        implicitWidth: listView.width
         property string modelUrl: model ? model.url : ""
         onModelUrlChanged: {
             // must compare with ==
