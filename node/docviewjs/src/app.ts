@@ -34,7 +34,7 @@ class Docview {
 
     public countHighlight(): number {
         return $(".docview-highlighted span").length
-    } 
+    }
 
     public scrollToNthHighlight(n: number): void {
         console.log("docview.js:scrollToNthHighlight "+ n)
@@ -79,11 +79,12 @@ class Docview {
                 }
             } else if (e[i].nodeType == Node.ELEMENT_NODE) {
                 const arr = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT"]
-                if (! arr.includes((e[i] as HTMLElement).tagName)) {
-                    // console.log("recurs on", (e[i] as HTMLElement).tagName)
-                    this._highlightWord(word, e[i].childNodes)
-                } else {
-                    // console.log("ignored", e[i])
+                const html = e[i] as HTMLElement;
+                if (html.offsetHeight > 0 && html.offsetWidth > 0) {
+                    if (! arr.includes(html.tagName)) {
+                        // console.log("recurs on", (e[i] as HTMLElement).tagName)
+                        this._highlightWord(word, e[i].childNodes)
+                    }
                 }
             }
         }
