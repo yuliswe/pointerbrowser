@@ -20,7 +20,7 @@ int TabsModel::count()
     return _tabs.length();
 }
 
-Webpage* TabsModel::tab(int i)
+Webpage* TabsModel::at(int i)
 {
     return _tabs[i].data();
 }

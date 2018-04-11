@@ -7,6 +7,7 @@ TabsPanelForm {
     signal userOpensNewTab
     signal userClosesTab(int index)
     signal userOpensTab(int index)
+    signal userOpensSavedTab(int index)
 
     tabHeight: 30
 
@@ -14,6 +15,15 @@ TabsPanelForm {
     searchListHeight: SearchDB.searchResult.count * tabHeight
     tabsList.model: TabsModel
     searchList.model: SearchDB.searchResult
+
+    function filterModelBySymbol(sym) {
+        SearchDB.search(sym)
+    }
+
+    tabsSearch.onTextEdited: {
+        console.log("tabsSearch: ", tabsSearch.text)
+        filterModelBySymbol(tabsSearch.text)
+    }
 
     function setCurrentIndex(i) {
         tabsList.setHighlightAt(i)
@@ -40,6 +50,13 @@ TabsPanelForm {
         onUserClicksTab: {
             setCurrentIndex(index)
             userOpensTab(index)
+        }
+    }
+
+    Connections {
+        target: searchList
+        onUserDoubleClicksTab: {
+            userOpensSavedTab(index)
         }
     }
 

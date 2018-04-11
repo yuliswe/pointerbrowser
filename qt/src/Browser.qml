@@ -44,6 +44,11 @@ BrowserForm {
         clearBrowserSearchHightlights()
     }
 
+    function openSavedTab(index) {
+        console.log("openSavedTab", index)
+        newTab(SearchDB.searchResult.at(index).url, true)
+    }
+
     Component.onCompleted: {
         if (TabsModel.count > 0) {
             openTab(0)
@@ -70,7 +75,7 @@ BrowserForm {
         tabsPanel.setCurrentIndex(index)
         var wp = currentWebView()
         browserAddressBar.update(currentIndex())
-        browserBookmarkButton.checked = true
+        browserBookmarkButton.checked = SearchDB.hasWebpage(wp.url)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
     }
@@ -106,12 +111,9 @@ BrowserForm {
     Connections {
         target: tabsPanel
         onUserOpensNewTab: newTab("", true)
-    }
-
-    Connections {
-        target: tabsPanel
         onUserOpensTab: openTab(index)
         onUserClosesTab: closeTab(index)
+        onUserOpensSavedTab: openSavedTab(index)
     }
 
     Connections {
@@ -217,6 +219,19 @@ BrowserForm {
                                                })
             }
 
+        }
+    }
+
+    Connections {
+        target: browserBookmarkButton
+        onClicked: {
+            if (browserBookmarkButton.checked) {
+                console.log("bookmarking", currentWebView().url)
+                SearchDB.addWebpage(currentWebView().url)
+            } else {
+                console.log("unbookmarking", currentWebView().url)
+                SearchDB.removeWebpage(currentWebView().url)
+            }
         }
     }
 

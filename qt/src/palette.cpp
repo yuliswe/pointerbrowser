@@ -30,5 +30,10 @@ Palette::Palette() : QPalette()
     this->setColor(QPalette::Inactive, QPalette::BrightText, QColor("blue"));
     // Highlight
 //    this->setColor(QPalette::Active, QPalette::Highlight, QColor("#aaaaaaff"));
+    // Base & AlternateBase
+    this->setColor(QPalette::Active, QPalette::Base, QColor("#ccc"));
+    this->setColor(QPalette::Inactive, QPalette::Base, QColor("#ccc"));
+    this->setColor(QPalette::Active, QPalette::AlternateBase, QColor("#555"));
+    this->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor("555"));
 }
 

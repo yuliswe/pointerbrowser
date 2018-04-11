@@ -32,7 +32,8 @@ class SearchDB : public QObject
         void disconnect();
         bool execMany(const QStringList& lines);
         bool addWebpage(const QString& url);
-        Webpage_ findWebpage(const QString& url);
+        Webpage_ findWebpage(const QString& url) const;
+        bool hasWebpage(const QString& url) const;
         void removeWebpage(const QString& url);
         void search(const QString& word);
         QSqlRelationalTableModel* webpageTable() const;
@@ -43,6 +44,7 @@ class SearchDB : public QObject
         QSqlDatabase _db;
         QRelTable_ _indexTable;
         QRelTable_ _webpageTable;
+        QString _currentWord;
         TabsModel _searchResult; // cache search function
 };
 

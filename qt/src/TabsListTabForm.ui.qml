@@ -4,6 +4,7 @@ import QtQuick.Controls 2.3
 ItemDelegate {
     id: tabButton
     property alias closeButton: closeButton
+    property alias rectangle: rectangle
 
     SystemPalette {
         id: actPal
@@ -13,15 +14,14 @@ ItemDelegate {
         id: inaPal
         colorGroup: SystemPalette.Inactive
     }
-
     readonly property var pal: highlighted ? actPal : inaPal
-
-    highlighted: true // preview
+    hoverEnabled: true
+    property bool showCloseButton: true
     background: Rectangle {
         id: rectangle
-        color: tabButton.highlighted ? pal.button : "#00000000"
         width: parent.width
         radius: 2
+        color: highlighted ? actPal.base : (hovered ? actPal.button : "#00000000")
         RoundButton {
             id: closeButton
             width: 15
@@ -30,8 +30,8 @@ ItemDelegate {
             anchors.verticalCenterOffset: 1
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
+            visible: tabButton.hovered && tabButton.showCloseButton
             z: 2
-            visible: true // preview
             icon {
                 source: "icon/cross.svg"
                 color: pal.buttonText
@@ -40,7 +40,7 @@ ItemDelegate {
             }
         }
         Text {
-            color: pal.buttonText
+            color: highlighted ? pal.alternateBase : pal.buttonText
             text: (model.title || "Loading") + " - " + model.url
             anchors.rightMargin: 5
             anchors.right: parent.right

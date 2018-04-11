@@ -6,7 +6,9 @@ TabsListForm {
     id: tabsList
     signal userClicksTab(int index)
     signal userClosesTab(int index)
-    property bool showCloseButton: true;
+    signal userDoubleClicksTab(int index)
+    property bool showCloseButton: true
+    property bool hoverHighlight: false
 
     function setHighlightAt(index) {
         tabsList.currentIndex = index
@@ -18,11 +20,14 @@ TabsListForm {
         id: tab
         implicitHeight: tabsList.tabHeight
         showCloseButton: tabsList.showCloseButton
-        highlighted: index === currentIndex
+        highlighted: (index === currentIndex) // || (hoverHighlight && hovered)
         width: parent.width
         onClicked: {
             tab.forceActiveFocus()
             userClicksTab(index)
+        }
+        onDoubleClicked: {
+            userDoubleClicksTab(index)
         }
         onUserClosesTab: {
             tabsList.userClosesTab(index)

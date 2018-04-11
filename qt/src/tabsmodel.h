@@ -39,7 +39,7 @@ class TabsModel : public QAbstractListModel
         void loadTabs();
         void syncTabs(QVariantList);
         void clear();
-        Webpage* tab(int index);
+        Webpage* at(int index);
 
     private:
         WebpageList _tabs;

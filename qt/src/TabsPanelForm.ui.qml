@@ -20,8 +20,6 @@ Item {
 
     RowLayout {
         id: topControls
-        x: 5
-        y: 5
         height: 25
         anchors.top: parent.top
         anchors.topMargin: 3
@@ -29,9 +27,6 @@ Item {
         anchors.rightMargin: 5
         anchors.left: parent.left
         anchors.leftMargin: 5
-        Layout.maximumHeight: 25
-        Layout.fillWidth: true
-        Layout.margins: 5
 
         C.Button {
             id: newTabButton
@@ -55,10 +50,11 @@ Item {
         }
     }
 
-    Flickable {
-        id: flickable
-        boundsBehavior: Flickable.StopAtBounds
-        flickableDirection: Flickable.VerticalFlick
+    C1.ScrollView {
+        id: scrollView
+        //        interactive: true
+        //        boundsBehavior: Flickable.DragOverBounds
+        //        flickableDirection: Flickable.VerticalFlick
         clip: true
         anchors.bottomMargin: 5
         anchors.top: topControls.bottom
@@ -66,66 +62,67 @@ Item {
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
+        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+        //        contentWidth: form.width
+        //        contentHeight: 1000 //text1.height + tabsList.height + text2.height + searchList.height
+        Flickable {
+            boundsBehavior: Flickable.DragOverBounds
+            contentHeight: text1.height + tabsList.height + text2.height + searchList.height
+            Text {
+                id: text1
+                width: form.width
+                color: actPal.mid
+                text: qsTr("Open Tabs")
+                verticalAlignment: Text.AlignBottom
+                anchors.top: parent.top
+                anchors.topMargin: 5
+                topPadding: 5
+                bottomPadding: 5
+                leftPadding: 5
+                font.bold: false
+                font.capitalization: Font.AllUppercase
+                font.pixelSize: 9
+            }
 
-        //        contentWidth: contentItem.childrenRect.width
-        //        contentHeight: contentItem.childrenRect.height
-        Text {
-            id: text1
-            x: 0
-            width: form.width
-            color: actPal.mid
-            text: qsTr("Open Tabs")
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            topPadding: 5
-            bottomPadding: 5
-            leftPadding: 5
-            font.bold: false
-            font.capitalization: Font.AllUppercase
-            font.pixelSize: 9
-        }
+            TabsList {
+                id: tabsList
+                x: 0
+                width: form.width
+                //            height: 500
+                anchors.top: text1.bottom
+                anchors.topMargin: -3
+                tabHeight: form.tabHeight
+                interactive: false
+                highlightFollowsCurrentItem: false
+            }
 
-        TabsList {
-            id: tabsList
-            x: 0
-            width: form.width
-            anchors.top: text1.bottom
-            anchors.topMargin: 0
-            implicitHeight: 100
-            tabHeight: form.tabHeight
-            interactive: false
-            highlightFollowsCurrentItem: false
-            Layout.fillHeight: false
-            Layout.fillWidth: true
-        }
+            Text {
+                id: text2
+                x: 0
+                width: form.width
+                color: actPal.mid
+                text: qsTr("Bookmarks")
+                verticalAlignment: Text.AlignBottom
+                anchors.top: tabsList.bottom
+                anchors.topMargin: 5
+                bottomPadding: 5
+                leftPadding: 5
+                topPadding: 5
+                font.capitalization: Font.AllUppercase
+                font.bold: false
+                font.pixelSize: 9
+            }
 
-        Text {
-            id: text2
-            x: 0
-            width: form.width
-            color: actPal.mid
-            text: qsTr("Saved")
-            anchors.top: tabsList.bottom
-            anchors.topMargin: 0
-            bottomPadding: 5
-            leftPadding: 5
-            topPadding: 5
-            font.capitalization: Font.AllUppercase
-            font.bold: false
-            font.pixelSize: 9
-        }
-
-        TabsList {
-            id: searchList
-            x: 0
-            width: form.width
-            height: 100
-            anchors.top: text2.bottom
-            anchors.topMargin: 0
-            tabHeight: form.tabHeight
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            showCloseButton: false
+            TabsList {
+                id: searchList
+                //            height: 500
+                width: form.width
+                hoverHighlight: true
+                anchors.top: text2.bottom
+                anchors.topMargin: -3
+                tabHeight: form.tabHeight
+                showCloseButton: false
+            }
         }
     }
 

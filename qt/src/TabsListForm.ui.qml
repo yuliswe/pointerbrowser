@@ -7,10 +7,7 @@ ListView {
     id: listview
     property alias tabsModel: listview.model
     highlightFollowsCurrentItem: false
-    snapMode: ListView.NoSnap
-    boundsBehavior: Flickable.StopAtBounds
     interactive: false
-    highlightRangeMode: ListView.NoHighlightRange
     model: ListModel {
         ListElement {
             url: "test"
