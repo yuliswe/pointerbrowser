@@ -7,10 +7,10 @@
 #include "eventfilter.h"
 #include "searchdb.h"
 #include "palette.h"
+#include "webpage.h"
 
 QMLRegister::QMLRegister(QObject *parent) : QObject(parent)
 {
-
 }
 
 

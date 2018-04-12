@@ -51,6 +51,5 @@ class Webpage : public QObject
         QString _html;
 };
 
-Q_DECLARE_METATYPE(Webpage_)
 Q_DECLARE_METATYPE(Webpage*)
 #endif // WEBPAGE_H

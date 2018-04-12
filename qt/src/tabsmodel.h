@@ -14,7 +14,7 @@ class TabsModel : public QAbstractListModel
     public:
         explicit TabsModel(QObject *parent = nullptr);
 //        QVariantList tabs() const;
-        QVariant data(const QModelIndex& idx, int role = 0) const;
+        QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
         int rowCount(const QModelIndex &parent) const;
 //        bool setData(const QModelIndex &index, const QVariant &value, int role = 0);
 //        Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -39,7 +39,7 @@ class TabsModel : public QAbstractListModel
         void loadTabs();
 //        void syncTabs(QVariantList);
         void clear();
-        Webpage* at(int index);
+        QVariant at(int index);
 
     private:
         WebpageList _tabs;

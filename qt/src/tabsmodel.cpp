@@ -20,9 +20,11 @@ int TabsModel::count()
     return _tabs.length();
 }
 
-Webpage* TabsModel::at(int i)
+QVariant TabsModel::at(int i)
 {
-    return _tabs[i].data();
+    QVariant v;
+    v.setValue(_tabs[i].data());
+    return v;
 }
 
 void TabsModel::insertTab(int idx, QString url, QString title, QString html)
@@ -91,15 +93,14 @@ void TabsModel::loadTabs(void) {
     qDebug() << jarr;
     _tabs.clear();
     int idx = 0;
-    qDebug() << "loadTabs: " << endl;
+    qDebug() << "TabsModel::loadTabs";
     int cnt = jarr.size();
     emit beginInsertRows(QModelIndex(), 0, cnt - 1);
     for (QJsonValue jval : jarr) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
-        Webpage* page = page_.data();
         _tabs << page_;
-        //        emit tabInserted(idx, page);
+        qDebug() << page_;
         idx++;
     }
     emit endInsertRows();
@@ -127,6 +128,7 @@ QVariant TabsModel::data(const QModelIndex& idx, int role) const
     Webpage_ p = _tabs[row];
     QVariant v;
     v.setValue(p.data());
+    qDebug() << "TabsModel::data" << v;
     return v;
 }
 
