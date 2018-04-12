@@ -18,11 +18,12 @@ int main(int argc, char *argv[])
     QMLRegister::tabsModel->loadTabs();
     QMLRegister::fileManager->setupDirectories();
 
-    Palette customPal;
-    app.setPalette(customPal);
+//    Palette customPal;
+//    app.setPalette(customPal);
 
     QMLRegister::registerToQML();
     QMLRegister::searchDB->connect();
+    QMLRegister::palette->setup();
     QtWebView::initialize();
 
 #ifdef Q_OS_WIN
@@ -44,7 +45,6 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
-
 
     return app.exec();
 }

@@ -6,6 +6,7 @@
 #include "webpage.h"
 #include "eventfilter.h"
 #include "searchdb.h"
+#include "palette.h"
 
 QMLRegister::QMLRegister(QObject *parent) : QObject(parent)
 {
@@ -34,6 +35,11 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::searchDB;
     });
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "Palette", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::palette;
+    });
 //    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
 }
 
@@ -42,3 +48,4 @@ FileManager* QMLRegister::fileManager = new FileManager();
 TabsModel* QMLRegister::tabsModel = new TabsModel();
 EventFilter* QMLRegister::eventFilter = new EventFilter();
 SearchDB* QMLRegister::searchDB = new SearchDB();
+Palette* QMLRegister::palette = new Palette();

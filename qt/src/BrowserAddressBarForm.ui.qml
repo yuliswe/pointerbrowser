@@ -4,6 +4,7 @@ import "controls" as C
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4 as C1
+import Backend 1.0
 
 Item {
     id: form
@@ -27,6 +28,12 @@ Item {
         //                width: progressBar.value/100 * textField.width
     }
 
+    C.TextField {
+        id: textField
+        horizontalAlignment: Text.AlignHCenter
+        anchors.fill: parent
+    }
+
     Text {
         id: titleDisplay
         text: qsTr("Text")
@@ -37,23 +44,7 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         anchors.fill: parent
-        color: inaPal.buttonText
-    }
-
-    C.TextField {
-        id: textField
-        horizontalAlignment: Text.AlignHCenter
-        anchors.fill: parent
-
-        //        ProgressBar {
-        //            id: progressBar
-        //            anchors.fill: parent
-        //            value: 10
-        //            from: 0
-        //            to: 100
-        //            contentItem:
-        //            background: Item {
-        //            }
-        //        }
+        color: Palette.normal.input_placeholder
+        visible: !textField.activeFocus
     }
 }

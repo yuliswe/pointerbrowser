@@ -6,6 +6,7 @@
 #include "tabsmodel.h"
 #include "eventfilter.h"
 #include "searchdb.h"
+#include "palette.h"
 
 class QMLRegister : public QObject
 {
@@ -17,6 +18,7 @@ class QMLRegister : public QObject
         static TabsModel* tabsModel;
         static EventFilter* eventFilter;
         static SearchDB* searchDB;
+        static Palette* palette;
         static void registerToQML();
 
     signals:

@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.3
+import Backend 1.0
 
 Item {
     id: form
@@ -20,17 +21,7 @@ Item {
     property alias tlResizer: diagTLSizer
     property alias trResizer: diagTRSizer
 
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
-
-    SystemPalette {
-        id: inactPal
-        colorGroup: SystemPalette.Inactive
-    }
-
-    readonly property var palette: active ? actPal : inactPal
+    readonly property var palette: active ? Palette.selected : Palette.normal
 
     Draggable {
         id: vertiTSizer
@@ -155,7 +146,7 @@ Item {
         }
 
         Rectangle {
-            color: palette.window
+            color: palette.window_background
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.bottom: parent.bottom

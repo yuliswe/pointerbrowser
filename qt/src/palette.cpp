@@ -1,45 +1,49 @@
 #include "palette.h"
+#include "filemanager.h"
 #include <QPalette>
+#include <QVariantMap>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QDebug>
+#include <QMap>
 
-Palette::Palette() : QPalette()
-{
-    // Window
-    this->setColor(QPalette::Active, QPalette::Window, QColor("#faf5f5f5"));
-//    this->setColor(QPalette::Active, QPalette::Window, QColor("#00000000"));
-    this->setColor(QPalette::Inactive, QPalette::Window, QColor("#faf5f5f5"));
-    this->setColor(QPalette::Active, QPalette::WindowText, QColor("#000"));
-    // Text
-    this->setColor(QPalette::Active, QPalette::Text, QColor("#555"));
-    this->setColor(QPalette::Inactive, QPalette::Text, QColor("#555"));
-    this->setColor(QPalette::Disabled, QPalette::Text, QColor("#555"));
-    // Button
-    this->setColor(QPalette::Active, QPalette::Button, QColor("#ddd"));
-    this->setColor(QPalette::Inactive, QPalette::Button, QColor("#00000000"));
-    this->setColor(QPalette::Disabled, QPalette::Button, QColor("#00000000"));
-    this->setColor(QPalette::Active, QPalette::ButtonText, QColor("#555"));
-    this->setColor(QPalette::Inactive, QPalette::ButtonText, QColor("#555"));
-    this->setColor(QPalette::Disabled, QPalette::ButtonText, QColor("#aaa"));
-    // Shadow
+Palette::Palette() {}
+
+void Palette::setup() {
+
 #ifdef Q_OS_IOS
-    this->setColor(QPalette::Active, QPalette::Shadow, QColor("#00000000"));
-    this->setColor(QPalette::Inactive, QPalette::Shadow, QColor("#00000000"));
-    this->setColor(QPalette::Disabled, QPalette::Shadow, QColor("#00000000"));
+    QByteArray bs = FileManager::readQrcFileB("theme/ios.json");
 #else
-    this->setColor(QPalette::Active, QPalette::Shadow, QColor("#ccc"));
-    this->setColor(QPalette::Inactive, QPalette::Shadow, QColor("#ccc"));
-    this->setColor(QPalette::Disabled, QPalette::Shadow, QColor("#ccc"));
+    QByteArray bs = FileManager::readQrcFileB("theme/macos.json");
 #endif
-    // Dark and Bright
-    this->setColor(QPalette::Active, QPalette::Dark, QColor("#ddd"));
-    this->setColor(QPalette::Inactive, QPalette::Dark, QColor("#ddd"));
-    this->setColor(QPalette::Active, QPalette::BrightText, QColor("blue"));
-    this->setColor(QPalette::Inactive, QPalette::BrightText, QColor("blue"));
-    // Highlight
-//    this->setColor(QPalette::Active, QPalette::Highlight, QColor("#aaaaaaff"));
-    // Base & AlternateBase
-    this->setColor(QPalette::Active, QPalette::Base, QColor("#ccc"));
-    this->setColor(QPalette::Inactive, QPalette::Base, QColor("#ccc"));
-    this->setColor(QPalette::Active, QPalette::AlternateBase, QColor("#555"));
-    this->setColor(QPalette::Inactive, QPalette::AlternateBase, QColor("555"));
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(bs, &error);
+    if (doc.isNull()) {
+        qDebug() << "Palette::setup " << error.errorString();
+    }
+    _json = doc.object();
+    qDebug() << "Palette::setup " << _json;
+
+    QStringList keys = _json.keys();
+    for (QString k: keys) {
+        QJsonArray colors = _json[k].toArray();
+        if (colors.size() < 4) {
+            _normal[k] = _selected[k] = _hovered[k] = _disabled[k] = colors[0];
+        } else {
+            _normal[k] = colors[0];
+            _selected[k] = colors[1];
+            _hovered[k] = colors[2];
+            _disabled[k] = colors[3];
+        }
+        qDebug() << "Palette::setup " << _normal[k];
+    }
+
+    emit paletteChanged();
 }
+
+ColorMap Palette::normal() const { return _normal; }
+ColorMap Palette::selected() const { return _selected; }
+ColorMap Palette::hovered() const { return _hovered; }
+ColorMap Palette::disabled() const { return _disabled; }
+QJsonObject Palette::json() const { return _json; }
 

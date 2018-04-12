@@ -2,7 +2,7 @@ import QtQuick 2.4
 import QtQuick.Controls 2.3 as C2
 import "controls" as C
 import QtQuick.Layouts 1.3
-
+import Backend 1.0
 Item {
     id: form
 
@@ -13,24 +13,14 @@ Item {
     property alias nextBtn: next
     property alias closeBtn: close
 
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
-
-    SystemPalette {
-        id: inaPal
-        colorGroup: SystemPalette.Inactive
-    }
-
-    readonly property var pal: focus ? actPal : inaPal
+    readonly property var pal: focus ? Palette.selected : Palette.normal
 
     Rectangle {
         id: rectangle
         radius: 3
         clip: true
         anchors.fill: parent
-        color: pal.window
+        color: pal.window_background
 
         RowLayout {
             id: rowLayout
@@ -55,7 +45,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignTop
                     font.pixelSize: 12
-                    color: pal.shadow
+                    color: pal.input_placeholder
                 }
             }
 
@@ -65,7 +55,7 @@ Item {
                 Layout.preferredWidth: parent.height
                 icon {
                     source: "icon/up.svg"
-                    color: inaPal.dark
+                    color: pal.button_icon
                 }
                 rectangle.border.width: 0
                 padding: 9
@@ -76,7 +66,7 @@ Item {
                 Layout.preferredWidth: parent.height
                 icon {
                     source: "icon/down.svg"
-                    color: inaPal.dark
+                    color: pal.button_icon
                 }
                 rectangle.border.width: 0
                 topPadding: 10
@@ -88,7 +78,7 @@ Item {
                 Layout.preferredWidth: parent.height
                 icon {
                     source: "icon/cross.svg"
-                    color: inaPal.dark
+                    color: pal.button_icon
                 }
                 onClicked: form.visible = false
                 rectangle.border.width: 0

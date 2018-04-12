@@ -1,27 +1,20 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3
+import Backend 1.0
 
 ItemDelegate {
     id: tabButton
     property alias closeButton: closeButton
     property alias rectangle: rectangle
 
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
-    SystemPalette {
-        id: inaPal
-        colorGroup: SystemPalette.Inactive
-    }
-    readonly property var pal: highlighted ? actPal : inaPal
+    readonly property var pal: highlighted ? Palette.selected : hovered ? Palette.hovered : Palette.normal
     hoverEnabled: true
     property bool showCloseButton: true
     background: Rectangle {
         id: rectangle
         width: parent.width
         radius: 2
-        color: highlighted ? actPal.base : (hovered ? actPal.button : "#00000000")
+        color: pal.list_item_background
         RoundButton {
             id: closeButton
             width: 15
@@ -34,13 +27,13 @@ ItemDelegate {
             z: 2
             icon {
                 source: "icon/cross.svg"
-                color: pal.buttonText
+                color: pal.button_icon
             }
             background: Item {
             }
         }
         Text {
-            color: highlighted ? pal.alternateBase : pal.buttonText
+            color: highlighted ? pal.list_item_text : pal.button_text
             text: (model.title || "Loading") + " - " + model.url
             anchors.rightMargin: 5
             anchors.right: parent.right

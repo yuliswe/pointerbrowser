@@ -33,5 +33,8 @@
         <file>icon/refresh.svg</file>
         <file>icon/plus-thin.svg</file>
         <file>icon/plus-mid.svg</file>
+        <file>theme/ios.json</file>
+        <file>theme/macos.json</file>
+        <file>theme/windows.json</file>
     </qresource>
 </RCC>

@@ -1,26 +1,25 @@
 import QtQuick 2.9
 import QtQuick.Templates 2.3 as T
 import QtQuick.Controls 2.3
+import Backend 1.0
 
 T.TextField {
     id: textfield
-    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
-    SystemPalette { id: inactPal; colorGroup: SystemPalette.Inactive }
     readonly property var palette: {
-        if (activeFocus) { return actPal }
-        return inactPal
+        if (activeFocus) { return Palette.selected }
+        return Palette.normal
     }
-    color: activeFocus ? palette.text : palette.buttonText
+    color: text == placeholderText ? palette.input_placeholder : palette.input_text
     property alias rectangle: rectangle
     selectByMouse: true
-    selectionColor: palette.highlight
-    selectedTextColor: palette.highlightedText
+    selectionColor: palette.text_background
+    selectedTextColor: palette.text
     text: placeholderText
     background: Rectangle {
         id: rectangle
         border.width: 1
-        border.color: palette.shadow
-        color: textfield.activeFocus ? palette.light : palette.button
+        border.color: palette.input_border
+        color: textfield.activeFocus ? palette.input_background : palette.input_background
         anchors.fill: textfield
         radius: 3
     }

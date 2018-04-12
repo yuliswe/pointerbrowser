@@ -1,34 +1,23 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3 as C
 import QtQuick.Layouts 1.3
+import Backend 1.0
 
 C.Button {
     id: button
-    SystemPalette { id: actPal; colorGroup: SystemPalette.Active }
-    SystemPalette { id: inaPal; colorGroup: SystemPalette.Inactive }
-    SystemPalette { id: disPal; colorGroup: SystemPalette.Disabled }
-//    contentItem: Text {
-//        text: button.text
-//        font: button.font
-//        color: pal.buttonText
-//        horizontalAlignment: Text.AlignHCenter
-//        verticalAlignment: Text.AlignVCenter
-//        elide: Text.ElideRight
-//    }
-//    contentItem: Image {
-//        source: button.icon.source
-//    }
     property alias rectangle: rect
     readonly property var pal: {
-        if (! enabled) { return disPal }
-        if (down || checked || hovered) { return actPal }
-        return inaPal
+        if (! enabled) { return Palette.disabled }
+        if (hovered) { return Palette.hovered }
+        if (down || checked) { return Palette.selected }
+        if (! active) { return Palette.inactive }
+        return Palette.normal
     }
     antialiasing: true
     background: Rectangle {
         id: rect
-        color: pal.button
-        border.color: pal.shadow
+        color: pal.button_background
+        border.color: pal.button_border
         radius: 3
         width: button.width
         height: button.height
@@ -36,7 +25,7 @@ C.Button {
     implicitHeight: 25
     implicitWidth: 25
     icon {
-        color: pal.buttonText
+        color: pal.button_icon
         width: button.width
         height: button.height
     }

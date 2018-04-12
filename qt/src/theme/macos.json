@@ -1,0 +1,16 @@
+{
+    "window_background": ["#faf5f5f5"],
+    "window_text": ["#000"],
+    "text": ["#000"],
+    "text_background": ["transparent","#70a7ff","transparent","transparent"],
+    "button_text": ["#555"],
+    "button_icon": ["#555","#555","#555","#ccc"],
+    "button_background": ["transparent","#ddd","#ddd","transparent"],
+    "button_border": ["#ccc","#ccc","#ccc","#ddd"],
+    "input_text": ["#000"],
+    "input_placeholder": ["#666","#666","#666","#aaa"],
+    "input_background": ["#eee","#fafafa","#fafafa","#fafafa"],
+    "input_border": ["#ccc","#ccc","#ccc","#ddd"],
+    "list_item_text": ["#333"],
+    "list_item_background": ["transparent","#ddd","#eee","transparent"]
+}

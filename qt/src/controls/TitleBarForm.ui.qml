@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
+import Backend 1.0
 
 Item {
     id: titleBar
@@ -14,17 +15,7 @@ Item {
     property bool fullscreened: false
     clip: true
 
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
-
-    SystemPalette {
-        id: inaPal
-        colorGroup: SystemPalette.Inactive
-    }
-
-    readonly property var pal: active ? actPal : inaPal
+    readonly property var pal: active ? Palette.selected : Palette.normal
 
     Draggable {
         id: mouseArea
@@ -36,7 +27,7 @@ Item {
         id: topRec
         radius: 5
         border.width: 0
-        color: pal.window
+        color: pal.window_background
         anchors.fill: titleBar
 
         Rectangle {
