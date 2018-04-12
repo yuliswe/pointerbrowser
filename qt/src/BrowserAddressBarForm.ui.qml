@@ -17,17 +17,6 @@ Item {
         colorGroup: SystemPalette.Inactive
     }
 
-    Rectangle {
-        id: progressBar
-        color: "green"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        width: 0.2 * textField.width // preview
-        //                width: progressBar.value/100 * textField.width
-    }
-
     C.TextField {
         id: textField
         horizontalAlignment: Text.AlignHCenter
@@ -47,5 +36,17 @@ Item {
         color: Palette.normal.input_placeholder
 
         visible: !textField.activeFocus
+    }
+
+    Rectangle {
+        id: progressBar
+        color: "green"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        radius: textField.rectangle.radius
+        width: 0.2 * textField.width // preview
+        //                width: progressBar.value/100 * textField.width
     }
 }
