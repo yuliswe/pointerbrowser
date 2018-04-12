@@ -20,9 +20,15 @@ Palette::Palette() : QPalette()
     this->setColor(QPalette::Inactive, QPalette::ButtonText, QColor("#555"));
     this->setColor(QPalette::Disabled, QPalette::ButtonText, QColor("#aaa"));
     // Shadow
+#ifdef Q_OS_IOS
+    this->setColor(QPalette::Active, QPalette::Shadow, QColor("#00000000"));
+    this->setColor(QPalette::Inactive, QPalette::Shadow, QColor("#00000000"));
+    this->setColor(QPalette::Disabled, QPalette::Shadow, QColor("#00000000"));
+#else
     this->setColor(QPalette::Active, QPalette::Shadow, QColor("#ccc"));
     this->setColor(QPalette::Inactive, QPalette::Shadow, QColor("#ccc"));
     this->setColor(QPalette::Disabled, QPalette::Shadow, QColor("#ccc"));
+#endif
     // Dark and Bright
     this->setColor(QPalette::Active, QPalette::Dark, QColor("#ddd"));
     this->setColor(QPalette::Inactive, QPalette::Dark, QColor("#ddd"));

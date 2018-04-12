@@ -108,6 +108,13 @@ BrowserForm {
         }
     }
 
+    tabsPanel.buttonSize: buttonSize
+
+    buttonSize: {
+        if (Qt.platform.os == "ios") { return 30 }
+        return 25
+    }
+
     Connections {
         target: tabsPanel
         onUserOpensNewTab: newTab("", true)

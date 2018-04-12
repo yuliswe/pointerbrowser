@@ -4,7 +4,6 @@ import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.5 as C1
 import "controls" as C
-import QtGraphicalEffects 1.0
 
 C1.SplitView {
     id: splitView
@@ -20,6 +19,7 @@ C1.SplitView {
     property alias prevEnabled: prev.enabled
     property alias nextEnabled: next.enabled
     property alias browserSearch: browserSearch
+    property int buttonSize: 40
 
     SystemPalette {
         id: actPal
@@ -40,7 +40,7 @@ C1.SplitView {
         anchors.leftMargin: 0
         RowLayout {
             id: toolbar
-            height: 25
+            height: buttonSize
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.top: parent.top
@@ -52,11 +52,10 @@ C1.SplitView {
                 id: prev
                 leftPadding: 5
                 padding: 7
-                Layout.maximumWidth: toolbar.height
+                Layout.preferredWidth: parent.height
+                Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/left.svg"
-                    width: 25
-                    height: 25
                 }
             }
 
@@ -65,11 +64,10 @@ C1.SplitView {
                 width: height
                 rightPadding: 5
                 padding: 7
-                Layout.maximumWidth: toolbar.height
+                Layout.preferredWidth: parent.height
+                Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/right.svg"
-                    width: 25
-                    height: 25
                 }
             }
 
@@ -77,11 +75,10 @@ C1.SplitView {
                 id: refresh
                 topPadding: 4
                 padding: 3
-                Layout.maximumWidth: toolbar.height
+                Layout.preferredWidth: parent.height
+                Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/refresh.svg"
-                    width: 25
-                    height: 25
                 }
             }
 
@@ -99,20 +96,20 @@ C1.SplitView {
                 bottomPadding: 4
                 padding: 0
                 checkable: true
+                Layout.preferredWidth: parent.height
+                Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/list.svg"
-                    width: 25
-                    height: 25
                 }
             }
 
             C.Button {
                 id: bookmark
                 checkable: true
+                Layout.preferredWidth: parent.height
+                Layout.preferredHeight: parent.height
                 icon {
                     source: checked ? "icon/bookmark.svg" : "icon/book.svg"
-                    width: 25
-                    height: 25
                 }
             }
         }

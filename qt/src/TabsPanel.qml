@@ -11,6 +11,24 @@ TabsPanelForm {
 
     tabHeight: 30
 
+    flickable {
+        rebound: Transition {
+            NumberAnimation {
+                properties: "x,y"
+                duration: 2500
+                easing.type: Easing.OutQuint
+            }
+        }
+
+        boundsBehavior: {
+            if (Qt.platform.os == "ios") {
+                return Flickable.DragAndOvershootBounds
+            } else {
+                return Flickable.StopAtBounds
+            }
+        }
+    }
+
     tabsListHeight: TabsModel.count * tabHeight
     searchListHeight: SearchDB.searchResult.count * tabHeight
     tabsList.model: TabsModel

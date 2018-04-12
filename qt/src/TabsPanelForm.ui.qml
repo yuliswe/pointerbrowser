@@ -1,13 +1,16 @@
-import QtQuick 2.9
-import QtQuick.Controls.Styles 1.4
+import QtQuick 2.10
 import QtQuick.Controls 2.3
 import "controls" as C
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 1.4 as C1
 
+
+//import QtQuick.Controls 1.4 as C1
 Item {
     id: form
+
+    property alias flickable: flickable
+    property int buttonSize: 40
 
     Rectangle {
         id: background
@@ -20,7 +23,7 @@ Item {
 
     RowLayout {
         id: topControls
-        height: 25
+        height: buttonSize
         anchors.top: parent.top
         anchors.topMargin: 3
         anchors.right: parent.right
@@ -31,8 +34,8 @@ Item {
         C.Button {
             id: newTabButton
             font.bold: true
-            Layout.preferredWidth: 25
-            Layout.preferredHeight: 25
+            Layout.preferredWidth: parent.height
+            Layout.preferredHeight: parent.height
             padding: 1
             Layout.fillHeight: true
             icon {
@@ -42,7 +45,6 @@ Item {
 
         C.TextField {
             id: tabsSearch
-            height: 25
             Layout.fillHeight: true
             Layout.fillWidth: true
             placeholderText: "Search Tabs"
@@ -50,23 +52,25 @@ Item {
         }
     }
 
-    C1.ScrollView {
+    ScrollView {
         id: scrollView
         //        interactive: true
         //        boundsBehavior: Flickable.DragOverBounds
         //        flickableDirection: Flickable.VerticalFlick
-        clip: true
+        //        clip: true
         anchors.bottomMargin: 5
         anchors.top: topControls.bottom
         anchors.right: parent.right
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
-        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+        //        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
         //        contentWidth: form.width
         //        contentHeight: 1000 //text1.height + tabsList.height + text2.height + searchList.height
         Flickable {
-            boundsBehavior: Flickable.DragOverBounds
+            id: flickable
+            //            flickDeceleration: 10
+            //            maximumFlickVelocity: 1000
             contentHeight: text1.height + tabsList.height + text2.height + searchList.height
             Text {
                 id: text1
