@@ -131,11 +131,18 @@ Window {
             }
             mainWindow.showMinimized()
         }
+
         titleBar.height: {
             if (Qt.platform.os == "ios") {
                 return 0
             }
             return 25
+        }
+        titleBar.visible: {
+            if (Qt.platform.os == "ios") {
+                return false
+            }
+            return true
         }
 
         // Resizers

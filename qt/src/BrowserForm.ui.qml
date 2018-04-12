@@ -47,12 +47,13 @@ C1.SplitView {
             anchors.rightMargin: 5
             anchors.leftMargin: 5
             anchors.topMargin: 3
-
+            readonly property int buttonWidth: buttonSize * (Qt.platform.os == "ios" ? 1 : 1)
+            //            spacing: (Qt.platform.os == "ios") ? 0 : 2
             C.Button {
                 id: prev
-                leftPadding: 5
-                padding: 7
-                Layout.preferredWidth: parent.height
+                leftPadding: (Qt.platform.os == "ios") ? 7 : 5
+                padding: (Qt.platform.os == "ios") ? 12 : 7
+                Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/left.svg"
@@ -62,9 +63,9 @@ C1.SplitView {
             C.Button {
                 id: next
                 width: height
-                rightPadding: 5
-                padding: 7
-                Layout.preferredWidth: parent.height
+                rightPadding: (Qt.platform.os == "ios") ? 7 : 5
+                padding: (Qt.platform.os == "ios") ? 12 : 7
+                Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/right.svg"
@@ -73,9 +74,9 @@ C1.SplitView {
 
             C.Button {
                 id: refresh
-                topPadding: 4
-                padding: 3
-                Layout.preferredWidth: parent.height
+                topPadding: (Qt.platform.os == "ios") ? 6 : 4
+                padding: (Qt.platform.os == "ios") ? 6 : 3
+                Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/refresh.svg"
@@ -85,18 +86,18 @@ C1.SplitView {
             BrowserAddressBar {
                 id: addressBar
                 Layout.fillWidth: true
-                Layout.fillHeight: true
+                Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
                 url: browserWebViews.url
                 title: browserWebViews.title
             }
 
             C.Button {
                 id: docview
-                topPadding: 4
-                bottomPadding: 4
+                topPadding: (Qt.platform.os == "ios") ? 9 : 4
+                bottomPadding: (Qt.platform.os == "ios") ? 9 : 4
                 padding: 0
                 checkable: true
-                Layout.preferredWidth: parent.height
+                Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 icon {
                     source: "icon/list.svg"
@@ -105,9 +106,9 @@ C1.SplitView {
 
             C.Button {
                 id: bookmark
-                padding: 3
+                padding: (Qt.platform.os == "ios") ? 6 : 4
                 checkable: true
-                Layout.preferredWidth: parent.height
+                Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 icon {
                     source: checked ? "icon/bookmark.svg" : "icon/book.svg"

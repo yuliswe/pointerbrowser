@@ -8,7 +8,7 @@
     "button_background": ["transparent","#ddd","#ddd","transparent"],
     "button_border": ["transparent"],
     "input_text": ["#000"],
-    "input_font_size": [14],
+    "input_font_size": [16],
     "input_placeholder": ["#555","#555","#555","#aaa"],
     "input_background": ["#ddd","#fafafa","#ddd","#fafafa"],
     "input_border": ["transparent"],

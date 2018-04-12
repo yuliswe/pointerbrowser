@@ -110,7 +110,7 @@ BrowserForm {
     tabsPanel.buttonSize: buttonSize
 
     buttonSize: {
-        if (Qt.platform.os == "ios") { return 30 }
+        if (Qt.platform.os == "ios") { return 40 }
         return 25
     }
 

@@ -12,11 +12,6 @@ Item {
     property alias progressBar: progressBar
     property alias titleDisplay: titleDisplay
 
-    SystemPalette {
-        id: inaPal
-        colorGroup: SystemPalette.Inactive
-    }
-
     C.TextField {
         id: textField
         horizontalAlignment: Text.AlignHCenter
@@ -26,6 +21,7 @@ Item {
     Text {
         id: titleDisplay
         font.pixelSize: Palette.normal.input_font_size
+        fontSizeMode: Text.FixedSize
         elide: Text.ElideRight
         clip: true
         rightPadding: 5

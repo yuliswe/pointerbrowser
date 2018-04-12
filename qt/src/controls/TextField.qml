@@ -22,7 +22,7 @@ T.TextField {
         border.color: palette.input_border
         color: textfield.activeFocus ? palette.input_background : palette.input_background
         anchors.fill: textfield
-        radius: 3
+        radius: (Qt.platform.os == "ios" ? 10 : 3)
     }
     verticalAlignment: TextInput.AlignVCenter
     leftPadding: 5

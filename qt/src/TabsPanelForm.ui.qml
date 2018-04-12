@@ -45,8 +45,8 @@ Item {
 
         C.TextField {
             id: tabsSearch
-            Layout.fillHeight: true
             Layout.fillWidth: true
+            Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
             placeholderText: "Search Tabs"
             selectByMouse: true
         }

@@ -98,7 +98,7 @@ void TabsModel::loadTabs(void) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
         Webpage* page = page_.data();
-        _tabs << Webpage::fromQJsonObject(jobj);
+        _tabs << page_;
         //        emit tabInserted(idx, page);
         idx++;
     }
