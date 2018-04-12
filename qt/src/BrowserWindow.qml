@@ -1,26 +1,40 @@
 import QtQuick 2.4
 import Backend 1.0
+import "controls"
 
-BrowserWindowForm {
+FramelessWindow {
+    title: qsTr("DOCVIEWER")
     id: browserWindow
-    sourceComponent: c
+    //    visible: false
     Component {
-        id: c
-        Browser {
-            id: browser
-            anchors.fill: parent
-            z: 1
+        Item {
+            Browser {
+                id: browser
+                anchors.fill: parent
+            }
+//            Rectangle {
+//                id: splash
+//                height: browser.height
+//                width: browser.width
+//                color: "#000"
+//                visible: TabsModel.count === 0
+//            }
+            Timer {
+                id: timeout
+                repeat: false
+                triggeredOnStart: false
+                interval: 500
+                onTriggered: {
+                    TabsModel.loadTabs()
+                }
+            }
+            Component.onCompleted: {
+                timeout.start()
+            }
         }
     }
 
-    Connections {
-        target: browserWindow
-        onClosing: {
-            TabsModel.saveTabs()
-            SearchDB.disconnect()
-        }
-        onActiveFocusItemChanged: {
-            console.log("onActiveFocusItemChanged:", activeFocusItem)
-        }
+    onActiveFocusItemChanged: {
+        console.log("onActiveFocusItemChanged:", activeFocusItem)
     }
 }

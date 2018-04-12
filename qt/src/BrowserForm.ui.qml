@@ -105,6 +105,7 @@ C1.SplitView {
 
             C.Button {
                 id: bookmark
+                padding: 3
                 checkable: true
                 Layout.preferredWidth: parent.height
                 Layout.preferredHeight: parent.height

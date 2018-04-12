@@ -15,6 +15,7 @@ T.TextField {
     selectionColor: palette.text_background
     selectedTextColor: palette.text
     text: placeholderText
+    font.pixelSize: palette.input_font_size
     background: Rectangle {
         id: rectangle
         border.width: 1

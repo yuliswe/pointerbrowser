@@ -8,6 +8,7 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+//        qDebug() << "EventFilter::eventFilter" << keyEvent->key();
         if (keyEvent->key() == Qt::Key_Control) {
             setCtrlKeyDown(true);
         }

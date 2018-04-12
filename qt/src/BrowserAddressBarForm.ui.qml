@@ -36,7 +36,7 @@ Item {
 
     Text {
         id: titleDisplay
-        text: qsTr("Text")
+        font.pixelSize: Palette.normal.input_font_size
         elide: Text.ElideRight
         clip: true
         rightPadding: 5
@@ -45,6 +45,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         anchors.fill: parent
         color: Palette.normal.input_placeholder
+
         visible: !textField.activeFocus
     }
 }

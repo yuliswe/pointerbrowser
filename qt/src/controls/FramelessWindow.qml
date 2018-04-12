@@ -16,12 +16,16 @@ Window {
     property int startW: -1
     property int startH: -1
     property bool draggingResetted: false
-    property alias sourceComponent: form.sourceComponent
+    default property var body
+
     //    property var delegate: null
     //        color: "green"
     color: "#00000000"
 
-    readonly property int customFlags: Qt.Window | Qt.FramelessWindowHint
+    readonly property int customFlags: {
+        if (Qt.platform.os == "ios") { return Qt.Window }
+        return Qt.Window | Qt.FramelessWindowHint
+    }
 
     property bool resizing: false
 
@@ -62,6 +66,7 @@ Window {
 
     FramelessWindowForm {
         id: form
+        loader.sourceComponent: body
         active: mainWindow.active
         width: mainWindow.width
         height: mainWindow.height
@@ -164,6 +169,14 @@ Window {
         brResizer.onDraggingStops: stopDragging()
         tlResizer.onDraggingStops: stopDragging()
         trResizer.onDraggingStops: stopDragging()
+        rResizer.enabled: (Qt.platform.os != "ios")
+        lResizer.enabled: (Qt.platform.os != "ios")
+        tResizer.enabled: (Qt.platform.os != "ios")
+        bResizer.enabled: (Qt.platform.os != "ios")
+        trResizer.enabled: (Qt.platform.os != "ios")
+        tlResizer.enabled: (Qt.platform.os != "ios")
+        brResizer.enabled: (Qt.platform.os != "ios")
+        blResizer.enabled: (Qt.platform.os != "ios")
         rResizer.onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
@@ -239,5 +252,4 @@ Window {
             }
         }
     }
-
 }

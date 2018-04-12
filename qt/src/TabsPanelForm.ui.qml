@@ -54,6 +54,7 @@ Item {
 
     ScrollView {
         id: scrollView
+        clip: true
         //        interactive: true
         //        boundsBehavior: Flickable.DragOverBounds
         //        flickableDirection: Flickable.VerticalFlick
@@ -69,6 +70,7 @@ Item {
         //        contentHeight: 1000 //text1.height + tabsList.height + text2.height + searchList.height
         Flickable {
             id: flickable
+            clip: false
             //            flickDeceleration: 10
             //            maximumFlickVelocity: 1000
             contentHeight: text1.height + tabsList.height + text2.height + searchList.height

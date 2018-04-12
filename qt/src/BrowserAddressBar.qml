@@ -3,7 +3,6 @@ import Backend 1.0
 
 BrowserAddressBarForm {
     id: form
-    property int progress: 0
     property string url: "url"
     property string title: "title"
     signal userEntersUrl(string url)
@@ -17,50 +16,61 @@ BrowserAddressBarForm {
         console.log("update", form.url, form.title)
         if (title !== "") {
             titleDisplay.text = title
-//            textField.horizontalAlignment = Text.AlignHCenter
+            //            textField.horizontalAlignment = Text.AlignHCenter
         } else {
             titleDisplay.text = url
-//            textField.horizontalAlignment = Text.AlignHCenter
-//            textField.horizontalAlignment = Text.AlignLeft
-//            titleDisplay.ensureVisible(0)
+            //            textField.horizontalAlignment = Text.AlignHCenter
+            //            textField.horizontalAlignment = Text.AlignLeft
+            //            titleDisplay.ensureVisible(0)
         }
-//        textField.focus = false
+        //        textField.focus = false
     }
+
+    function updateProgress(progress) {
+        var w = Math.max(10,progress)/100 * textField.width
+        if (progressBar.width >= w) {
+            barWidthAnimation.enabled = false
+            progressBar.opacity = 0
+            progressBar.width = w
+            fadeProgress.stop()
+            return
+        }
+        barWidthAnimation.enabled = true
+        progressBar.opacity = 0.3
+        progressBar.width = w
+        if (progress === 100) {
+            fadeProgress.restart()
+        } else {
+            fadeProgress.stop()
+        }
+    }
+
 
     textField.onAccepted: {
         var url = textField.text
         var exp = new RegExp("http://|https://")
         if (!exp.test(url)) {
-            url = "http://www.google.com/search?query=" + url
+            url = "http://www.google.com/search?q=" + url
         }
         textField.focus = false
+        console.log("userEntersUrl", url)
         userEntersUrl(url)
     }
 
     textField.onActiveFocusChanged: {
         if (textField.activeFocus) {
-//            textField.horizontalAlignment = Text.AlignHCenter
+            //            textField.horizontalAlignment = Text.AlignHCenter
+            textField.color = Palette.selected.input_text
             textField.text = form.url
-            textField.ensureVisible(0)
+            if (Qt.platform.os != "ios") {
+                textField.ensureVisible(0)
+            }
             textField.selectAll()
         } else {
             textField.deselect()
-//            textField.horizontalAlignment = Text.AlignHCenter
-            textField.text = ""
+            //            textField.horizontalAlignment = Text.AlignHCenter
+            textField.color = "transparent"
         }
-    }
-
-    onProgressChanged: {
-        if (progress === 0) {
-            barWidthAnimation.enabled = true
-            progressBar.opacity = 0.3
-        } else if (progress === 100) {
-            fadeProgress.start()
-        } else {
-        }
-        var newW = progress/100 * textField.width
-        progressBar.width = newW
-        console.log("progress=", progress, "newW=",newW,"progressBar.width=",progressBar.width, "progressBar.opacity=", progressBar.opacity, "barWidthAnimation.enabled=", barWidthAnimation.enabled)
     }
 
     Behavior on progressBar.width {
@@ -68,6 +78,7 @@ BrowserAddressBarForm {
         enabled: progress < 100
         SmoothedAnimation {
             duration: 100
+            velocity: -1
         }
     }
 
@@ -78,9 +89,7 @@ BrowserAddressBarForm {
         properties: "opacity"
         to: 0
         duration: 1000
-        onStopped: {
-            progressBar.width = 0
-        }
+        alwaysRunToEnd: false
     }
 
     Shortcut {

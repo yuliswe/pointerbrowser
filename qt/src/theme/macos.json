@@ -8,8 +8,9 @@
     "button_background": ["transparent","#ddd","#ddd","transparent"],
     "button_border": ["#ccc","#ccc","#ccc","#ddd"],
     "input_text": ["#000"],
+    "input_font_size": [13],
     "input_placeholder": ["#666","#666","#666","#aaa"],
-    "input_background": ["#eee","#fafafa","#fafafa","#fafafa"],
+    "input_background": ["transparent","#fafafa","transparent","#fafafa"],
     "input_border": ["#ccc","#ccc","#ccc","#ddd"],
     "list_item_text": ["#333"],
     "list_item_background": ["transparent","#ddd","#eee","transparent"]

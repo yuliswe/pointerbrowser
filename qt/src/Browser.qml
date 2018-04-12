@@ -55,11 +55,9 @@ BrowserForm {
         }
     }
 
-    browserAddressBar.progress: browserWebViews.loadProgress
-
     function newTab(url, switchToView) {
         console.log("newTab:", url, switchToView)
-        url = url || "https://google.ca"
+        url = url || "https://www.google.ca/"
         TabsModel.insertTab(0, url, "", "")
         if (switchToView) {
             openTab(0)
@@ -75,6 +73,7 @@ BrowserForm {
         tabsPanel.setCurrentIndex(index)
         var wp = currentWebView()
         browserAddressBar.update(currentIndex())
+        browserAddressBar.updateProgress(currentWebView().loadProgress)
         browserBookmarkButton.checked = SearchDB.hasWebpage(wp.url)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
@@ -127,6 +126,7 @@ BrowserForm {
         target: browserWebViews
         onUserOpensLinkInWebView: {
             browserAddressBar.update(url, "")
+            browserAddressBar.updateProgress(currentWebView().loadProgress)
             currentWebView().forceActiveFocus()
             //            prevEnabled = true
             //            nextEnabled = false
@@ -150,6 +150,11 @@ BrowserForm {
             prevEnabled = cw && cw.canGoBack
             nextEnabled = cw && cw.canGoForward
             var wp = browserWebViews.webViewAt(index)
+        }
+        onWebViewLoadingProgressChanged: {
+            if (index === currentIndex()) {
+                browserAddressBar.updateProgress(progress)
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: listView
 
-    readonly property int loadProgress: currentWebView() ? currentWebView().loadProgress : 0
     readonly property string url: currentWebView() ? currentWebView().url : ""
     readonly property string title: currentWebView() ? currentWebView().title : ""
     signal userOpensLinkInWebView(int index, string url)
@@ -14,8 +13,15 @@ BrowserWebViewsForm {
     signal webViewLoadingStarted(int index, string url)
     signal webViewLoadingStopped(int index, string url)
     signal webViewLoadingFailed(int index, string url)
+    signal webViewLoadingProgressChanged(int index, int progress)
 
     repeaterModel: TabsModel
+
+    //    Component.onCompleted: {
+    //        for (var i = 0; i < TabsModel.count; i++) {
+    //            webViewAt(i).url = TabsModel.at(i).url
+    //        }
+    //    }
 
     function currentWebView() {
         return webViewAt(currentIndex())
@@ -49,18 +55,13 @@ BrowserWebViewsForm {
         id: webview
         implicitHeight: listView.height
         implicitWidth: listView.width
-        property string modelUrl: model ? model.url : ""
-        onModelUrlChanged: {
-            // must compare with ==
-            // the two string types might be different!
-            console.log("onModelUrlChanged:", url, model.url, url == modelUrl)
-            if (url != modelUrl) {
-                url = modelUrl
-            }
+        Component.onCompleted: {
+            url = TabsModel.at(index).url
+            //            visible = true
         }
-        onTitleChanged: {
-            TabsModel.updateTab(index, "title", title)
-        }
+        onUrlChanged: TabsModel.updateTab(index, "url", url.toString())
+        onTitleChanged: TabsModel.updateTab(index, "title", title)
+        onLoadProgressChanged: webViewLoadingProgressChanged(index, loadProgress)
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
@@ -81,21 +82,26 @@ BrowserWebViewsForm {
                 webViewLoadingStarted(index, loadRequest.url)
                 break
             case WebView.LoadSucceededStatus:
-                TabsModel.updateTab(index, "url", loadRequest.url)
+                console.log("WebView.LoadSucceededStatus",
+                            loadRequest.errorString)
                 webViewLoadingSucceeded(index, loadRequest.url)
                 webViewLoadingStopped(index, loadRequest.url)
                 break
             case WebView.LoadFailedStatus:
-                TabsModel.updateTab(index, "url", loadRequest.url)
+                console.log("WebView.LoadFailedStatus",
+                            loadRequest.errorString)
                 webViewLoadingFailed(index, loadRequest.url)
                 webViewLoadingStopped(index, loadRequest.url)
                 break
             case WebView.LoadStoppedStatus:
+                console.log("WebView.LoadStoppedStatus",
+                            loadRequest.errorString)
                 webViewLoadingStopped(index, loadRequest.url)
                 break
             }
         }
     }
+
 
     Connections {
         target: listView.stackLayout

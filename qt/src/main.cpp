@@ -12,14 +12,13 @@
 int main(int argc, char *argv[])
 {
     // init ui
-        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     // set properties
-    QMLRegister::tabsModel->loadTabs();
     QMLRegister::fileManager->setupDirectories();
 
-//    Palette customPal;
-//    app.setPalette(customPal);
+    //    Palette customPal;
+    //    app.setPalette(customPal);
 
     QMLRegister::registerToQML();
     QMLRegister::searchDB->connect();
@@ -45,6 +44,13 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
+
+//    QMLRegister::tabsModel->loadTabs();
+
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
+        QMLRegister::tabsModel->saveTabs();
+        QMLRegister::searchDB->disconnect();
+    });
 
     return app.exec();
 }

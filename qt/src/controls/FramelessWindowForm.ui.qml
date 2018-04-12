@@ -8,7 +8,6 @@ Item {
     //            color: "black"
     property alias titleBar: titleBar
     property alias rightResizer: horiRSizer
-    property alias sourceComponent: loader.sourceComponent
     property bool active: false
     property int resizerThreshold: 5
     property int loaderMargin: form.resizerThreshold / 2
@@ -20,6 +19,7 @@ Item {
     property alias blResizer: diagBLSizer
     property alias tlResizer: diagTLSizer
     property alias trResizer: diagTRSizer
+    property alias loader: loader
 
     readonly property var palette: active ? Palette.selected : Palette.normal
 

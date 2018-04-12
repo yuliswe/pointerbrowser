@@ -8,8 +8,9 @@
     "button_background": ["transparent","#ddd","#ddd","transparent"],
     "button_border": ["transparent"],
     "input_text": ["#000"],
+    "input_font_size": [14],
     "input_placeholder": ["#555","#555","#555","#aaa"],
-    "input_background": ["#ddd","#fafafa","#fafafa","#fafafa"],
+    "input_background": ["transparent","#fafafa","transparent","#fafafa"],
     "input_border": ["transparent"],
     "list_item_text": ["#333"],
     "list_item_background": ["transparent","#ddd","#eee","transparent"]
