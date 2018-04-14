@@ -16,15 +16,12 @@ typedef QSharedPointer<QSqlRelationalTableModel> QRelTable_;
 class SearchDB : public QObject
 {
         Q_OBJECT
-        Q_PROPERTY(QSqlRelationalTableModel* webpageTable READ webpageTable NOTIFY webpageTableChanged)
         Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged)
-
 
     public:
         explicit SearchDB();
 
     signals:
-        void webpageTableChanged();
         void searchResultChanged();
 
     public slots:
@@ -32,9 +29,11 @@ class SearchDB : public QObject
         void disconnect();
         bool execMany(const QStringList& lines);
         bool addWebpage(const QString& url);
+        bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
+        bool addSymbols(const QString& url, const QStringList& symbols);
         Webpage_ findWebpage(const QString& url) const;
         bool hasWebpage(const QString& url) const;
-        void removeWebpage(const QString& url);
+        bool removeWebpage(const QString& url);
         void search(const QString& word);
         QSqlRelationalTableModel* webpageTable() const;
         TabsModel* searchResult();
@@ -42,8 +41,9 @@ class SearchDB : public QObject
     protected:
         QString _dbPath;
         QSqlDatabase _db;
-        QRelTable_ _indexTable;
-        QRelTable_ _webpageTable;
+        QRelTable_ _symbol;
+        QRelTable_ _webpage;
+        QRelTable_ _webpage_symbol;
         QString _currentWord;
         TabsModel _searchResult; // cache search function
 };

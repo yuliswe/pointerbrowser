@@ -1,1 +1,16 @@
-CREATE TABLE IF NOT EXISTS webpage (id INTEGER PRIMARY KEY, url TEXT);
+CREATE TABLE IF NOT EXISTS webpage (
+    id INTEGER PRIMARY KEY,
+    url TEXT UNIQUE NOT NULL,
+    temporary BOOLEAN NOT NULL
+);
+CREATE TABLE IF NOT EXISTS symbol (
+    id INTEGER PRIMARY KEY,
+    symbol TEXT UNIQUE NOT NULL
+);
+CREATE TABLE IF NOT EXISTS webpage_symbol (
+    id INTEGER PRIMARY KEY,
+    webpage INTEGER NOT NULL,
+    symbol INTEGER NOT NULL,
+    FOREIGN KEY(webpage) REFERENCES webpage(id),
+    FOREIGN KEY(symbol) REFERENCES symbol(id)
+);

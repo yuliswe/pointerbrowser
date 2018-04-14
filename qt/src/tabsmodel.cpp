@@ -128,7 +128,6 @@ QVariant TabsModel::data(const QModelIndex& idx, int role) const
     Webpage_ p = _tabs[row];
     QVariant v;
     v.setValue(p.data());
-    qDebug() << "TabsModel::data" << v;
     return v;
 }
 

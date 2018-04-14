@@ -3,17 +3,37 @@ import Mark from "mark.ts"
 
 class Docview {
 
-    public allSymbols(): string[] {
+    public symbols(): string[] {
         const hrefs = $.map($('a'), (x:any)=>x.href)
         const syms = hrefs.map((x:string) => {
             const m = x.match(/\#(.+)$/g)
-            return m == null ? "" : m[0]
+            return m == null ? "" : m[0].substr(1)
         })
         return syms.filter((x:string) => x.length > 0)
     }
 
+    public prefixes(word: string, len: number): string[] {
+        let i = 0
+        let subs = []
+        while (i < word.length) {
+            subs.push(word.substring(i, Math.min(i+len, word.length)))
+            i++
+        }
+        return subs
+    }
+
+    public keys(len: number): string[] {
+        let mapping = {}
+        this.symbols().map((v) => {
+            this.prefixes(v,len).forEach((v) => {
+                mapping[v] = 1;
+            })
+        })
+        return Object.keys(mapping)
+    }
+
     public docviewHTML(): string {
-        return this.allSymbols().join('\n')
+        return this.symbols().join('\n')
     }
 
     public turnOn(): void {

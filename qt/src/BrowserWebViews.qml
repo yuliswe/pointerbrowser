@@ -84,8 +84,19 @@ BrowserWebViewsForm {
             case WebView.LoadSucceededStatus:
                 console.log("WebView.LoadSucceededStatus",
                             loadRequest.errorString)
-                webViewLoadingSucceeded(index, loadRequest.url)
-                webViewLoadingStopped(index, loadRequest.url)
+                var js = FileManager.readQrcFileS("js/docview.js")
+//                var lr = loadRequest
+//                var url = loadRequest.url
+//                console.log("wtf??", loadRequest.url, loadRequest.status)
+                webview.runJavaScript(js, function() {
+                    webview.runJavaScript("Docview.symbols()", function(syms) {
+//                        console.log("wtf??", lr.url, lr.status)
+                        SearchDB.addWebpage(webview.url)
+                        SearchDB.addSymbols(webview.url, syms)
+                    })
+                    webViewLoadingSucceeded(index, loadRequest.url)
+                    webViewLoadingStopped(index, loadRequest.url)
+                })
                 break
             case WebView.LoadFailedStatus:
                 console.log("WebView.LoadFailedStatus",

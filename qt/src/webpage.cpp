@@ -28,12 +28,13 @@ QString Webpage::title() const { return _title; }
 QString Webpage::url() const { return _url; }
 QString Webpage::storeFile() const { return _storeFile; }
 QString Webpage::html() const { return _html; }
+bool Webpage::temporary() const { return _temporary; }
 
 void Webpage::setTitle(QString x) { _title = x; }
 void Webpage::setUrl(QString x) { _url = x; }
 void Webpage::setStoreFile(QString x) { _storeFile = x; }
 void Webpage::setHtml(QString x) { _html = x; }
-
+void Webpage::setTemporary(bool x) { _temporary = x; }
 
 QVariantMap Webpage::toQVariantMap()
 {

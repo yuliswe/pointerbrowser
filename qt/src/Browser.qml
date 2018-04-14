@@ -13,6 +13,10 @@ BrowserForm {
         return browserWebViews.currentIndex()
     }
 
+    function webViewAt(i) {
+        return browserWebViews.webViewAt(i)
+    }
+
     function showBrowserSearch() {
         browserSearch.visible = true
         browserSearch.textfield.focus = true
@@ -59,6 +63,7 @@ BrowserForm {
         console.log("newTab:", url, switchToView)
         url = url || "https://www.google.ca/"
         TabsModel.insertTab(0, url, "", "")
+        SearchDB.addWebpage(url)
         if (switchToView) {
             openTab(0)
         } else {
@@ -74,13 +79,14 @@ BrowserForm {
         var wp = currentWebView()
         browserAddressBar.update(currentIndex())
         browserAddressBar.updateProgress(currentWebView().loadProgress)
-        browserBookmarkButton.checked = SearchDB.hasWebpage(wp.url)
+        browserBookmarkButton.checked = ! SearchDB.hasWebpage(wp.url).temporary
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
     }
 
     function closeTab(index) {
         console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
+        SearchDB.removeWebpage(webViewAt(index).url)
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
@@ -136,10 +142,7 @@ BrowserForm {
         }
         onWebViewLoadingSucceeded: {
             var wp = browserWebViews.webViewAt(index)
-            var js = FileManager.readQrcFileS("js/docview.js")
-            wp.runJavaScript(js)
             if (index === currentIndex()) {
-                browserBookmarkButton.checked = true
                 browserAddressBar.update(wp.url, wp.title)
             }
         }
@@ -239,10 +242,15 @@ BrowserForm {
         onClicked: {
             if (browserBookmarkButton.checked) {
                 console.log("bookmarking", currentWebView().url)
-                SearchDB.addWebpage(currentWebView().url)
+                currentWebView().runJavaScript("Docview.symbols()", function(syms) {
+                    SearchDB.addWebpage(currentWebView().url)
+                    if (! SearchDB.updateWebpage(currentWebView().url, "temporary", browserBookmarkButton.checked)) {
+                        browserBookmarkButton.checked = ! browserBookmarkButton.checked
+                    }
+                })
             } else {
                 console.log("unbookmarking", currentWebView().url)
-                SearchDB.removeWebpage(currentWebView().url)
+                browserBookmarkButton.checked = ! SearchDB.updateWebpage(currentWebView().url, "temporary", false)
             }
         }
     }

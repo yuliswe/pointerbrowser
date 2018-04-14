@@ -34,6 +34,31 @@ Window {
     property int prevVisibility: Window.Hidden
 
     Timer {
+        id: resizingTimeout
+        onTriggered: resizing = false
+        triggeredOnStart: false
+        interval: 1000
+    }
+
+    function maximizeWindow() {
+        resizing = true
+        mainWindow.showMaximized()
+        resizingTimeout.restart()
+    }
+
+    function minimizeWindow() {
+        resizing = true
+        mainWindow.showMinimized()
+        resizingTimeout.restart()
+    }
+
+    function normalizeWindow() {
+        resizing = true
+        mainWindow.showNormal()
+        resizingTimeout.restart()
+    }
+
+    Timer {
         id: onExitFromFullscreen
         repeat: false
         triggeredOnStart: false
@@ -105,7 +130,7 @@ Window {
         titleBar.onUserMaximizesWindow: {
             switch (mainWindow.visibility) {
             case Window.FullScreen:
-                mainWindow.showNormal()
+                normalizeWindow()
                 //                macosRenderBugFix()
                 break
             default:
@@ -115,10 +140,10 @@ Window {
         titleBar.onUserDoubleClicksTitleBar: {
             switch (mainWindow.visibility) {
             case Window.Maximized:
-                mainWindow.showNormal()
+                normalizeWindow()
                 break
             default:
-                mainWindow.showMaximized()
+                maximizeWindow()
             }
             macosRenderBugFix()
         }
@@ -129,7 +154,7 @@ Window {
             if (Qt.platform.os === 'osx') {
                 mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowMinMaxButtonsHint
             }
-            mainWindow.showMinimized()
+            minimizeWindow()()
         }
 
         titleBar.height: {
