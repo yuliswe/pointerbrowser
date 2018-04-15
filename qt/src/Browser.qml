@@ -83,6 +83,8 @@ BrowserForm {
     Component.onCompleted: {
         if (TabsModel.count > 0) {
             openTab(0)
+        } else {
+            showWelcomePage()
         }
     }
 
