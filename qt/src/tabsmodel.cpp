@@ -27,30 +27,32 @@ QVariant TabsModel::at(int i)
     return v;
 }
 
-void TabsModel::insertTab(int idx, QString url, QString title, QString html)
+void TabsModel::insertWebpage(int idx, Webpage_ page)
 {
     emit beginInsertRows(QModelIndex(), idx, idx);
-    Webpage_ page = Webpage::create(url);
-    QVariant v;
-    v.setValue(page.data());
     _tabs.insert(idx, page);
     _tabs[idx] = page;
     emit endInsertRows();
     emit countChanged();
 }
 
+void TabsModel::insertTab(int idx, QString url)
+{
+    qDebug() << "TabsModel::insertTab" << idx << url;
+    Webpage_ page = Webpage::create(url);
+    insertWebpage(idx, page);
+}
+
 void TabsModel::updateTab(int index, QString property, QVariant value)
 {
+    qDebug() << "TabsModel::updateTab:" << property << value;
     Webpage_ page = _tabs[index];
     QByteArray ba = property.toLocal8Bit();
     const char *str = ba.data();
     QVariant current = page.data()->property(str);
-    qDebug() << "TabsModel::updateTab:" << property << "from" << current << "to" << value << (value == current);
     if (value == current) { return; }
     page.data()->setProperty(str, value);
     QModelIndex i = TabsModel::index(index);
-    //    QVector<int> roles;
-    //    roles << 0;
     emit dataChanged(i,i);
 }
 
@@ -107,18 +109,6 @@ void TabsModel::loadTabs(void) {
     emit countChanged();
 }
 
-//void TabsModel::syncTabs(QVariantList tabs) {
-//    _tabs.clear();
-//    int idx = 0;
-//    for (QVariant tab : tabs) {
-//        Webpage* page = tab.value<Webpage*>();
-//        _tabs << QSharedPointer<Webpage>(page);
-//        emit tabInserted(idx, page);
-//        idx++;
-//    }
-//    emit tabsChanged();
-//}
-
 QVariant TabsModel::data(const QModelIndex& idx, int role) const
 {
     int row = idx.row();
@@ -135,43 +125,6 @@ int TabsModel::rowCount(const QModelIndex &parent) const
 {
     return _tabs.length();
 }
-
-//bool TabsModel::setData(const QModelIndex &i, const QVariant &v, int role)
-//{
-//    if (i.row() >= _tabs.length()) { return false; }
-//    Webpage_ sptr = QSharedPointer<Webpage>(v.value<Webpage*>());
-//    _tabs[i.row()] = sptr;
-//    emit dataChanged(i,i);
-//    return true;
-//}
-
-//Qt::ItemFlags TabsModel::flags(const QModelIndex &index) const
-//{
-//    return Qt::ItemIsSelectable
-//            | Qt::ItemIsEditable
-//            | Qt::ItemNeverHasChildren;
-//}
-
-//bool TabsModel::removeRows(int row, int count, const QModelIndex &parent)
-//{
-//    if (row >= _tabs.length()) { return false; }
-//    emit beginRemoveRows(parent, row, row);
-//    _tabs.removeAt(row);
-//    emit endRemoveRows();
-//    emit countChanged();
-//    return true;
-//}
-
-//bool TabsModel::insertRows(int row, int count, const QModelIndex &parent)
-//{
-//    if (row > _tabs.length()) { return false; }
-//    emit beginInsertRows(parent, row, row);
-//    Webpage_ page = QSharedPointer<Webpage>(nullptr);
-//    _tabs.insert(row, page);
-//    emit endInsertRows();
-//    emit countChanged();
-//    return true;
-//}
 
 QHash<int, QByteArray> TabsModel::roleNames() const {
     QHash<int, QByteArray> roles;

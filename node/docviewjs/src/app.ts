@@ -4,12 +4,26 @@ import Mark from "mark.ts"
 class Docview {
 
     public symbols(): string[] {
-        const hrefs = $.map($('a'), (x:any)=>x.href)
-        const syms = hrefs.map((x:string) => {
-            const m = x.match(/\#(.+)$/g)
-            return m == null ? "" : m[0].substr(1)
+        let hrefs = {}
+        $('a').each((i,e)=> {
+            hrefs[$(e).attr("href")] = $(e).text()
         })
-        return syms.filter((x:string) => x.length > 0)
+        let mapping = {}
+        for (let k in hrefs) {
+            const m = k.match(/\#(.+)$/g)
+            if (m !== null) {
+                const treatment = [" "]
+                let link = m[0].substr(1).toLowerCase()
+                let txt = hrefs[k].toLowerCase()
+                treatment.forEach((t) => {
+                    link.replace(t, "")
+                    txt.replace(t, "")
+                })
+                // mapping[link] = 1
+                mapping[txt] = 1
+            }
+        }
+        return Object.keys(mapping)
     }
 
     public prefixes(word: string, len: number): string[] {

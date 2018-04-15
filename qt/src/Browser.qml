@@ -17,6 +17,33 @@ BrowserForm {
         return browserWebViews.webViewAt(i)
     }
 
+    function showWelcomePage() {
+        browserWebViews.setCurrentIndex(-1)
+        browserForwardButton.enabled = false
+        browserRefreshButton.enabled = false
+        browserBackButton.enabled = false
+        browserDocviewButton.enabled = false
+        browserBookmarkButton.enabled = false
+        browserAddressBar.update("Welcome", "")
+    }
+
+    function hideWelcomePage() {
+        browserForwardButton.enabled = true
+        browserRefreshButton.enabled = true
+        browserBackButton.enabled = true
+        browserDocviewButton.enabled = true
+        browserBookmarkButton.enabled = true
+    }
+
+    function refreshCurrentWebview() {
+        console.log("Browser.qml reloadWebViewAt")
+        if (currentIndex() > 0) {
+            EventFilter.ctrlKeyDown = false
+            SearchDB.removeWebpage(currentWebView().url)
+            browserWebViews.reloadCurrentWebView()
+        }
+    }
+
     function showBrowserSearch() {
         browserSearch.visible = true
         browserSearch.textfield.focus = true
@@ -69,15 +96,38 @@ BrowserForm {
         } else {
             openTab(currentIndex() + 1)
         }
+        hideWelcomePage()
+    }
+
+    tabsPanel.rectangle.color: {
+        if (splitView.resizing || browserWindow.resizing) {
+            return Palette.normal.window_base_background
+        } else {
+            return "transparent"
+        }
+    }
+
+    Timer {
+        id: bugfixTimeout
+        repeat: false
+        interval: 1000
+        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
+            if (splitView.resizing || browserWindow.resizing) {
+                return Palette.normal.window_base_background
+            } else {
+                return "transparent"
+            }
+        })
     }
 
     function openTab(index) {
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
-
+        tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
+        bugfixTimeout.restart()
         var wp = currentWebView()
-        browserAddressBar.update(currentIndex())
+        browserAddressBar.update(currentWebView().url, currentWebView().title)
         browserAddressBar.updateProgress(currentWebView().loadProgress)
         browserBookmarkButton.checked = ! SearchDB.hasWebpage(wp.url).temporary
         prevEnabled = wp && wp.canGoBack
@@ -86,7 +136,8 @@ BrowserForm {
 
     function closeTab(index) {
         console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
-        SearchDB.removeWebpage(webViewAt(index).url)
+        if (index < 0) { return }
+        //        SearchDB.removeWebpage(webViewAt(index).url)
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
@@ -102,8 +153,9 @@ BrowserForm {
             }
             // if this is the only one
             else {
-                newTab("",true)
-                TabsModel.removeTab(index+1)
+                TabsModel.removeTab(index)
+                showWelcomePage()
+                //                newTab("",true)
             }
         } else if (currentIndex() > index) {
             TabsModel.removeTab(index)
@@ -192,7 +244,12 @@ BrowserForm {
     Connections {
         target: browserAddressBar
         onUserEntersUrl: {
-            currentWebView().url = url
+            if (EventFilter.ctrlKeyDown || currentIndex() === -1) {
+                EventFilter.ctrlKeyDown = false
+                newTab(url, true)
+            } else {
+                currentWebView().url = url
+            }
         }
     }
 
@@ -212,15 +269,13 @@ BrowserForm {
 
     Connections {
         target: browserRefreshButton
-        onClicked: {
-            browserWebViews.reloadCurrentWebView()
-        }
+        onClicked: refreshCurrentWebview()
     }
 
     Connections {
-        target: browserDocviewSwitch
+        target: browserDocviewButton
         onCheckedChanged: {
-            if (browserDocviewSwitch.checked) {
+            if (browserDocviewButton.checked) {
                 console.log("Docview.turnOn()")
                 currentWebView().runJavaScript("Docview.turnOn()",
                                                function (result) {
@@ -258,29 +313,25 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+R"
         autoRepeat: false
-        onActivated: {
-            EventFilter.ctrlKeyDown = false
-            browserWebViews.reloadCurrentWebView()
-        }
+        onActivated: refreshCurrentWebview()
     }
 
-    Timer {
-        id: ctrl_w_timeout
-        interval: 100
-        triggeredOnStart: false
-        onTriggered: {
-            ctrl_w.guard = true
-        }
-        repeat: false
-    }
+    //    Timer {
+    //        id: ctrl_w_timeout
+    //        interval: 100
+    //        triggeredOnStart: false
+    //        onTriggered: {
+    //            ctrl_w.guard = true
+    //        }
+    //        repeat: false
+    //    }
 
     Shortcut {
         id: ctrl_w
         property bool guard: true
         autoRepeat: true
         sequence: "Ctrl+W"
-        context: Qt.ApplicationShortcut
-        onActivated: {
+        onActivated: closeTab(currentIndex()) /*{
             if (guard) {
                 guard = false
                 EventFilter.ctrlKeyDown = false
@@ -288,7 +339,7 @@ BrowserForm {
                 closeTab(currentIndex())
                 ctrl_w_timeout.start()
             }
-        }
+        }*/
     }
 
     Shortcut {

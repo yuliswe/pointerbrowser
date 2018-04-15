@@ -10,9 +10,9 @@ BrowserAddressBarForm {
     progressBar.opacity: 0.3
     progressBar.width: 0
 
-    function update(index) {
-        form.url = TabsModel.at(index).url
-        form.title = TabsModel.at(index).title
+    function update(url, title) {
+        form.title = title
+        form.url = url
         console.log("update", form.url, form.title)
         if (title !== "") {
             titleDisplay.text = title

@@ -5,22 +5,22 @@ import Backend 1.0
 
 T.TextField {
     id: textfield
-    readonly property var palette: {
+    readonly property var pal: {
         if (activeFocus) { return Palette.selected }
         return Palette.normal
     }
-    color: text == placeholderText ? palette.input_placeholder : palette.input_text
+    color: text == placeholderText ? pal.input_placeholder : pal.input_text
     property alias rectangle: rectangle
     selectByMouse: true
-    selectionColor: palette.text_background
-    selectedTextColor: palette.text
+    selectionColor: pal.text_background
+    selectedTextColor: pal.text
     text: placeholderText
-    font.pixelSize: palette.input_font_size
+    font.pixelSize: pal.input_font_size
     background: Rectangle {
         id: rectangle
         border.width: 1
-        border.color: palette.input_border
-        color: textfield.activeFocus ? palette.input_background : palette.input_background
+        border.color: pal.input_border
+        color: textfield.activeFocus ? pal.input_background : pal.input_background
         anchors.fill: textfield
         radius: (Qt.platform.os == "ios" ? 10 : 3)
     }

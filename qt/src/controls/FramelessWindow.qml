@@ -154,7 +154,7 @@ Window {
             if (Qt.platform.os === 'osx') {
                 mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowMinMaxButtonsHint
             }
-            minimizeWindow()()
+            minimizeWindow()
         }
 
         titleBar.height: {

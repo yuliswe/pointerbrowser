@@ -82,7 +82,7 @@ bool SearchDB::execMany(const QStringList& lines)
 
 bool SearchDB::updateWebpage(const QString& url, const QString& property, const QVariant& value)
 {
-    qDebug() << "SearchDB::updateWebpage " << url << value;
+    qDebug() << "SearchDB::updateWebpage " << url << property << value;
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
@@ -95,7 +95,8 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
         qDebug() << "SearchDB::setTemporary failed";
         return false;
     }
-    return _webpage->submitAll();
+    _webpage->submitAll();
+    return true;
 }
 
 bool SearchDB::addSymbols(const QString& url, const QStringList& symbols)
@@ -154,7 +155,6 @@ bool SearchDB::addWebpage(const QString& url)
         return false;
     };
     _webpage->submitAll();
-    search(_currentWord);
     return true;
 }
 
@@ -184,9 +184,7 @@ bool SearchDB::removeWebpage(const QString& url)
         goto whenFailed;
     }
     _webpage->submitAll();
-    _webpage_symbol->submitAll();
-    search(_currentWord);
-    return true;
+    return _webpage_symbol->submitAll();
 whenFailed:
     qDebug() << "SearchDB::removeWebpage failed";
     _webpage->revertAll();
@@ -203,10 +201,12 @@ Webpage_ SearchDB::findWebpage(const QString& url) const
     if (_webpage->rowCount() == 0) {
         return QSharedPointer<Webpage>(nullptr);
     }
-    QSqlRecord record = _webpage->record(0);
-    qDebug() << "SearchDB::findWebpage found " << record;
-    Webpage_ webpage = Webpage::create(url);
-    return webpage;
+    QSqlRecord r = _webpage->record(0);
+    qDebug() << "SearchDB::findWebpage found " << r;
+    Webpage_ wp = Webpage::create(url);
+    wp->setTitle(r.value("title").value<QString>());
+    wp->setTemporary(r.value("temporary").value<bool>());
+    return wp;
 }
 
 bool SearchDB::hasWebpage(const QString& url) const
@@ -231,7 +231,9 @@ void SearchDB::search(const QString& word)
     for (int i = 0; i < upper; i++) {
         QSqlRecord record = _webpage->record(i);
         QString url = record.value("url").value<QString>();
-        _searchResult.insertTab(0, url, "", "");
+        QString title = record.value("title").value<QString>();
+        _searchResult.insertTab(0, url);
+        _searchResult.updateTab(0, "title", title);
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();
 }

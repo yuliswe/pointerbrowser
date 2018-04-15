@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS webpage (
     id INTEGER PRIMARY KEY,
     url TEXT UNIQUE NOT NULL,
-    temporary BOOLEAN NOT NULL
+    temporary BOOLEAN NOT NULL,
+    title TEXT,
+    html TEXT
 );
 CREATE TABLE IF NOT EXISTS symbol (
     id INTEGER PRIMARY KEY,

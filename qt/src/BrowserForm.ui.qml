@@ -14,11 +14,12 @@ C1.SplitView {
     property alias browserForwardButton: next
     property alias browserRefreshButton: refresh
     property alias browserBookmarkButton: bookmark
-    property alias browserDocviewSwitch: docview
+    property alias browserDocviewButton: docview
     property alias browserWebViews: browserWebViews
     property alias prevEnabled: prev.enabled
     property alias nextEnabled: next.enabled
     property alias browserSearch: browserSearch
+    property alias splitView: splitView
     property int buttonSize: 40
 
     SystemPalette {
@@ -87,8 +88,6 @@ C1.SplitView {
                 id: addressBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
-                url: browserWebViews.url
-                title: browserWebViews.title
             }
 
             C.Button {

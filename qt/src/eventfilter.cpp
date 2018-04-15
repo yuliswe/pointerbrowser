@@ -6,17 +6,24 @@
 
 bool EventFilter::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-//        qDebug() << "EventFilter::eventFilter" << keyEvent->key();
-        if (keyEvent->key() == Qt::Key_Control) {
+    switch(event->type()) {
+    case QEvent::KeyPress: {
+        QKeyEvent* e = static_cast<QKeyEvent *>(event);
+//        qDebug() << "EventFilter::eventFilter" << obj << e->modifiers() << e->key() << e->isAutoRepeat();
+        if (e->key() == Qt::Key_Control) {
             setCtrlKeyDown(true);
         }
-    } else if (event->type() == QEvent::KeyRelease) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        if (keyEvent->key() == Qt::Key_Control) {
+        break;
+    }
+    case QEvent::KeyRelease: {
+        QKeyEvent* e = static_cast<QKeyEvent *>(event);
+        if (e->key() == Qt::Key_Control) {
             setCtrlKeyDown(false);
         }
+        break;
+    }
+    default:
+        return false;
     }
     return false;
 }

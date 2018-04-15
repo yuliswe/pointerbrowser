@@ -3,6 +3,7 @@ import QtQuick.Controls 2.3
 import "controls" as C
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
+import Backend 1.0
 
 
 //import QtQuick.Controls 1.4 as C1
@@ -11,11 +12,10 @@ Item {
 
     property alias flickable: flickable
     property int buttonSize: 40
+    property alias rectangle: background
 
     Rectangle {
         id: background
-        color: (splitView.resizing
-                || browserWindow.resizing) ? actPal.window : "#00000000"
         //        color: "#00000000"
         border.width: 0
         anchors.fill: form
@@ -77,7 +77,7 @@ Item {
             Text {
                 id: text1
                 width: form.width
-                color: actPal.mid
+                color: Palette.normal.label_text
                 text: qsTr("Open Tabs")
                 verticalAlignment: Text.AlignBottom
                 anchors.top: parent.top
@@ -106,7 +106,7 @@ Item {
                 id: text2
                 x: 0
                 width: form.width
-                color: actPal.mid
+                color: Palette.normal.label_text
                 text: qsTr("Bookmarks")
                 verticalAlignment: Text.AlignBottom
                 anchors.top: tabsList.bottom
@@ -146,11 +146,6 @@ Item {
             id: docviewSwitch
             checked: true
         }
-    }
-
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
     }
 
     property alias tabsSearch: tabsSearch

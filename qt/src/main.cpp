@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 #endif
 
-    app.installEventFilter(QMLRegister::eventFilter);
+    QCoreApplication::instance()->installEventFilter(QMLRegister::eventFilter);
 
     // set window transparent
     //    QSurfaceFormat surfaceFormat;

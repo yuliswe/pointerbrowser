@@ -13,31 +13,22 @@ class TabsModel : public QAbstractListModel
 
     public:
         explicit TabsModel(QObject *parent = nullptr);
-//        QVariantList tabs() const;
         QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
         int rowCount(const QModelIndex &parent) const;
-//        bool setData(const QModelIndex &index, const QVariant &value, int role = 0);
-//        Qt::ItemFlags flags(const QModelIndex &index) const;
-//        bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
-//        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+        void insertWebpage(int idx, Webpage_ wp);
         QHash<int, QByteArray> roleNames() const;
 
     signals:
         void countChanged();
-//        void tabsChanged();
-//        void tabInserted(int index, Webpage* webpage);
-//        void tabRemoved(int index, Webpage* webpage);
 
     public slots:
-        void insertTab(int i, QString url, QString title, QString html);
+        void insertTab(int i, QString url);
         void updateTab(int i, QString property, QVariant value);
-//        int appendTab(QString url, QString title, QString html);
         bool removeTab(int idx);
         int findTab(QString url);
         int count();
         void saveTabs();
         void loadTabs();
-//        void syncTabs(QVariantList);
         void clear();
         QVariant at(int index);
 

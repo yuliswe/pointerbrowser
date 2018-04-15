@@ -85,15 +85,17 @@ BrowserWebViewsForm {
                 console.log("WebView.LoadSucceededStatus",
                             loadRequest.errorString)
                 var js = FileManager.readQrcFileS("js/docview.js")
-//                var lr = loadRequest
-//                var url = loadRequest.url
-//                console.log("wtf??", loadRequest.url, loadRequest.status)
+                //                var lr = loadRequest
+                //                var url = loadRequest.url
+                //                console.log("wtf??", loadRequest.url, loadRequest.status)
                 webview.runJavaScript(js, function() {
-                    webview.runJavaScript("Docview.symbols()", function(syms) {
-//                        console.log("wtf??", lr.url, lr.status)
-                        SearchDB.addWebpage(webview.url)
-                        SearchDB.addSymbols(webview.url, syms)
-                    })
+                    if (! SearchDB.hasWebpage(webview.url)) {
+                        webview.runJavaScript("Docview.symbols()", function(syms) {
+                            SearchDB.addWebpage(webview.url)
+                            SearchDB.updateWebpage(webview.url, "title", webview.title)
+                            SearchDB.addSymbols(webview.url, syms)
+                        })
+                    }
                     webViewLoadingSucceeded(index, loadRequest.url)
                     webViewLoadingStopped(index, loadRequest.url)
                 })

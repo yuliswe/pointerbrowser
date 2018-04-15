@@ -1,5 +1,6 @@
-import QtQuick 2.4
+import QtQuick 2.9
 import Backend 1.0
+import QtQuick.Controls 2.2
 import "controls"
 
 FramelessWindow {
@@ -11,6 +12,13 @@ FramelessWindow {
             Browser {
                 id: browser
                 anchors.fill: parent
+                Shortcut {
+                    sequence: "Ctrl+G"
+                    autoRepeat: false
+                    onActivated: {
+                        console.log("qml test Ctrl pressed")
+                    }
+                }
             }
 //            Rectangle {
 //                id: splash
