@@ -1,6 +1,6 @@
-import QtQuick 2.9
+import QtQuick 2.7
 import QtWebView 1.1
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.5 as C1
 import "controls" as C
@@ -56,7 +56,7 @@ C1.SplitView {
                 padding: (Qt.platform.os == "ios") ? 12 : 7
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/left.svg"
                 }
             }
@@ -68,7 +68,7 @@ C1.SplitView {
                 padding: (Qt.platform.os == "ios") ? 12 : 7
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/right.svg"
                 }
             }
@@ -79,7 +79,7 @@ C1.SplitView {
                 padding: (Qt.platform.os == "ios") ? 6 : 3
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/refresh.svg"
                 }
             }
@@ -98,7 +98,7 @@ C1.SplitView {
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/list.svg"
                 }
             }
@@ -109,8 +109,8 @@ C1.SplitView {
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                icon {
-                    source: checked ? "icon/bookmark.svg" : "icon/book.svg"
+                contentItem: Image {
+                    source: bookmark.checked ? "icon/bookmark.svg" : "icon/book.svg"
                 }
             }
         }

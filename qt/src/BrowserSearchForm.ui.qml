@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.3 as C2
+import QtQuick 2.7
+import QtQuick.Controls 2.2
 import "controls" as C
 import QtQuick.Layouts 1.3
 import Backend 1.0
@@ -53,9 +53,9 @@ Item {
                 id: prev
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/up.svg"
-                    color: pal.button_icon
+//                    color: pal.button_icon
                 }
                 rectangle.border.width: 0
                 padding: 9
@@ -64,9 +64,9 @@ Item {
                 id: next
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/down.svg"
-                    color: pal.button_icon
+//                    color: pal.button_icon
                 }
                 rectangle.border.width: 0
                 topPadding: 10
@@ -76,9 +76,9 @@ Item {
                 id: close
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                icon {
+                contentItem: Image {
                     source: "icon/cross.svg"
-                    color: pal.button_icon
+//                    color: pal.button_icon
                 }
                 onClicked: form.visible = false
                 rectangle.border.width: 0

@@ -1,9 +1,9 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.3 as C
+import QtQuick 2.7
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import Backend 1.0
 
-C.Button {
+Button {
     id: button
     property alias rectangle: rect
     readonly property var pal: {
@@ -24,8 +24,8 @@ C.Button {
     }
     implicitHeight: 25
     implicitWidth: 25
-    icon {
-        color: pal.button_icon
+    contentItem: Image {
+//        color: pal.button_icon
         width: button.width
         height: button.height
     }

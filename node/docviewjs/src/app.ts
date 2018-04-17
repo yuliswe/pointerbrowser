@@ -93,7 +93,7 @@ class Docview {
                 const str = e[i].nodeValue.toLocaleLowerCase()
                 let changed = false
                 let newstr = ""
-                let next;
+                let next
                 let prev = 0;
                 while ((next = str.indexOf(word, prev)) >= 0) {
                     changed = true

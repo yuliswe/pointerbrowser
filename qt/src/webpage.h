@@ -58,4 +58,5 @@ private:
 };
 
 Q_DECLARE_METATYPE(Webpage*)
+Q_DECLARE_METATYPE(Webpage_)
 #endif // WEBPAGE_H

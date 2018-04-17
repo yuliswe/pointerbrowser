@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QSqlRelationalTableModel>
 #include <QSharedPointer>
+#include <QRegularExpression>
 #include <algorithm>
 #include "searchdb.h"
 #include "filemanager.h"
@@ -62,6 +63,13 @@ bool SearchDB::connect() {
 }
 
 void SearchDB::disconnect() {
+    QStringList ls;
+    ls << "DELETE FROM webpage_symbol WHERE webpage IN (SELECT id FROM webpage WHERE temporary = 1);"
+       << "DELETE FROM webpage WHERE temporary = 1;"
+       << "DELETE FROM symbol WHERE id NOT IN (SELECT symbol FROM webpage_symbol);";
+    if (! execMany(ls)) {
+        qDebug() << "SearchDB::disconnect failed";
+    }
     _db.close();
     qDebug() << "SearchDB: disconnected";
 }
@@ -72,8 +80,7 @@ bool SearchDB::execMany(const QStringList& lines)
         QSqlQuery query = _db.exec(l);
         QSqlError error = query.lastError();
         if (error.isValid()) {
-            qDebug() << "Error in searchDB.setup" << endl
-                     << error.type() << " " << error.text() << endl;
+            qDebug() << "SearchDB::execMany error when executing" << l << error.type() << error.text();
             return false;
         }
     }
@@ -96,6 +103,7 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
         return false;
     }
     _webpage->submitAll();
+    search(_currentWord);
     return true;
 }
 
@@ -155,6 +163,7 @@ bool SearchDB::addWebpage(const QString& url)
         return false;
     };
     _webpage->submitAll();
+    search(_currentWord);
     return true;
 }
 
@@ -209,6 +218,15 @@ Webpage_ SearchDB::findWebpage(const QString& url) const
     return wp;
 }
 
+bool SearchDB::isBookmarked(const QString& url) const
+{
+    Webpage_ w = findWebpage(url);
+    if (w.isNull()) {
+        return false;
+    }
+    return ! w->temporary();
+}
+
 bool SearchDB::hasWebpage(const QString& url) const
 {
     return findWebpage(url).data() != nullptr;
@@ -219,21 +237,41 @@ void SearchDB::search(const QString& word)
     qDebug() << "SearchDB::search" << word;
     _currentWord = word;
     if (word == "") {
-        _webpage->setFilter("");
+        _webpage->setFilter("temporary = 0");
         _webpage->select();
+        int upper = std::min(10, _webpage->rowCount());
+        _searchResult.clear();
+        for (int i = 0; i < upper; i++) {
+            QSqlRecord record = _webpage->record(i);
+            QString url = record.value("url").value<QString>();
+            QString title = record.value("title").value<QString>();
+            _searchResult.insertTab(0, url);
+            _searchResult.updateTab(0, "title", title);
+        }
     } else {
-        // TODO
-        _webpage->setFilter("");
-        _webpage->select();
-    }
-    int upper = std::min(10, _webpage->rowCount());
-    _searchResult.clear();
-    for (int i = 0; i < upper; i++) {
-        QSqlRecord record = _webpage->record(i);
-        QString url = record.value("url").value<QString>();
-        QString title = record.value("title").value<QString>();
-        _searchResult.insertTab(0, url);
-        _searchResult.updateTab(0, "title", title);
+        QStringList ws = word.split(QRegularExpression(" "));
+        QStringList qsl;
+        for (QString w : ws) {
+            qsl << QString("SELECT DISTINCT webpage.id, webpage.url, webpage.title from webpage ") +
+                   "INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage " +
+                   "INNER JOIN symbol ON symbol.id = webpage_symbol.symbol " +
+                   "WHERE INSTR(symbol.symbol,'" + w + "') > 0";
+        }
+        QString qs = qsl.join(" INTERSECT ") + ";";
+        qDebug() << "SearchDB::search" << qs;
+        QSqlQuery q = _db.exec(qs);
+        if (q.lastError().isValid()) {
+            qDebug() << "SearchDB::search failed" << q.lastError();
+            return;
+        }
+        _searchResult.clear();
+        while (q.next()) {
+            QSqlRecord record = q.record();
+            QString url = record.value("url").value<QString>();
+            QString title = record.value("title").value<QString>();
+            _searchResult.insertTab(0, url);
+            _searchResult.updateTab(0, "title", title);
+        }
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();
 }

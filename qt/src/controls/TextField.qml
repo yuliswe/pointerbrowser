@@ -1,9 +1,9 @@
-import QtQuick 2.9
-import QtQuick.Templates 2.3 as T
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+//import QtQuick.Templates 2.3 as T
+import QtQuick.Controls 2.2
 import Backend 1.0
 
-T.TextField {
+TextField {
     id: textfield
     readonly property var pal: {
         if (activeFocus) { return Palette.selected }

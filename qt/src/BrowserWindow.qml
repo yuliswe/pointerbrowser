@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.7
 import Backend 1.0
 import QtQuick.Controls 2.2
 import "controls"
@@ -27,18 +27,18 @@ FramelessWindow {
 //                color: "#000"
 //                visible: TabsModel.count === 0
 //            }
-            Timer {
-                id: timeout
-                repeat: false
-                triggeredOnStart: false
-                interval: 500
-                onTriggered: {
-                    TabsModel.loadTabs()
-                }
-            }
-            Component.onCompleted: {
-                timeout.start()
-            }
+//            Timer {
+//                id: timeout
+//                repeat: false
+//                triggeredOnStart: false
+//                interval: 500
+//                onTriggered: {
+//                    TabsModel.loadTabs()
+//                }
+//            }
+//            Component.onCompleted: {
+//                timeout.start()
+//            }
         }
     }
 

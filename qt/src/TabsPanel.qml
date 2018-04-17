@@ -1,5 +1,5 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Controls 2.2
 import Backend 1.0
 
 TabsPanelForm {
@@ -15,17 +15,22 @@ TabsPanelForm {
         rebound: Transition {
             NumberAnimation {
                 properties: "x,y"
-                duration: 2500
+                duration: {
+                    switch (Qt.platform.os) {
+                    case "ios": return 2500; break;
+                    default: return 500
+                    }
+                }
                 easing.type: Easing.OutQuint
             }
         }
 
         boundsBehavior: {
-            if (Qt.platform.os == "ios") {
-                return Flickable.DragAndOvershootBounds
-            } else {
-                return Flickable.StopAtBounds
-            }
+            //            if (Qt.platform.os == "ios") {
+            return Flickable.DragAndOvershootBounds
+            //            } else {
+            //                return Flickable.StopAtBounds
+            //            }
         }
     }
 
@@ -40,6 +45,14 @@ TabsPanelForm {
 
     tabsSearch.onTextEdited: {
         console.log("tabsSearch: ", tabsSearch.text)
+        if (tabsSearch.text.length > 1) {
+            filterModelBySymbol(tabsSearch.text)
+        } else if (tabsSearch.text.length == 0) {
+            filterModelBySymbol("")
+        }
+    }
+
+    tabsSearch.onAccepted: {
         filterModelBySymbol(tabsSearch.text)
     }
 
@@ -49,7 +62,7 @@ TabsPanelForm {
 
     Component.onCompleted: {
         searchList.setHighlightAt(-1);
-//        SearchDB.search("")
+        //        SearchDB.search("")
         console.log("searchList.model", searchList.model, searchList.model.count)
     }
 
@@ -81,7 +94,7 @@ TabsPanelForm {
     Shortcut {
         sequence: "Ctrl+Shift+F"
         onActivated: {
-            tabsSearch.focus = true
+            tabsSearch.forceActiveFocus()
             tabsSearch.selectAll()
         }
     }

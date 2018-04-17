@@ -1,5 +1,5 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Controls 2.2
 import "controls" as C
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
@@ -38,7 +38,7 @@ Item {
             Layout.preferredHeight: parent.height
             padding: 1
             Layout.fillHeight: true
-            icon {
+            contentItem: Image {
                 source: "icon/plus-mid.svg"
             }
         }

@@ -1,6 +1,6 @@
-import QtQuick 2.9
-import QtQuick.Window 2.3
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Window 2.2
+import QtQuick.Controls 2.2
 import Backend 1.0
 
 Item {

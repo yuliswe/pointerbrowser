@@ -1,6 +1,6 @@
-import QtQuick 2.4
+import QtQuick 2.7
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.2
 
 RoundButton {
     id: btn
@@ -28,9 +28,9 @@ RoundButton {
         border.color: active ? activeBorderColor : inactiveBorderColor
     }
 
-    icon {
+    contentItem: Image {
         source: "icon/cross.svg"
-        color: btn.hovered ? "#000" : btn.background.color
+//        color: btn.hovered ? "#000" : btn.background.color
         height: 5
         width: 5
     }

@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.7
 import Backend 1.0
 
 BrowserAddressBarForm {
@@ -96,7 +96,7 @@ BrowserAddressBarForm {
         sequence: "Ctrl+E"
         autoRepeat: false
         onActivated: {
-            textField.focus = true
+            textField.forceActiveFocus()
             textField.selectAll()
         }
     }

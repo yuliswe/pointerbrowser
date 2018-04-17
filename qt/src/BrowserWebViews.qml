@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.7
 import QtWebView 1.1
 import Backend 1.0
 
@@ -38,7 +38,11 @@ BrowserWebViewsForm {
 
     function reloadWebViewAt(index) {
         console.log("reloadWebViewAt", index)
-        webViewAt(index).reload()
+        var wv = webViewAt(index)
+        wv.reload()
+        //        SearchDB.updateWebpage(wv.url, "title", wv.title)
+        //        wv
+        //        SearchDB.addSymbols(wv.url, )
     }
 
     function webViewAt(i) {
@@ -46,7 +50,6 @@ BrowserWebViewsForm {
     }
 
     function reloadCurrentWebView() {
-        // ignore Ctrl in this function
         reloadWebViewAt(currentIndex())
     }
 
@@ -57,14 +60,19 @@ BrowserWebViewsForm {
         implicitWidth: listView.width
         Component.onCompleted: {
             url = TabsModel.at(index).url
-            //            visible = true
         }
         onUrlChanged: TabsModel.updateTab(index, "url", url.toString())
         onTitleChanged: TabsModel.updateTab(index, "title", title)
-        onLoadProgressChanged: webViewLoadingProgressChanged(index, loadProgress)
+        onLoadProgressChanged: {
+            if (loading) {
+                console.log("onLoadProgressChanged", index, loadProgress)
+                webViewLoadingProgressChanged(index, loadProgress)
+            }
+        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
+                console.log("WebView.LoadStartedStatus", loadRequest.errorString)
                 if (index === currentIndex()) {
                     var url = loadRequest.url
                     // if control key is held, then stop loading
@@ -82,22 +90,19 @@ BrowserWebViewsForm {
                 webViewLoadingStarted(index, loadRequest.url)
                 break
             case WebView.LoadSucceededStatus:
-                console.log("WebView.LoadSucceededStatus",
-                            loadRequest.errorString)
+                console.log("WebView.LoadSucceededStatus", loadRequest.errorString)
                 var js = FileManager.readQrcFileS("js/docview.js")
-                //                var lr = loadRequest
-                //                var url = loadRequest.url
-                //                console.log("wtf??", loadRequest.url, loadRequest.status)
                 webview.runJavaScript(js, function() {
                     if (! SearchDB.hasWebpage(webview.url)) {
+                        SearchDB.addWebpage(webview.url)
+                        SearchDB.updateWebpage(webview.url, "title", webview.title)
+                        SearchDB.updateWebpage(webview.url, "temporary", true)
                         webview.runJavaScript("Docview.symbols()", function(syms) {
-                            SearchDB.addWebpage(webview.url)
-                            SearchDB.updateWebpage(webview.url, "title", webview.title)
                             SearchDB.addSymbols(webview.url, syms)
+                            webViewLoadingSucceeded(index, loadRequest.url)
+                            webViewLoadingStopped(index, loadRequest.url)
                         })
                     }
-                    webViewLoadingSucceeded(index, loadRequest.url)
-                    webViewLoadingStopped(index, loadRequest.url)
                 })
                 break
             case WebView.LoadFailedStatus:

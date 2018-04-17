@@ -1,7 +1,7 @@
 import Backend 1.0
-import QtQuick 2.9
+import QtQuick 2.7
 import QtWebView 1.1
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.2
 
 BrowserForm {
     id: browser
@@ -37,9 +37,9 @@ BrowserForm {
 
     function refreshCurrentWebview() {
         console.log("Browser.qml reloadWebViewAt")
-        if (currentIndex() > 0) {
+        if (currentIndex() > -1) {
             EventFilter.ctrlKeyDown = false
-            SearchDB.removeWebpage(currentWebView().url)
+//            var bookmarked = SearchDB.isBookmarked(currentWebView().url)
             browserWebViews.reloadCurrentWebView()
         }
     }
@@ -92,7 +92,6 @@ BrowserForm {
         console.log("newTab:", url, switchToView)
         url = url || "https://www.google.ca/"
         TabsModel.insertTab(0, url, "", "")
-        SearchDB.addWebpage(url)
         if (switchToView) {
             openTab(0)
         } else {
@@ -123,6 +122,7 @@ BrowserForm {
     }
 
     function openTab(index) {
+        hideWelcomePage()
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
         tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
         browserWebViews.setCurrentIndex(index)
@@ -131,7 +131,7 @@ BrowserForm {
         var wp = currentWebView()
         browserAddressBar.update(currentWebView().url, currentWebView().title)
         browserAddressBar.updateProgress(currentWebView().loadProgress)
-        browserBookmarkButton.checked = ! SearchDB.hasWebpage(wp.url).temporary
+        browserBookmarkButton.checked = SearchDB.isBookmarked(wp.url)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
     }
@@ -195,18 +195,26 @@ BrowserForm {
             newTab(url)
         }
         onWebViewLoadingSucceeded: {
-            var wp = browserWebViews.webViewAt(index)
             if (index === currentIndex()) {
+                var wp = currentWebView()
                 browserAddressBar.update(wp.url, wp.title)
             }
         }
         onWebViewLoadingStarted: {
+            if (index === currentIndex()) {
+                var cw = currentWebView()
+                prevEnabled = cw && cw.canGoBack
+                nextEnabled = cw && cw.canGoForward
+                browserBookmarkButton.checked = SearchDB.isBookmarked(cw.url)
+            }
         }
         onWebViewLoadingStopped: {
-            var cw = currentWebView()
-            prevEnabled = cw && cw.canGoBack
-            nextEnabled = cw && cw.canGoForward
-            var wp = browserWebViews.webViewAt(index)
+            if (index === currentIndex()) {
+                var cw = currentWebView()
+                prevEnabled = cw && cw.canGoBack
+                nextEnabled = cw && cw.canGoForward
+                browserBookmarkButton.checked = SearchDB.isBookmarked(cw.url)
+            }
         }
         onWebViewLoadingProgressChanged: {
             if (index === currentIndex()) {
@@ -297,18 +305,15 @@ BrowserForm {
     Connections {
         target: browserBookmarkButton
         onClicked: {
-            if (browserBookmarkButton.checked) {
-                console.log("bookmarking", currentWebView().url)
-                currentWebView().runJavaScript("Docview.symbols()", function(syms) {
-                    SearchDB.addWebpage(currentWebView().url)
-                    if (! SearchDB.updateWebpage(currentWebView().url, "temporary", browserBookmarkButton.checked)) {
-                        browserBookmarkButton.checked = ! browserBookmarkButton.checked
-                    }
-                })
-            } else {
-                console.log("unbookmarking", currentWebView().url)
-                browserBookmarkButton.checked = ! SearchDB.updateWebpage(currentWebView().url, "temporary", false)
-            }
+//            console.log("bookmarking", currentWebView().url)
+//            currentWebView().runJavaScript("Docview.symbols()", function(syms) {
+//                SearchDB.addWebpage(currentWebView().url)
+//                SearchDB.updateWebpage(currentWebView().url, "title", currentWebView().title)
+//                SearchDB.addSymbols(currentWebView().url, syms)
+                if (! SearchDB.updateWebpage(currentWebView().url, "temporary", ! browserBookmarkButton.checked)) {
+                    browserBookmarkButton.checked = ! browserBookmarkButton.checked
+                }
+//            })
         }
     }
 

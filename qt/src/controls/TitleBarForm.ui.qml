@@ -1,5 +1,5 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import Backend 1.0
 
@@ -78,7 +78,7 @@ Item {
         TitleBarButton {
             id: closeBtn
             active: true
-            icon {
+            contentItem: Image {
                 source: "icon/cross2.svg"
             }
         }
@@ -87,7 +87,7 @@ Item {
             active: true
             activeColor: "#ffcc00"
             activeBorderColor: "#ffcc00"
-            icon {
+            contentItem: Image {
                 source: "icon/minus2.svg"
             }
         }
@@ -97,7 +97,7 @@ Item {
             active: true
             activeColor: "#00cc44"
             activeBorderColor: "#00aa33"
-            icon {
+            contentItem: Image {
                 source: "icon/plus2.svg"
             }
         }
