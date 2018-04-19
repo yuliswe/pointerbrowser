@@ -1,5 +1,4 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import Backend 1.0
 
@@ -21,6 +20,7 @@ Item {
         id: mouseArea
         anchors.fill: parent
         drag.target: titleBar
+        hoverEnabled: true
     }
 
     Rectangle {
@@ -67,39 +67,53 @@ Item {
 
     RowLayout {
         id: rowLayout
-        width: 54
-        height: 100
         anchors.verticalCenterOffset: 1
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 0
+        spacing: 8
+        property bool hover: closeBtn.hovered || minBtn.hovered || maxBtn.hovered
 
-        TitleBarButton {
+        RoundButton {
             id: closeBtn
-            active: true
-            contentItem: Image {
-                source: "icon/cross2.svg"
+            padding: 3
+            Layout.preferredHeight: 12
+            Layout.preferredWidth: 12
+            image.source: "icon/cross2.svg"
+            overlay.visible: rowLayout.hover
+            rectangle {
+                border.width: 1
+                border.color: "#ee4444"
+                color: "#ff5555"
             }
         }
-        TitleBarButton {
+        RoundButton {
             id: minBtn
-            active: true
-            activeColor: "#ffcc00"
-            activeBorderColor: "#ffcc00"
-            contentItem: Image {
-                source: "icon/minus2.svg"
+            padding: 2
+            Layout.preferredHeight: 12
+            Layout.preferredWidth: 12
+            Layout.fillHeight: true
+            rectangle {
+                border.width: 1
+                border.color: "#eebb00"
+                color: "#ffcc11"
             }
+            overlay.visible: rowLayout.hover
+            image.source: "icon/minus2.svg"
         }
-
-        TitleBarButton {
+        RoundButton {
             id: maxBtn
-            active: true
-            activeColor: "#00cc44"
-            activeBorderColor: "#00aa33"
-            contentItem: Image {
-                source: "icon/plus2.svg"
+            padding: 2
+            Layout.preferredHeight: 12
+            Layout.preferredWidth: 12
+            Layout.fillHeight: true
+            rectangle {
+                border.width: 1
+                border.color: "#00bb33"
+                color: "#11cc44"
             }
+            overlay.visible: rowLayout.hover
+            image.source: "icon/plus2.svg"
         }
     }
 }

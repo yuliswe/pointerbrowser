@@ -14,16 +14,16 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     // set properties
     QMLRegister::fileManager->setupDirectories();
-    QMLRegister::registerToQML();
     QMLRegister::searchDB->connect();
     QMLRegister::palette->setup();
+    QMLRegister::registerToQML();
     QtWebView::initialize();
 
 #ifdef Q_OS_WIN
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 #endif
 
-    QCoreApplication::instance()->installEventFilter(QMLRegister::eventFilter);
+    app.installEventFilter(QMLRegister::eventFilter);
 
     // load qmls
     QQmlApplicationEngine engine;

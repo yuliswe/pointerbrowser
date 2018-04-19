@@ -10,6 +10,8 @@ BrowserAddressBarForm {
     progressBar.opacity: 0.3
     progressBar.width: 0
 
+    state: "mac"
+
     function update(url, title) {
         form.title = title
         form.url = url

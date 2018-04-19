@@ -8,7 +8,6 @@ import "controls" as C
 C1.SplitView {
     id: splitView
     property alias tabsPanel: tabsPanel
-    property alias tabsList: tabsPanel.tabsList
     property alias browserAddressBar: addressBar
     property alias browserBackButton: prev
     property alias browserForwardButton: next
@@ -21,11 +20,6 @@ C1.SplitView {
     property alias browserSearch: browserSearch
     property alias splitView: splitView
     property int buttonSize: 40
-
-    SystemPalette {
-        id: actPal
-        colorGroup: SystemPalette.Active
-    }
 
     handleDelegate: Item {
     }
@@ -52,36 +46,24 @@ C1.SplitView {
             //            spacing: (Qt.platform.os == "ios") ? 0 : 2
             C.Button {
                 id: prev
-                leftPadding: (Qt.platform.os == "ios") ? 7 : 5
-                padding: (Qt.platform.os == "ios") ? 12 : 7
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                contentItem: Image {
-                    source: "icon/left.svg"
-                }
+                iconSource: "icon/left.svg"
             }
 
             C.Button {
                 id: next
                 width: height
-                rightPadding: (Qt.platform.os == "ios") ? 7 : 5
-                padding: (Qt.platform.os == "ios") ? 12 : 7
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                contentItem: Image {
-                    source: "icon/right.svg"
-                }
+                iconSource: "icon/right.svg"
             }
 
             C.Button {
                 id: refresh
-                topPadding: (Qt.platform.os == "ios") ? 6 : 4
-                padding: (Qt.platform.os == "ios") ? 6 : 3
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                contentItem: Image {
-                    source: "icon/refresh.svg"
-                }
+                iconSource: "icon/refresh.svg"
             }
 
             BrowserAddressBar {
@@ -92,26 +74,18 @@ C1.SplitView {
 
             C.Button {
                 id: docview
-                topPadding: (Qt.platform.os == "ios") ? 9 : 4
-                bottomPadding: (Qt.platform.os == "ios") ? 9 : 4
-                padding: 0
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                contentItem: Image {
-                    source: "icon/list.svg"
-                }
+                iconSource: "icon/list.svg"
             }
 
             C.Button {
                 id: bookmark
-                padding: (Qt.platform.os == "ios") ? 6 : 4
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
-                contentItem: Image {
-                    source: bookmark.checked ? "icon/bookmark.svg" : "icon/book.svg"
-                }
+                iconSource: bookmark.checked ? "icon/bookmark.svg" : "icon/book.svg"
             }
         }
 
@@ -142,4 +116,37 @@ C1.SplitView {
         width: 150
         Layout.minimumWidth: 150
     }
+    states: [
+        State {
+            name: "osx"
+
+            PropertyChanges {
+                target: docview
+                padding: 4
+            }
+
+            PropertyChanges {
+                target: bookmark
+                padding: 4
+            }
+
+            PropertyChanges {
+                target: prev
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: next
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: refresh
+                padding: 3
+            }
+        },
+        State {
+            name: "ios"
+        }
+    ]
 }

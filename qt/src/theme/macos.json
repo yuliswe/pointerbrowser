@@ -5,7 +5,7 @@
     "text": ["#000"],
     "text_background": ["transparent","#70a7ff","transparent","transparent"],
     "button_text": ["#555"],
-    "button_icon": ["#555","#555","#555","#ccc"],
+    "button_icon": ["#555","#555","#555","#aaa"],
     "button_background": ["transparent","#ddd","#ddd","transparent"],
     "button_border": ["#ccc","#ccc","#ccc","#ddd"],
     "input_text": ["#000"],

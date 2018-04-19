@@ -17,6 +17,8 @@ BrowserForm {
         return browserWebViews.webViewAt(i)
     }
 
+    state: Qt.platform.os
+
     function showWelcomePage() {
         browserWebViews.setCurrentIndex(-1)
         browserForwardButton.enabled = false
@@ -39,7 +41,7 @@ BrowserForm {
         console.log("Browser.qml reloadWebViewAt")
         if (currentIndex() > -1) {
             EventFilter.ctrlKeyDown = false
-//            var bookmarked = SearchDB.isBookmarked(currentWebView().url)
+            //            var bookmarked = SearchDB.isBookmarked(currentWebView().url)
             browserWebViews.reloadCurrentWebView()
         }
     }
@@ -182,6 +184,7 @@ BrowserForm {
         onUserOpensSavedTab: openSavedTab(index)
     }
 
+
     Connections {
         target: browserWebViews
         onUserOpensLinkInWebView: {
@@ -305,15 +308,15 @@ BrowserForm {
     Connections {
         target: browserBookmarkButton
         onClicked: {
-//            console.log("bookmarking", currentWebView().url)
-//            currentWebView().runJavaScript("Docview.symbols()", function(syms) {
-//                SearchDB.addWebpage(currentWebView().url)
-//                SearchDB.updateWebpage(currentWebView().url, "title", currentWebView().title)
-//                SearchDB.addSymbols(currentWebView().url, syms)
-                if (! SearchDB.updateWebpage(currentWebView().url, "temporary", ! browserBookmarkButton.checked)) {
-                    browserBookmarkButton.checked = ! browserBookmarkButton.checked
-                }
-//            })
+            //            console.log("bookmarking", currentWebView().url)
+            //            currentWebView().runJavaScript("Docview.symbols()", function(syms) {
+            //                SearchDB.addWebpage(currentWebView().url)
+            //                SearchDB.updateWebpage(currentWebView().url, "title", currentWebView().title)
+            //                SearchDB.addSymbols(currentWebView().url, syms)
+            if (! SearchDB.updateWebpage(currentWebView().url, "temporary", ! browserBookmarkButton.checked)) {
+                browserBookmarkButton.checked = ! browserBookmarkButton.checked
+            }
+            //            })
         }
     }
 

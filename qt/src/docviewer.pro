@@ -49,6 +49,3 @@ HEADERS += \
     eventfilter.h \
     searchdb.h
 
-DISTFILES += \
-    TitleBarForm.ui.qml \
-    TitleBar.qml

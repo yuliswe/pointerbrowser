@@ -1,18 +1,11 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import "controls" as C
-import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
 import Backend 1.0
 
-
-//import QtQuick.Controls 1.4 as C1
 Item {
     id: form
-
-    property alias flickable: flickable
-    property int buttonSize: 40
-    property alias rectangle: background
 
     Rectangle {
         id: background
@@ -38,9 +31,7 @@ Item {
             Layout.preferredHeight: parent.height
             padding: 1
             Layout.fillHeight: true
-            contentItem: Image {
-                source: "icon/plus-mid.svg"
-            }
+            iconSource: "icon/plus-mid.svg"
         }
 
         C.TextField {
@@ -92,9 +83,7 @@ Item {
 
             TabsList {
                 id: tabsList
-                x: 0
                 width: form.width
-                //            height: 500
                 anchors.top: text1.bottom
                 anchors.topMargin: -3
                 tabHeight: form.tabHeight
@@ -148,13 +137,13 @@ Item {
         }
     }
 
-    property alias tabsSearch: tabsSearch
+    property alias flickable: flickable
+    property int buttonSize: 40
+    property alias rectangle: background
     property alias newTabButton: newTabButton
-    property alias tabsList: tabsList
-    property alias searchList: searchList
-    property alias tabsModel: tabsList.tabsModel
-    property alias searchListHeight: searchList.height
+    property alias openTabsList: tabsList
+    property alias searchTextField: tabsSearch
+    property alias searchTabsList: searchList
     property int tabHeight: 30
-    property alias tabsListHeight: tabsList.height
     clip: true
 }

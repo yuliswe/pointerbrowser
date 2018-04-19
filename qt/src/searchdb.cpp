@@ -255,7 +255,7 @@ void SearchDB::search(const QString& word)
             qsl << QString("SELECT DISTINCT webpage.id, webpage.url, webpage.title from webpage ") +
                    "INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage " +
                    "INNER JOIN symbol ON symbol.id = webpage_symbol.symbol " +
-                   "WHERE INSTR(symbol.symbol,'" + w + "') > 0";
+                   "WHERE INSTR(LOWER(symbol.symbol),LOWER('" + w + "')) > 0";
         }
         QString qs = qsl.join(" INTERSECT ") + ";";
         qDebug() << "SearchDB::search" << qs;

@@ -1,15 +1,23 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.2
+import QtQuick 2.9
 import Backend 1.0
 
 TabsPanelForm {
     id: tabsPanel
-    signal userOpensNewTab
+
+    signal userOpensSavedTab(int index)
     signal userClosesTab(int index)
     signal userOpensTab(int index)
-    signal userOpensSavedTab(int index)
+    signal userOpensNewTab()
 
     tabHeight: 30
+
+    function setCurrentIndex(i) {
+        openTabsList.setHighlightAt(i)
+    }
+
+    function filterModelBySymbol(sym) {
+        SearchDB.search(sym)
+    }
 
     flickable {
         rebound: Transition {
@@ -26,55 +34,19 @@ TabsPanelForm {
         }
 
         boundsBehavior: {
-            //            if (Qt.platform.os == "ios") {
-            return Flickable.DragAndOvershootBounds
-            //            } else {
-            //                return Flickable.StopAtBounds
-            //            }
+            if (Qt.platform.os == "ios") {
+                return Flickable.DragAndOvershootBounds
+            } else {
+                return Flickable.StopAtBounds
+            }
         }
     }
 
-    tabsListHeight: TabsModel.count * tabHeight
-    searchListHeight: SearchDB.searchResult.count * tabHeight
-    tabsList.model: TabsModel
-    searchList.model: SearchDB.searchResult
 
-    function filterModelBySymbol(sym) {
-        SearchDB.search(sym)
-    }
+    openTabsList {
+        height: TabsModel.count * tabHeight
+        model: TabsModel
 
-    tabsSearch.onTextEdited: {
-        console.log("tabsSearch: ", tabsSearch.text)
-        if (tabsSearch.text.length > 1) {
-            filterModelBySymbol(tabsSearch.text)
-        } else if (tabsSearch.text.length == 0) {
-            filterModelBySymbol("")
-        }
-    }
-
-    tabsSearch.onAccepted: {
-        filterModelBySymbol(tabsSearch.text)
-    }
-
-    function setCurrentIndex(i) {
-        tabsList.setHighlightAt(i)
-    }
-
-    Component.onCompleted: {
-        searchList.setHighlightAt(-1);
-        //        SearchDB.search("")
-        console.log("searchList.model", searchList.model, searchList.model.count)
-    }
-
-    Connections {
-        target: newTabButton
-        onClicked: {
-            tabsPanel.userOpensNewTab()
-        }
-    }
-
-    Connections {
-        target: tabsList
         onUserClosesTab: {
             userClosesTab(index)
         }
@@ -84,18 +56,42 @@ TabsPanelForm {
         }
     }
 
-    Connections {
-        target: searchList
+    searchTabsList {
+        height: SearchDB.searchResult.count * tabHeight
+        model: SearchDB.searchResult
+
         onUserDoubleClicksTab: {
             userOpensSavedTab(index)
         }
     }
 
-    Shortcut {
-        sequence: "Ctrl+Shift+F"
-        onActivated: {
-            tabsSearch.forceActiveFocus()
-            tabsSearch.selectAll()
+    searchTextField {
+        onTextEdited: {
+            if (searchTextField.text.length > 1) {
+                filterModelBySymbol(searchTextField.text)
+            } else if (searchTextField.text.length === 0) {
+                filterModelBySymbol("")
+            }
+        }
+        onAccepted: {
+            filterModelBySymbol(searchTextField.text)
         }
     }
+
+    Component.onCompleted: {
+        searchTabsList.setHighlightAt(-1);
+    }
+
+    newTabButton.onClicked: {
+        tabsPanel.userOpensNewTab()
+    }
+
+    Shortcut {
+        sequences: ["Ctrl+Shift+F", "Ctrl+T"]
+        onActivated: {
+            searchTextField.forceActiveFocus()
+            searchTextField.selectAll()
+        }
+    }
+
 }

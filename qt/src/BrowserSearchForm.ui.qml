@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import "controls" as C
 import QtQuick.Layouts 1.3
 import Backend 1.0
+
 Item {
     id: form
 
@@ -53,33 +54,23 @@ Item {
                 id: prev
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                contentItem: Image {
-                    source: "icon/up.svg"
-//                    color: pal.button_icon
-                }
+                image.source: "icon/up.svg"
                 rectangle.border.width: 0
-                padding: 9
+                padding: 8
             }
             C.Button {
                 id: next
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                contentItem: Image {
-                    source: "icon/down.svg"
-//                    color: pal.button_icon
-                }
+                image.source: "icon/down.svg"
                 rectangle.border.width: 0
-                topPadding: 10
-                bottomPadding: 8
+                padding: 8
             }
             C.Button {
                 id: close
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                contentItem: Image {
-                    source: "icon/cross.svg"
-//                    color: pal.button_icon
-                }
+                image.source: "icon/cross.svg"
                 onClicked: form.visible = false
                 rectangle.border.width: 0
                 padding: 10
