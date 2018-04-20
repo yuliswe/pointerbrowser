@@ -1,5 +1,6 @@
 ﻿import $ = require("jquery")
 import Mark from "mark.ts"
+import { setTimeout } from "timers";
 
 class Properties {
     perc_height: number
@@ -45,18 +46,18 @@ class Docview {
                 if (! k.includes("webkit")) {
                     if (k.includes("padding") || k.includes("margin")) {
                         if (parseInt(v) < heu.maxMarginPaddingAllowed) {
-                            _styles += k + ":" + v + "!important;"
+                            _styles += k + ":" + v + ";"
                         }
                     } else if (k.includes("width")) {
                         if (parseInt(v) < heu.maxWidthAllowed) {
-                            _styles += k + ":" + v + "!important;"
+                            _styles += k + ":" + v + ";"
                         }
                     } else if (k.includes("height")) {
                         // if (parseInt(v) < 50) {
-                        //     _styles += k + ":" + v + "!important;"
+                        //     _styles += k + ":" + v + ";"
                         // }
                     } else {
-                        _styles += k + ":" + v + "!important;"
+                        _styles += k + ":" + v + ";"
                     }
                 }
             }
@@ -95,10 +96,7 @@ class Docview {
             while (nodes.length > 0) {
                 const n = nodes.shift()
                 if (test(n)) {
-                    // && ((n.innerText||"").length > (0.75 * contentLength))) {
                     root = n
-                    console.log("pruning at", n)
-                    // $(n).siblings().remove()
                     break
                 }
                 for (let c in n.childNodes) {
