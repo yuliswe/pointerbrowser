@@ -58,15 +58,17 @@ BrowserWebViewsForm {
         property bool docviewLoaded: false
         property bool inDocview: false
 
-        function docviewOn() {
-            currentWebView().runJavaScript("Docview.turnOn()", function() {
-                currentWebView().inDocview = true
+        function docviewOn(callback) {
+            webview.runJavaScript("Docview.turnOn()", function() {
+                webview.inDocview = true
+                callback()
             })
         }
 
-        function docviewOff() {
-            currentWebView().runJavaScript("Docview.turnOff()", function() {
-                currentWebView().inDocview = false
+        function docviewOff(callback) {
+            webview.runJavaScript("Docview.turnOff()", function() {
+                webview.inDocview = false
+                callback()
             })
         }
 
@@ -86,6 +88,7 @@ BrowserWebViewsForm {
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebView.LoadStartedStatus:
+                webview.docviewLoaded = false
                 console.log("WebView.LoadStartedStatus", loadRequest.errorString)
                 if (index === currentIndex()) {
                     var url = loadRequest.url
@@ -120,6 +123,9 @@ BrowserWebViewsForm {
                             webViewLoadingSucceeded(index, loadRequest.url)
                             webViewLoadingStopped(index, loadRequest.url)
                         })
+                    } else {
+                        webViewLoadingSucceeded(index, loadRequest.url)
+                        webViewLoadingStopped(index, loadRequest.url)
                     }
                 })
                 break

@@ -119,51 +119,51 @@ class Docview {
                     root,
                     (n) => (! this.nonDiv.includes(n.tagName))
                             && (n.scrollHeight > 0.90 * root.scrollHeight)
-                            && (n.scrollWidth > 0.60 * root.scrollWidth)
-                            && (n.innerText.length > 0.5 * root.innerText.length),
+                            && (n.scrollWidth > 0.50 * root.scrollWidth)
+                            && (n.innerText.length > 0.50 * root.innerText.length),
                     1
                 )
             if (root != attempt1) {
                 root = attempt1
                 continue
             }
-            let attempt3 =
-                this.guessRoot(
-                    root,
-                    (n) => (! this.nonDiv.includes(n.tagName))
-                            && (n.scrollHeight > 0.75 * root.scrollHeight)
-                            && (n.scrollWidth > 0.60 * root.scrollWidth)
-                            && (n.innerText.length > 0.5 * root.innerText.length),
-                    1
-                )
-            if (root != attempt3) {
-                root = attempt3
-                continue
-            }
             let attempt2 =
                 this.guessRoot(
                     root,
                     (n) => (! this.nonDiv.includes(n.tagName))
-                            && (n.scrollHeight > 0.90 * root.scrollHeight)
-                            && (n.innerText.length > 0.5 * root.innerText.length),
+                            && (n.scrollHeight > 0.75 * root.scrollHeight)
+                            && (n.scrollWidth > 0.50 * root.scrollWidth)
+                            && (n.innerText.length > 0.50 * root.innerText.length),
                     1
                 )
             if (root != attempt2) {
                 root = attempt2
                 continue
             }
-            let attempt4 =
-                this.guessRoot(
-                    root,
-                    (n) => (! this.nonDiv.includes(n.tagName))
-                            && (n.scrollHeight > 0.75 * root.scrollHeight)
-                            && (n.innerText.length > 0.5 * root.innerText.length),
-                    1
-                )
-            if (root != attempt4) {
-                root = attempt4
-                continue
-            }
+            // let attempt3 =
+            //     this.guessRoot(
+            //         root,
+            //         (n) => (! this.nonDiv.includes(n.tagName))
+            //                 && (n.scrollHeight > 0.90 * root.scrollHeight)
+            //                 && (n.innerText.length > 0.5 * root.innerText.length),
+            //         1
+            //     )
+            // if (root != attempt3) {
+            //     root = attempt3
+            //     continue
+            // }
+            // let attempt4 =
+            //     this.guessRoot(
+            //         root,
+            //         (n) => (! this.nonDiv.includes(n.tagName))
+            //                 && (n.scrollHeight > 0.75 * root.scrollHeight)
+            //                 && (n.innerText.length > 0.5 * root.innerText.length),
+            //         1
+            //     )
+            // if (root != attempt4) {
+            //     root = attempt4
+            //     continue
+            // }
             // reach here if nothing changed
             break
         }

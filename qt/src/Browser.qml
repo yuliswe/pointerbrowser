@@ -204,6 +204,7 @@ BrowserForm {
             if (index === currentIndex()) {
                 var wp = currentWebView()
                 browserAddressBar.update(wp.url, wp.title)
+                console.log("browserBookmarkButton.enabled = true")
                 browserBookmarkButton.enabled = true
                 browserDocviewButton.enabled = true
             }
@@ -214,6 +215,9 @@ BrowserForm {
                 prevEnabled = cw && cw.canGoBack
                 nextEnabled = cw && cw.canGoForward
                 browserBookmarkButton.checked = SearchDB.isBookmarked(cw.url)
+                console.log("browserBookmarkButton.enabled = false")
+                browserBookmarkButton.enabled = false
+                browserDocviewButton.enabled = false
             }
         }
         onWebViewLoadingStopped: {
