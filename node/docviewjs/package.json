@@ -12,7 +12,6 @@
     "babel-minify": "^0.3.0",
     "babel-minify-webpack-plugin": "^0.3.1",
     "jquery": "^3.3.1",
-    "js-queue": "^2.0.0",
     "mark.js": "^8.11.1",
     "mark.ts": "^1.0.5",
     "ts-loader": "^4.0.1",

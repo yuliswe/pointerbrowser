@@ -1,7 +1,6 @@
 ﻿import $ = require("jquery")
 import Mark from "mark.ts"
 import { setTimeout } from "timers";
-import { Queue } from "typescript-collections"
 
 class Properties {
     perc_height: number
@@ -25,18 +24,6 @@ class DocviewStyle {
     public fontsizeCode = '12px'
 }
 
-class Timer {
-    public static stack: {id: number, time: number}[] = []
-    public static start(id) {
-        Timer.stack.push({id: id, time: Date.now()})
-    }
-    public static stop(id): number {
-        const p = Timer.stack.pop()
-        console.assert(p.id === id, "timer id mismatch:",p.id,id)
-        return Date.now() - p.time
-    }
-}
-
 class Docview {
 
     nonDiv = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT", "IFRAME", "BUTTON", "SVG"]
@@ -45,15 +32,12 @@ class Docview {
         console.log("snapshotHTML called")
         const _root = document.body.cloneNode(true) as HTMLBodyElement
         const root = document.body as HTMLBodyElement
-        let nodes: Queue<Element> = new Queue() // nodes in the current depth
-        let _nodes: Queue<Element> = new Queue()
-        nodes.enqueue(root)
-        _nodes.enqueue(_root)
-        Timer.start(1)
-        while (nodes.size() > 0) {
-            console.log("snapshotHTML setting style on node")
-            const n = nodes.dequeue()
-            const _n = _nodes.dequeue()
+        let nodes: Element[] = [root] // nodes in the current depth
+        let _nodes: Element[] = [_root]
+        while (nodes.length > 0) {
+            console.log("iteration")
+            const n = nodes.shift()
+            const _n = _nodes.shift()
             let _styles = ""
             const styles = window.getComputedStyle(n)
             for (let i = 0; i < styles.length; i++) {
@@ -80,19 +64,17 @@ class Docview {
             const contentB = window.getComputedStyle(n, ":before").content
             const contentA = window.getComputedStyle(n, ":after").content
             _n.setAttribute("style", _styles)
-            // _n.setAttribute("style", styles.cssText)
-            // _n.setAttribute("data-before", contentB)
-            // _n.setAttribute("data-after", contentA)
+            _n.setAttribute("data-before", contentB)
+            _n.setAttribute("data-after", contentA)
             let c = n.firstElementChild
             let _c = _n.firstElementChild
             while (c != null) {
-                nodes.enqueue(c)
-                _nodes.enqueue(_c)
+                nodes.push(c)
+                _nodes.push(_c)
                 c = c.nextElementSibling
                 _c = _c.nextElementSibling
             }
         }
-        console.log("snapshotHTML setting style on node", Timer.stop(1))
         // window["Docview_htmlSnapshot"] = root
         // document.body = _root
         return _root
@@ -133,11 +115,10 @@ class Docview {
         : HTMLBodyElement
     {
         console.log("docviewHTML called")
-        const _root = document.body
+        let _root = document.body
         document.body = root
         // let root = document.body
         for (let i = 0; i < level; i++) {
-            console.log("guessing root")
             // prone every node that has more than X controls
             // use the first node that has > 80% page content as root
             let attempt1 =
@@ -215,8 +196,7 @@ class Docview {
         const all = $(bb).find("*")
         let avgFontSize: number = 0
         let d: number = 0
-        const leafs = $(bb).find("*:not(:has(*))")
-        leafs.each((i,e) => {
+        $(bb).find("*:not(:has(*))").each((i,e) => {
             if (e.innerText) {
                 const sz = getComputedStyle(e).getPropertyValue("font-size")
                 if (sz.includes("px")) {
@@ -229,11 +209,8 @@ class Docview {
             }
         })
         console.log("avgFontSize", avgFontSize)
-        document.body = _root
         // regularize font size
-        Timer.start(2)
-        leafs.each((i,e) => {
-            console.log("regularize font size")
+        all.each((i,e) => {
             if (e.innerText) {
                 const sz = getComputedStyle(e).getPropertyValue("font-size")
                 const s = parseInt(sz)
@@ -246,21 +223,15 @@ class Docview {
                     e.style.fontSize = docSt.fontsizeSmall
                 }
                 e.style.fontFamily = "Source Sans Pro, sans-serif"
+                e.removeAttribute("class")
+                e.removeAttribute("id")
             }
         })
-        console.log("regularize font size", Timer.stop(2))
-        Timer.start(3)
-        console.log("remove classes")
-        all.each((i,e) => {
-            e.removeAttribute("class")
-            e.removeAttribute("id")
-        })
-        console.log("set font families")
         $(bb).find("pre,code,pre *,code *").css({
               fontSize: docSt.fontsizeCode
             , fontFamily: "Source Code Pro, monospace"
         })
-        console.log("rest", Timer.stop(3))
+        document.body = _root
         return bb
     }
 
