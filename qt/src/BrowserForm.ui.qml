@@ -74,6 +74,7 @@ C1.SplitView {
 
             C.Button {
                 id: docview
+                enabled: false
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
@@ -82,6 +83,7 @@ C1.SplitView {
 
             C.Button {
                 id: bookmark
+                enabled: false
                 checkable: true
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height

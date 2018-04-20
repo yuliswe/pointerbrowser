@@ -164,6 +164,8 @@ class Docview {
                 root = attempt4
                 continue
             }
+            // reach here if nothing changed
+            break
         }
         console.log("root", root)
         const bb = document.createElement("body")
@@ -270,13 +272,21 @@ class Docview {
         return Object.keys(mapping)
     }
 
+    public isOn = false
+
     public turnOn(): void {
-        window["Docview_original_body"] = document.body
-        document.body = window["Docview_body"]
+        if (! this.isOn) {
+            window["Docview_original_body"] = document.body
+            document.body = window["Docview_body"]
+            this.isOn = true
+        }
     }
 
     public turnOff(): void {
-        document.body = window["Docview_original_body"]
+        if (this.isOn) {
+            document.body = window["Docview_original_body"]
+            this.isOn = false
+        }
     }
 
     public clearHighlight(): void {

@@ -133,9 +133,12 @@ BrowserForm {
         var wp = currentWebView()
         browserAddressBar.update(currentWebView().url, currentWebView().title)
         browserAddressBar.updateProgress(currentWebView().loadProgress)
-        browserBookmarkButton.checked = SearchDB.isBookmarked(wp.url)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
+        browserBookmarkButton.enabled = currentWebView().docviewLoaded
+        browserDocviewButton.enabled = currentWebView().docviewLoaded
+        browserDocviewButton.checked = currentWebView().inDocview
+        browserBookmarkButton.checked = SearchDB.isBookmarked(wp.url)
     }
 
     function closeTab(index) {
@@ -201,6 +204,8 @@ BrowserForm {
             if (index === currentIndex()) {
                 var wp = currentWebView()
                 browserAddressBar.update(wp.url, wp.title)
+                browserBookmarkButton.enabled = true
+                browserDocviewButton.enabled = true
             }
         }
         onWebViewLoadingStarted: {
@@ -289,17 +294,9 @@ BrowserForm {
         target: browserDocviewButton
         onCheckedChanged: {
             if (browserDocviewButton.checked) {
-                console.log("Docview.turnOn()")
-                currentWebView().runJavaScript("Docview.turnOn()",
-                                               function (result) {
-                                                   print(result)
-                                               })
+                currentWebView().docviewOn()
             } else {
-                console.log("Docview.turnOff()")
-                currentWebView().runJavaScript("Docview.turnOff()",
-                                               function (result) {
-                                                   print(result)
-                                               })
+                currentWebView().docviewOff()
             }
 
         }

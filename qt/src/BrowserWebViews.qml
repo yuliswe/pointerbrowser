@@ -53,9 +53,23 @@ BrowserWebViewsForm {
         reloadWebViewAt(currentIndex())
     }
 
-
     repeaterDelegate: WebView {
         id: webview
+        property bool docviewLoaded: false
+        property bool inDocview: false
+
+        function docviewOn() {
+            currentWebView().runJavaScript("Docview.turnOn()", function() {
+                currentWebView().inDocview = true
+            })
+        }
+
+        function docviewOff() {
+            currentWebView().runJavaScript("Docview.turnOff()", function() {
+                currentWebView().inDocview = false
+            })
+        }
+
         implicitHeight: listView.height
         implicitWidth: listView.width
         Component.onCompleted: {
@@ -93,6 +107,10 @@ BrowserWebViewsForm {
                 console.log("WebView.LoadSucceededStatus", loadRequest.errorString)
                 var js = FileManager.readQrcFileS("js/docview.js")
                 webview.runJavaScript(js, function() {
+                    webview.docviewLoaded = true
+                    if (webview.inDocview) {
+                        docviewOn()
+                    }
                     if (! SearchDB.hasWebpage(webview.url)) {
                         SearchDB.addWebpage(webview.url)
                         SearchDB.updateWebpage(webview.url, "title", webview.title)
