@@ -1,3 +1,3 @@
 default:
-	cd node/docviewjs/npm install .
+	cd node/docviewjs && npm install .
 
