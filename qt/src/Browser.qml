@@ -358,6 +358,10 @@ BrowserForm {
         onActivated: showBrowserSearch()
     }
     Shortcut {
+        sequence: "Ctrl+N"
+        onActivated: newTab("", true)
+    }
+    Shortcut {
         sequence: "Esc"
         onActivated: hideBrowserSearch()
     }
