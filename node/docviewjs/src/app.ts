@@ -27,13 +27,17 @@ class Docview {
 
     nonDiv = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT", "IFRAME", "BUTTON", "SVG"]
 
-    public snapshotHTML(heu: Heuristic = new Heuristic()): HTMLElement {
-        const _root = $(document.body).clone()[0]
-        let root = document.body
-        let nodes: HTMLElement[] = [root] // nodes in the current depth
+    public snapshotHTML(heu: Heuristic = new Heuristic()): HTMLBodyElement {
+        console.log("snapshotHTML called")
+        const _root = document.body.cloneNode(true) as HTMLBodyElement
+        const root = document.body as HTMLBodyElement
+        let nodes: Element[] = [root] // nodes in the current depth
+        let _nodes: Element[] = [_root]
         while (nodes.length > 0) {
+            console.log("iteration")
             const n = nodes.shift()
-            let newStyles = ""
+            const _n = _nodes.shift()
+            let _styles = ""
             const styles = window.getComputedStyle(n)
             for (let i = 0; i < styles.length; i++) {
                 const k = styles[i]
@@ -41,34 +45,38 @@ class Docview {
                 if (! k.includes("webkit")) {
                     if (k.includes("padding") || k.includes("margin")) {
                         if (parseInt(v) < heu.maxMarginPaddingAllowed) {
-                            newStyles += k + ":" + v + "!important;"
+                            _styles += k + ":" + v + "!important;"
                         }
                     } else if (k.includes("width")) {
                         if (parseInt(v) < heu.maxWidthAllowed) {
-                            newStyles += k + ":" + v + "!important;"
+                            _styles += k + ":" + v + "!important;"
                         }
                     } else if (k.includes("height")) {
                         // if (parseInt(v) < 50) {
-                        //     newStyles += k + ":" + v + "!important;"
+                        //     _styles += k + ":" + v + "!important;"
                         // }
                     } else {
-                        newStyles += k + ":" + v + "!important;"
+                        _styles += k + ":" + v + "!important;"
                     }
                 }
             }
-            // const stylesBefore = window.getComputedStyle(n, ":before").content
-            // const stylesAfter = window.getComputedStyle(n, ":after").content
-            // $(n).attr('data-before', stylesBefore).attr('data-after', stylesAfter)
-            n.setAttribute("style", newStyles)
-            for (const c in n.childNodes) {
-                if (n.childNodes[c].nodeType == Node.ELEMENT_NODE) {
-                    nodes.push(n.childNodes[c] as HTMLElement)
-                }
+            const contentB = window.getComputedStyle(n, ":before").content
+            const contentA = window.getComputedStyle(n, ":after").content
+            _n.setAttribute("style", _styles)
+            _n.setAttribute("data-before", contentB)
+            _n.setAttribute("data-after", contentA)
+            let c = n.firstElementChild
+            let _c = _n.firstElementChild
+            while (c != null) {
+                nodes.push(c)
+                _nodes.push(_c)
+                c = c.nextElementSibling
+                _c = _c.nextElementSibling
             }
         }
         // window["Docview_htmlSnapshot"] = root
-        document.body = _root
-        return root
+        // document.body = _root
+        return _root
     }
 
     public guessRoot(root: HTMLElement,
@@ -108,6 +116,7 @@ class Docview {
                        docSt: DocviewStyle = new DocviewStyle())
         : HTMLBodyElement
     {
+        console.log("docviewHTML called")
         let _root = document.body
         document.body = root
         // let root = document.body
@@ -167,7 +176,6 @@ class Docview {
             // reach here if nothing changed
             break
         }
-        console.log("root", root)
         const bb = document.createElement("body")
         var link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
@@ -230,6 +238,7 @@ class Docview {
     }
 
     public symbols(): string[] {
+        console.log("finding symbols")
         let hrefs = {}
         $('a').each((i,e)=> {
             hrefs[$(e).attr("href")] = $(e).text()
@@ -357,6 +366,7 @@ class Docview {
     public static setup(heu: Heuristic = new Heuristic(),
                         st: DocviewStyle = new DocviewStyle())
     {
+        console.log("setting up")
         let instance = new Docview()
         window["Docview"] = instance
         window["Docview_original_body"] = document.body
