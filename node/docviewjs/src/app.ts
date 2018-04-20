@@ -56,6 +56,8 @@ class Docview {
                         // if (parseInt(v) < 50) {
                         //     _styles += k + ":" + v + ";"
                         // }
+                    } else if (k == "font-family") {
+                        _styles += 'font-family: "Source Sans Pro", sans-serif;'
                     } else {
                         _styles += k + ":" + v + ";"
                     }
@@ -66,6 +68,8 @@ class Docview {
             _n.setAttribute("style", _styles)
             _n.setAttribute("data-before", contentB)
             _n.setAttribute("data-after", contentA)
+            _n.removeAttribute("id")
+            _n.removeAttribute("class")
             let c = n.firstElementChild
             let _c = _n.firstElementChild
             while (c != null) {
@@ -222,9 +226,7 @@ class Docview {
                 } else {
                     e.style.fontSize = docSt.fontsizeSmall
                 }
-                e.style.fontFamily = "Source Sans Pro, sans-serif"
-                e.removeAttribute("class")
-                e.removeAttribute("id")
+                // e.style.fontFamily = "Source Sans Pro, sans-serif"
             }
         })
         $(bb).find("pre,code,pre *,code *").css({
