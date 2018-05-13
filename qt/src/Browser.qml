@@ -201,7 +201,6 @@ BrowserForm {
             newTab(url)
         }
         onWebViewLoadingSucceeded: {
-            console.log("here!")
             if (index === currentIndex()) {
                 var wp = currentWebView()
                 browserAddressBar.update(wp.url, wp.title)
