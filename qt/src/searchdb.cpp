@@ -239,7 +239,7 @@ void SearchDB::search(const QString& word)
     if (word == "") {
         _webpage->setFilter("temporary = 0");
         _webpage->select();
-        int upper = std::min(10, _webpage->rowCount());
+        int upper = std::min(100, _webpage->rowCount());
         _searchResult.clear();
         for (int i = 0; i < upper; i++) {
             QSqlRecord record = _webpage->record(i);

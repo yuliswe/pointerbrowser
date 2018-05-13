@@ -2,7 +2,7 @@ import QtQuick 2.7
 import Backend 1.0
 
 BrowserWebViewsForm {
-    id: listView
+    id: browserWebViews
 
     readonly property string url: currentWebView() ? currentWebView().url : ""
     readonly property string title: currentWebView() ? currentWebView().title : ""
@@ -27,12 +27,12 @@ BrowserWebViewsForm {
     }
 
     function currentIndex() {
-        return listView.stackLayout.currentIndex
+        return browserWebViews.stackLayout.currentIndex
     }
 
     function setCurrentIndex(idx) {
         console.log("setCurrentIndex", idx)
-        listView.stackLayout.currentIndex = idx
+        browserWebViews.stackLayout.currentIndex = idx
     }
 
     function reloadWebViewAt(index) {
@@ -45,22 +45,21 @@ BrowserWebViewsForm {
     }
 
     function webViewAt(i) {
-        return listView.repeater.itemAt(i)
+        return browserWebViews.repeater.itemAt(i)
     }
 
     function reloadCurrentWebView() {
         reloadWebViewAt(currentIndex())
     }
 
-    repeaterDelegate: WebUI {
-    }
+    repeaterDelegate: WebUI {}
 
 
     Connections {
-        target: listView.stackLayout
+        target: browserWebViews.stackLayout
         onCurrentIndexChanged: {
-            console.log("listView.stackLayout.onCurrentIndexChanged",
-                        listView.stackLayout.currentIndex)
+            console.log("browserWebViews.stackLayout.onCurrentIndexChanged",
+                        browserWebViews.stackLayout.currentIndex)
         }
     }
 

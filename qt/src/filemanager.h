@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QJsonDocument>
 
 class FileManager : public QObject
 {
@@ -11,16 +12,17 @@ class FileManager : public QObject
     public:
         explicit FileManager(QObject *parent = nullptr);
         void static setupDirectories();
-        static QString dataPath();
 
     signals:
 
     public slots:
+        static QString dataPath();
         static QString readQrcFileS(QString file);
         static QByteArray readQrcFileB(QString file);
         static void saveFile(QString file, QByteArray contents);
         static QString readFileS(QString file);
         static QByteArray readFileB(QString file);
+        static void defaultOpenUrl(QString file);
 };
 
 #endif // FILEMANAGER_H

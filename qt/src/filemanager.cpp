@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QDir>
 #include "filemanager.h"
+#include <QDesktopServices>
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
@@ -13,9 +14,7 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 void FileManager::setupDirectories()
 {
     QDir dir;
-    qDebug() << "setupDirectories: "
-             << FileManager::dataPath()
-             << endl;
+    qDebug() << "setupDirectories"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
 }
 
@@ -66,4 +65,12 @@ QByteArray FileManager::readFileB(QString filename)
     file.open(QIODevice::ReadOnly);
     qDebug() << "readFileB: reading file " << path;
     return file.readAll();
+}
+
+void FileManager::defaultOpenUrl(QString filename)
+{
+    QUrl url(filename);
+    url.setScheme("file");
+    qDebug() << "FileManager::defaultOpenUrl" << url;
+    QDesktopServices::openUrl(url);
 }

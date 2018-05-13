@@ -21,8 +21,8 @@ WebEngineView {
         })
     }
 
-    implicitHeight: browserWebViews.height
-    implicitWidth: browserWebViews.width
+    implicitHeight: listView.height
+    implicitWidth: listView.width
     Component.onCompleted: {
         url = TabsModel.at(index).url
     }
@@ -65,26 +65,14 @@ WebEngineView {
                 }
                 if (! SearchDB.hasWebpage(webview.url)) {
                     SearchDB.addWebpage(webview.url)
+                    SearchDB.updateWebpage(webview.url, "title", webview.title)
+                    SearchDB.updateWebpage(webview.url, "temporary", true)
                     webview.runJavaScript("Docview.symbols()", function(syms) {
-                        SearchDB.updateWebpage(webview.url, "title", webview.title)
                         SearchDB.addSymbols(webview.url, syms)
-                        // when the url's domain is in the auto-bookmark list
-                        var arr = FileManager.readFileS("auto-bookmark").split("\n")
-                        var domain = webview.url.toString().split("/")[2]
-                        SearchDB.updateWebpage(webview.url, "temporary", arr.indexOf(domain) === -1)
-                        // loading done
-                        browserWebViews.webViewLoadingSucceeded(index, loadRequest.url)
+                        webViewLoadingSucceeded(index, loadRequest.url)
                         webViewLoadingStopped(index, loadRequest.url)
                     })
                 } else {
-                    // when the url's domain is in the auto-bookmark list
-                    var arr = FileManager.readFileS("auto-bookmark").split("\n")
-                    var domain = webview.url.toString().split("/")[2]
-                    if (arr.indexOf(domain) === -1) {
-                        SearchDB.updateWebpage(webview.url, "temporary", false)
-                    }
-                    // loading done
-                    console.log("here!!")
                     webViewLoadingSucceeded(index, loadRequest.url)
                     webViewLoadingStopped(index, loadRequest.url)
                 }

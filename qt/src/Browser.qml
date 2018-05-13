@@ -201,6 +201,7 @@ BrowserForm {
             newTab(url)
         }
         onWebViewLoadingSucceeded: {
+            console.log("here!")
             if (index === currentIndex()) {
                 var wp = currentWebView()
                 browserAddressBar.update(wp.url, wp.title)
@@ -364,5 +365,9 @@ BrowserForm {
     Shortcut {
         sequence: "Esc"
         onActivated: hideBrowserSearch()
+    }
+    Shortcut {
+        sequence: "Ctrl+K"
+        onActivated: FileManager.defaultOpenUrl(FileManager.dataPath())
     }
 }
