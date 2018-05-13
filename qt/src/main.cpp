@@ -1,11 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
-#include <QtWebView>
 #include <QDebug>
 #include "qmlregister.h"
 #include "palette.h"
 #include "eventfilter.h"
+#ifdef Q_OS_MACX
+#include <QtWebEngine>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -17,8 +19,9 @@ int main(int argc, char *argv[])
     QMLRegister::searchDB->connect();
     QMLRegister::palette->setup();
     QMLRegister::registerToQML();
-    QtWebView::initialize();
-
+#ifdef Q_OS_MACX
+    QtWebEngine::initialize();
+#endif
 #ifdef Q_OS_WIN
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
 #endif
@@ -32,7 +35,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-//    QMLRegister::tabsModel->loadTabs();
+    //    QMLRegister::tabsModel->loadTabs();
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();

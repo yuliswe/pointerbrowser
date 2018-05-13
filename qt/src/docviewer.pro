@@ -1,4 +1,4 @@
-QT += quick webview sql svg
+QT += quick sql svg
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -26,8 +26,13 @@ RESOURCES += \
     qml.qrc \
     db.qrc \
     js.qrc \
-    osx.qrc \
     controls.qrc
+
+macx-clang {
+    QT += webengine
+    RESOURCES += os-specific/mac.qrc
+}
+
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
