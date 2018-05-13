@@ -84,7 +84,6 @@ WebEngineView {
                         SearchDB.updateWebpage(webview.url, "temporary", false)
                     }
                     // loading done
-                    console.log("here!!")
                     webViewLoadingSucceeded(index, loadRequest.url)
                     webViewLoadingStopped(index, loadRequest.url)
                 }
