@@ -1,18 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>controls/Button.qml</file>
-        <file>controls/Draggable.qml</file>
-        <file>controls/FramelessWindow.qml</file>
-        <file>controls/FramelessWindowForm.ui.qml</file>
         <file>controls/TextField.qml</file>
-        <file>controls/TitleBar.qml</file>
-        <file>controls/TitleBarForm.ui.qml</file>
-        <file>controls/icon/minus.svg</file>
-        <file>controls/icon/cross.svg</file>
-        <file>controls/icon/plus.svg</file>
-        <file>controls/icon/minus2.svg</file>
-        <file>controls/icon/plus2.svg</file>
-        <file>controls/icon/cross2.svg</file>
         <file>controls/ButtonForm.ui.qml</file>
         <file>controls/RoundButton.qml</file>
         <file>controls/RoundButtonForm.ui.qml</file>

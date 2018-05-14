@@ -15,7 +15,7 @@ T.TextField {
     selectionColor: pal.text_background
     selectedTextColor: pal.text
     text: placeholderText
-    renderType: Text.NativeRendering
+    renderType: (Qt.platform.os == "win" ? Text.NativeRendering : Text.QtRendering)
     font.pixelSize: pal.input_font_size
     background: Rectangle {
         id: rectangle

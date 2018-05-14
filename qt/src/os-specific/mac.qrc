@@ -29,5 +29,13 @@
         <file>mac/cursor/Vertical Resize.cur</file>
         <file>mac/cursor/Working.ani</file>
         <file alias="WebUI.qml">mac/WebUI.qml</file>
+        <file alias="icons/cross2.svg">mac/window/icons/cross2.svg</file>
+        <file alias="icons/minus2.svg">mac/window/icons/minus2.svg</file>
+        <file alias="icons/plus2.svg">mac/window/icons/plus2.svg</file>
+        <file alias="Draggable.qml">mac/window/Draggable.qml</file>
+        <file alias="FramelessWindow.qml">mac/window/FramelessWindow.qml</file>
+        <file alias="FramelessWindowForm.qml">mac/window/FramelessWindowForm.ui.qml</file>
+        <file alias="TitleBar.qml">mac/window/TitleBar.qml</file>
+        <file alias="TitleBarForm.qml">mac/window/TitleBarForm.ui.qml</file>
     </qresource>
 </RCC>

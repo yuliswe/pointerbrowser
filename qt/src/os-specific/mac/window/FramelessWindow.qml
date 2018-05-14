@@ -20,7 +20,7 @@ Window {
 
     //    property var delegate: null
     //        color: "green"
-//    color: "#00000000"
+    color: "#00000000"
 
     readonly property int customFlags: {
 //        if (Qt.platform.os == "ios") { return Qt.Window }
