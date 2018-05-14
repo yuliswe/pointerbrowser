@@ -30,7 +30,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         anchors.fill: parent
         color: Palette.normal.input_placeholder
-
+        renderType: Text.NativeRendering
         visible: !textField.activeFocus
     }
 

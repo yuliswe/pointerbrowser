@@ -35,6 +35,7 @@ ItemDelegate {
         Text {
             color: highlighted ? pal.list_item_text : pal.button_text
             text: (model.title || "Loading") + " - " + model.url
+            renderType: Text.NativeRendering
             anchors.rightMargin: 5
             anchors.right: parent.right
             font.pointSize: 10

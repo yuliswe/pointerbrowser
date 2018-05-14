@@ -8,6 +8,9 @@
 #ifdef Q_OS_MACX
 #include <QtWebEngine>
 #endif
+#ifdef Q_OS_WIN
+#include <QtWebEngine>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +26,8 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
 #endif
 #ifdef Q_OS_WIN
-    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    QtWebEngine::initialize();
 #endif
 
     app.installEventFilter(QMLRegister::eventFilter);

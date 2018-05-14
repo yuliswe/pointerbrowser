@@ -25,12 +25,20 @@ SOURCES += \
 RESOURCES += \
     qml.qrc \
     db.qrc \
-    js.qrc \
-    controls.qrc
+    js.qrc
 
+macx {
 macx-clang {
     QT += webengine
     RESOURCES += os-specific/mac.qrc
+}
+}
+
+win32 {
+win32-msvc {
+    QT += webengine
+    RESOURCES += os-specific/win.qrc
+}
 }
 
 

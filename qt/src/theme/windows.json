@@ -1,5 +1,5 @@
 {
-    "window_background": ["#faf5f5f5"],
+    "window_background": ["white"],
     "window_text": ["#000"],
     "text": ["#555","#000","#555","#555"],
     "text_background": ["transparent","#70a7ff","transparent","transparent"],

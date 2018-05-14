@@ -79,6 +79,7 @@ Item {
                 font.bold: false
                 font.capitalization: Font.AllUppercase
                 font.pixelSize: 9
+                renderType: Text.NativeRendering
             }
 
             TabsList {
@@ -106,6 +107,7 @@ Item {
                 font.capitalization: Font.AllUppercase
                 font.bold: false
                 font.pixelSize: 9
+                renderType: Text.NativeRendering
             }
 
             TabsList {
