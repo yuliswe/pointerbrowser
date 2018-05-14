@@ -87,7 +87,7 @@ TabsPanelForm {
     }
 
     Shortcut {
-        sequences: ["Ctrl+Shift+F", "Ctrl+T"]
+        sequences: ["Ctrl+Shift+F", "Ctrl+D"]
         onActivated: {
             searchTextField.forceActiveFocus()
             searchTextField.selectAll()

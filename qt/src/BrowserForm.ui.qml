@@ -24,15 +24,14 @@ C1.SplitView {
     handleDelegate: Item {
     }
 
+    TabsPanel {
+        id: tabsPanel
+        Layout.minimumWidth: 150
+    }
+
     Rectangle {
-        id: rectangle
+        id: mainPanel
         color: "#00000000"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
         RowLayout {
             id: toolbar
             height: buttonSize
@@ -113,11 +112,6 @@ C1.SplitView {
         Layout.fillWidth: true
     }
 
-    TabsPanel {
-        id: tabsPanel
-        width: 150
-        Layout.minimumWidth: 150
-    }
     states: [
         State {
             name: "osx"

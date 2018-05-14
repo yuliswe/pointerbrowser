@@ -11,10 +11,10 @@ April:
   (done) BUG: cannot drag on extended screen 
   (done) Bug: address bar display loads when cmd+link click opens a new tab
   (done) FEATURE: search in current webview
-  FEATURE: search symbols in the tab
+  (done) FEATURE: search symbols in the tab
 
 May:
-  FEATURE: docview mode
+  (done) FEATURE: docview mode
 
 June:
   FEATURE: offline mode
@@ -26,5 +26,5 @@ August:
   FEATURE: drag and sort tabs
 
 September:
-  FEATURE: prettify button icons
+  FEATURE: finalize
 

@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import Backend 1.0
+import "qrc:/controls" as C
 
 ItemDelegate {
     id: tabButton
@@ -19,24 +20,23 @@ ItemDelegate {
             id: closeButton
             width: 15
             height: 15
+            anchors.leftMargin: 2
             padding: 4
-            anchors.verticalCenterOffset: 1
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             visible: tabButton.hovered && tabButton.showCloseButton
             z: 2
             contentItem: Image {
                 source: "icon/cross.svg"
-//                color: pal.button_icon
+                //                color: pal.button_icon
             }
             background: Item {
             }
         }
-        Text {
+        C.Text {
             color: highlighted ? pal.list_item_text : pal.button_text
-            text: (model.title || "Loading") + " - " + model.url
-            renderType: (Qt.platform.os == "win" ? Text.NativeRendering : Text.QtRendering)
-            anchors.rightMargin: 5
+            text: (model.title || "Loading")
+            anchors.rightMargin: 10
             anchors.right: parent.right
             font.pointSize: 10
             textFormat: Text.PlainText

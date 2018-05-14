@@ -24,6 +24,14 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 5
 
+        C.TextField {
+            id: tabsSearch
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
+            placeholderText: "Search Tabs"
+            selectByMouse: true
+        }
+
         C.Button {
             id: newTabButton
             font.bold: true
@@ -32,14 +40,6 @@ Item {
             padding: 1
             Layout.fillHeight: true
             iconSource: "icon/plus-mid.svg"
-        }
-
-        C.TextField {
-            id: tabsSearch
-            Layout.fillWidth: true
-            Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
-            placeholderText: "Search Tabs"
-            selectByMouse: true
         }
     }
 
@@ -65,11 +65,13 @@ Item {
             //            flickDeceleration: 10
             //            maximumFlickVelocity: 1000
             contentHeight: text1.height + tabsList.height + text2.height + searchList.height
-            Text {
+            C.Text {
                 id: text1
                 width: form.width
                 color: Palette.normal.label_text
                 text: qsTr("Open Tabs")
+                anchors.left: parent.left
+                anchors.leftMargin: 5
                 verticalAlignment: Text.AlignBottom
                 anchors.top: parent.top
                 anchors.topMargin: 5
@@ -79,25 +81,24 @@ Item {
                 font.bold: false
                 font.capitalization: Font.AllUppercase
                 font.pixelSize: 9
-                renderType: Text.NativeRendering
             }
 
             TabsList {
                 id: tabsList
                 width: form.width
                 anchors.top: text1.bottom
-                anchors.topMargin: -3
                 tabHeight: form.tabHeight
                 interactive: false
                 highlightFollowsCurrentItem: false
             }
 
-            Text {
+            C.Text {
                 id: text2
-                x: 0
                 width: form.width
                 color: Palette.normal.label_text
                 text: qsTr("Bookmarks")
+                anchors.left: parent.left
+                anchors.leftMargin: 5
                 verticalAlignment: Text.AlignBottom
                 anchors.top: tabsList.bottom
                 anchors.topMargin: 5
@@ -107,7 +108,6 @@ Item {
                 font.capitalization: Font.AllUppercase
                 font.bold: false
                 font.pixelSize: 9
-                renderType: Text.NativeRendering
             }
 
             TabsList {
@@ -116,7 +116,6 @@ Item {
                 width: form.width
                 hoverHighlight: true
                 anchors.top: text2.bottom
-                anchors.topMargin: -3
                 tabHeight: form.tabHeight
                 showCloseButton: false
             }
