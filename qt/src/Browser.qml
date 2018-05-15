@@ -59,17 +59,17 @@ BrowserForm {
     }
 
     function scrollToNthHighlightInCurrentWebview(n) {
-        currentWebView().runJavaScript("Docview.scrollToNthHighlight("+n+")", function() {
+        currentWebView().scrollToNthHighlight(n, function() {
             browserSearch.updateCurrent(n)
         })
     }
 
     function highlightWordInCurrentWebview(word, callback) {
-        currentWebView().runJavaScript("Docview.highlightWord('"+word+"')", callback)
+        currentWebView().highlightWord(word, callback)
     }
 
     function clearBrowserSearchHightlights() {
-        currentWebView().runJavaScript("Docview.clearHighlight()");
+        currentWebView().clearHighlight()
     }
 
     function hideBrowserSearch() {
@@ -81,6 +81,7 @@ BrowserForm {
         console.log("openSavedTab", index)
         newTab(SearchDB.searchResult.at(index).url, true)
     }
+
 
     Component.onCompleted: {
         if (TabsModel.count > 0) {
@@ -100,6 +101,7 @@ BrowserForm {
             openTab(currentIndex() + 1)
         }
         hideWelcomePage()
+        return browserWebViews.webViewAt(0)
     }
 
     tabsPanel.rectangle.color: {
@@ -199,6 +201,10 @@ BrowserForm {
         }
         onUserOpensLinkInNewTab: {
             newTab(url)
+        }
+        onUserRequestsNewView: {
+            var wv = newTab()
+            wv.handleNewViewRequest(request)
         }
         onWebViewLoadingSucceeded: {
             if (index === currentIndex()) {

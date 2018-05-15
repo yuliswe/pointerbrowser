@@ -8,6 +8,7 @@ BrowserWebViewsForm {
     readonly property string title: currentWebView() ? currentWebView().title : ""
     signal userOpensLinkInWebView(int index, string url)
     signal userOpensLinkInNewTab(string url)
+    signal userRequestsNewView(var request)
     signal webViewLoadingSucceeded(int index, string url)
     signal webViewLoadingStarted(int index, string url)
     signal webViewLoadingStopped(int index, string url)
