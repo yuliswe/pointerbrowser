@@ -29,6 +29,7 @@ BrowserAddressBarForm {
     }
 
     function updateProgress(progress) {
+        console.log("addressbar updateProgress", progress)
         var w = Math.max(10,progress)/100 * textField.width
         if (progressBar.width >= w) {
             barWidthAnimation.enabled = false

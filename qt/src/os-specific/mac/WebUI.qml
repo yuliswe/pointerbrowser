@@ -8,6 +8,7 @@ StackLayout {
     property alias canGoBack: webview.canGoBack
     property alias canGoForward: webview.canGoForward
     property alias title: webview.title
+    property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
     currentIndex: 0
