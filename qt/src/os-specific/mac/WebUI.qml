@@ -3,7 +3,7 @@ import QtWebEngine 1.5
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
-StackLayout {
+Item {
     property alias url: webview.url
     property alias canGoBack: webview.canGoBack
     property alias canGoForward: webview.canGoForward
@@ -11,7 +11,7 @@ StackLayout {
     property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
-    currentIndex: 0
+    property int currentIndex: 0
 
     function docviewOn(callback) {
         //        webview.runJavaScript("Docview.turnOn()", function() {
@@ -19,6 +19,8 @@ StackLayout {
         //            callback()
         //        })
         inDocview = true
+        webview.visible = false
+        docview.visible = true
         currentIndex = 1
     }
 
@@ -28,6 +30,8 @@ StackLayout {
         //            callback()
         //        })
         inDocview = false
+        webview.visible = true
+        docview.visible = false
         currentIndex = 0
     }
 
@@ -78,7 +82,10 @@ StackLayout {
         id: webview
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
-        onTitleChanged: TabsModel.updateTab(index, "title", title)
+        onTitleChanged: {
+            TabsModel.updateTab(index, "title", title)
+            SearchDB.updateWebpage(url, "title", title)
+        }
         onLoadProgressChanged: {
             if (loading) {
                 console.log("onLoadProgressChanged", index, loadProgress)
@@ -104,6 +111,7 @@ StackLayout {
 
     WebEngineView {
         id: docview
+        visible: false
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         url: webview.url
@@ -135,7 +143,6 @@ StackLayout {
                     // when the page is not in db
                     if (! SearchDB.hasWebpage(url)) {
                         SearchDB.addWebpage(url)
-                        SearchDB.updateWebpage(url, "title", title)
                         runJavaScript("Docview.symbols()", function(syms) {
                             SearchDB.addSymbols(url, syms)
                             // when the url's domain is in the auto-bookmark list

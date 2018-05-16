@@ -26,7 +26,8 @@ RESOURCES += \
     qml.qrc \
     db.qrc \
     js.qrc \
-    controls.qrc
+    controls.qrc \
+    defaults.qrc
 
 macx {
     macx-clang {

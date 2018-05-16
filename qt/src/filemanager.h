@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QJsonDocument>
+#include <QFile>
+#include <QSharedPointer>
+typedef QSharedPointer<QFile> QFile_;
 
 class FileManager : public QObject
 {
@@ -17,6 +20,8 @@ class FileManager : public QObject
 
     public slots:
         static QString dataPath();
+        static QFile_ dataFile(QString file);
+        static QFile_ qrcFile(QString file);
         static QString readQrcFileS(QString file);
         static QByteArray readQrcFileB(QString file);
         static void saveFile(QString file, QByteArray contents);

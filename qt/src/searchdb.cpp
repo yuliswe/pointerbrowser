@@ -21,19 +21,19 @@ SearchDB::SearchDB()
 }
 
 bool SearchDB::connect() {
-    qDebug() << "libraryPaths:" << QCoreApplication::libraryPaths () << endl;
+    qDebug() << "libraryPaths:" << QCoreApplication::libraryPaths();
     _db = QSqlDatabase::addDatabase("QSQLITE");
     _dbPath = FileManager::dataPath() + "search.db";
-    qDebug() << "SearchDB: connecting" << _dbPath << endl;
+    qDebug() << "SearchDB: connecting" << _dbPath;
     _db.setDatabaseName(_dbPath);
     if (! _db.open()) {
         qDebug() << "SearchDB Error: connection with database failed";
         return false;
     }
     qDebug() << "SearchDB: connection ok";
-    QString script = FileManager::readQrcFileS("searchDB.setup");
-    QStringList lines = script.split(";");
-    execMany(lines);
+//    QString script = FileManager::readQrcFileS("searchDB.setup");
+//    QStringList lines = script.split(";");
+//    execMany(lines);
     _webpage = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
     _webpage->setTable("webpage");
     _webpage->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -155,14 +155,16 @@ addSymbolsFailed:
 
 bool SearchDB::addWebpage(const QString& url)
 {
-    qDebug() << "SearchDB::addWebpage " << url;
+    qDebug() << "SearchDB::addWebpage" << url;
     QSqlRecord wpRecord = _webpage->record();
     wpRecord.setValue("url", url);
     wpRecord.setValue("temporary", true);
-    if (! _webpage->insertRecord(-1, wpRecord)) {
+    if (! (_webpage->insertRecord(-1, wpRecord)
+            && _webpage->submitAll()))
+    {
+        qDebug() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
         return false;
     };
-    _webpage->submitAll();
     search(_currentWord);
     return true;
 }

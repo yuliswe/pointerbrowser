@@ -85,11 +85,11 @@ void TabsModel::saveTabs(void) {
         tabs << tab->toQJsonObject();
     }
     QJsonDocument doc(tabs);
-    QMLRegister::fileManager->saveFile("openTabs.json", doc.toJson());
+    QMLRegister::fileManager->saveFile("open.json", doc.toJson());
 }
 
 void TabsModel::loadTabs(void) {
-    QByteArray contents = QMLRegister::fileManager->readFileB("openTabs.json");
+    QByteArray contents = QMLRegister::fileManager->readFileB("open.json");
     QJsonDocument doc = QJsonDocument::fromJson(contents);
     QJsonArray jarr = doc.array();
     qDebug() << jarr;

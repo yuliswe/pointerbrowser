@@ -16,6 +16,31 @@ void FileManager::setupDirectories()
     QDir dir;
     qDebug() << "setupDirectories"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
+    QStringList defaults;
+    defaults << "search.db" << "auto-bookmark";
+    for (QString file : defaults) {
+        QFile_ dest = FileManager::dataFile(file);
+        QFile_ src = FileManager::qrcFile("defaults/"+file);
+        if (! dest->exists()) {
+            qDebug() << "copying" << src->fileName() << "to" << dest->fileName();
+            src->copy(dest->fileName());
+            QFile::setPermissions(dest->fileName(),
+                                  QFileDevice::ReadOwner|
+                                  QFileDevice::WriteOwner);
+        }
+    }
+}
+
+QFile_ FileManager::dataFile(QString filename)
+{
+    QString path = FileManager::dataPath() + filename;
+    return QFile_::create(path);
+}
+
+
+QFile_ FileManager::qrcFile(QString filename)
+{
+    return QFile_::create(":/" + filename);
 }
 
 
