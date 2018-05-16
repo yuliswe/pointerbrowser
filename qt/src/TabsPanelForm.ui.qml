@@ -131,11 +131,6 @@ Item {
         Layout.maximumHeight: 25
         Layout.fillWidth: true
         Layout.margins: 5
-
-        Switch {
-            id: docviewSwitch
-            checked: true
-        }
     }
 
     property alias flickable: flickable
