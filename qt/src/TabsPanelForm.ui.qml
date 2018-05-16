@@ -7,13 +7,12 @@ import Backend 1.0
 Item {
     id: form
 
-    Rectangle {
-        id: background
-        //        color: "#00000000"
-        border.width: 0
-        anchors.fill: form
-    }
-
+    //    Rectangle {
+    //        id: background
+    //        //        color: "#00000000"
+    //        border.width: 0
+    //        anchors.fill: form
+    //    }
     RowLayout {
         id: topControls
         height: buttonSize
@@ -28,7 +27,7 @@ Item {
             id: tabsSearch
             Layout.fillWidth: true
             Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
-            placeholderText: "Search Tabs"
+            placeholderText: "Search"
             selectByMouse: true
         }
 
@@ -135,7 +134,7 @@ Item {
 
     property alias flickable: flickable
     property int buttonSize: 40
-    property alias rectangle: background
+    //    property alias rectangle: background
     property alias newTabButton: newTabButton
     property alias openTabsList: tabsList
     property alias searchTextField: tabsSearch

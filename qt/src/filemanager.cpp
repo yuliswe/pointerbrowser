@@ -17,7 +17,7 @@ void FileManager::setupDirectories()
     qDebug() << "setupDirectories"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
-    defaults << "search.db" << "auto-bookmark";
+    defaults << "search.db" << "auto-bookmark.txt";
     for (QString file : defaults) {
         QFile_ dest = FileManager::dataFile(file);
         QFile_ src = FileManager::qrcFile("defaults/"+file);

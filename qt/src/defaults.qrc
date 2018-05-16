@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>defaults/auto-bookmark</file>
+        <file>defaults/auto-bookmark.txt</file>
         <file>defaults/search.db</file>
     </qresource>
 </RCC>

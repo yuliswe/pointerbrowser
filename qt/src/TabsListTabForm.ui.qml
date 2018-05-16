@@ -38,7 +38,7 @@ ItemDelegate {
             text: (model.title || "Loading")
             anchors.rightMargin: 10
             anchors.right: parent.right
-            font.pointSize: 10
+            font.pointSize: 11
             textFormat: Text.PlainText
             anchors.left: closeButton.right
             anchors.verticalCenter: parent.verticalCenter

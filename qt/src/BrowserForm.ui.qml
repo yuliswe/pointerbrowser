@@ -3,7 +3,7 @@ import QtWebView 1.1
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.5 as C1
-import "controls" as C
+import "qrc:/controls" as C
 
 C1.SplitView {
     id: splitView
@@ -19,6 +19,7 @@ C1.SplitView {
     property alias nextEnabled: next.enabled
     property alias browserSearch: browserSearch
     property alias splitView: splitView
+    property alias welcomePage: welcomePage
     property int buttonSize: 40
 
     handleDelegate: Item {
@@ -97,6 +98,14 @@ C1.SplitView {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.topMargin: 3
+
+            WelcomePageForm {
+                id: welcomePage
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                visible: !browserWindow.resizing
+                opacity: 0.5
+            }
 
             BrowserSearch {
                 id: browserSearch

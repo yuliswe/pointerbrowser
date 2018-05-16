@@ -55,7 +55,6 @@ BrowserWebViewsForm {
 
     repeaterDelegate: WebUI {}
 
-
     Connections {
         target: browserWebViews.stackLayout
         onCurrentIndexChanged: {

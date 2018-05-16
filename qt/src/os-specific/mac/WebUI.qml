@@ -11,7 +11,6 @@ Item {
     property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
-    property int currentIndex: 0
 
     function docviewOn(callback) {
         //        webview.runJavaScript("Docview.turnOn()", function() {
@@ -21,7 +20,6 @@ Item {
         inDocview = true
         webview.visible = false
         docview.visible = true
-        currentIndex = 1
     }
 
     function docviewOff(callback) {
@@ -32,7 +30,6 @@ Item {
         inDocview = false
         webview.visible = true
         docview.visible = false
-        currentIndex = 0
     }
 
     function goBack() {
@@ -145,8 +142,8 @@ Item {
                         SearchDB.addWebpage(url)
                         runJavaScript("Docview.symbols()", function(syms) {
                             SearchDB.addSymbols(url, syms)
-                            // when the url's domain is in the auto-bookmark list
-                            var arr = FileManager.readFileS("auto-bookmark").split("\n")
+                            // when the url's domain is in the auto-bookmark.txt list
+                            var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
                             var domain = url.toString().split("/")[2]
                             SearchDB.updateWebpage(url, "temporary", arr.indexOf(domain) === -1)
                             // turn on docview
@@ -163,8 +160,8 @@ Item {
                     }
                     // when the page is already in db, skip symbol parsing (too expensive)
                     else {
-                        // when the url's domain is in the auto-bookmark list
-                        var arr = FileManager.readFileS("auto-bookmark").split("\n")
+                        // when the url's domain is in the auto-bookmark.txt list
+                        var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
                         var domain = url.toString().split("/")[2]
                         if (arr.indexOf(domain) > -1) {
                             SearchDB.updateWebpage(url, "temporary", false)

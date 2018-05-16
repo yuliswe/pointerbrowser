@@ -37,7 +37,7 @@ Window {
         id: resizingTimeout
         onTriggered: resizing = false
         triggeredOnStart: false
-        interval: 1000
+        interval: 0
     }
 
     function maximizeWindow() {

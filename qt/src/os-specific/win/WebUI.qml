@@ -68,8 +68,8 @@ WebEngineView {
                     webview.runJavaScript("Docview.symbols()", function(syms) {
                         SearchDB.updateWebpage(webview.url, "title", webview.title)
                         SearchDB.addSymbols(webview.url, syms)
-                        // when the url's domain is in the auto-bookmark list
-                        var arr = FileManager.readFileS("auto-bookmark").split("\n")
+                        // when the url's domain is in the auto-bookmark.txt list
+                        var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
                         var domain = webview.url.toString().split("/")[2]
                         SearchDB.updateWebpage(webview.url, "temporary", arr.indexOf(domain) === -1)
                         // loading done
@@ -77,8 +77,8 @@ WebEngineView {
                         webViewLoadingStopped(index, loadRequest.url)
                     })
                 } else {
-                    // when the url's domain is in the auto-bookmark list
-                    var arr = FileManager.readFileS("auto-bookmark").split("\n")
+                    // when the url's domain is in the auto-bookmark.txt list
+                    var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
                     var domain = webview.url.toString().split("/")[2]
                     if (arr.indexOf(domain) === -1) {
                         SearchDB.updateWebpage(webview.url, "temporary", false)

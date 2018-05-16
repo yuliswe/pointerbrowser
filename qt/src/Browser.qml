@@ -27,6 +27,7 @@ BrowserForm {
         browserDocviewButton.enabled = false
         browserBookmarkButton.enabled = false
         browserAddressBar.update("Welcome", "")
+        welcomePage.visible = true
     }
 
     function hideWelcomePage() {
@@ -35,6 +36,7 @@ BrowserForm {
         browserBackButton.enabled = true
         browserDocviewButton.enabled = true
         browserBookmarkButton.enabled = true
+        welcomePage.visible = false
     }
 
     function refreshCurrentWebview() {
@@ -104,26 +106,26 @@ BrowserForm {
         return browserWebViews.webViewAt(0)
     }
 
-    tabsPanel.rectangle.color: {
-        if (splitView.resizing || browserWindow.resizing) {
-            return Palette.normal.window_base_background
-        } else {
-            return "transparent"
-        }
-    }
+//    tabsPanel.rectangle.color: {
+////        if (splitView.resizing || browserWindow.resizing) {
+////            return Palette.normal.window_base_background
+////        } else {
+//            return "transparent"
+////        }
+//    }
 
-    Timer {
-        id: bugfixTimeout
-        repeat: false
-        interval: 1000
-        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
-            if (splitView.resizing || browserWindow.resizing) {
-                return Palette.normal.window_base_background
-            } else {
-                return "transparent"
-            }
-        })
-    }
+//    Timer {
+//        id: bugfixTimeout
+//        repeat: false
+//        interval: 1000
+//        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
+//            if (splitView.resizing || browserWindow.resizing) {
+//                return Palette.normal.window_base_background
+//            } else {
+//                return "transparent"
+//            }
+//        })
+//    }
 
     function openTab(index) {
         hideWelcomePage()
@@ -131,7 +133,7 @@ BrowserForm {
         tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
-        bugfixTimeout.restart()
+//        bugfixTimeout.restart()
         var wp = currentWebView()
         browserAddressBar.update(currentWebView().url, currentWebView().title)
         browserAddressBar.updateProgress(currentWebView().loadProgress)
@@ -373,6 +375,6 @@ BrowserForm {
     }
     Shortcut {
         sequence: "Ctrl+K"
-        onActivated: FileManager.defaultOpenUrl(FileManager.dataPath())
+        onActivated: FileManager.defaultOpenUrl(FileManager.dataPath() + "/auto-bookmark.txt")
     }
 }

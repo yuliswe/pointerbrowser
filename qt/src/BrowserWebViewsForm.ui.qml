@@ -15,8 +15,6 @@ Item {
 
         Repeater {
             id: repeater
-            Layout.fillHeight: true
-            Layout.fillWidth: true
         }
     }
 }
