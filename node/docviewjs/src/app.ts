@@ -363,15 +363,20 @@ class Docview {
         }
     }
 
-    public static setup(heu: Heuristic = new Heuristic(),
-                        st: DocviewStyle = new DocviewStyle())
+    public static init()
     {
         console.log("setting up")
         let instance = new Docview()
         window["Docview"] = instance
+    }
+
+    public static initDocviewHTML(heu: Heuristic = new Heuristic(),
+                                  st: DocviewStyle = new DocviewStyle())
+    {
+        let instance = window["Docview"]
         window["Docview_original_body"] = document.body
         window["Docview_body"] = instance.docviewHTML(instance.snapshotHTML(), 8, st)
     }
 }
 
-Docview.setup();
+Docview.init();

@@ -31,9 +31,9 @@ bool SearchDB::connect() {
         return false;
     }
     qDebug() << "SearchDB: connection ok";
-//    QString script = FileManager::readQrcFileS("searchDB.setup");
-//    QStringList lines = script.split(";");
-//    execMany(lines);
+    //    QString script = FileManager::readQrcFileS("searchDB.setup");
+    //    QStringList lines = script.split(";");
+    //    execMany(lines);
     _webpage = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
     _webpage->setTable("webpage");
     _webpage->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -160,7 +160,7 @@ bool SearchDB::addWebpage(const QString& url)
     wpRecord.setValue("url", url);
     wpRecord.setValue("temporary", true);
     if (! (_webpage->insertRecord(-1, wpRecord)
-            && _webpage->submitAll()))
+           && _webpage->submitAll()))
     {
         qDebug() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
         return false;
@@ -254,10 +254,13 @@ void SearchDB::search(const QString& word)
         QStringList ws = word.split(QRegularExpression(" "));
         QStringList qsl;
         for (QString w : ws) {
-            qsl << QString("SELECT DISTINCT webpage.id, webpage.url, webpage.title from webpage ") +
+            if (w == "") { continue; }
+            qsl << QString("SELECT * FROM ( SELECT webpage.id, webpage.url, webpage.title from webpage ") +
                    "INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage " +
                    "INNER JOIN symbol ON symbol.id = webpage_symbol.symbol " +
-                   "WHERE INSTR(LOWER(symbol.symbol),LOWER('" + w + "')) > 0";
+                   "WHERE INSTR(LOWER(symbol.symbol),LOWER('" + w + "')) > 0 " +
+                   "UNION SELECT webpage.id, webpage.url, webpage.title from webpage " +
+                   "WHERE INSTR(LOWER(webpage.title),LOWER('" + w + "')) > 0 )";
         }
         QString qs = qsl.join(" INTERSECT ") + ";";
         qDebug() << "SearchDB::search" << qs;

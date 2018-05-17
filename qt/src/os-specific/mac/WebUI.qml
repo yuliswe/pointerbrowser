@@ -55,16 +55,16 @@ Item {
     }
 
     function clearHighlight() {
+        webview.runJavaScript("Docview.clearHighlight()")
         docview.runJavaScript("Docview.clearHighlight()")
     }
 
     function highlightWord(word, callback) {
-        //        webview.findText(word, {}, callback)
-        docview.runJavaScript("Docview.highlightWord('"+word+"')", callback)
+        (inDocview ? docview : webview).runJavaScript("Docview.highlightWord('"+word+"')", callback)
     }
 
     function scrollToNthHighlight(n, callback) {
-        docview.runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
+        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
     }
 
     function handleNewViewRequest(request) {
@@ -81,12 +81,15 @@ Item {
         implicitWidth: browserWebViews.width
         onTitleChanged: {
             TabsModel.updateTab(index, "title", title)
-            SearchDB.updateWebpage(url, "title", title)
+            if (SearchDB.hasWebpage(url)) {
+                SearchDB.updateWebpage(url, "title", title)
+            }
         }
-        onLoadProgressChanged: {
-            if (loading) {
-                console.log("onLoadProgressChanged", index, loadProgress)
-                webViewLoadingProgressChanged(index, loadProgress)
+        onLoadingChanged: {
+            switch (loadRequest.status) {
+            case WebEngineView.LoadSucceededStatus:
+                console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
+                runJavaScript(FileManager.readQrcFileS("js/docview.js"))
             }
         }
         onNewViewRequested: {
@@ -140,7 +143,8 @@ Item {
                     // when the page is not in db
                     if (! SearchDB.hasWebpage(url)) {
                         SearchDB.addWebpage(url)
-                        runJavaScript("Docview.symbols()", function(syms) {
+                        SearchDB.updateWebpage(url, "title", title)
+                        runJavaScript("Docview.initDocviewHTML(); Docview.symbols()", function(syms) {
                             SearchDB.addSymbols(url, syms)
                             // when the url's domain is in the auto-bookmark.txt list
                             var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")

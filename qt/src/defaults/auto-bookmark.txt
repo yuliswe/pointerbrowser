@@ -4,3 +4,6 @@ docs.python.org
 developer.mozilla.org
 www.cplusplus.com
 docs.oracle.com
+devdocs.io
+www.w3schools.com
+getbootstrap.com

@@ -130,7 +130,7 @@ BrowserForm {
     function openTab(index) {
         hideWelcomePage()
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
-        tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
+//        tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
 //        bugfixTimeout.restart()
