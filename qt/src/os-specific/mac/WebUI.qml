@@ -144,14 +144,14 @@ Item {
                     if (! SearchDB.hasWebpage(url)) {
                         SearchDB.addWebpage(url)
                         SearchDB.updateWebpage(url, "title", title)
-                        runJavaScript("Docview.initDocviewHTML(); Docview.symbols()", function(syms) {
+                        runJavaScript("Docview.symbols()", function(syms) {
                             SearchDB.addSymbols(url, syms)
                             // when the url's domain is in the auto-bookmark.txt list
                             var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
                             var domain = url.toString().split("/")[2]
                             SearchDB.updateWebpage(url, "temporary", arr.indexOf(domain) === -1)
                             // turn on docview
-                            runJavaScript("Docview.turnOn()", function() {
+                            runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
                                 docviewLoaded = true
                                 if (inDocview) {
                                     docviewOn()
@@ -171,7 +171,7 @@ Item {
                             SearchDB.updateWebpage(url, "temporary", false)
                         }
                         // turn on docview
-                        runJavaScript("Docview.turnOn()", function() {
+                        runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
                             docviewLoaded = true
                             if (inDocview) {
                                 docviewOn()
