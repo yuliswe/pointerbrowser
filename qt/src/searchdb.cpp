@@ -127,30 +127,27 @@ bool SearchDB::addSymbols(const QString& url, const QStringList& symbols)
             syRecord = _symbol->record();
             syRecord.setValue("symbol", s);
             if (! _symbol->insertRecord(-1, syRecord)) {
-                goto addSymbolsFailed;
+                qDebug() << _symbol->lastError();
+                continue;
             }
-            _symbol->submitAll();
         }
+        _symbol->submitAll();
         _symbol->select();
         if (_symbol->rowCount() == 0) {
-            qDebug() << "SearchDB::addSymbols this should not have happened";
-            goto addSymbolsFailed;
+            qDebug() << "SearchDB::addSymbols this should not have happened"
+                     << _symbol->lastError();
+            continue;
         }
         syRecord = _symbol->record(0);
         QSqlRecord rel = _webpage_symbol->record();
         rel.setValue("symbol", syRecord.value("id"));
         rel.setValue("webpage", wpRecord.value("id"));
         if (! _webpage_symbol->insertRecord(-1, rel)) {
-            goto addSymbolsFailed;
+            qDebug() << _webpage_symbol->lastError();
+            continue;
         }
     }
     return _webpage_symbol->submitAll();
-
-addSymbolsFailed:
-    qDebug() << "SearchDB::addSymbols failed";
-    _symbol->revertAll();
-    _webpage_symbol->revertAll();
-    return false;
 }
 
 bool SearchDB::addWebpage(const QString& url)

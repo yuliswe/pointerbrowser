@@ -377,4 +377,15 @@ BrowserForm {
         sequence: "Ctrl+K"
         onActivated: FileManager.defaultOpenUrl(FileManager.dataPath() + "/auto-bookmark.txt")
     }
+    Shortcut {
+        sequence: "Ctrl+Shift+P"
+        onActivated: {
+            var r = SearchDB.searchResult
+            console.log(r.count)
+            for (var i = 0; i < r.count; i++) {
+//                SearchDB.removeWebpage(r.at(i).url)
+                newTab(r.at(i).url, true)
+            }
+        }
+    }
 }

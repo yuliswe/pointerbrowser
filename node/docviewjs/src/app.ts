@@ -245,18 +245,19 @@ class Docview {
         })
         let mapping = {}
         for (let k in hrefs) {
-            const m = k.match(/\#(.+)$/g)
-            if (m !== null) {
-                const treatment = [""]
-                let link = m[0].substr(1)
-                let txt = hrefs[k]
-                treatment.forEach((t) => {
-                    link.replace(t, "")
-                    txt.replace(t, "")
-                })
-                // mapping[link] = 1
-                mapping[txt] = 1
-            }
+            let txt = hrefs[k]
+            // const m = k.match(/\#(.+)$/g)
+            // if (m !== null) {
+            //     const treatment = [""]
+            //     let link = m[0].substr(1)
+
+            //     treatment.forEach((t) => {
+            //         link.replace(t, "")
+            //         txt.replace(t, "")
+            //     })
+            //     // mapping[link] = 1
+            // }
+            mapping[txt] = 1
         }
         return Object.keys(mapping)
     }
@@ -370,7 +371,7 @@ class Docview {
         window["Docview"] = instance
     }
 
-    public static initDocviewHTML(heu: Heuristic = new Heuristic(),
+    public initDocviewHTML(heu: Heuristic = new Heuristic(),
                                   st: DocviewStyle = new DocviewStyle())
     {
         let instance = window["Docview"]
@@ -380,3 +381,5 @@ class Docview {
 }
 
 Docview.init();
+
+

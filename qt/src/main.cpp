@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    //    QMLRegister::tabsModel->loadTabs();
+//        QMLRegister::tabsModel->loadTabs();
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();
