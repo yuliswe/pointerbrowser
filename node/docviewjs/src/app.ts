@@ -235,7 +235,7 @@ class Docview {
         console.log("finding symbols")
         let hrefs = {}
         $('a').each((i,e)=> {
-            hrefs[$(e).attr("href")] = $(e).text()
+            hrefs[$(e).attr("href")] = e.innerText
         })
         let mapping = {}
         for (let k in hrefs) {
@@ -252,6 +252,7 @@ class Docview {
             //     // mapping[link] = 1
             // }
             mapping[txt] = 1
+            mapping[k] = 1
         }
         return Object.keys(mapping)
     }

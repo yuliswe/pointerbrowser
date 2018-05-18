@@ -11,13 +11,15 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 {
 }
 
-void FileManager::setupDirectories()
+void FileManager::mkDataDir()
 {
     QDir dir;
-    qDebug() << "setupDirectories"<< FileManager::dataPath();
+    qDebug() << "FileManager::mkDataDir"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
-    defaults << "search.db" << "auto-bookmark.txt";
+    defaults << "search.db"
+             << "auto-bookmark.txt"
+             << "version";
     for (QString file : defaults) {
         QFile_ dest = FileManager::dataFile(file);
         QFile_ src = FileManager::qrcFile("defaults/"+file);
@@ -29,6 +31,13 @@ void FileManager::setupDirectories()
                                   QFileDevice::WriteOwner);
         }
     }
+}
+
+void FileManager::rmDataDir()
+{
+    qDebug() << "FileManager::rmDataDir"<< FileManager::dataPath();
+    QDir dir(FileManager::dataPath());
+    dir.removeRecursively();
 }
 
 QFile_ FileManager::dataFile(QString filename)
@@ -64,15 +73,23 @@ QByteArray FileManager::readQrcFileB(QString file)
     return input.readAll();
 }
 
-void FileManager::saveFile(QString filename, QByteArray contents)
+void FileManager::writeFileB(QString filename, QByteArray contents)
 {
     QString path = FileManager::dataPath() + filename;
-    QFile file(path);
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(contents);
-    qDebug() << "saveFile: writing file " << path << endl
+    QFile_ file = FileManager::dataFile(path);
+    file->open(QIODevice::WriteOnly | QIODevice::Text);
+    file->write(contents);
+    file->close();
+    qDebug() << "writeFileB: writing file " << path << endl
              << contents << endl;
 }
+
+
+void FileManager::writeFileS(QString filename, QString contents)
+{
+    FileManager::writeFileB(filename, contents.toUtf8());
+}
+
 
 QString FileManager::readFileS(QString filename)
 {

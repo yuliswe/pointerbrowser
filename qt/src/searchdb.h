@@ -31,8 +31,9 @@ class SearchDB : public QObject
         bool addWebpage(const QString& url);
         bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
         bool addSymbols(const QString& url, const QStringList& symbols);
-        Webpage_ findWebpage(const QString& url) const;
-        bool isBookmarked(const QString& url) const;
+        Webpage_ findWebpage_(const QString& url) const;
+        bool setBookmarked(const QString& url, bool bk);
+        bool bookmarked(const QString& url) const;
         bool hasWebpage(const QString& url) const;
         bool removeWebpage(const QString& url);
         void search(const QString& word);

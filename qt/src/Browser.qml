@@ -31,10 +31,10 @@ BrowserForm {
     }
 
     function hideWelcomePage() {
-        browserForwardButton.enabled = true
+        //        browserForwardButton.enabled = true
         browserRefreshButton.enabled = true
-        browserBackButton.enabled = true
-        browserDocviewButton.enabled = true
+        //        browserBackButton.enabled = true
+        //        browserDocviewButton.enabled = true
         browserBookmarkButton.enabled = true
         welcomePage.visible = false
     }
@@ -43,7 +43,7 @@ BrowserForm {
         console.log("Browser.qml reloadWebViewAt")
         if (currentIndex() > -1) {
             EventFilter.ctrlKeyDown = false
-            //            var bookmarked = SearchDB.isBookmarked(currentWebView().url)
+            //            var bookmarked = SearchDB.isBookmarked(currentWebView().url())
             browserWebViews.reloadCurrentWebView()
         }
     }
@@ -106,49 +106,46 @@ BrowserForm {
         return browserWebViews.webViewAt(0)
     }
 
-//    tabsPanel.rectangle.color: {
-////        if (splitView.resizing || browserWindow.resizing) {
-////            return Palette.normal.window_base_background
-////        } else {
-//            return "transparent"
-////        }
-//    }
+    //    tabsPanel.rectangle.color: {
+    ////        if (splitView.resizing || browserWindow.resizing) {
+    ////            return Palette.normal.window_base_background
+    ////        } else {
+    //            return "transparent"
+    ////        }
+    //    }
 
-//    Timer {
-//        id: bugfixTimeout
-//        repeat: false
-//        interval: 1000
-//        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
-//            if (splitView.resizing || browserWindow.resizing) {
-//                return Palette.normal.window_base_background
-//            } else {
-//                return "transparent"
-//            }
-//        })
-//    }
+    //    Timer {
+    //        id: bugfixTimeout
+    //        repeat: false
+    //        interval: 1000
+    //        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
+    //            if (splitView.resizing || browserWindow.resizing) {
+    //                return Palette.normal.window_base_background
+    //            } else {
+    //                return "transparent"
+    //            }
+    //        })
+    //    }
 
     function openTab(index) {
         hideWelcomePage()
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
-//        tabsPanel.rectangle.color = Palette.normal.window_base_background // mac bugfix
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
-//        bugfixTimeout.restart()
         var wp = currentWebView()
-        browserAddressBar.update(currentWebView().url, currentWebView().title)
+        browserAddressBar.update(currentWebView().url(), currentWebView().title)
         browserAddressBar.updateProgress(currentWebView().loadProgress)
         prevEnabled = wp && wp.canGoBack
         nextEnabled = wp && wp.canGoForward
-        browserBookmarkButton.enabled = currentWebView().docviewLoaded
-        browserDocviewButton.enabled = currentWebView().docviewLoaded
-        browserDocviewButton.checked = currentWebView().inDocview
-        browserBookmarkButton.checked = SearchDB.isBookmarked(wp.url)
+        browserDocviewButton.enabled = wp && wp.docviewLoaded
+        browserDocviewButton.checked = wp && wp.inDocview
+        browserBookmarkButton.checked = SearchDB.bookmarked(wp.url())
     }
 
     function closeTab(index) {
         console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
         if (index < 0) { return }
-        //        SearchDB.removeWebpage(webViewAt(index).url)
+        //        SearchDB.removeWebpage(webViewAt(index).url())
         // todo: remove from backend
         if (currentIndex() === index) {
             // when removing current tab
@@ -211,9 +208,7 @@ BrowserForm {
         onWebViewLoadingSucceeded: {
             if (index === currentIndex()) {
                 var wp = currentWebView()
-                browserAddressBar.update(wp.url, wp.title)
-                console.log("browserBookmarkButton.enabled = true")
-                browserBookmarkButton.enabled = true
+                browserAddressBar.update(wp.url(), wp.title)
                 browserDocviewButton.enabled = true
             }
         }
@@ -222,9 +217,8 @@ BrowserForm {
                 var cw = currentWebView()
                 prevEnabled = cw && cw.canGoBack
                 nextEnabled = cw && cw.canGoForward
-                browserBookmarkButton.checked = SearchDB.isBookmarked(cw.url)
-                console.log("browserBookmarkButton.enabled = false")
-                browserBookmarkButton.enabled = false
+                browserBookmarkButton.checked = SearchDB.bookmarked(cw.url())
+                browserBookmarkButton.enabled = true
                 browserDocviewButton.enabled = false
             }
         }
@@ -233,7 +227,7 @@ BrowserForm {
                 var cw = currentWebView()
                 prevEnabled = cw && cw.canGoBack
                 nextEnabled = cw && cw.canGoForward
-                browserBookmarkButton.checked = SearchDB.isBookmarked(cw.url)
+                browserBookmarkButton.checked = SearchDB.bookmarked(cw.url())
             }
         }
         onWebViewLoadingProgressChanged: {
@@ -278,7 +272,7 @@ BrowserForm {
                 EventFilter.ctrlKeyDown = false
                 newTab(url, true)
             } else {
-                currentWebView().url = url
+                currentWebView().goTo(url)
             }
         }
     }
@@ -316,16 +310,16 @@ BrowserForm {
 
     Connections {
         target: browserBookmarkButton
+        onCheckedChanged: {
+            console.log("onCheckedChanged!!", browserBookmarkButton.checked)
+        }
+
         onClicked: {
-            //            console.log("bookmarking", currentWebView().url)
-            //            currentWebView().runJavaScript("Docview.symbols()", function(syms) {
-            //                SearchDB.addWebpage(currentWebView().url)
-            //                SearchDB.updateWebpage(currentWebView().url, "title", currentWebView().title)
-            //                SearchDB.addSymbols(currentWebView().url, syms)
-            if (! SearchDB.updateWebpage(currentWebView().url, "temporary", ! browserBookmarkButton.checked)) {
-                browserBookmarkButton.checked = ! browserBookmarkButton.checked
+            if (browserBookmarkButton.checked) {
+                SearchDB.setBookmarked(currentWebView().url(), true)
+            } else {
+                SearchDB.setBookmarked(currentWebView().url(), false)
             }
-            //            })
         }
     }
 
@@ -380,11 +374,11 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+Shift+P"
         onActivated: {
-            var r = SearchDB.searchResult
-            console.log(r.count)
-            for (var i = 0; i < r.count; i++) {
-//                SearchDB.removeWebpage(r.at(i).url)
-                newTab(r.at(i).url, true)
+            var r = FileManager.readQrcFileS('defaults/auto-bookmark.txt').split('\n')
+            for (var i = 0; i < r.length; i++) {
+                //                SearchDB.removeWebpage(r.at(i).url)
+                newTab(r[i], true)
+                currentWebView().bookmark()
             }
         }
     }

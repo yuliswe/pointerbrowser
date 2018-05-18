@@ -4,7 +4,7 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: browserWebViews
 
-    readonly property string url: currentWebView() ? currentWebView().url : ""
+    readonly property string url: currentWebView() ? currentWebView().url() : ""
     readonly property string title: currentWebView() ? currentWebView().title : ""
     signal userOpensLinkInWebView(int index, string url)
     signal userOpensLinkInNewTab(string url)
@@ -14,6 +14,7 @@ BrowserWebViewsForm {
     signal webViewLoadingStopped(int index, string url)
     signal webViewLoadingFailed(int index, string url)
     signal webViewLoadingProgressChanged(int index, int progress)
+    signal webViewNavRequested(int index)
 
     repeaterModel: TabsModel
 

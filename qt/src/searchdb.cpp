@@ -200,7 +200,7 @@ whenFailed:
     return false;
 }
 
-Webpage_ SearchDB::findWebpage(const QString& url) const
+Webpage_ SearchDB::findWebpage_(const QString& url) const
 {
     qDebug() << "SearchDB::findWebpage " << url;
     const QString query = "url = '" + url + "'";
@@ -217,9 +217,19 @@ Webpage_ SearchDB::findWebpage(const QString& url) const
     return wp;
 }
 
-bool SearchDB::isBookmarked(const QString& url) const
+//Webpage* SearchDB::getWebpage(const QString& url) const
+//{
+//    return SearchDB::findWebpage_(url).data();
+//}
+
+bool SearchDB::setBookmarked(const QString& url, bool bk)
 {
-    Webpage_ w = findWebpage(url);
+    return updateWebpage(url, "temporary", ! bk);
+}
+
+bool SearchDB::bookmarked(const QString& url) const
+{
+    Webpage_ w = findWebpage_(url);
     if (w.isNull()) {
         return false;
     }
@@ -228,7 +238,7 @@ bool SearchDB::isBookmarked(const QString& url) const
 
 bool SearchDB::hasWebpage(const QString& url) const
 {
-    return findWebpage(url).data() != nullptr;
+    return findWebpage_(url).data() != nullptr;
 }
 
 void SearchDB::search(const QString& word)

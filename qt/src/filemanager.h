@@ -14,7 +14,8 @@ class FileManager : public QObject
 
     public:
         explicit FileManager(QObject *parent = nullptr);
-        void static setupDirectories();
+        void static mkDataDir();
+        void static rmDataDir();
 
     signals:
 
@@ -24,7 +25,8 @@ class FileManager : public QObject
         static QFile_ qrcFile(QString file);
         static QString readQrcFileS(QString file);
         static QByteArray readQrcFileB(QString file);
-        static void saveFile(QString file, QByteArray contents);
+        static void writeFileB(QString file, QByteArray contents);
+        static void writeFileS(QString file, QString contents);
         static QString readFileS(QString file);
         static QByteArray readFileB(QString file);
         static void defaultOpenUrl(QString file);

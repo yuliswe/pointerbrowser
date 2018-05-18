@@ -18,7 +18,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     // set properties
-    QMLRegister::fileManager->setupDirectories();
+    qDebug() << "FileManager::dataPath()" << FileManager::dataPath();
+    FileManager::mkDataDir();
+    QString currV = FileManager::readQrcFileS("defaults/version");
+    QString dataV = FileManager::readFileS("version");
+    qDebug() << "running version" << currV
+             << "data version" << dataV;
+    if (currV != dataV) {
+        FileManager::rmDataDir();
+        FileManager::mkDataDir();
+    }
     QMLRegister::searchDB->connect();
     QMLRegister::palette->setup();
     QMLRegister::registerToQML();

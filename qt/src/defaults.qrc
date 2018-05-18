@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>defaults/auto-bookmark.txt</file>
         <file>defaults/search.db</file>
+        <file>defaults/version</file>
     </qresource>
 </RCC>

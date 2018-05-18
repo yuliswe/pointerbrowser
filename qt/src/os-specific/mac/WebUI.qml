@@ -4,29 +4,31 @@ import Backend 1.0
 import QtQuick.Layouts 1.3
 
 Item {
-    property alias url: webview.url
     property alias canGoBack: webview.canGoBack
     property alias canGoForward: webview.canGoForward
     property alias title: webview.title
     property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
+    id: webUI
 
-    function docviewOn(callback) {
-        //        webview.runJavaScript("Docview.turnOn()", function() {
-        //            inDocview = true
-        //            callback()
-        //        })
+
+    function url() {
+        var s = webview.url.toString()
+        var i = s.indexOf("#")
+        if (i > -1) {
+            return s.substring(0, i)
+        }
+        return s
+    }
+
+    function docviewOn() {
         inDocview = true
         webview.visible = false
         docview.visible = true
     }
 
-    function docviewOff(callback) {
-        //        webview.runJavaScript("Docview.turnOff()", function() {
-        //            inDocview = false
-        //            callback()
-        //        })
+    function docviewOff() {
         inDocview = false
         webview.visible = true
         docview.visible = false
@@ -42,10 +44,9 @@ Item {
         webview.goForward()
     }
 
-    function goTo(url) {
+    function goTo(u) {
         docviewOff()
-        webview.url = url
-        TabsModel.updateTab(index, "url", url.toString())
+        webview.url = u
     }
 
     function reload() {
@@ -79,18 +80,6 @@ Item {
         id: webview
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
-        onTitleChanged: {
-            TabsModel.updateTab(index, "title", title)
-            if (SearchDB.hasWebpage(url)) {
-                SearchDB.updateWebpage(url, "title", title)
-            }
-        }
-        onLoadProgressChanged: {
-            if (loading) {
-                console.log("onLoadProgressChanged", index, loadProgress)
-                webViewLoadingProgressChanged(index, loadProgress)
-            }
-        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadSucceededStatus:
@@ -101,18 +90,6 @@ Item {
         onNewViewRequested: {
             userRequestsNewView(request)
         }
-//        onNavigationRequested: {
-//            switch (request.navigationType) {
-//            case WebEngineNavigationRequest.LinkClickedNavigation:
-//                console.log("onNavigationRequested", request.url, "WebEngineNavigationRequest.LinkClickedNavigation")
-//                break
-//            case WebEngineNavigationRequest.TypedNavigation:
-//                console.log("onNavigationRequested", request.url, "WebEngineNavigationRequest.TypedNavigation")
-//                break
-//            default:
-//                console.log("onNavigationRequested", request.url, "default")
-//            }
-//        }
     }
 
     WebEngineView {
@@ -121,50 +98,57 @@ Item {
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         url: webview.url
+        onTitleChanged: {
+            TabsModel.updateTab(index, "title", title)
+            if (SearchDB.hasWebpage(webUI.url())) {
+                SearchDB.updateWebpage(webUI.url(), "title", title)
+            }
+        }
+        onUrlChanged: {
+            TabsModel.updateTab(index, "url", webUI.url())
+        }
+        onLoadProgressChanged: {
+            if (loading) {
+                console.log("onLoadProgressChanged", index, loadProgress)
+                webViewLoadingProgressChanged(index, loadProgress)
+            }
+        }
         onNewViewRequested: {
             userRequestsNewView(request)
         }
-//        onNavigationRequested: {
-//            switch (request.navigationType) {
-//            case WebEngineNavigationRequest.LinkClickedNavigation:
-//                console.log("onNavigationRequested", request.url, "WebEngineNavigationRequest.LinkClickedNavigation")
-//                break
-//            case WebEngineNavigationRequest.TypedNavigation:
-//                console.log("onNavigationRequested", request.url, "WebEngineNavigationRequest.TypedNavigation")
-//                break
-//            default:
-//                console.log("onNavigationRequested", request.url, "default")
-//            }
-//        }
+        onNavigationRequested: {
+            console.log("onWebViewNavRequested", index)
+            webViewNavRequested(index)
+        }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadStartedStatus:
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                webViewLoadingStarted(index, loadRequest.url)
+                SearchDB.addWebpage(webUI.url())
+                // when the url's domain is in the auto-bookmark.txt list
+                var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
+                var domain = webUI.url().split("/")[2]//
+                SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
+                webViewLoadingStarted(index, webUI.url())
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     // when the page is not in db
 //                    if (! SearchDB.hasWebpage(url)) {
-                        SearchDB.addWebpage(url)
-                        SearchDB.updateWebpage(url, "title", title)
+                        SearchDB.updateWebpage(webUI.url(), "title", title)
                         runJavaScript("Docview.symbols()", function(syms) {
-                            SearchDB.addSymbols(url, syms)
-                            // when the url's domain is in the auto-bookmark.txt list
-                            var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-                            var domain = url.toString().split("/")[2]
-                            SearchDB.updateWebpage(url, "temporary", arr.indexOf(domain) === -1)
+                            SearchDB.addSymbols(webUI.url(), syms)
                             // turn on docview
                             runJavaScript("Docview.docviewOn()", function() {
-                                docviewLoaded = true
                                 if (inDocview) {
                                     docviewOn()
                                 }
                                 // loading done
-                                webViewLoadingSucceeded(index, loadRequest.url)
-                                webViewLoadingStopped(index, loadRequest.url)
+                                docviewLoaded = true
+                                webViewLoadingSucceeded(index, webUI.url())
+                                webViewLoadingStopped(index, webUI.url())
                             })
                         })
 //                    }
@@ -192,13 +176,13 @@ Item {
             case WebEngineView.LoadFailedStatus:
                 console.log("WebEngineView.LoadFailedStatus",
                             loadRequest.errorString)
-                webViewLoadingFailed(index, loadRequest.url)
-                webViewLoadingStopped(index, loadRequest.url)
+                webViewLoadingFailed(index, webUI.url())
+                webViewLoadingStopped(index, webUI.url())
                 break
             case WebEngineView.LoadStoppedStatus:
                 console.log("WebEngineView.LoadStoppedStatus",
                             loadRequest.errorString)
-                webViewLoadingStopped(index, loadRequest.url)
+                webViewLoadingStopped(index, webUI.url())
                 break
             }
         }
