@@ -29,6 +29,8 @@ RESOURCES += \
     controls.qrc \
     defaults.qrc
 
+RC_ICONS += chrome.ico
+
 macx {
     macx-clang {
         QT += webengine

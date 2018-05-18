@@ -12,6 +12,16 @@ T.Button {
         if (down || checked) { return Palette.selected }
         return Palette.normal
     }
+    state: Qt.platform.os
+    states: [
+        State {
+            name: "windows"
+            PropertyChanges {
+                target: rect
+                radius: 0
+            }
+        }
+    ]
     background: Rectangle {
         id: rect
         color: pal.button_background

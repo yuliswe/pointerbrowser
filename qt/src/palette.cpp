@@ -13,8 +13,12 @@ void Palette::setup() {
 
 #ifdef Q_OS_IOS
     QByteArray bs = FileManager::readQrcFileB("theme/ios.json");
-#else
+#endif
+#ifdef Q_OS_OSX
     QByteArray bs = FileManager::readQrcFileB("theme/macos.json");
+#endif
+#ifdef Q_OS_WIN
+    QByteArray bs = FileManager::readQrcFileB("theme/windows.json");
 #endif
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(bs, &error);

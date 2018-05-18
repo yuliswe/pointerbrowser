@@ -9,12 +9,33 @@ T.TextField {
         if (activeFocus) { return Palette.selected }
         return Palette.normal
     }
+    state: Qt.platform.os
     color: text == placeholderText ? pal.input_placeholder : pal.input_text
     property alias rectangle: rectangle
     selectByMouse: true
     selectionColor: pal.text_background
     selectedTextColor: pal.text
     text: placeholderText
+    states: [
+        State {
+            name: "windows"
+            PropertyChanges {
+                target: rectangle
+                radius: 0
+            }
+            PropertyChanges {
+                target: textfield
+                renderType: Text.NativeRendering
+            }
+        },
+        State {
+            name: "mac"
+            PropertyChanges {
+                target: rectangle
+                radius: 3
+            }
+        }
+    ]
     renderType: (Qt.platform.os == "win" ? Text.NativeRendering : Text.QtRendering)
     font.pixelSize: pal.input_font_size
     background: Rectangle {

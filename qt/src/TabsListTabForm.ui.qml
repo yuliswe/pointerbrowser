@@ -8,9 +8,27 @@ ItemDelegate {
     property alias closeButton: closeButton
     property alias rectangle: rectangle
 
+    state: Qt.platform.os
+
     readonly property var pal: highlighted ? Palette.selected : hovered ? Palette.hovered : Palette.normal
     hoverEnabled: true
     property bool showCloseButton: true
+    states: [
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: text1
+                font.pixelSize: 11
+                renderType: Text.NativeRendering
+            }
+
+            PropertyChanges {
+                target: rectangle
+                radius: 0
+            }
+        }
+    ]
     background: Rectangle {
         id: rectangle
         width: parent.width
@@ -34,11 +52,12 @@ ItemDelegate {
             }
         }
         C.Text {
+            id: text1
             color: highlighted ? pal.list_item_text : pal.button_text
             text: (model.title || "Loading")
+            font.pixelSize: 11
             anchors.rightMargin: 10
             anchors.right: parent.right
-            font.pointSize: 11
             textFormat: Text.PlainText
             anchors.left: closeButton.right
             anchors.verticalCenter: parent.verticalCenter

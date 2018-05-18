@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
-import "controls" as C
+import "qrc:/controls" as C
 import QtQuick.Layouts 1.3
 import Backend 1.0
 
@@ -13,6 +13,7 @@ Item {
     //        border.width: 0
     //        anchors.fill: form
     //    }
+    state: Qt.platform.os
     RowLayout {
         id: topControls
         height: buttonSize
@@ -131,6 +132,23 @@ Item {
         Layout.fillWidth: true
         Layout.margins: 5
     }
+    states: [
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: text1
+                renderType: Text.NativeRendering
+                font.pixelSize: 11
+            }
+
+            PropertyChanges {
+                target: text2
+                renderType: Text.NativeRendering
+                font.pixelSize: 11
+            }
+        }
+    ]
 
     property alias flickable: flickable
     property int buttonSize: 40

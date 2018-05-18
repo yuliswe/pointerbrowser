@@ -6,13 +6,9 @@
         <file alias="TitleBar.qml">win/window/TitleBar.qml</file>
         <file alias="TitleBarForm.qml">win/window/TitleBarForm.ui.qml</file>
         <file alias="WebUI.qml">win/WebUI.qml</file>
-        <file alias="controls/Button.qml">win/controls/Button.qml</file>
-        <file alias="controls/ButtonForm.qml">win/controls/ButtonForm.ui.qml</file>
-        <file alias="controls/RoundButton.qml">win/controls/RoundButton.qml</file>
-        <file alias="controls/RoundButtonForm.qml">win/controls/RoundButtonForm.ui.qml</file>
-        <file alias="controls/TextField.qml">win/controls/TextField.qml</file>
         <file alias="icons/cross2.svg">win/window/icons/cross2.svg</file>
         <file alias="icons/minus2.svg">win/window/icons/minus2.svg</file>
         <file alias="icons/plus2.svg">win/window/icons/plus2.svg</file>
+        <file alias="WelcomePageForm.qml">win/WelcomePageForm.ui.qml</file>
     </qresource>
 </RCC>

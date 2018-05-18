@@ -152,6 +152,34 @@ C1.SplitView {
         },
         State {
             name: "ios"
+        },
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: docview
+                padding: 3
+            }
+
+            PropertyChanges {
+                target: bookmark
+                padding: 3
+            }
+
+            PropertyChanges {
+                target: prev
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: next
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: refresh
+                padding: 3
+            }
         }
     ]
 }
