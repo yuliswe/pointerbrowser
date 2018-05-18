@@ -1,3 +1,5 @@
+TARGET = Docviewer
+
 QT += quick sql svg
 CONFIG += c++11
 
