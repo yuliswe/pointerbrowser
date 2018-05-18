@@ -29,9 +29,9 @@ RESOURCES += \
     controls.qrc \
     defaults.qrc
 
-RC_ICONS += chrome.ico
 
 macx {
+    ICON += chrome.icns
     macx-clang {
         QT += webengine
         RESOURCES += os-specific/mac.qrc
@@ -39,6 +39,7 @@ macx {
 }
 
 win32 {
+    RC_ICONS += chrome.ico
     win32-msvc {
         QT += webengine
         RESOURCES += os-specific/win.qrc
