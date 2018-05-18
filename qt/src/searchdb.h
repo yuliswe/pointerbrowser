@@ -39,6 +39,7 @@ class SearchDB : public QObject
         void search(const QString& word);
         QSqlRelationalTableModel* webpageTable() const;
         TabsModel* searchResult();
+        bool execScript(QString filename);
 
     protected:
         QString _dbPath;

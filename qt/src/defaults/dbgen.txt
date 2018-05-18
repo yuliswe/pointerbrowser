@@ -1,0 +1,8 @@
+https://doc.qt.io
+https://api.jquery.com
+https://docs.python.org
+https://developer.mozilla.org
+http://www.cplusplus.com
+https://devdocs.io
+https://www.w3schools.com
+https://getbootstrap.com

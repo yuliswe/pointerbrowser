@@ -374,11 +374,11 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+Shift+P"
         onActivated: {
-            var r = FileManager.readQrcFileS('defaults/auto-bookmark.txt').split('\n')
+            SearchDB.execScript("db/deleteAll.sqlite3")
+            var r = FileManager.readQrcFileS('defaults/dbgen.txt').split('\n')
             for (var i = 0; i < r.length; i++) {
-                //                SearchDB.removeWebpage(r.at(i).url)
+                if (! r[i]) { continue; }
                 newTab(r[i], true)
-                currentWebView().bookmark()
             }
         }
     }

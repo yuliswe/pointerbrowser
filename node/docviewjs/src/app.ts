@@ -251,8 +251,11 @@ class Docview {
             //     })
             //     // mapping[link] = 1
             // }
-            mapping[txt] = 1
-            mapping[k] = 1
+            if (txt.length > 0) {
+                mapping[txt] = 1
+            } else {
+                mapping[k] = 1
+            }
         }
         return Object.keys(mapping)
     }

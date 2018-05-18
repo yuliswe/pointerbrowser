@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>searchDB.setup</file>
+        <file>db/deleteAll.sqlite3</file>
+        <file>db/setup.sqlite3</file>
     </qresource>
 </RCC>

@@ -67,3 +67,7 @@ HEADERS += \
     eventfilter.h \
     searchdb.h
 
+DISTFILES += \
+    defaults/dbgen.txt \
+    resetTables.sqlite3
+

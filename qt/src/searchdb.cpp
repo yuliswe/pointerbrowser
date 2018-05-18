@@ -31,9 +31,6 @@ bool SearchDB::connect() {
         return false;
     }
     qDebug() << "SearchDB: connection ok";
-    //    QString script = FileManager::readQrcFileS("searchDB.setup");
-    //    QStringList lines = script.split(";");
-    //    execMany(lines);
     _webpage = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
     _webpage->setTable("webpage");
     _webpage->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -74,9 +71,16 @@ void SearchDB::disconnect() {
     qDebug() << "SearchDB: disconnected";
 }
 
+bool SearchDB::execScript(QString filename)
+{
+    QString s = FileManager::readQrcFileS(filename);
+    return execMany(s.split("\n"));
+}
+
 bool SearchDB::execMany(const QStringList& lines)
 {
     for (const QString l : lines) {
+        qDebug() << "SearchDB::execMany" << l;
         QSqlQuery query = _db.exec(l);
         QSqlError error = query.lastError();
         if (error.isValid()) {
@@ -84,6 +88,7 @@ bool SearchDB::execMany(const QStringList& lines)
             return false;
         }
     }
+    search(_currentWord);
     return true;
 }
 
