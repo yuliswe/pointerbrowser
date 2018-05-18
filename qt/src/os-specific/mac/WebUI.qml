@@ -126,51 +126,53 @@ Item {
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
                 SearchDB.addWebpage(webUI.url())
-                // when the url's domain is in the auto-bookmark.txt list
-                var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-                var domain = webUI.url().split("/")[2]
-                SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
+                if (! SearchDB.bookmarked(webUI.url())) {
+                    // when the url's domain is in the auto-bookmark.txt list
+                    var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
+                    var domain = webUI.url().split("/")[2]
+                    SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
+                }
                 webViewLoadingStarted(index, webUI.url())
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     // when the page is not in db
-//                    if (! SearchDB.hasWebpage(url)) {
-                        SearchDB.updateWebpage(webUI.url(), "title", title)
-                        runJavaScript("Docview.symbols()", function(syms) {
-                            SearchDB.addSymbols(webUI.url(), syms)
-                            // turn on docview
-                            runJavaScript("Docview.docviewOn()", function() {
-                                if (inDocview) {
-                                    docviewOn()
-                                }
-                                // loading done
-                                docviewLoaded = true
-                                webViewLoadingSucceeded(index, webUI.url())
-                                webViewLoadingStopped(index, webUI.url())
-                            })
+                    //                    if (! SearchDB.hasWebpage(url)) {
+                    SearchDB.updateWebpage(webUI.url(), "title", title)
+                    runJavaScript("Docview.symbols()", function(syms) {
+                        SearchDB.addSymbols(webUI.url(), syms)
+                        // turn on docview
+                        runJavaScript("Docview.docviewOn()", function() {
+                            if (inDocview) {
+                                docviewOn()
+                            }
+                            // loading done
+                            docviewLoaded = true
+                            webViewLoadingSucceeded(index, webUI.url())
+                            webViewLoadingStopped(index, webUI.url())
                         })
-//                    }
-//                    // when the page is already in db, skip symbol parsing (too expensive)
-//                    else {
-//                        // when the url's domain is in the auto-bookmark.txt list
-//                        var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-//                        var domain = url.toString().split("/")[2]
-//                        if (arr.indexOf(domain) > -1) {
-//                            SearchDB.updateWebpage(url, "temporary", false)
-//                        }
-//                        // turn on docview
-//                        runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
-//                            docviewLoaded = true
-//                            if (inDocview) {
-//                                docviewOn()
-//                            }
-//                            // loading done
-//                            webViewLoadingSucceeded(index, loadRequest.url)
-//                            webViewLoadingStopped(index, loadRequest.url)
-//                        })
-//                    }
+                    })
+                    //                    }
+                    //                    // when the page is already in db, skip symbol parsing (too expensive)
+                    //                    else {
+                    //                        // when the url's domain is in the auto-bookmark.txt list
+                    //                        var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
+                    //                        var domain = url.toString().split("/")[2]
+                    //                        if (arr.indexOf(domain) > -1) {
+                    //                            SearchDB.updateWebpage(url, "temporary", false)
+                    //                        }
+                    //                        // turn on docview
+                    //                        runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
+                    //                            docviewLoaded = true
+                    //                            if (inDocview) {
+                    //                                docviewOn()
+                    //                            }
+                    //                            // loading done
+                    //                            webViewLoadingSucceeded(index, loadRequest.url)
+                    //                            webViewLoadingStopped(index, loadRequest.url)
+                    //                        })
+                    //                    }
                 })
                 break
             case WebEngineView.LoadFailedStatus:
