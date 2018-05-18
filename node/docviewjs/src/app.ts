@@ -28,7 +28,7 @@ class Docview {
 
     nonDiv = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT", "IFRAME", "BUTTON", "SVG"]
 
-    public snapshotHTML(heu: Heuristic = new Heuristic()): HTMLBodyElement {
+    public snapshotHTML(heu: Heuristic = new Heuristic()) {
         console.log("snapshotHTML called")
         const _root = document.body.cloneNode(true) as HTMLBodyElement
         const root = document.body as HTMLBodyElement
@@ -79,9 +79,7 @@ class Docview {
                 _c = _c.nextElementSibling
             }
         }
-        // window["Docview_htmlSnapshot"] = root
-        // document.body = _root
-        return _root
+        document.body = _root
     }
 
     public guessRoot(root: HTMLElement,
@@ -113,14 +111,11 @@ class Docview {
         return root
     }
 
-    public docviewHTML(root: HTMLElement = this.snapshotHTML(),
-                       level: number = 8,
+    public docviewHTML(level: number = 8,
                        docSt: DocviewStyle = new DocviewStyle())
-        : HTMLBodyElement
     {
         console.log("docviewHTML called")
-        let _root = document.body
-        document.body = root
+        let root = document.body
         // let root = document.body
         for (let i = 0; i < level; i++) {
             // prone every node that has more than X controls
@@ -233,8 +228,7 @@ class Docview {
               fontSize: docSt.fontsizeCode
             , fontFamily: "Source Code Pro, monospace"
         })
-        document.body = _root
-        return bb
+        $(bb).css({backgroundColor: "white"})
     }
 
     public symbols(): string[] {
@@ -280,23 +274,6 @@ class Docview {
             })
         })
         return Object.keys(mapping)
-    }
-
-    public isOn = false
-
-    public turnOn(): void {
-        if (! this.isOn) {
-            window["Docview_original_body"] = document.body
-            document.body = window["Docview_body"]
-            this.isOn = true
-        }
-    }
-
-    public turnOff(): void {
-        if (this.isOn) {
-            document.body = window["Docview_original_body"]
-            this.isOn = false
-        }
     }
 
     public clearHighlight(): void {
@@ -364,22 +341,13 @@ class Docview {
         }
     }
 
-    public static init()
+    public docviewOn(heu: Heuristic = new Heuristic(),
+                     st: DocviewStyle = new DocviewStyle())
     {
-        console.log("setting up")
-        let instance = new Docview()
-        window["Docview"] = instance
-    }
-
-    public initDocviewHTML(heu: Heuristic = new Heuristic(),
-                                  st: DocviewStyle = new DocviewStyle())
-    {
-        let instance = window["Docview"]
-        window["Docview_original_body"] = document.body
-        window["Docview_body"] = instance.docviewHTML(instance.snapshotHTML(), 8, st)
+        this.snapshotHTML()
+        this.docviewHTML(8, st)
     }
 }
 
-Docview.init();
-
+window["Docview"] = new Docview();
 

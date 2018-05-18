@@ -157,7 +157,7 @@ Item {
                             var domain = url.toString().split("/")[2]
                             SearchDB.updateWebpage(url, "temporary", arr.indexOf(domain) === -1)
                             // turn on docview
-                            runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
+                            runJavaScript("Docview.docviewOn()", function() {
                                 docviewLoaded = true
                                 if (inDocview) {
                                     docviewOn()
