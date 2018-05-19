@@ -1,6 +1,5 @@
 import Backend 1.0
 import QtQuick 2.7
-import QtWebView 1.1
 import QtQuick.Controls 2.2
 
 BrowserForm {
@@ -52,31 +51,34 @@ BrowserForm {
         browserSearch.visible = true
         browserSearch.textfield.focus = true
         browserSearch.textfield.selectAll()
-        if (browserSearch.textfield.text) {
-            var cur = browserSearch.current()
-            highlightWordInCurrentWebview(browserSearch.textfield.text, function() {
-                scrollToNthHighlightInCurrentWebview(cur)
-            })
-        }
+        //        if (browserSearch.textfield.text) {
+        //            var cur = browserSearch.current()
+        //            highlightWordInCurrentWebview(browserSearch.textfield.text, function() {
+        //                scrollToNthHighlightInCurrentWebview(cur)
+        //            })
+        //        }
     }
 
-    function scrollToNthHighlightInCurrentWebview(n) {
-        currentWebView().scrollToNthHighlight(n, function() {
-            browserSearch.updateCurrent(n)
-        })
-    }
+    //    function scrollToNthHighlightInCurrentWebview(n) {
+    //        currentWebView().scrollToNthHighlight(n, function() {
+    //            browserSearch.updateCurrent(n)
+    //        })
+    //    }
 
-    function highlightWordInCurrentWebview(word, callback) {
-        currentWebView().highlightWord(word, callback)
-    }
+    //    function highlightWordInCurrentWebview(word, callback) {
+    //        currentWebView().highlightWord(word, callback)
+    //    }
 
-    function clearBrowserSearchHightlights() {
-        currentWebView().clearHighlight()
-    }
+    //    function clearBrowserSearchHightlights() {
+    //        currentWebView().clearHighlight()
+    //    }
 
     function hideBrowserSearch() {
         browserSearch.visible = false
-        clearBrowserSearchHightlights()
+        //        clearBrowserSearchHightlights()
+        if (currentWebView() !== null) {
+            currentWebView().clearFindText()
+        }
     }
 
     function openSavedTab(index) {
@@ -239,30 +241,57 @@ BrowserForm {
 
     Connections {
         target: browserSearch
-        onUserSearchesWordInBrowser: {
-            highlightWordInCurrentWebview(word, function(count) {
-                browserSearch.updateCount(count)
-                if (count > 0) {
-                    browserSearch.updateCurrent(0)
-                }
-            })
-        }
+//        onUserSearchesWordInBrowser: {
+//            if (currentWebView() !== null) {
+//                currentWebView().findNext(word, function(count) {
+//                    browserSearch.updateCount(count)
+//                    if (count > 0) {
+//                        browserSearch.updateCurrent(1)
+//                    }
+//                })
+//            }
+//        }
         onUserSearchesNextInBrowser: {
-            var cur = browserSearch.current()
-            var cnt = browserSearch.count()
-            console.log(cur+1, cnt)
-            if (cur+1 < cnt) {
-                scrollToNthHighlightInCurrentWebview(cur+1)
+            if (currentWebView() !== null) {
+                currentWebView().findNext(browserSearch.textfield.text, function(cnt) {
+                    browserSearch.showCount()
+                    var cur = browserSearch.current()
+                    browserSearch.updateCount(cnt)
+                    if (cnt === 0) {
+                        browserSearch.updateCurrent(0)
+                    } else if (cur === cnt) {
+                        browserSearch.updateCurrent(1)
+                    } else {
+                        browserSearch.updateCurrent(cur + 1)
+                    }
+                })
             }
         }
         onUserSearchesPreviousInBrowser: {
-            var cur = browserSearch.current()
-            if (cur-1 >= 0) {
-                scrollToNthHighlightInCurrentWebview(cur-1)
+            if (currentWebView() !== null) {
+                currentWebView().findPrev(browserSearch.textfield.text, function(cnt) {
+                    browserSearch.showCount()
+                    var cur = browserSearch.current()
+                    browserSearch.updateCount(cnt)
+                    if (cnt === 0) {
+                        browserSearch.updateCurrent(0)
+                    } else if (cur <= 1) {
+                        browserSearch.updateCurrent(cnt)
+                    } else {
+                        browserSearch.updateCurrent(cur - 1)
+                    }
+                })
             }
         }
         onUserClosesSearch: hideBrowserSearch()
-        onUserRetypesInSearch: clearBrowserSearchHightlights()
+        onUserTypesInSearch: {
+            browserSearch.updateCount(0)
+            browserSearch.updateCurrent(0)
+            browserSearch.hideCount()
+            if (currentWebView() !== null) {
+                currentWebView().clearFindText()
+            }
+        }
     }
 
     Connections {

@@ -8,11 +8,12 @@ Item {
     id: form
 
     property alias textfield: textField
-    property int currentHighlight: -1
+    property int currentHighlight: 0
     property int highlightCount: 0
     property alias prevBtn: prev
     property alias nextBtn: next
     property alias closeBtn: close
+    property alias counter: counter
 
     readonly property var pal: focus ? Palette.selected : Palette.normal
 
@@ -38,7 +39,7 @@ Item {
 
                 Text {
                     id: counter
-                    text: (currentHighlight + 1) + "/" + highlightCount
+                    text: currentHighlight + "/" + highlightCount
                     anchors.rightMargin: 5
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter

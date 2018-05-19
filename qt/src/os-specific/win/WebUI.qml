@@ -1,5 +1,6 @@
-import QtQuick 2.0
-import QtWebEngine 1.5
+import QtQuick 2.9
+import QtQml 2.2
+import QtWebEngine 1.3
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -55,17 +56,38 @@ Item {
         docview.reload()
     }
 
-    function clearHighlight() {
-        webview.runJavaScript("Docview.clearHighlight()")
-        docview.runJavaScript("Docview.clearHighlight()")
+    function clearFindText() {
+        findNext("")
     }
 
-    function highlightWord(word, callback) {
-        (inDocview ? docview : webview).runJavaScript("Docview.highlightWord('"+word+"')", callback)
+    function openConsole() {
+        console.log("triggerWebAction(WebEngineView.InspectElement)")
+        (inDocview ? docview : webview).triggerWebAction(WebEngineView.SelectAll)
     }
 
-    function scrollToNthHighlight(n, callback) {
-        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
+    function findNext(word, callback) {
+        var target = inDocview ? docview : webview
+        target.findText(word, 0, callback)
+//        var count = 0
+//        function recursiveFindText() {
+//            console.log("recursiveFindText", word)
+//            target.findText(word, 0, function(found) {
+//                if (found) {
+//                    count++
+//                    recursiveFindText()
+//                } else {
+//                    callback(count)
+//                }
+//            })
+//        }//.runJavaScript("Docview.highlightWord('"+word+"')", callback)
+//        recursiveFindText()
+    }
+
+
+    function findPrev(word, callback) {
+        var target = inDocview ? docview : webview
+        target.findText(word, WebEngineView.FindBackward, callback)
+//        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
     }
 
     function handleNewViewRequest(request) {
@@ -89,6 +111,14 @@ Item {
         }
         onNewViewRequested: {
             userRequestsNewView(request)
+        }
+        Shortcut {
+            sequence: "Ctrl+Shift+O"
+            onActivated: {
+                webview.runJavaScript("document.getSelection()", function(result) {
+                    console.log(JSON.stringify(result))
+                })
+            }
         }
     }
 
