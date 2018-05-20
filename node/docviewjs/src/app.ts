@@ -43,8 +43,11 @@ class Docview {
             for (let i = 0; i < styles.length; i++) {
                 const k = styles[i]
                 const v = styles.getPropertyValue(k)
-                if (k.includes("webkit") || k == "background-color") {
+                if (k.includes("webkit")) {
                     // do not copy
+                } else if ((k == "background-color") 
+                           && (! ['PRE','CODE'].includes(n.tagName))) {
+
                 } else if (k.includes("padding") || k.includes("margin")) {
                     if (parseInt(v) < heu.maxMarginPaddingAllowed) {
                         _styles += k + ":" + v + ";"
