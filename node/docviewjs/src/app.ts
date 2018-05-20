@@ -44,23 +44,25 @@ class Docview {
                 const k = styles[i]
                 const v = styles.getPropertyValue(k)
                 if (k.includes("webkit")
-                    || k == "background-image") {
+                    // || k.includes("border")
+                    || k == "background-image"
+                    || k == "float") {
                     // do not copy
                 } else if ((k == "background-color")) {
-                    if (['PRE','CODE'].includes(n.tagName)) {
+                    if (['PRE','CODE'].includes(n.tagName)
+                        || styles.fontFamily.includes("monospace")
+                        || styles.fontStyle.includes("italic")) {
                         _styles += k + ":" + v + ";"
                     }
                 } else if (k.includes("padding") || k.includes("margin")) {
                     if (parseInt(v) < heu.maxMarginPaddingAllowed) {
                         _styles += k + ":" + v + ";"
                     }
-                } else if (k.includes("width")) {
+                } else if (k == "width" || k == "max-width") {
                     if (parseInt(v) < heu.maxWidthAllowed) {
                         _styles += k + ":" + v + ";"
-                    } else if (styles.display == 'block') {
-                        _styles += k + ": 100%;"
                     }
-                } else if (k.includes("height")) {
+                } else if (k == "height" || k == "max-height") {
                     // if (parseInt(v) < 50) {
                     //     _styles += k + ":" + v + ";"
                     // }
@@ -136,25 +138,36 @@ class Docview {
             //     n.className += " docview-garbage"
             // } else 
             // navbar
-            if (/nav/ig.test(n.className) 
-                || /nav/ig.test(n.id) 
-                || /nav/ig.test(n.tagName)) {
+            const nav = /nav/ig
+            if (nav.test(n.className) 
+                || nav.test(n.id) 
+                || nav.test(n.tagName)
+                || nav.test(n.getAttribute("role"))) {
                 n.className += " docview-garbage"
-            } else 
+                continue
+            } 
             // sidebar
-            if (/side.?bar/ig.test(n.className) 
-                || /side.?bar/ig.test(n.id)) {
+            const side = /side.?bar/ig
+            if (side.test(n.className)
+                || side.test(n.getAttribute("role"))
+                || side.test(n.id)) {
                 n.className += " docview-garbage"
-            } else 
+                continue
+            } 
             // header|footer
-            if (/header|footer/ig.test(n.tagName)
-                || /head|foot/ig.test(n.id)
-                || /head|foot/ig.test(n.className)) {
+            const header = /head|foot/ig
+            if (header.test(n.tagName)
+                || header.test(n.id)
+                || header.test(n.getAttribute('role'))
+                || header.test(n.className)) {
                 n.className += " docview-garbage"
-            } else 
+                continue
+            } 
             // controls
-            if (/input|textarea|button|select/ig.test(n.tagName)) {
+            const controls = /input|textarea|button|select/ig
+            if (controls.test(n.tagName)) {
                 n.className += " docview-garbage"
+                continue
             }
             for (let c in n.childNodes) {
                 if (n.childNodes[c].nodeType == Node.ELEMENT_NODE) {

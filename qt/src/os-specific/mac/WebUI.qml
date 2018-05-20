@@ -74,32 +74,32 @@ Item {
 
     function openConsole() {
         console.log("triggerWebAction(WebEngineView.InspectElement)")
-        (inDocview ? docview : webview).triggerWebAction(WebEngineView.SelectAll)
+                (inDocview ? docview : webview).triggerWebAction(WebEngineView.SelectAll)
     }
 
     function findNext(word, callback) {
         var target = inDocview ? docview : webview
         target.findText(word, 0, callback)
-//        var count = 0
-//        function recursiveFindText() {
-//            console.log("recursiveFindText", word)
-//            target.findText(word, 0, function(found) {
-//                if (found) {
-//                    count++
-//                    recursiveFindText()
-//                } else {
-//                    callback(count)
-//                }
-//            })
-//        }//.runJavaScript("Docview.highlightWord('"+word+"')", callback)
-//        recursiveFindText()
+        //        var count = 0
+        //        function recursiveFindText() {
+        //            console.log("recursiveFindText", word)
+        //            target.findText(word, 0, function(found) {
+        //                if (found) {
+        //                    count++
+        //                    recursiveFindText()
+        //                } else {
+        //                    callback(count)
+        //                }
+        //            })
+        //        }//.runJavaScript("Docview.highlightWord('"+word+"')", callback)
+        //        recursiveFindText()
     }
 
 
     function findPrev(word, callback) {
         var target = inDocview ? docview : webview
         target.findText(word, WebEngineView.FindBackward, callback)
-//        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
+        //        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
     }
 
     function handleNewViewRequest(request) {
@@ -170,13 +170,12 @@ Item {
                     // when the page is not in db
                     //                    if (! SearchDB.hasWebpage(url)) {
                     SearchDB.updateWebpage(webUI.url(), "title", title)
-                    runJavaScript("Docview.symbols()", function(syms) {
-                        SearchDB.addSymbols(webUI.url(), syms)
-                        // turn on docview
-                        runJavaScript("Docview.docviewOn()", function() {
-                            if (inDocview) {
-                                docviewOn()
-                            }
+                    runJavaScript("Docview.docviewOn()", function() {
+                        if (inDocview) {
+                            docviewOn()
+                        }
+                        runJavaScript("Docview.symbols()", function(syms) {
+                            SearchDB.addSymbols(webUI.url(), syms)
                             // loading done
                             docviewLoaded = true
                             webViewLoadingSucceeded(index, webUI.url())
