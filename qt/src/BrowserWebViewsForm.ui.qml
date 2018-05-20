@@ -9,6 +9,8 @@ Item {
     property alias repeater: repeater
     property alias repeaterModel: repeater.model
     property alias repeaterDelegate: repeater.delegate
+    property alias currentIndex: stackLayout.currentIndex
+
     StackLayout {
         id: stackLayout
         anchors.fill: parent

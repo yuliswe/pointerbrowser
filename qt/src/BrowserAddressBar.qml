@@ -3,8 +3,9 @@ import Backend 1.0
 
 BrowserAddressBarForm {
     id: form
-    property string url: "url"
-    property string title: "title"
+    property string url: ""
+    property string title: ""
+    property int progress: 0
     signal userEntersUrl(string url)
 
     progressBar.opacity: 0.3
@@ -12,20 +13,17 @@ BrowserAddressBarForm {
 
     state: "mac"
 
+    onUrlChanged: update(url, title)
+    onTitleChanged: update(url, title)
+    onProgressChanged: updateProgress(progress)
+
     function update(url, title) {
-        form.title = title
-        form.url = url
-        console.log("update", form.url, form.title)
+        console.log("addressBar update", url, title)
         if (title !== "") {
             titleDisplay.text = title
-            //            textField.horizontalAlignment = Text.AlignHCenter
         } else {
             titleDisplay.text = url
-            //            textField.horizontalAlignment = Text.AlignHCenter
-            //            textField.horizontalAlignment = Text.AlignLeft
-            //            titleDisplay.ensureVisible(0)
         }
-        //        textField.focus = false
     }
 
     function updateProgress(progress) {

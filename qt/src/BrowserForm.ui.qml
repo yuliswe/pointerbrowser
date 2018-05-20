@@ -15,12 +15,14 @@ C1.SplitView {
     property alias browserBookmarkButton: bookmark
     property alias browserDocviewButton: docview
     property alias browserWebViews: browserWebViews
+    property alias currentWebView: browserWebViews.currentWebView
+    property alias currentWebViewIndex: browserWebViews.currentIndex
     property alias prevEnabled: prev.enabled
     property alias nextEnabled: next.enabled
     property alias browserSearch: browserSearch
     property alias splitView: splitView
     property alias welcomePage: welcomePage
-    property int buttonSize: 40
+    property int buttonSize: 25
 
     handleDelegate: Item {
     }
