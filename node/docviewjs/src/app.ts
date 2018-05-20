@@ -43,11 +43,13 @@ class Docview {
             for (let i = 0; i < styles.length; i++) {
                 const k = styles[i]
                 const v = styles.getPropertyValue(k)
-                if (k.includes("webkit")) {
+                if (k.includes("webkit")
+                    || k == "background-image") {
                     // do not copy
-                } else if ((k == "background-color") 
-                           && (! ['PRE','CODE'].includes(n.tagName))) {
-
+                } else if ((k == "background-color")) {
+                    if (['PRE','CODE'].includes(n.tagName)) {
+                        _styles += k + ":" + v + ";"
+                    }
                 } else if (k.includes("padding") || k.includes("margin")) {
                     if (parseInt(v) < heu.maxMarginPaddingAllowed) {
                         _styles += k + ":" + v + ";"
@@ -55,6 +57,8 @@ class Docview {
                 } else if (k.includes("width")) {
                     if (parseInt(v) < heu.maxWidthAllowed) {
                         _styles += k + ":" + v + ";"
+                    } else if (styles.display == 'block') {
+                        _styles += k + ": 100%;"
                     }
                 } else if (k.includes("height")) {
                     // if (parseInt(v) < 50) {
@@ -142,10 +146,10 @@ class Docview {
                 || /side.?bar/ig.test(n.id)) {
                 n.className += " docview-garbage"
             } else 
-            // header
-            if (/header/ig.test(n.tagName)
-                || /header/ig.test(n.id)
-                || /header/ig.test(n.className)) {
+            // header|footer
+            if (/header|footer/ig.test(n.tagName)
+                || /head|foot/ig.test(n.id)
+                || /head|foot/ig.test(n.className)) {
                 n.className += " docview-garbage"
             } else 
             // controls
