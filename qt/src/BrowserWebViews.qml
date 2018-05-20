@@ -4,8 +4,6 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: browserWebViews
 
-    readonly property string url: currentWebView() ? currentWebView().url() : ""
-    readonly property string title: currentWebView() ? currentWebView().title : ""
     signal userOpensLinkInWebView(int index, string url)
     signal userOpensLinkInNewTab(string url)
     signal userRequestsNewView(var request)
@@ -15,6 +13,7 @@ BrowserWebViewsForm {
     signal webViewLoadingFailed(int index, string url)
     signal webViewLoadingProgressChanged(int index, int progress)
     signal webViewNavRequested(int index)
+    property var currentWebView: repeater.itemAt(currentIndex)
 
     repeaterModel: TabsModel
 
@@ -24,17 +23,9 @@ BrowserWebViewsForm {
     //        }
     //    }
 
-    function currentWebView() {
-        return webViewAt(currentIndex())
-    }
-
-    function currentIndex() {
-        return browserWebViews.stackLayout.currentIndex
-    }
-
     function setCurrentIndex(idx) {
-        console.log("setCurrentIndex", idx)
         browserWebViews.stackLayout.currentIndex = idx
+        console.log("setCurrentIndex", idx, browserWebViews.stackLayout.currentIndex)
     }
 
     function reloadWebViewAt(index) {
@@ -51,7 +42,7 @@ BrowserWebViewsForm {
     }
 
     function reloadCurrentWebView() {
-        reloadWebViewAt(currentIndex())
+        reloadWebViewAt(currentIndex)
     }
 
     repeaterDelegate: WebUI {}

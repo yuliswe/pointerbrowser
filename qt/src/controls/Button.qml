@@ -9,9 +9,10 @@ T.Button {
     readonly property var pal: {
         if (! enabled) { return Palette.disabled }
         if (hovered) { return Palette.hovered }
-        if (down || checked) { return Palette.selected }
+        if (down || checked || active) { return Palette.selected }
         return Palette.normal
     }
+    property bool active: false
     state: Qt.platform.os
     states: [
         State {

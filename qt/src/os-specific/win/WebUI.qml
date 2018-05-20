@@ -8,11 +8,23 @@ Item {
     property alias canGoBack: webview.canGoBack
     property alias canGoForward: webview.canGoForward
     property alias title: webview.title
-    property alias loadProgress: webview.loadProgress
+    property alias loadProgress: docview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
+    property bool bookmarked: false
     id: webUI
 
+    function bookmark() {
+        if (SearchDB.setBookmarked(url(), true)) {
+            bookmarked = true
+        }
+    }
+
+    function unbookmark() {
+        if (SearchDB.setBookmarked(url(), false)) {
+            bookmarked = false
+        }
+    }
 
     function url() {
         var s = webview.url.toString()
@@ -95,30 +107,17 @@ Item {
     }
 
     Component.onCompleted: {
-        goTo(TabsModel.at(index).url)
+        var url = TabsModel.at(index).url
+        goTo(url)
+        bookmarked = SearchDB.bookmarked(url)
     }
 
     WebEngineView {
         id: webview
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
-        onLoadingChanged: {
-            switch (loadRequest.status) {
-            case WebEngineView.LoadSucceededStatus:
-                console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
-                runJavaScript(FileManager.readQrcFileS("js/docview.js"))
-            }
-        }
         onNewViewRequested: {
             userRequestsNewView(request)
-        }
-        Shortcut {
-            sequence: "Ctrl+Shift+O"
-            onActivated: {
-                webview.runJavaScript("document.getSelection()", function(result) {
-                    console.log(JSON.stringify(result))
-                })
-            }
         }
     }
 
@@ -136,6 +135,7 @@ Item {
         }
         onUrlChanged: {
             TabsModel.updateTab(index, "url", webUI.url())
+            bookmarked = SearchDB.bookmarked(webUI.url())
         }
         onLoadProgressChanged: {
             if (loading) {

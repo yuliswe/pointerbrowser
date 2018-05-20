@@ -43,24 +43,31 @@ class Docview {
             for (let i = 0; i < styles.length; i++) {
                 const k = styles[i]
                 const v = styles.getPropertyValue(k)
-                if (! k.includes("webkit")) {
-                    if (k.includes("padding") || k.includes("margin")) {
-                        if (parseInt(v) < heu.maxMarginPaddingAllowed) {
-                            _styles += k + ":" + v + ";"
-                        }
-                    } else if (k.includes("width")) {
-                        if (parseInt(v) < heu.maxWidthAllowed) {
-                            _styles += k + ":" + v + ";"
-                        }
-                    } else if (k.includes("height")) {
-                        // if (parseInt(v) < 50) {
-                        //     _styles += k + ":" + v + ";"
-                        // }
-                    } else if (k == "font-family") {
-                        _styles += 'font-family: "Source Sans Pro", sans-serif;'
-                    } else {
+                if (k.includes("webkit")
+                    || k == "background-image") {
+                    // do not copy
+                } else if ((k == "background-color")) {
+                    if (['PRE','CODE'].includes(n.tagName)) {
                         _styles += k + ":" + v + ";"
                     }
+                } else if (k.includes("padding") || k.includes("margin")) {
+                    if (parseInt(v) < heu.maxMarginPaddingAllowed) {
+                        _styles += k + ":" + v + ";"
+                    }
+                } else if (k.includes("width")) {
+                    if (parseInt(v) < heu.maxWidthAllowed) {
+                        _styles += k + ":" + v + ";"
+                    } else if (styles.display == 'block') {
+                        _styles += k + ": 100%;"
+                    }
+                } else if (k.includes("height")) {
+                    // if (parseInt(v) < 50) {
+                    //     _styles += k + ":" + v + ";"
+                    // }
+                } else if (k == "font-family") {
+                    _styles += 'font-family: "Source Sans Pro", sans-serif;'
+                } else {
+                    _styles += k + ":" + v + ";"
                 }
             }
             const contentB = window.getComputedStyle(n, ":before").content
@@ -68,8 +75,8 @@ class Docview {
             _n.setAttribute("style", _styles)
             _n.setAttribute("data-before", contentB)
             _n.setAttribute("data-after", contentA)
-            _n.removeAttribute("id")
-            _n.removeAttribute("class")
+            // _n.removeAttribute("id")
+            // _n.removeAttribute("class")
             let c = n.firstElementChild
             let _c = _n.firstElementChild
             while (c != null) {
@@ -80,6 +87,7 @@ class Docview {
             }
         }
         document.body = _root
+        $('link').remove()
     }
 
     public guessRoot(root: HTMLElement,
@@ -116,63 +124,101 @@ class Docview {
     {
         console.log("docviewHTML called")
         let root = document.body
-        // let root = document.body
-        for (let i = 0; i < level; i++) {
-            // prone every node that has more than X controls
-            // use the first node that has > 80% page content as root
-            let attempt1 =
-                this.guessRoot(
-                    root,
-                    (n) => (! this.nonDiv.includes(n.tagName))
-                            && (n.scrollHeight > 0.90 * root.scrollHeight)
-                            && (n.scrollWidth > 0.50 * root.scrollWidth)
-                            && (n.innerText.length > 0.50 * root.innerText.length),
-                    1
-                )
-            if (root != attempt1) {
-                root = attempt1
-                continue
+        // remove garbage
+        let nodes: HTMLElement[] = [root]// nodes in the current depth
+        while (nodes.length > 0) {
+            const n = nodes.shift()
+            // garbage test
+            // sidebar
+            console.log(n.id)
+            // if (n.offsetHeight > 0.9 * document.body.offsetHeight
+            //     && n.offsetWidth < 0.5 * document.body.offsetWidth) {
+            //     n.className += " docview-garbage"
+            // } else 
+            // navbar
+            if (/nav/ig.test(n.className) 
+                || /nav/ig.test(n.id) 
+                || /nav/ig.test(n.tagName)) {
+                n.className += " docview-garbage"
+            } else 
+            // sidebar
+            if (/side.?bar/ig.test(n.className) 
+                || /side.?bar/ig.test(n.id)) {
+                n.className += " docview-garbage"
+            } else 
+            // header|footer
+            if (/header|footer/ig.test(n.tagName)
+                || /head|foot/ig.test(n.id)
+                || /head|foot/ig.test(n.className)) {
+                n.className += " docview-garbage"
+            } else 
+            // controls
+            if (/input|textarea|button|select/ig.test(n.tagName)) {
+                n.className += " docview-garbage"
             }
-            let attempt2 =
-                this.guessRoot(
-                    root,
-                    (n) => (! this.nonDiv.includes(n.tagName))
-                            && (n.scrollHeight > 0.75 * root.scrollHeight)
-                            && (n.scrollWidth > 0.50 * root.scrollWidth)
-                            && (n.innerText.length > 0.50 * root.innerText.length),
-                    1
-                )
-            if (root != attempt2) {
-                root = attempt2
-                continue
+            for (let c in n.childNodes) {
+                if (n.childNodes[c].nodeType == Node.ELEMENT_NODE) {
+                    nodes.push(n.childNodes[c] as HTMLElement)
+                }
             }
-            // let attempt3 =
-            //     this.guessRoot(
-            //         root,
-            //         (n) => (! this.nonDiv.includes(n.tagName))
-            //                 && (n.scrollHeight > 0.90 * root.scrollHeight)
-            //                 && (n.innerText.length > 0.5 * root.innerText.length),
-            //         1
-            //     )
-            // if (root != attempt3) {
-            //     root = attempt3
-            //     continue
-            // }
-            // let attempt4 =
-            //     this.guessRoot(
-            //         root,
-            //         (n) => (! this.nonDiv.includes(n.tagName))
-            //                 && (n.scrollHeight > 0.75 * root.scrollHeight)
-            //                 && (n.innerText.length > 0.5 * root.innerText.length),
-            //         1
-            //     )
-            // if (root != attempt4) {
-            //     root = attempt4
-            //     continue
-            // }
-            // reach here if nothing changed
-            break
         }
+        // let root = document.body
+        // for (let i = 0; i < level; i++) {
+        //     // prone every node that has more than X controls
+        //     // use the first node that has > 80% page content as root
+        //     let attempt1 =
+        //         this.guessRoot(
+        //             root,
+        //             (n) => (! this.nonDiv.includes(n.tagName))
+        //                     && (n.scrollHeight > 0.90 * root.scrollHeight)
+        //                     && (n.scrollWidth > 0.50 * root.scrollWidth)
+        //                     && (n.innerText.length > 0.50 * root.innerText.length),
+        //             1
+        //         )
+        //     if (root != attempt1) {
+        //         root = attempt1
+        //         continue
+        //     }
+        //     let attempt2 =
+        //         this.guessRoot(
+        //             root,
+        //             (n) => (! this.nonDiv.includes(n.tagName))
+        //                     && (n.scrollHeight > 0.75 * root.scrollHeight)
+        //                     && (n.scrollWidth > 0.50 * root.scrollWidth)
+        //                     && (n.innerText.length > 0.50 * root.innerText.length),
+        //             1
+        //         )
+        //     if (root != attempt2) {
+        //         root = attempt2
+        //         continue
+        //     }
+        //     // let attempt3 =
+        //     //     this.guessRoot(
+        //     //         root,
+        //     //         (n) => (! this.nonDiv.includes(n.tagName))
+        //     //                 && (n.scrollHeight > 0.90 * root.scrollHeight)
+        //     //                 && (n.innerText.length > 0.5 * root.innerText.length),
+        //     //         1
+        //     //     )
+        //     // if (root != attempt3) {
+        //     //     root = attempt3
+        //     //     continue
+        //     // }
+        //     // let attempt4 =
+        //     //     this.guessRoot(
+        //     //         root,
+        //     //         (n) => (! this.nonDiv.includes(n.tagName))
+        //     //                 && (n.scrollHeight > 0.75 * root.scrollHeight)
+        //     //                 && (n.innerText.length > 0.5 * root.innerText.length),
+        //     //         1
+        //     //     )
+        //     // if (root != attempt4) {
+        //     //     root = attempt4
+        //     //     continue
+        //     // }
+        //     // reach here if nothing changed
+        //     break
+        // }
         const bb = document.createElement("body")
         var link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
@@ -182,6 +228,8 @@ class Docview {
         $(bb).css({margin: "1em"})
         bb.appendChild(root)
         document.body = bb
+
+        $(bb).find(".docview-garbage").remove()
 
         for (const s of this.nonDiv) {
             const redun = bb.querySelectorAll(s)
@@ -229,6 +277,10 @@ class Docview {
             , fontFamily: "Source Code Pro, monospace"
         })
         $(bb).css({backgroundColor: "white"})
+        // $(bb).find("*").each((i,e) => { 
+        //     e.id = '' 
+        //     e.className = ''
+        // })
     }
 
     public symbols(): string[] {
@@ -348,7 +400,7 @@ class Docview {
     public docviewOn(heu: Heuristic = new Heuristic(),
                      st: DocviewStyle = new DocviewStyle())
     {
-        this.snapshotHTML()
+        this.snapshotHTML(heu)
         this.docviewHTML(8, st)
     }
 }

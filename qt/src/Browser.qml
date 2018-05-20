@@ -4,13 +4,6 @@ import QtQuick.Controls 2.2
 
 BrowserForm {
     id: browser
-    function currentWebView() {
-        return browserWebViews.currentWebView()
-    }
-
-    function currentIndex() {
-        return browserWebViews.currentIndex()
-    }
 
     function webViewAt(i) {
         return browserWebViews.webViewAt(i)
@@ -18,66 +11,57 @@ BrowserForm {
 
     state: Qt.platform.os
 
-    function showWelcomePage() {
-        browserWebViews.setCurrentIndex(-1)
-        browserForwardButton.enabled = false
-        browserRefreshButton.enabled = false
-        browserBackButton.enabled = false
-        browserDocviewButton.enabled = false
-        browserBookmarkButton.enabled = false
-        browserAddressBar.update("Welcome", "")
-        welcomePage.visible = true
+
+    browserDocviewButton {
+        checkable: false
+        enabled: currentWebView && currentWebView.docviewLoaded
+        active: currentWebView && currentWebView.inDocview
+        onClicked: currentWebView && (currentWebView.inDocview ? currentWebView.docviewOff() : currentWebView.docviewOn())
     }
 
-    function hideWelcomePage() {
-        //        browserForwardButton.enabled = true
-        browserRefreshButton.enabled = true
-        //        browserBackButton.enabled = true
-        //        browserDocviewButton.enabled = true
-        browserBookmarkButton.enabled = true
-        welcomePage.visible = false
+    browserBookmarkButton {
+        checkable: false
+        enabled: currentWebView
+        active: currentWebView && currentWebView.bookmarked
+        onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
+    }
+
+    welcomePage {
+        visible: ! currentWebView
+    }
+
+    browserRefreshButton {
+        enabled: currentWebView
+    }
+
+    browserBackButton {
+        enabled: currentWebView && currentWebView.canGoBack
+    }
+
+    browserForwardButton {
+        enabled: currentWebView && currentWebView.canGoForward
+    }
+
+    browserAddressBar {
+        url: currentWebView ? currentWebView.url() : ""
+        title: currentWebView ? currentWebView.title : ""
+        progress: currentWebView ? currentWebView.loadProgress : 0
     }
 
     function refreshCurrentWebview() {
-        console.log("Browser.qml reloadWebViewAt")
-        if (currentIndex() > -1) {
-            EventFilter.ctrlKeyDown = false
-            //            var bookmarked = SearchDB.isBookmarked(currentWebView().url())
-            browserWebViews.reloadCurrentWebView()
-        }
+        browserWebViews.reloadCurrentWebView()
     }
 
     function showBrowserSearch() {
         browserSearch.visible = true
         browserSearch.textfield.focus = true
         browserSearch.textfield.selectAll()
-        //        if (browserSearch.textfield.text) {
-        //            var cur = browserSearch.current()
-        //            highlightWordInCurrentWebview(browserSearch.textfield.text, function() {
-        //                scrollToNthHighlightInCurrentWebview(cur)
-        //            })
-        //        }
     }
-
-    //    function scrollToNthHighlightInCurrentWebview(n) {
-    //        currentWebView().scrollToNthHighlight(n, function() {
-    //            browserSearch.updateCurrent(n)
-    //        })
-    //    }
-
-    //    function highlightWordInCurrentWebview(word, callback) {
-    //        currentWebView().highlightWord(word, callback)
-    //    }
-
-    //    function clearBrowserSearchHightlights() {
-    //        currentWebView().clearHighlight()
-    //    }
 
     function hideBrowserSearch() {
         browserSearch.visible = false
-        //        clearBrowserSearchHightlights()
-        if (currentWebView() !== null) {
-            currentWebView().clearFindText()
+        if (currentWebView !== null) {
+            currentWebView.clearFindText()
         }
     }
 
@@ -90,58 +74,31 @@ BrowserForm {
     Component.onCompleted: {
         if (TabsModel.count > 0) {
             openTab(0)
-        } else {
-            showWelcomePage()
         }
     }
 
     function newTab(url, switchToView) {
         console.log("newTab:", url, switchToView)
         url = url || "https://www.google.ca/"
-        TabsModel.insertTab(0, url, "", "")
+        if (currentWebViewIndex === -1) {
+            TabsModel.insertTab(0, url, "", "")
+        } else {
+            TabsModel.insertTab(0, url, "", "")
+            openTab(currentWebViewIndex + 1)
+        }
         if (switchToView) {
             openTab(0)
-        } else {
-            openTab(currentIndex() + 1)
         }
-        hideWelcomePage()
         return browserWebViews.webViewAt(0)
     }
 
-    //    tabsPanel.rectangle.color: {
-    ////        if (splitView.resizing || browserWindow.resizing) {
-    ////            return Palette.normal.window_base_background
-    ////        } else {
-    //            return "transparent"
-    ////        }
-    //    }
-
-    //    Timer {
-    //        id: bugfixTimeout
-    //        repeat: false
-    //        interval: 1000
-    //        onTriggered: tabsPanel.rectangle.color = Qt.binding(function() {
-    //            if (splitView.resizing || browserWindow.resizing) {
-    //                return Palette.normal.window_base_background
-    //            } else {
-    //                return "transparent"
-    //            }
-    //        })
-    //    }
-
     function openTab(index) {
-        hideWelcomePage()
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
-        var wp = currentWebView()
-        browserAddressBar.update(currentWebView().url(), currentWebView().title)
-        browserAddressBar.updateProgress(currentWebView().loadProgress)
-        prevEnabled = wp && wp.canGoBack
-        nextEnabled = wp && wp.canGoForward
-        browserDocviewButton.enabled = wp && wp.docviewLoaded
-        browserDocviewButton.checked = wp && wp.inDocview
-        browserBookmarkButton.checked = SearchDB.bookmarked(wp.url())
+//        var wp = currentWebView
+//        browserAddressBar.update(currentWebView.url(), currentWebView.title)
+//        browserAddressBar.updateProgress(currentWebView.loadProgress)
     }
 
     function closeTab(index) {
@@ -149,11 +106,12 @@ BrowserForm {
         if (index < 0) { return }
         //        SearchDB.removeWebpage(webViewAt(index).url())
         // todo: remove from backend
-        if (currentIndex() === index) {
+        if (currentWebViewIndex === index) {
             // when removing current tab
             // if there's one after, open that
             if (index + 1 < TabsModel.count) {
                 TabsModel.removeTab(index)
+                browserWebViews.setCurrentIndex(-1) // force update binding
                 openTab(index)
             }
             // if there's one before, open that
@@ -164,23 +122,17 @@ BrowserForm {
             // if this is the only one
             else {
                 TabsModel.removeTab(index)
-                showWelcomePage()
-                //                newTab("",true)
+                browserWebViews.setCurrentIndex(-1)
             }
-        } else if (currentIndex() > index) {
+        } else if (currentWebViewIndex > index) {
             TabsModel.removeTab(index)
-            openTab(currentIndex() - 1)
+            openTab(currentWebViewIndex - 1)
         } else {
             TabsModel.removeTab(index)
         }
     }
 
     tabsPanel.buttonSize: buttonSize
-
-    buttonSize: {
-        if (Qt.platform.os == "ios") { return 40 }
-        return 25
-    }
 
     Connections {
         target: tabsPanel
@@ -194,11 +146,9 @@ BrowserForm {
     Connections {
         target: browserWebViews
         onUserOpensLinkInWebView: {
-            browserAddressBar.update(url, "")
-            browserAddressBar.updateProgress(currentWebView().loadProgress)
-            currentWebView().forceActiveFocus()
-            //            prevEnabled = true
-            //            nextEnabled = false
+//            browserAddressBar.update(url, "")
+//            browserAddressBar.updateProgress(currentWebView.loadProgress)
+//            currentWebView.forceActiveFocus()
         }
         onUserOpensLinkInNewTab: {
             newTab(url)
@@ -208,52 +158,28 @@ BrowserForm {
             wv.handleNewViewRequest(request)
         }
         onWebViewLoadingSucceeded: {
-            if (index === currentIndex()) {
-                var wp = currentWebView()
-                browserAddressBar.update(wp.url(), wp.title)
-                browserDocviewButton.enabled = true
+            if (index === currentWebViewIndex) {
             }
         }
         onWebViewLoadingStarted: {
-            if (index === currentIndex()) {
-                var cw = currentWebView()
-                prevEnabled = cw && cw.canGoBack
-                nextEnabled = cw && cw.canGoForward
-                browserBookmarkButton.checked = SearchDB.bookmarked(cw.url())
-                browserBookmarkButton.enabled = true
-                browserDocviewButton.enabled = false
+            if (index === currentWebViewIndex) {
             }
         }
         onWebViewLoadingStopped: {
-            if (index === currentIndex()) {
-                var cw = currentWebView()
-                prevEnabled = cw && cw.canGoBack
-                nextEnabled = cw && cw.canGoForward
-                browserBookmarkButton.checked = SearchDB.bookmarked(cw.url())
+            if (index === currentWebViewIndex) {
             }
         }
         onWebViewLoadingProgressChanged: {
-            if (index === currentIndex()) {
-                browserAddressBar.updateProgress(progress)
+            if (index === currentWebViewIndex) {
             }
         }
     }
 
     Connections {
         target: browserSearch
-//        onUserSearchesWordInBrowser: {
-//            if (currentWebView() !== null) {
-//                currentWebView().findNext(word, function(count) {
-//                    browserSearch.updateCount(count)
-//                    if (count > 0) {
-//                        browserSearch.updateCurrent(1)
-//                    }
-//                })
-//            }
-//        }
         onUserSearchesNextInBrowser: {
-            if (currentWebView() !== null) {
-                currentWebView().findNext(browserSearch.textfield.text, function(cnt) {
+            if (currentWebView !== null) {
+                currentWebView.findNext(browserSearch.textfield.text, function(cnt) {
                     browserSearch.showCount()
                     var cur = browserSearch.current()
                     browserSearch.updateCount(cnt)
@@ -268,8 +194,8 @@ BrowserForm {
             }
         }
         onUserSearchesPreviousInBrowser: {
-            if (currentWebView() !== null) {
-                currentWebView().findPrev(browserSearch.textfield.text, function(cnt) {
+            if (currentWebView !== null) {
+                currentWebView.findPrev(browserSearch.textfield.text, function(cnt) {
                     browserSearch.showCount()
                     var cur = browserSearch.current()
                     browserSearch.updateCount(cnt)
@@ -288,8 +214,8 @@ BrowserForm {
             browserSearch.updateCount(0)
             browserSearch.updateCurrent(0)
             browserSearch.hideCount()
-            if (currentWebView() !== null) {
-                currentWebView().clearFindText()
+            if (currentWebView !== null) {
+                currentWebView.clearFindText()
             }
         }
     }
@@ -297,11 +223,11 @@ BrowserForm {
     Connections {
         target: browserAddressBar
         onUserEntersUrl: {
-            if (EventFilter.ctrlKeyDown || currentIndex() === -1) {
+            if (EventFilter.ctrlKeyDown || currentWebViewIndex === -1) {
                 EventFilter.ctrlKeyDown = false
                 newTab(url, true)
             } else {
-                currentWebView().goTo(url)
+                currentWebView.goTo(url)
             }
         }
     }
@@ -309,14 +235,14 @@ BrowserForm {
     Connections {
         target: browserBackButton
         onClicked: {
-            currentWebView().goBack()
+            currentWebView.goBack()
         }
     }
 
     Connections {
         target: browserForwardButton
         onClicked: {
-            currentWebView().goForward()
+            currentWebView.goForward()
         }
     }
 
@@ -337,51 +263,18 @@ BrowserForm {
         }
     }
 
-    Connections {
-        target: browserBookmarkButton
-        onCheckedChanged: {
-            console.log("onCheckedChanged!!", browserBookmarkButton.checked)
-        }
-
-        onClicked: {
-            if (browserBookmarkButton.checked) {
-                SearchDB.setBookmarked(currentWebView().url(), true)
-            } else {
-                SearchDB.setBookmarked(currentWebView().url(), false)
-            }
-        }
-    }
-
     Shortcut {
         sequence: "Ctrl+R"
         autoRepeat: false
         onActivated: refreshCurrentWebview()
     }
 
-    //    Timer {
-    //        id: ctrl_w_timeout
-    //        interval: 100
-    //        triggeredOnStart: false
-    //        onTriggered: {
-    //            ctrl_w.guard = true
-    //        }
-    //        repeat: false
-    //    }
-
     Shortcut {
         id: ctrl_w
         property bool guard: true
         autoRepeat: true
         sequence: "Ctrl+W"
-        onActivated: closeTab(currentIndex()) /*{
-            if (guard) {
-                guard = false
-                EventFilter.ctrlKeyDown = false
-                console.log("Ctrl+W", ctrl_w)
-                closeTab(currentIndex())
-                ctrl_w_timeout.start()
-            }
-        }*/
+        onActivated: closeTab(currentWebViewIndex)
     }
 
     Shortcut {
@@ -411,4 +304,5 @@ BrowserForm {
             }
         }
     }
+
 }
