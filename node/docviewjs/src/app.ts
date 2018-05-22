@@ -35,7 +35,7 @@ class Docview {
         let nodes: Element[] = [root] // nodes in the current depth
         let _nodes: Element[] = [_root]
         while (nodes.length > 0) {
-            console.log("iteration")
+            console.count("iteration")
             const n = nodes.shift()
             const _n = _nodes.shift()
             let _styles = ""
@@ -132,7 +132,6 @@ class Docview {
             const n = nodes.shift()
             // garbage test
             // sidebar
-            console.log(n.id)
             // if (n.offsetHeight > 0.9 * document.body.offsetHeight
             //     && n.offsetWidth < 0.5 * document.body.offsetWidth) {
             //     n.className += " docview-garbage"
@@ -268,7 +267,7 @@ class Docview {
                 }
             }
         })
-        console.log("avgFontSize", avgFontSize)
+        // console.log("avgFontSize", avgFontSize)
         // regularize font size
         all.each((i,e) => {
             if (e.innerText) {
@@ -296,33 +295,43 @@ class Docview {
         // })
     }
 
-    public symbols(): string[] {
-        console.log("finding symbols")
+    public crawler(): 
+        {
+            symbols: {string: string}, 
+            links: string[], 
+            referer: string
+        } 
+    {
+        // console.log("finding symbols")
         let hrefs = {}
         $('a').each((i,e)=> {
             hrefs[$(e).attr("href")] = e.innerText
         })
-        let mapping = {}
+        let symbols = {} as {string:string}
+        let links = {}
         for (let k in hrefs) {
-            let txt = hrefs[k]
-            // const m = k.match(/\#(.+)$/g)
-            // if (m !== null) {
-            //     const treatment = [""]
-            //     let link = m[0].substr(1)
-
-            //     treatment.forEach((t) => {
-            //         link.replace(t, "")
-            //         txt.replace(t, "")
-            //     })
-            //     // mapping[link] = 1
-            // }
-            if (txt.length > 0) {
-                mapping[txt] = 1
-            } else {
-                mapping[k] = 1
+            const url = new URL(k, location.href)            
+            const txt = hrefs[k]
+            // const i = k.indexOf("#")
+            if (url.hash.length > 1 
+                // anything with a space is probably not a symbol
+                && (! (txt.includes(" ") && ! txt.includes("("))) 
+                && url.pathname === location.pathname 
+                && url.hostname == location.hostname) { 
+                    // console.log(url.pathname, location.pathname)
+                symbols[url.hash.substr(1)] = txt
+            } else 
+            if (url.hostname == location.hostname 
+                && (! (txt.includes(" ") && ! txt.includes("("))) 
+                && url.hash.length > 1 ) {
+                links[url.origin + url.pathname] = 1
             }
         }
-        return Object.keys(mapping)
+        return {
+            symbols: symbols, 
+            links: Object.keys(links), 
+            referer: location.origin + location.pathname
+        }
     }
 
     public prefixes(word: string, len: number): string[] {
@@ -335,15 +344,15 @@ class Docview {
         return subs
     }
 
-    public keys(len: number): string[] {
-        let mapping = {}
-        this.symbols().map((v) => {
-            this.prefixes(v,len).forEach((v) => {
-                mapping[v] = 1;
-            })
-        })
-        return Object.keys(mapping)
-    }
+    // public keys(len: number): string[] {
+    //     let mapping = {}
+    //     this.symbols().map((v) => {
+    //         this.prefixes(v,len).forEach((v) => {
+    //             mapping[v] = 1;
+    //         })
+    //     })
+    //     return Object.keys(mapping)
+    // }
 
     public clearHighlight(): void {
         const span = $(".docview-highlighted")

@@ -43,7 +43,7 @@ BrowserForm {
     }
 
     browserAddressBar {
-        url: currentWebView ? currentWebView.url() : ""
+        url: currentWebView ? currentWebView.href : ""
         title: currentWebView ? currentWebView.title : ""
         progress: currentWebView ? currentWebView.loadProgress : 0
     }

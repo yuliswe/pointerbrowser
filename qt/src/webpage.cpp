@@ -29,18 +29,24 @@ QString Webpage::url() const { return _url; }
 QString Webpage::storeFile() const { return _storeFile; }
 QString Webpage::html() const { return _html; }
 bool Webpage::temporary() const { return _temporary; }
+bool Webpage::crawling() const { return _crawling; }
+bool Webpage::crawled() const { return _crawled; }
 
 void Webpage::setTitle(QString x) { _title = x; }
 void Webpage::setUrl(QString x) { _url = x; }
 void Webpage::setStoreFile(QString x) { _storeFile = x; }
 void Webpage::setHtml(QString x) { _html = x; }
 void Webpage::setTemporary(bool x) { _temporary = x; }
+void Webpage::setCrawling(bool x) { _crawling = x; }
+void Webpage::setCrawled(bool x) { _crawled = x; }
 
 QVariantMap Webpage::toQVariantMap()
 {
     QVariantMap map;
     map.insert("title", title());
     map.insert("url", url());
+    map.insert("crawling", crawling());
+    map.insert("crawled", crawled());
     return map;
 }
 

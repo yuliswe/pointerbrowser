@@ -2,12 +2,15 @@ CREATE TABLE IF NOT EXISTS webpage (
     id INTEGER PRIMARY KEY,
     url TEXT UNIQUE NOT NULL,
     temporary BOOLEAN NOT NULL,
+    crawling BOOLEAN NOT NULL,
+    crawled BOOLEAN NOT NULL,
     title TEXT,
     html TEXT
 );
 CREATE TABLE IF NOT EXISTS symbol (
     id INTEGER PRIMARY KEY,
-    symbol TEXT UNIQUE NOT NULL
+    text TEXT NOT NULL,
+    hash TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS webpage_symbol (
     id INTEGER PRIMARY KEY,
