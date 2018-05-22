@@ -264,11 +264,11 @@ void SearchDB::search(const QString& word)
 {
     qDebug() << "SearchDB::search" << word;
     _currentWord = word;
+    _searchResult.clear();
     if (word == "") {
         _webpage->setFilter("temporary = 0");
         _webpage->select();
         int upper = std::min(100, _webpage->rowCount());
-        _searchResult.clear();
         for (int i = 0; i < upper; i++) {
             QSqlRecord record = _webpage->record(i);
             QString url = record.value("url").value<QString>();
@@ -277,27 +277,46 @@ void SearchDB::search(const QString& word)
             _searchResult.updateTab(0, "title", title);
         }
     } else {
-        QStringList ws = word.split(QRegularExpression(" "));
+        QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
+        if (ws.length() == 0) { return; }
         // search by symbol
-        QStringList qsl;
-        for (QString w : ws) {
-            if (w == "") { continue; }
-            qsl << QString("SELECT DISTINCT webpage.id, webpage.url, webpage.title, symbol.text, symbol.hash from webpage ") +
-                   "INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage " +
-                   "INNER JOIN symbol ON symbol.id = webpage_symbol.symbol " +
-                   "WHERE INSTR(LOWER(symbol.text),LOWER('" + w + "')) > 0 " +
-                   "OR INSTR(LOWER(symbol.hash),LOWER('" + w + "')) > 0";
+        QString q_by_title = "SELECT DISTINCT id, url, title FROM webpage WHERE INSTR(LOWER(title),LOWER('" + ws[0] + "')) > 0";
+        for (auto w = ws.begin() + 1; w != ws.end(); w++) {
+            q_by_title += " AND INSTR(LOWER(title),LOWER('" + (*w) + "')) > 0";
         }
-        QString qs = qsl.join(" INTERSECT ") + ";";
-        qDebug() << "SearchDB::search" << qs;
-        QSqlQuery q = _db.exec(qs);
-        if (q.lastError().isValid()) {
-            qDebug() << "SearchDB::search failed" << q.lastError();
+        qDebug() << "SearchDB::search" << q_by_title;
+        QSqlQuery r_by_title = _db.exec(q_by_title);
+        if (r_by_title.lastError().isValid()) {
+            qDebug() << "SearchDB::search failed" << r_by_title.lastError();
             return;
         }
-        _searchResult.clear();
-        while (q.next()) {
-            QSqlRecord record = q.record();
+        while (r_by_title.next()) {
+            QSqlRecord record = r_by_title.record();
+            QString url = record.value("url").value<QString>();
+            QString title = record.value("title").value<QString>();
+            _searchResult.insertTab(0, url);
+            _searchResult.updateTab(0, "title", "\""+title+"\"");
+        }
+        QString q_by_sym;
+        for (auto w = ws.begin(); w != ws.end(); w++) {
+            q_by_sym += QStringLiteral("SELECT * FROM (SELECT webpage.id, url, title, text, hash FROM webpage") +
+                        " INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+                        " INNER JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+                        " WHERE INSTR(LOWER(symbol.text),LOWER('" + (*w) + "')) > 0" +
+                        " OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "')) > 0)";
+            if (w != ws.end() - 1) {
+                q_by_sym += QStringLiteral(" UNION ");
+            }
+        }
+        qDebug() << "SearchDB::search" << q_by_sym;
+        QSqlQuery r_by_sym = _db.exec(q_by_sym);
+        if (r_by_sym.lastError().isValid()) {
+            qDebug() << "SearchDB::search failed" << r_by_sym.lastError();
+            return;
+        }
+        while (r_by_sym.next()) {
+            QSqlRecord record = r_by_sym.record();
+            int c = record.count();
             QString url = record.value("url").value<QString>();
             QString title = record.value("title").value<QString>();
             QString symbol = record.value("text").value<QString>();
@@ -310,28 +329,6 @@ void SearchDB::search(const QString& word)
             _searchResult.updateTab(0, "title", display);
         }
         // search by title
-        {
-            QStringList qsl;
-            for (QString w : ws) {
-                if (w == "") { continue; }
-                qsl << QString("SELECT id, url, title from webpage ") +
-                       "WHERE INSTR(LOWER(title),LOWER('" + w + "')) > 0 ";
-            }
-            QString qs = qsl.join(" INTERSECT ") + ";";
-            qDebug() << "SearchDB::search" << qs;
-            QSqlQuery q = _db.exec(qs);
-            if (q.lastError().isValid()) {
-                qDebug() << "SearchDB::search failed" << q.lastError();
-                return;
-            }
-            while (q.next()) {
-                QSqlRecord record = q.record();
-                QString url = record.value("url").value<QString>();
-                QString title = record.value("title").value<QString>();
-                _searchResult.insertTab(0, url);
-                _searchResult.updateTab(0, "title", title);
-            }
-        }
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();
 }
