@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQml 2.2
-import QtWebEngine 1.3
+import QtWebEngine 1.5
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -12,6 +12,7 @@ Item {
     property bool docviewLoaded: false
     property bool inDocview: false
     property bool bookmarked: false
+    property alias href: webview.url
     id: webUI
 
     function bookmark() {
@@ -72,34 +73,15 @@ Item {
         findNext("")
     }
 
-    function openConsole() {
-        console.log("triggerWebAction(WebEngineView.InspectElement)")
-                (inDocview ? docview : webview).triggerWebAction(WebEngineView.SelectAll)
-    }
-
     function findNext(word, callback) {
         var target = inDocview ? docview : webview
         target.findText(word, 0, callback)
-        //        var count = 0
-        //        function recursiveFindText() {
-        //            console.log("recursiveFindText", word)
-        //            target.findText(word, 0, function(found) {
-        //                if (found) {
-        //                    count++
-        //                    recursiveFindText()
-        //                } else {
-        //                    callback(count)
-        //                }
-        //            })
-        //        }//.runJavaScript("Docview.highlightWord('"+word+"')", callback)
-        //        recursiveFindText()
     }
 
 
     function findPrev(word, callback) {
         var target = inDocview ? docview : webview
         target.findText(word, WebEngineView.FindBackward, callback)
-        //        (inDocview ? docview : webview).runJavaScript("Docview.scrollToNthHighlight("+n+")", callback)
     }
 
     function handleNewViewRequest(request) {
@@ -119,6 +101,7 @@ Item {
         onNewViewRequested: {
             userRequestsNewView(request)
         }
+        settings.focusOnNavigationEnabled: false
     }
 
     WebEngineView {
@@ -127,6 +110,7 @@ Item {
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         url: webview.url
+        settings.focusOnNavigationEnabled: false
         onTitleChanged: {
             TabsModel.updateTab(index, "title", title)
             if (SearchDB.hasWebpage(webUI.url())) {
@@ -155,7 +139,9 @@ Item {
             case WebEngineView.LoadStartedStatus:
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                SearchDB.addWebpage(webUI.url())
+                if (! SearchDB.hasWebpage(webUI)) {
+                    SearchDB.addWebpage(webUI.url())
+                }
                 if (! SearchDB.bookmarked(webUI.url())) {
                     // when the url's domain is in the auto-bookmark.txt list
                     var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
@@ -166,42 +152,25 @@ Item {
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
+                SearchDB.updateWebpage(webUI.url(), "crawling", true)
+                SearchDB.updateWebpage(webUI.url(), "title", title)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    // when the page is not in db
-                    //                    if (! SearchDB.hasWebpage(url)) {
-                    SearchDB.updateWebpage(webUI.url(), "title", title)
                     runJavaScript("Docview.docviewOn()", function() {
                         if (inDocview) {
                             docviewOn()
                         }
-                        runJavaScript("Docview.symbols()", function(syms) {
-                            SearchDB.addSymbols(webUI.url(), syms)
+                        runJavaScript("Docview.crawler()", function(result) {
+                            console.log(result.referer, result.symbols, result.links)
+                            console.log(result.referer, webUI.url())
+                            SearchDB.addSymbols(result.referer, result.symbols)
+                            SearchDB.updateWebpage(result.referer, "crawling", false)
                             // loading done
                             docviewLoaded = true
                             webViewLoadingSucceeded(index, webUI.url())
                             webViewLoadingStopped(index, webUI.url())
+                            crawler.queueLinks(result.referer, result.links)
                         })
                     })
-                    //                    }
-                    //                    // when the page is already in db, skip symbol parsing (too expensive)
-                    //                    else {
-                    //                        // when the url's domain is in the auto-bookmark.txt list
-                    //                        var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-                    //                        var domain = url.toString().split("/")[2]
-                    //                        if (arr.indexOf(domain) > -1) {
-                    //                            SearchDB.updateWebpage(url, "temporary", false)
-                    //                        }
-                    //                        // turn on docview
-                    //                        runJavaScript("Docview.initDocviewHTML(); Docview.turnOn()", function() {
-                    //                            docviewLoaded = true
-                    //                            if (inDocview) {
-                    //                                docviewOn()
-                    //                            }
-                    //                            // loading done
-                    //                            webViewLoadingSucceeded(index, loadRequest.url)
-                    //                            webViewLoadingStopped(index, loadRequest.url)
-                    //                        })
-                    //                    }
                 })
                 break
             case WebEngineView.LoadFailedStatus:
@@ -215,6 +184,70 @@ Item {
                             loadRequest.errorString)
                 webViewLoadingStopped(index, webUI.url())
                 break
+            }
+        }
+    }
+
+
+    WebEngineView {
+        id: crawler
+        implicitHeight: browserWebViews.height
+        implicitWidth: browserWebViews.width
+        visible: false
+        focus: false
+        activeFocusOnPress: false
+        settings.focusOnNavigationEnabled: false
+        property var queue: []
+//        url: queue.length ? queue[0] : ""
+        function queueLinks(referer, links) {
+            console.log("crawler.queueLinks", referer, links)
+            // check if referer is fully crawled
+            var incomplete = []
+            var unstarted = []
+            for (var i = 0; i < links.length; i++) {
+                var l = links[i]
+                if (! SearchDB.hasWebpage(l)) {
+                    unstarted.push(l)
+                    SearchDB.updateWebpage(l, "crawling", true)
+                    continue
+                }
+                var w = SearchDB.findWebpage(l)
+                if (w.crawling) {
+                    incomplete.push(i)
+                } else if (! w.crawled) {
+                    unstarted.push(i)
+                    SearchDB.updateWebpage(l, "crawling", true)
+                }
+            }
+            if (incomplete.length == 0 && unstarted.length == 0) {
+                SearchDB.updateWebpage(referer, "crawled", true)
+            }
+            queue = queue.concat(unstarted)
+//            console.log("now queue is", loading, queue.length)
+            if (queue.length && ! loading) {
+                var u = queue.shift()
+                console.log("crawling", u)
+                url = u
+            }
+        }
+        onLoadingChanged: {
+            switch (loadRequest.status) {
+            case WebEngineView.LoadStartedStatus:
+                if (! SearchDB.hasWebpage(url)) {
+                    SearchDB.addWebpage(url)
+                }
+                break
+            case WebEngineView.LoadSucceededStatus:
+                console.log("crawler error", loadRequest.errorString)
+                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                    runJavaScript("Docview.crawler()", function(result) {
+                        SearchDB.addSymbols(result.referer, result.symbols)
+                        SearchDB.updateWebpage(result.referer, "crawling", false)
+                        SearchDB.updateWebpage(result.referer, "title", title)
+                        // loading done
+//                        queueLinks(result.referer, result.links)
+                    })
+                })
             }
         }
     }

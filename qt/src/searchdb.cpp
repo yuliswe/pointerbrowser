@@ -9,6 +9,8 @@
 #include <QSqlRelationalTableModel>
 #include <QSharedPointer>
 #include <QRegularExpression>
+#include <QString>
+#include <QMap>
 #include <algorithm>
 #include "searchdb.h"
 #include "filemanager.h"
@@ -88,7 +90,7 @@ bool SearchDB::execMany(const QStringList& lines)
             return false;
         }
     }
-//    search(_currentWord);
+    //    search(_currentWord);
     return true;
 }
 
@@ -108,7 +110,7 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
         return false;
     }
     _webpage->submitAll();
-//    search(_currentWord);
+    //    search(_currentWord);
     return true;
 }
 
@@ -123,11 +125,11 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
         return false;
     }
     const QSqlRecord wpRecord = _webpage->record(0);
-    for (auto i = symbols.constKeyValueBegin();
-         i != symbols.constKeyValueEnd();
+    for (auto i = symbols.keyBegin();
+         i != symbols.keyEnd();
          i++) {
-        QString hash = std::get<0>(*i);
-        QString text = (std::get<1>(*i)).value<QString>();
+        QString hash = (*i);
+        QString text = symbols[hash].value<QString>();
         _symbol->setFilter("hash = '" + hash + "' AND text = '"+ text +"'");
         _symbol->select();
         QSqlRecord syRecord;
@@ -174,7 +176,7 @@ bool SearchDB::addWebpage(const QString& url)
         qDebug() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
         return false;
     };
-//    search(_currentWord);
+    //    search(_currentWord);
     return true;
 }
 
@@ -276,6 +278,7 @@ void SearchDB::search(const QString& word)
         }
     } else {
         QStringList ws = word.split(QRegularExpression(" "));
+        // search by symbol
         QStringList qsl;
         for (QString w : ws) {
             if (w == "") { continue; }
@@ -299,8 +302,35 @@ void SearchDB::search(const QString& word)
             QString title = record.value("title").value<QString>();
             QString symbol = record.value("text").value<QString>();
             QString hash = record.value("hash").value<QString>();
+            QString display =
+                    (symbol.length() > 0 ? "@"+symbol+"  " : "") +
+                    (hash.length() > 0 ? "#"+hash+"  " : "") +
+                    (title.length() > 0 ? "\""+title+"\"" : "");
             _searchResult.insertTab(0, url + "#" + hash);
-            _searchResult.updateTab(0, "title", "@" + symbol + "#" + hash + " " + title);
+            _searchResult.updateTab(0, "title", display);
+        }
+        // search by title
+        {
+            QStringList qsl;
+            for (QString w : ws) {
+                if (w == "") { continue; }
+                qsl << QString("SELECT id, url, title from webpage ") +
+                       "WHERE INSTR(LOWER(title),LOWER('" + w + "')) > 0 ";
+            }
+            QString qs = qsl.join(" INTERSECT ") + ";";
+            qDebug() << "SearchDB::search" << qs;
+            QSqlQuery q = _db.exec(qs);
+            if (q.lastError().isValid()) {
+                qDebug() << "SearchDB::search failed" << q.lastError();
+                return;
+            }
+            while (q.next()) {
+                QSqlRecord record = q.record();
+                QString url = record.value("url").value<QString>();
+                QString title = record.value("title").value<QString>();
+                _searchResult.insertTab(0, url);
+                _searchResult.updateTab(0, "title", title);
+            }
         }
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();

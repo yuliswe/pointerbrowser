@@ -30,6 +30,8 @@ C1.SplitView {
     TabsPanel {
         id: tabsPanel
         Layout.minimumWidth: 150
+        Layout.preferredWidth: 300
+        width: 300
     }
 
     Rectangle {
@@ -119,7 +121,7 @@ C1.SplitView {
             }
         }
 
-        Layout.minimumWidth: 300
+//        Layout.minimumWidth: 300
         Layout.fillWidth: true
     }
 
