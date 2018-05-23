@@ -71,5 +71,6 @@ HEADERS += \
 
 DISTFILES += \
     defaults/dbgen.txt \
-    resetTables.sqlite3
+    resetTables.sqlite3 \
+    db/exit.sqlite3
 

@@ -62,11 +62,7 @@ bool SearchDB::connect() {
 }
 
 void SearchDB::disconnect() {
-    QStringList ls;
-    ls << "DELETE FROM webpage_symbol WHERE webpage IN (SELECT id FROM webpage WHERE temporary = 1);"
-       << "DELETE FROM webpage WHERE temporary = 1;"
-       << "DELETE FROM symbol WHERE id NOT IN (SELECT symbol FROM webpage_symbol);";
-    if (! execMany(ls)) {
+    if (! execScript("db/exit.sqlite3")) {
         qDebug() << "SearchDB::disconnect failed";
     }
     _db.close();
