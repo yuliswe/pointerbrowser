@@ -291,7 +291,7 @@ BrowserForm {
     }
     Shortcut {
         sequence: "Ctrl+K"
-        onActivated: FileManager.defaultOpenUrl(FileManager.dataPath() + "/auto-bookmark.txt")
+        onActivated: FileManager.defaultOpenUrl(FileManager.dataPath())
     }
     Shortcut {
         sequence: "Ctrl+Shift+P"

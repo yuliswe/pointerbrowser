@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQml 2.2
-import QtWebEngine 1.3
+import QtWebEngine 1.5
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -101,6 +101,7 @@ Item {
         onNewViewRequested: {
             userRequestsNewView(request)
         }
+        settings.focusOnNavigationEnabled: false
     }
 
     WebEngineView {
@@ -109,6 +110,7 @@ Item {
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         url: webview.url
+        settings.focusOnNavigationEnabled: false
         onTitleChanged: {
             TabsModel.updateTab(index, "title", title)
             if (SearchDB.hasWebpage(webUI.url())) {
@@ -192,6 +194,9 @@ Item {
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         visible: false
+        focus: false
+        activeFocusOnPress: false
+        settings.focusOnNavigationEnabled: false
         property var queue: []
 //        url: queue.length ? queue[0] : ""
         function queueLinks(referer, links) {
@@ -240,7 +245,7 @@ Item {
                         SearchDB.updateWebpage(result.referer, "crawling", false)
                         SearchDB.updateWebpage(result.referer, "title", title)
                         // loading done
-                        queueLinks(result.referer, result.links)
+//                        queueLinks(result.referer, result.links)
                     })
                 })
             }
