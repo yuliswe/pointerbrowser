@@ -36,7 +36,6 @@ T.TextField {
             }
         }
     ]
-    renderType: (Qt.platform.os == "win" ? Text.NativeRendering : Text.QtRendering)
     font.pixelSize: pal.input_font_size
     background: Rectangle {
         id: rectangle
