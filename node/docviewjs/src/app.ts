@@ -320,10 +320,7 @@ class Docview {
                 && url.hostname == location.hostname) { 
                     // console.log(url.pathname, location.pathname)
                 symbols[url.hash.substr(1)] = txt
-            } else 
-            if (url.hostname == location.hostname 
-                && (! (txt.includes(" ") && ! txt.includes("("))) 
-                && url.hash.length > 1 ) {
+            } else if (url.hostname == location.hostname) {
                 links[url.origin + url.pathname] = 1
             }
         }

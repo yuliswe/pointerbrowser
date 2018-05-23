@@ -21,7 +21,7 @@
     "webpack-cli": "^2.0.10"
   },
   "dependencies": {
-    "npm": "^5.8.0"
+    "npm": "^5.10.0"
   },
   "scripts": {
     "postinstall": "./node_modules/.bin/webpack --config webpack.prod.config.js && cp ./dist/docview.js ../../qt/src/js/docview.js",

@@ -96,13 +96,13 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
-        qDebug() << "SearchDB::setTemporary didn't find the webpage";
+        qDebug() << "SearchDB::updateWebpage didn't find the webpage" << url;
         return false;
     }
     QSqlRecord record = _webpage->record(0);
     record.setValue(property, value);
     if (! _webpage->setRecord(0, record)) {
-        qDebug() << "SearchDB::setTemporary failed";
+        qDebug() << "SearchDB::updateWebpage failed" << url;
         return false;
     }
     _webpage->submitAll();
@@ -212,15 +212,16 @@ whenFailed:
 
 Webpage_ SearchDB::findWebpage_(const QString& url) const
 {
-    qDebug() << "SearchDB::findWebpage " << url;
+    qDebug() << "SearchDB::findWebpage_ " << url;
     const QString query = "url = '" + url + "'";
     _webpage->setFilter(query);
     _webpage->select();
     if (_webpage->rowCount() == 0) {
+        qDebug() << "ERROR: SearchDB::findWebpage_ not found!" << url;
         return QSharedPointer<Webpage>(nullptr);
     }
     QSqlRecord r = _webpage->record(0);
-    qDebug() << "SearchDB::findWebpage found " << r;
+    qDebug() << "SearchDB::findWebpage_ found " << r;
     Webpage_ wp = Webpage::create(url);
     wp->setTitle(r.value("title").value<QString>());
     wp->setTemporary(r.value("temporary").value<bool>());
@@ -231,6 +232,7 @@ QVariantMap SearchDB::findWebpage(const QString& url) const
 {
     Webpage_ p = SearchDB::findWebpage_(url);
     if (p.isNull()) {
+        qDebug() << "ERROR: SearchDB::findWebpage not found!" << url;
         return QVariantMap();
     }
     return p->toQVariantMap();
@@ -253,7 +255,12 @@ bool SearchDB::bookmarked(const QString& url) const
 
 bool SearchDB::hasWebpage(const QString& url) const
 {
-    return findWebpage_(url).data() != nullptr;
+     const QString query = "url = '" + url + "'";
+     _webpage->setFilter(query);
+     _webpage->select();
+     bool b = _webpage->rowCount() > 0;
+     qDebug() << "SearchDB::hasWebpage" << url << b;
+     return b;
 }
 
 void SearchDB::search(const QString& word)
@@ -276,21 +283,21 @@ void SearchDB::search(const QString& word)
         QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
         if (ws.length() == 0) { return; }
         QString q = QStringLiteral() +
-                    "SELECT DISTINCT webpage.id, url, title, hash, text FROM webpage" +
-                    " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-                    " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
-                    " WHERE (" +
-                    "    INSTR(LOWER(symbol.text),LOWER('" + ws[0] + "'))" +
-                    "    OR INSTR(LOWER(symbol.hash),LOWER('" + ws[0] + "'))" +
-                    "    OR INSTR(LOWER(webpage.title),LOWER('" + ws[0] + "'))" +
-                    " )";
-        for (auto w = ws.begin() + 1; w != ws.end(); w++) {
+                "SELECT DISTINCT webpage.id, url, title, hash, text FROM webpage" +
+                " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+                " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+                " WHERE ";
+        for (auto w = ws.begin(); w != ws.end(); w++) {
             q += QStringLiteral() +
-                 " AND (" +
-                 "    INSTR(LOWER(symbol.text),LOWER('" + (*w) + "'))" +
+                    " (" +
+                    "    INSTR(LOWER(symbol.text),LOWER('" + (*w) + "'))" +
                     "    OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "'))" +
                     "    OR INSTR(LOWER(webpage.title),LOWER('" + (*w) + "'))" +
+                    "    OR INSTR(LOWER(webpage.url),LOWER('" + (*w) + "'))" +
                     " )";
+            if (w != ws.end() - 1) {
+                q += " AND ";
+            }
         }
         q += " LIMIT 50";
         qDebug() << "SearchDB::search" << q;
@@ -309,7 +316,7 @@ void SearchDB::search(const QString& word)
                     (symbol.length() > 0 ? "@"+symbol+"  " : "") +
                     (hash.length() > 0 ? "#"+hash+"  " : "") +
                     (title.length() > 0 ? "\""+title+"\"" : "");
-            _searchResult.insertTab(0, url + "#" + hash);
+            _searchResult.insertTab(0, url + (hash.length()>0 ? ("#"+hash) : ""));
             _searchResult.updateTab(0, "title", display);
         }
         // search by symbol

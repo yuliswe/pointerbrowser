@@ -139,7 +139,7 @@ Item {
             case WebEngineView.LoadStartedStatus:
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                if (! SearchDB.hasWebpage(webUI)) {
+                if (! SearchDB.hasWebpage(webUI.url())) {
                     SearchDB.addWebpage(webUI.url())
                 }
                 if (! SearchDB.bookmarked(webUI.url())) {
@@ -155,22 +155,22 @@ Item {
                 SearchDB.updateWebpage(webUI.url(), "crawling", true)
                 SearchDB.updateWebpage(webUI.url(), "title", title)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                    runJavaScript("Docview.crawler()", function(result) {
+                        console.log(result.referer, result.symbols, result.links)
+                        console.log(result.referer, webUI.url())
+                        SearchDB.addSymbols(result.referer, result.symbols)
+                        SearchDB.updateWebpage(result.referer, "crawling", false)
+                        // loading done
+                        crawler.queueLinks(result.referer, result.links)
+                    })
                     runJavaScript("Docview.docviewOn()", function() {
                         if (inDocview) {
                             docviewOn()
                         }
-                        runJavaScript("Docview.crawler()", function(result) {
-                            console.log(result.referer, result.symbols, result.links)
-                            console.log(result.referer, webUI.url())
-                            SearchDB.addSymbols(result.referer, result.symbols)
-                            SearchDB.updateWebpage(result.referer, "crawling", false)
-                            // loading done
-                            docviewLoaded = true
-                            webViewLoadingSucceeded(index, webUI.url())
-                            webViewLoadingStopped(index, webUI.url())
-                            crawler.queueLinks(result.referer, result.links)
-                        })
+                        docviewLoaded = true
                     })
+                    webViewLoadingSucceeded(index, webUI.url())
+                    webViewLoadingStopped(index, webUI.url())
                 })
                 break
             case WebEngineView.LoadFailedStatus:
@@ -207,15 +207,13 @@ Item {
             for (var i = 0; i < links.length; i++) {
                 var l = links[i]
                 if (! SearchDB.hasWebpage(l)) {
-                    unstarted.push(l)
-                    SearchDB.updateWebpage(l, "crawling", true)
-                    continue
+                    SearchDB.addWebpage(l)
                 }
                 var w = SearchDB.findWebpage(l)
                 if (w.crawling) {
-                    incomplete.push(i)
+                    incomplete.push(l)
                 } else if (! w.crawled) {
-                    unstarted.push(i)
+                    unstarted.push(l)
                     SearchDB.updateWebpage(l, "crawling", true)
                 }
             }
@@ -224,6 +222,9 @@ Item {
             }
             queue = queue.concat(unstarted)
 //            console.log("now queue is", loading, queue.length)
+            crawNext()
+        }
+        function crawNext() {
             if (queue.length && ! loading) {
                 var u = queue.shift()
                 console.log("crawling", u)
@@ -237,8 +238,7 @@ Item {
                     SearchDB.addWebpage(url)
                 }
                 break
-            case WebEngineView.LoadSucceededStatus:
-                console.log("crawler error", loadRequest.errorString)
+            default:
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
                         SearchDB.addSymbols(result.referer, result.symbols)
@@ -246,6 +246,7 @@ Item {
                         SearchDB.updateWebpage(result.referer, "title", title)
                         // loading done
 //                        queueLinks(result.referer, result.links)
+                        crawNext()
                     })
                 })
             }
