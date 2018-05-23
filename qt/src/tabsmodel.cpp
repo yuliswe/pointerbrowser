@@ -133,7 +133,8 @@ QHash<int, QByteArray> TabsModel::roleNames() const {
 }
 
 void TabsModel::clear() {
-    emit beginRemoveRows(QModelIndex(), 0, count());
+    if (count() == 0) { return; }
+    emit beginRemoveRows(QModelIndex(), 0, count() - 1);
     _tabs.clear();
     emit endRemoveRows();
     emit countChanged();
