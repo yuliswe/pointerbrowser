@@ -6,4 +6,5 @@ TabsListTabForm {
     closeButton.onClicked: {
         form.userClosesTab()
     }
+    displayText: (model.title || model.url || "Loading")
 }

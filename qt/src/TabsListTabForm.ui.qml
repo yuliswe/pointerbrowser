@@ -7,6 +7,7 @@ ItemDelegate {
     id: tabButton
     property alias closeButton: closeButton
     property alias rectangle: rectangle
+    property alias displayText: text1.text
 
     state: Qt.platform.os
 
@@ -54,7 +55,6 @@ ItemDelegate {
         C.Text {
             id: text1
             color: highlighted ? pal.list_item_text : pal.button_text
-            text: (model.title || model.url)
             font.pixelSize: 11
             anchors.rightMargin: 10
             anchors.right: parent.right

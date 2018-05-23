@@ -118,7 +118,7 @@ Item {
             }
         }
         onUrlChanged: {
-            TabsModel.updateTab(index, "url", webUI.url())
+            TabsModel.updateTab(index, "url", webUI.href)
             bookmarked = SearchDB.bookmarked(webUI.url())
         }
         onLoadProgressChanged: {
@@ -148,7 +148,7 @@ Item {
                     var domain = webUI.url().split("/")[2]
                     SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
                 }
-                webViewLoadingStarted(index, webUI.url())
+                webViewLoadingStarted(index, webUI.href)
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)

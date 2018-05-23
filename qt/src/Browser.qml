@@ -77,9 +77,16 @@ BrowserForm {
         }
     }
 
+    function newTabHome() {
+        newTab("https://www.google.ca/", true)
+    }
+
     function newTab(url, switchToView) {
         console.log("newTab:", url, switchToView)
-        url = url || "https://www.google.ca/"
+        var opened = TabsModel.findTab(url);
+        if (opened !== -1) {
+            return openTab(opened)
+        }
         if (currentWebViewIndex === -1) {
             TabsModel.insertTab(0, url, "", "")
         } else {
@@ -96,16 +103,11 @@ BrowserForm {
         console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
-//        var wp = currentWebView
-//        browserAddressBar.update(currentWebView.url(), currentWebView.title)
-//        browserAddressBar.updateProgress(currentWebView.loadProgress)
     }
 
     function closeTab(index) {
         console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
         if (index < 0) { return }
-        //        SearchDB.removeWebpage(webViewAt(index).url())
-        // todo: remove from backend
         if (currentWebViewIndex === index) {
             // when removing current tab
             // if there's one after, open that
@@ -136,7 +138,7 @@ BrowserForm {
 
     Connections {
         target: tabsPanel
-        onUserOpensNewTab: newTab("", true)
+        onUserOpensNewTab: newTabHome()
         onUserOpensTab: openTab(index)
         onUserClosesTab: closeTab(index)
         onUserOpensSavedTab: openSavedTab(index)
@@ -154,6 +156,11 @@ BrowserForm {
             newTab(url)
         }
         onUserRequestsNewView: {
+            console.log("!!!!", request.requestedUrl)
+            var opened = TabsModel.findTab(request.requestedUrl);
+            if (opened !== -1) {
+                return openTab(opened)
+            }
             var wv = newTab()
             wv.handleNewViewRequest(request)
         }
@@ -283,7 +290,7 @@ BrowserForm {
     }
     Shortcut {
         sequence: "Ctrl+N"
-        onActivated: newTab("", true)
+        onActivated: newTabHome()
     }
     Shortcut {
         sequence: "Esc"
