@@ -1,5 +1,5 @@
 
-const MinifyPlugin = require("babel-minify-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
     entry: "./src/app.ts",
@@ -17,9 +17,15 @@ module.exports = {
         ]
     },
     mode: "production",
-    plugins: [
-        new MinifyPlugin({}, {
-            comments: false
-        })
-    ]
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: {                
+                        drop_console: true
+                    }
+                }
+            })
+        ]
+    }
 }
