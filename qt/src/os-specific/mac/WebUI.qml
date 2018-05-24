@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQml 2.2
-import QtWebEngine 1.5
+import QtWebEngine 1.7
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -99,7 +99,9 @@ Item {
         implicitHeight: browserWebViews.height
         implicitWidth: browserWebViews.width
         onNewViewRequested: {
-            userRequestsNewView(request)
+            console.log("onNewViewRequested", request, JSON.stringify(request));
+//            userRequestsNewView(request)
+
         }
         settings.focusOnNavigationEnabled: false
     }
@@ -186,6 +188,20 @@ Item {
                 break
             }
         }
+        settings {
+            focusOnNavigationEnabled: false
+            pluginsEnabled: false
+            linksIncludedInFocusChain: false
+            autoLoadImages: false
+            autoLoadIconsForPage: false
+            javascriptCanOpenWindows: false
+            allowGeolocationOnInsecureOrigins: false
+            allowWindowActivationFromJavaScript: false
+            allowRunningInsecureContent: false
+            webGLEnabled: false
+            playbackRequiresUserGesture: true
+            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+        }
     }
 
 
@@ -196,7 +212,23 @@ Item {
         visible: false
         focus: false
         activeFocusOnPress: false
-        settings.focusOnNavigationEnabled: false
+//        JavaScriptConsoleMessageLevel:
+        settings {
+            focusOnNavigationEnabled: false
+            pluginsEnabled: false
+            linksIncludedInFocusChain: false
+            errorPageEnabled: false
+            autoLoadImages: false
+            autoLoadIconsForPage: false
+            javascriptCanOpenWindows: false
+            allowGeolocationOnInsecureOrigins: false
+            allowWindowActivationFromJavaScript: false
+            allowRunningInsecureContent: false
+            webGLEnabled: false
+            playbackRequiresUserGesture: true
+            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+        }
+
         property var queue: []
 //        url: queue.length ? queue[0] : ""
         function queueLinks(referer, links) {
