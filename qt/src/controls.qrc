@@ -2,9 +2,8 @@
     <qresource prefix="/">
         <file>controls/Button.qml</file>
         <file>controls/TextField.qml</file>
-        <file>controls/ButtonForm.ui.qml</file>
         <file>controls/RoundButton.qml</file>
-        <file>controls/RoundButtonForm.ui.qml</file>
         <file>controls/Text.qml</file>
+        <file>controls/SplitView.qml</file>
     </qresource>
 </RCC>

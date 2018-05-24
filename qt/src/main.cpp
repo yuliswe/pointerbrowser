@@ -14,6 +14,7 @@
 
 int main(int argc, char *argv[])
 {
+    qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);

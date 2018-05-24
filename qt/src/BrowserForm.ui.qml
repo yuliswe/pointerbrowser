@@ -1,10 +1,10 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 1.5 as C1
+//import QtQuick.Controls 1.5 as C1
 import "qrc:/controls" as C
 
-C1.SplitView {
+C.SplitView {
     id: splitView
     property alias tabsPanel: tabsPanel
     property alias browserAddressBar: addressBar
@@ -21,6 +21,7 @@ C1.SplitView {
     property alias browserSearch: browserSearch
     property alias splitView: splitView
     property alias welcomePage: welcomePage
+    property alias mainPanel: mainPanel
     property int buttonSize: 25
 
     handleDelegate: Item {
@@ -122,6 +123,7 @@ C1.SplitView {
 
 //        Layout.minimumWidth: 300
         Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 
     states: [

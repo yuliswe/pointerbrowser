@@ -19,28 +19,30 @@ TabsPanelForm {
         SearchDB.search(sym)
     }
 
-    flickable {
-        rebound: Transition {
-            NumberAnimation {
-                properties: "x,y"
-                duration: {
-                    switch (Qt.platform.os) {
-                    case "ios": return 2500; break;
-                    default: return 500
-                    }
-                }
-                easing.type: Easing.OutQuint
-            }
-        }
+//    flickable {
+//        rebound: Transition {
+//            NumberAnimation {
+//                properties: "x,y"
+//                duration: {
+//                    switch (Qt.platform.os) {
+//                    case "ios": return 2500; break;
+//                    default: return 500
+//                    }
+//                }
+//                easing.type: Easing.OutQuint
+//            }
+//        }
 
-        boundsBehavior: {
-            if (Qt.platform.os == "ios") {
-                return Flickable.DragAndOvershootBounds
-            } else {
-                return Flickable.StopAtBounds
-            }
-        }
-    }
+//        boundsBehavior: {
+//            if (Qt.platform.os == "ios") {
+//                return Flickable.DragAndOvershootBounds
+//            } else {
+//                return Flickable.StopAtBounds
+//            }
+//        }
+//    }
+
+    flickable.boundsBehavior: Flickable.StopAtBounds
 
 
     openTabsList {

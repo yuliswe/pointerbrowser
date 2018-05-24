@@ -1,5 +1,6 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.2
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import "qrc:/controls" as C
 import QtQuick.Layouts 1.3
 import Backend 1.0
@@ -56,6 +57,8 @@ Item {
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
+//        ScrollViewStyle.transientScrollBars: true
+
         //        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
         //        contentWidth: form.width
         //        contentHeight: 1000 //text1.height + tabsList.height + text2.height + searchList.height
@@ -64,7 +67,7 @@ Item {
             clip: false
             //            flickDeceleration: 10
             //            maximumFlickVelocity: 1000
-            contentHeight: text1.height + tabsList.height + text2.height + searchList.height
+            contentHeight: text1.height + tabsList.height + text2.height + searchList.height + 10
             C.Text {
                 id: text1
                 width: form.width

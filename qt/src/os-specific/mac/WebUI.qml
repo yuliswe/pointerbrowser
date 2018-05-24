@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQml 2.2
-import QtWebEngine 1.7
+import QtWebEngine 1.5
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -96,8 +96,13 @@ Item {
 
     WebEngineView {
         id: webview
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
+        onWidthChanged: {
+            console.log(width)
+        }
+        width: Math.round(browserWebViews.width)
+        height: Math.round(browserWebViews.height)
+//        implicitHeight: browserWebViews.height
+//        implicitWidth: Math.floor(browserWebViews.width)
         onNewViewRequested: {
             console.log("onNewViewRequested", request, JSON.stringify(request));
 //            userRequestsNewView(request)
@@ -196,11 +201,11 @@ Item {
             autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
-            allowWindowActivationFromJavaScript: false
+//            allowWindowActivationFromJavaScript: false
             allowRunningInsecureContent: false
             webGLEnabled: false
-            playbackRequiresUserGesture: true
-            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+//            playbackRequiresUserGesture: true
+//            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
     }
 
@@ -222,11 +227,11 @@ Item {
             autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
-            allowWindowActivationFromJavaScript: false
+//            allowWindowActivationFromJavaScript: false
             allowRunningInsecureContent: false
             webGLEnabled: false
-            playbackRequiresUserGesture: true
-            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+//            playbackRequiresUserGesture: true
+//            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
 
         property var queue: []
