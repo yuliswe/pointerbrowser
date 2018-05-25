@@ -27,15 +27,6 @@ Item {
         }
     }
 
-    function url() {
-        var s = webview.url.toString()
-        var i = s.indexOf("#")
-        if (i > -1) {
-            return s.substring(0, i)
-        }
-        return s
-    }
-
     function docviewOn() {
         inDocview = true
         webview.visible = false
@@ -105,7 +96,17 @@ Item {
         settings.focusOnNavigationEnabled: false
     }
 
+    function noHash(u) {
+        var s = u.toString()
+        var i = s.indexOf("#")
+        if (i > -1) {
+            return s.substring(0, i)
+        }
+        return s
+    }
+
     WebEngineView {
+
         id: docview
         visible: false
         height: browserWebViews.height
@@ -114,13 +115,13 @@ Item {
         settings.focusOnNavigationEnabled: false
         onTitleChanged: {
             TabsModel.updateTab(index, "title", title)
-            if (SearchDB.hasWebpage(webUI.url())) {
-                SearchDB.updateWebpage(webUI.url(), "title", title)
+            if (SearchDB.hasWebpage(noHash(url))) {
+                SearchDB.updateWebpage(noHash(url), "title", title)
             }
         }
         onUrlChanged: {
             TabsModel.updateTab(index, "url", webUI.href)
-            bookmarked = SearchDB.bookmarked(webUI.url())
+            bookmarked = SearchDB.bookmarked(noHash(url))
         }
         onLoadProgressChanged: {
             if (loading) {
@@ -139,26 +140,24 @@ Item {
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                if (! SearchDB.hasWebpage(webUI.url())) {
-                    SearchDB.addWebpage(webUI.url())
+                if (! SearchDB.hasWebpage(noHash(url))) {
+                    SearchDB.addWebpage(noHash(url))
                 }
-                if (! SearchDB.bookmarked(webUI.url())) {
+                if (! SearchDB.bookmarked(noHash(url))) {
                     // when the url's domain is in the auto-bookmark.txt list
                     var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-                    var domain = webUI.url().split("/")[2]
-                    SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
+                    var domain = noHash(url).split("/")[2]
+                    SearchDB.setBookmarked(noHash(url), arr.indexOf(domain) > -1)
                 }
-                SearchDB.updateWebpage(webUI.url(), "crawling", true)
+                SearchDB.updateWebpage(noHash(url), "crawling", true)
             } else {
-                SearchDB.updateWebpage(webUI.url(), "title", title)
+                SearchDB.updateWebpage(noHash(url), "title", title)
+                SearchDB.updateWebpage(noHash(url), "crawling", false)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
-                        console.log(result.referer, result.symbols, result.links)
-                        console.log(result.referer, webUI.url())
-                        SearchDB.addSymbols(result.referer, result.symbols)
-                        SearchDB.updateWebpage(result.referer, "crawling", false)
+                        SearchDB.addSymbols(noHash(url), result.symbols)
                         // loading done
-                        crawler.queueLinks(result.referer, result.links)
+                        crawler.queueLinks(noHash(url), result.links)
                     })
                     runJavaScript("Docview.docviewOn()", function() {
                         if (inDocview) {
@@ -173,8 +172,6 @@ Item {
             focusOnNavigationEnabled: false
             pluginsEnabled: false
             linksIncludedInFocusChain: false
-            autoLoadImages: false
-            autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
             //            allowWindowActivationFromJavaScript: false
@@ -210,6 +207,15 @@ Item {
             //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
 
+        Component.onDestruction: {
+            if (loading) {
+                queue.push(url)
+            }
+            queue.forEach(function(l) {
+                SearchDB.updateWebpage(l, "crawling", false)
+            })
+        }
+
         property var queue: []
         //        url: queue.length ? queue[0] : ""
         function queueLinks(referer, links) {
@@ -229,7 +235,6 @@ Item {
                     SearchDB.setBookmarked(l, arr.indexOf(domain) > -1)
                 }
                 var w = SearchDB.findWebpage(l)
-                console.log(JSON.stringify(w), "here!!")
                 if (w.crawling) {
                     incomplete.push(l)
                 } else if (! w.crawled) {
@@ -252,18 +257,18 @@ Item {
                 url = u
             }
         }
+
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadStartedStatus:
                 break
             default:
+                SearchDB.updateWebpage(url, "crawling", false)
+                SearchDB.updateWebpage(url, "title", title)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
-                        SearchDB.addSymbols(result.referer, result.symbols)
-                        SearchDB.updateWebpage(result.referer, "crawling", false)
-                        SearchDB.updateWebpage(result.referer, "title", title)
+                        SearchDB.addSymbols(url, result.symbols)
                         // loading done
-                        //                        queueLinks(result.referer, result.links)
                         crawNext()
                     })
                 })
