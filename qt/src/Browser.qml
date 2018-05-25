@@ -148,14 +148,14 @@ BrowserForm {
 
     Connections {
         target: browserWebViews
-        onUserOpensLinkInWebView: {
-            //            browserAddressBar.update(url, "")
-            //            browserAddressBar.updateProgress(currentWebView.loadProgress)
-            //            currentWebView.forceActiveFocus()
-        }
-        onUserOpensLinkInNewTab: {
-            newTab(url)
-        }
+//        onUserOpensLinkInWebView: {
+//            //            browserAddressBar.update(url, "")
+//            //            browserAddressBar.updateProgress(currentWebView.loadProgress)
+//            //            currentWebView.forceActiveFocus()
+//        }
+//        onUserOpensLinkInNewTab: {
+//            newTab(url)
+//        }
         onUserRequestsNewView: {
             if (request.requestedUrl) {
                 var opened = TabsModel.findTab(request.requestedUrl);
@@ -166,22 +166,22 @@ BrowserForm {
             var wv = newTab()
             wv.handleNewViewRequest(request)
         }
-        onWebViewLoadingSucceeded: {
-            if (index === currentWebViewIndex) {
-            }
-        }
-        onWebViewLoadingStarted: {
-            if (index === currentWebViewIndex) {
-            }
-        }
-        onWebViewLoadingStopped: {
-            if (index === currentWebViewIndex) {
-            }
-        }
-        onWebViewLoadingProgressChanged: {
-            if (index === currentWebViewIndex) {
-            }
-        }
+//        onWebViewLoadingSucceeded: {
+//            if (index === currentWebViewIndex) {
+//            }
+//        }
+//        onWebViewLoadingStarted: {
+//            if (index === currentWebViewIndex) {
+//            }
+//        }
+//        onWebViewLoadingStopped: {
+//            if (index === currentWebViewIndex) {
+//            }
+//        }
+//        onWebViewLoadingProgressChanged: {
+//            if (index === currentWebViewIndex) {
+//            }
+//        }
     }
 
     Connections {

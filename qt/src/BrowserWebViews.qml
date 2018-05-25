@@ -4,14 +4,14 @@ import Backend 1.0
 BrowserWebViewsForm {
     id: browserWebViews
 
-    signal userOpensLinkInWebView(int index, string url)
-    signal userOpensLinkInNewTab(string url)
+//    signal userOpensLinkInWebView(int index, string url)
+//    signal userOpensLinkInNewTab(string url)
     signal userRequestsNewView(var request)
-    signal webViewLoadingSucceeded(int index, string url)
-    signal webViewLoadingStarted(int index, string url)
-    signal webViewLoadingStopped(int index, string url)
-    signal webViewLoadingFailed(int index, string url)
-    signal webViewLoadingProgressChanged(int index, int progress)
+//    signal webViewLoadingSucceeded(int index, string url)
+//    signal webViewLoadingStarted(int index, string url)
+//    signal webViewLoadingStopped(int index, string url)
+//    signal webViewLoadingFailed(int index, string url)
+//    signal webViewLoadingProgressChanged(int index, int progress)
     signal webViewNavRequested(int index)
     property var currentWebView: repeater.itemAt(currentIndex)
 

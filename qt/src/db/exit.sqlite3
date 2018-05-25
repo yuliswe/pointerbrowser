@@ -1,3 +1,4 @@
-DELETE FROM webpage WHERE temporary = 1 OR title IS NULL;
+DELETE FROM webpage WHERE temporary = 1;
 DELETE FROM webpage_symbol WHERE webpage NOT IN (SELECT id from webpage);
 DELETE FROM symbol WHERE id NOT IN (SELECT symbol from webpage_symbol);
+UPDATE webpage SET crawling = 0;

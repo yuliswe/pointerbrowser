@@ -96,13 +96,8 @@ Item {
 
     WebEngineView {
         id: webview
-        onWidthChanged: {
-            console.log(width)
-        }
-        width: Math.round(browserWebViews.width)
-        height: Math.round(browserWebViews.height)
-//        implicitHeight: browserWebViews.height
-//        implicitWidth: Math.floor(browserWebViews.width)
+        width: browserWebViews.width
+        height: browserWebViews.height
         onNewViewRequested: {
             console.log("onNewViewRequested", request, JSON.stringify(request));
             userRequestsNewView(request)
@@ -113,8 +108,8 @@ Item {
     WebEngineView {
         id: docview
         visible: false
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
+        height: browserWebViews.height
+        width: browserWebViews.width
         url: webview.url
         settings.focusOnNavigationEnabled: false
         onTitleChanged: {
@@ -130,7 +125,7 @@ Item {
         onLoadProgressChanged: {
             if (loading) {
                 console.log("onLoadProgressChanged", index, loadProgress)
-                webViewLoadingProgressChanged(index, loadProgress)
+                // webViewLoadingProgressChanged(index, loadProgress)
             }
         }
         onNewViewRequested: {
@@ -141,8 +136,7 @@ Item {
             webViewNavRequested(index)
         }
         onLoadingChanged: {
-            switch (loadRequest.status) {
-            case WebEngineView.LoadStartedStatus:
+            if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
                 console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
                 if (! SearchDB.hasWebpage(webUI.url())) {
@@ -154,11 +148,8 @@ Item {
                     var domain = webUI.url().split("/")[2]
                     SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
                 }
-                webViewLoadingStarted(index, webUI.href)
-                break
-            case WebEngineView.LoadSucceededStatus:
-                console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
                 SearchDB.updateWebpage(webUI.url(), "crawling", true)
+            } else {
                 SearchDB.updateWebpage(webUI.url(), "title", title)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
@@ -175,21 +166,7 @@ Item {
                         }
                         docviewLoaded = true
                     })
-                    webViewLoadingSucceeded(index, webUI.url())
-                    webViewLoadingStopped(index, webUI.url())
                 })
-                break
-            case WebEngineView.LoadFailedStatus:
-                console.log("WebEngineView.LoadFailedStatus",
-                            loadRequest.errorString)
-                webViewLoadingFailed(index, webUI.url())
-                webViewLoadingStopped(index, webUI.url())
-                break
-            case WebEngineView.LoadStoppedStatus:
-                console.log("WebEngineView.LoadStoppedStatus",
-                            loadRequest.errorString)
-                webViewLoadingStopped(index, webUI.url())
-                break
             }
         }
         settings {
@@ -200,23 +177,23 @@ Item {
             autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
-//            allowWindowActivationFromJavaScript: false
+            //            allowWindowActivationFromJavaScript: false
             allowRunningInsecureContent: false
             webGLEnabled: false
-//            playbackRequiresUserGesture: true
-//            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+            //            playbackRequiresUserGesture: true
+            //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
     }
 
 
     WebEngineView {
         id: crawler
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
+        height: browserWebViews.height
+        width: browserWebViews.width
         visible: false
         focus: false
         activeFocusOnPress: false
-//        JavaScriptConsoleMessageLevel:
+        //        JavaScriptConsoleMessageLevel:
         settings {
             focusOnNavigationEnabled: false
             pluginsEnabled: false
@@ -226,15 +203,15 @@ Item {
             autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
-//            allowWindowActivationFromJavaScript: false
+            //            allowWindowActivationFromJavaScript: false
             allowRunningInsecureContent: false
             webGLEnabled: false
-//            playbackRequiresUserGesture: true
-//            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+            //            playbackRequiresUserGesture: true
+            //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
 
         property var queue: []
-//        url: queue.length ? queue[0] : ""
+        //        url: queue.length ? queue[0] : ""
         function queueLinks(referer, links) {
             console.log("crawler.queueLinks", referer, links)
             // check if referer is fully crawled
@@ -286,7 +263,7 @@ Item {
                         SearchDB.updateWebpage(result.referer, "crawling", false)
                         SearchDB.updateWebpage(result.referer, "title", title)
                         // loading done
-//                        queueLinks(result.referer, result.links)
+                        //                        queueLinks(result.referer, result.links)
                         crawNext()
                     })
                 })
