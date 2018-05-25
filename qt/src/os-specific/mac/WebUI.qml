@@ -240,12 +240,19 @@ Item {
             // check if referer is fully crawled
             var incomplete = []
             var unstarted = []
+            var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
             for (var i = 0; i < links.length; i++) {
                 var l = links[i]
                 if (! SearchDB.hasWebpage(l)) {
                     SearchDB.addWebpage(l)
                 }
+                if (! SearchDB.bookmarked(l)) {
+                    // when the url's domain is in the auto-bookmark.txt list
+                    var domain = l.split("/")[2]
+                    SearchDB.setBookmarked(l, arr.indexOf(domain) > -1)
+                }
                 var w = SearchDB.findWebpage(l)
+                console.log(JSON.stringify(w), "here!!")
                 if (w.crawling) {
                     incomplete.push(l)
                 } else if (! w.crawled) {
@@ -257,22 +264,20 @@ Item {
                 SearchDB.updateWebpage(referer, "crawled", true)
             }
             queue = queue.concat(unstarted)
-//            console.log("now queue is", loading, queue.length)
+            console.log("unstarted", unstarted)
             crawNext()
         }
         function crawNext() {
-            if (queue.length && ! loading) {
+            console.log("crawNext")
+            if (queue.length) {
                 var u = queue.shift()
-                console.log("crawling", u)
+                console.log("crawling next", u)
                 url = u
             }
         }
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadStartedStatus:
-                if (! SearchDB.hasWebpage(url)) {
-                    SearchDB.addWebpage(url)
-                }
                 break
             default:
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {

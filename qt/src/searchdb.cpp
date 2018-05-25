@@ -225,6 +225,8 @@ Webpage_ SearchDB::findWebpage_(const QString& url) const
     Webpage_ wp = Webpage::create(url);
     wp->setTitle(r.value("title").value<QString>());
     wp->setTemporary(r.value("temporary").value<bool>());
+    wp->setCrawling(r.value("crawling").value<bool>());
+    wp->setCrawled(r.value("crawled").value<bool>());
     return wp;
 }
 

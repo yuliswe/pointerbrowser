@@ -106,16 +106,6 @@ BrowserForm {
         tabsPanel.setCurrentIndex(index)
     }
 
-    mainPanel {
-        onImplicitWidthChanged: {
-            console.log("mainPanel.onImplicitWidthChanged", mainPanel.onImplicitWidthChanged)
-        }
-        onWidthChanged: {
-            mainPanel.width = Math.round(mainPanel.width)
-            console.log("mainPanel.onWidthChanged", mainPanel.width)
-        }
-    }
-
     function closeTab(index) {
         console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
         if (index < 0) { return }
