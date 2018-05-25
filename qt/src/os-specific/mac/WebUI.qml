@@ -105,8 +105,7 @@ Item {
 //        implicitWidth: Math.floor(browserWebViews.width)
         onNewViewRequested: {
             console.log("onNewViewRequested", request, JSON.stringify(request));
-//            userRequestsNewView(request)
-
+            userRequestsNewView(request)
         }
         settings.focusOnNavigationEnabled: false
     }

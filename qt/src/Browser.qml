@@ -159,18 +159,19 @@ BrowserForm {
     Connections {
         target: browserWebViews
         onUserOpensLinkInWebView: {
-//            browserAddressBar.update(url, "")
-//            browserAddressBar.updateProgress(currentWebView.loadProgress)
-//            currentWebView.forceActiveFocus()
+            //            browserAddressBar.update(url, "")
+            //            browserAddressBar.updateProgress(currentWebView.loadProgress)
+            //            currentWebView.forceActiveFocus()
         }
         onUserOpensLinkInNewTab: {
             newTab(url)
         }
         onUserRequestsNewView: {
-            console.log("!!!!", request.requestedUrl)
-            var opened = TabsModel.findTab(request.requestedUrl);
-            if (opened !== -1) {
-                return openTab(opened)
+            if (request.requestedUrl) {
+                var opened = TabsModel.findTab(request.requestedUrl);
+                if (opened !== -1) {
+                    return openTab(opened)
+                }
             }
             var wv = newTab()
             wv.handleNewViewRequest(request)
