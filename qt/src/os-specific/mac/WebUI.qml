@@ -114,9 +114,11 @@ Item {
         url: webview.url
         settings.focusOnNavigationEnabled: false
         onTitleChanged: {
-            TabsModel.updateTab(index, "title", title)
-            if (SearchDB.hasWebpage(noHash(url))) {
-                SearchDB.updateWebpage(noHash(url), "title", title)
+            if (title) {
+                TabsModel.updateTab(index, "title", title)
+                if (SearchDB.hasWebpage(noHash(url))) {
+                    SearchDB.updateWebpage(noHash(url), "title", title)
+                }
             }
         }
         onUrlChanged: {
@@ -151,7 +153,6 @@ Item {
                 }
                 SearchDB.updateWebpage(noHash(url), "crawling", true)
             } else {
-                SearchDB.updateWebpage(noHash(url), "title", title)
                 SearchDB.updateWebpage(noHash(url), "crawling", false)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
@@ -258,13 +259,18 @@ Item {
             }
         }
 
+        onTitleChanged: {
+            if (title && SearchDB.hasWebpage(url)) {
+                SearchDB.updateWebpage(url, "title", title)
+            }
+        }
+
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadStartedStatus:
                 break
             default:
                 SearchDB.updateWebpage(url, "crawling", false)
-                SearchDB.updateWebpage(url, "title", title)
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                     runJavaScript("Docview.crawler()", function(result) {
                         SearchDB.addSymbols(url, result.symbols)

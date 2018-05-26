@@ -311,62 +311,20 @@ void SearchDB::search(const QString& word)
         while (r.next()) {
             QSqlRecord record = r.record();
             QString url = record.value("url").value<QString>();
+            QStringList path = url.split(QRegularExpression("/"), QString::SkipEmptyParts);
+            QString last = path.length() > 0 ? path[path.length() - 1] : "";
             QString title = record.value("title").value<QString>();
             QString symbol = record.value("text").value<QString>();
             QString hash = record.value("hash").value<QString>();
             QString display =
                     (symbol.length() > 0 ? "@"+symbol+"  " : "") +
                     (hash.length() > 0 ? "#"+hash+"  " : "") +
-                    (title.length() > 0 ? "\""+title+"\"" : "");
+                    (title.length() > 0 ? "\""+title+"\"" : "") +
+                    (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? "/"+last+"  " : "") +
+                    (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? ""+url+"  " : "");
             _searchResult.insertTab(0, url + (hash.length()>0 ? ("#"+hash) : ""));
             _searchResult.updateTab(0, "title", display);
         }
-        // search by symbol
-        //        QString q_by_title = "SELECT DISTINCT id, url, title FROM webpage WHERE INSTR(LOWER(title),LOWER('" + ws[0] + "')) > 0";
-        //        for (auto w = ws.begin() + 1; w != ws.end(); w++) {
-        //            q_by_title += " AND INSTR(LOWER(title),LOWER('" + (*w) + "')) > 0";
-        //        }
-        //        qDebug() << "SearchDB::search" << q_by_title;
-        //        QSqlQuery r_by_title = _db.exec(q_by_title);
-        //        if (r_by_title.lastError().isValid()) {
-        //            qDebug() << "SearchDB::search failed" << r_by_title.lastError();
-        //            return;
-        //        }
-        //        while (r_by_title.next()) {
-        //            QSqlRecord record = r_by_title.record();
-        //            QString url = record.value("url").value<QString>();
-        //            QString title = record.value("title").value<QString>();
-        //            _searchResult.insertTab(0, url);
-        //            _searchResult.updateTab(0, "title", "\""+title+"\"");
-        //        }
-        //        QString q_by_sym = QStringLiteral("SELECT webpage.id, url, title, text, hash FROM webpage") +
-        //                           " INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-        //                           " INNER JOIN symbol ON symbol.id = webpage_symbol.symbol" +
-        //                           " WHERE (INSTR(LOWER(symbol.text),LOWER('" + ws[0] + "')) > 0 OR INSTR(LOWER(symbol.hash),LOWER('" + ws[0] + "')) > 0)";
-        //        for (auto w = ws.begin() + 1; w != ws.end(); w++) {
-        //            q_by_sym += " AND (INSTR(LOWER(symbol.text),LOWER('" + (*w) + "')) > 0 OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "')) > 0)";
-        //        }
-        //        qDebug() << "SearchDB::search" << q_by_sym;
-        //        QSqlQuery r_by_sym = _db.exec(q_by_sym);
-        //        if (r_by_sym.lastError().isValid()) {
-        //            qDebug() << "SearchDB::search failed" << r_by_sym.lastError();
-        //            return;
-        //        }
-        //        while (r_by_sym.next()) {
-        //            QSqlRecord record = r_by_sym.record();
-        //            int c = record.count();
-        //            QString url = record.value("url").value<QString>();
-        //            QString title = record.value("title").value<QString>();
-        //            QString symbol = record.value("text").value<QString>();
-        //            QString hash = record.value("hash").value<QString>();
-        //            QString display =
-        //                    (symbol.length() > 0 ? "@"+symbol+"  " : "") +
-        //                    (hash.length() > 0 ? "#"+hash+"  " : "") +
-        //                    (title.length() > 0 ? "\""+title+"\"" : "");
-        //            _searchResult.insertTab(0, url + "#" + hash);
-        //            _searchResult.updateTab(0, "title", display);
-        //        }
-        // search by title
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();
 }
