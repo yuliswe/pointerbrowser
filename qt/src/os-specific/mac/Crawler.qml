@@ -26,7 +26,16 @@ WebEngineView {
         //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
     }
 
+    Timer {
+        id: timeout
+        triggeredOnStart: false
+        onTriggered: {
+            crawler.stop()
+        }
+    }
+
     property var queue: ({})
+    property string crawling: ""
     function queueLinks(referer, links) {
         console.log("crawler.queueLinks", referer, links)
 //        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
@@ -40,16 +49,18 @@ WebEngineView {
     function crawNext() {
         console.log("crawNext called on", Object.keys(crawler.queue).length, "links")
         for (var first in crawler.queue) {
-            console.log("crawNext", first)
             if (! crawler.loading) {
                 url = first
+                crawling = first
                 console.log("crawNext", url)
                 delete crawler.queue[first]
             } else {
                 console.log("crawNext aborted because the crawler is still loading")
             }
-            break
+            return
         }
+        crawling = ""
+        console.log("crawler queue is empty")
     }
 
     onLoadingChanged: {
