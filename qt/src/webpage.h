@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
 #include <QVariantMap>
 #include <QSharedPointer>
+
 class Webpage;
 typedef QSharedPointer<Webpage> Webpage_;
 typedef QList<Webpage_> WebpageList;

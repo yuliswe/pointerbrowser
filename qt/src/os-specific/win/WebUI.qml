@@ -146,7 +146,7 @@ Item {
                 }
                 if (! SearchDB.bookmarked(webUI.url())) {
                     // when the url's domain is in the auto-bookmark.txt list
-                    var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
+                    var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
                     var domain = webUI.url().split("/")[2]
                     SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
                 }

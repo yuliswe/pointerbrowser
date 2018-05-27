@@ -25,10 +25,12 @@ class FileManager : public QObject
         static QFile_ qrcFile(QString file);
         static QString readQrcFileS(QString file);
         static QByteArray readQrcFileB(QString file);
-        static void writeFileB(QString file, QByteArray contents);
-        static void writeFileS(QString file, QString contents);
-        static QString readFileS(QString file);
-        static QByteArray readFileB(QString file);
+        static void writeDataFileB(QString file, QByteArray contents);
+        static void writeDataFileS(QString file, QString contents);
+        static void appendDataFileB(QString file, QByteArray contents);
+        static void appendDataFileS(QString file, QString contents);
+        static QString readDataFileS(QString file);
+        static QByteArray readDataFileB(QString file);
         static void defaultOpenUrl(QString file);
 };
 

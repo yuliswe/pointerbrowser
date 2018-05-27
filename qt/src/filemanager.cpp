@@ -73,39 +73,55 @@ QByteArray FileManager::readQrcFileB(QString file)
     return input.readAll();
 }
 
-void FileManager::writeFileB(QString filename, QByteArray contents)
+void FileManager::writeDataFileB(QString filename, QByteArray contents)
 {
-    QString path = FileManager::dataPath() + filename;
-    QFile_ file = FileManager::dataFile(path);
+//    QString path = FileManager::dataPath() + filename;
+    QFile_ file = FileManager::dataFile(filename);
     file->open(QIODevice::WriteOnly | QIODevice::Text);
     file->write(contents);
     file->close();
-    qDebug() << "writeFileB: writing file " << path << endl
-             << contents << endl;
+//    qDebug() << "writeDataFileB: writing file " << filename << endl
+//             << contents << endl;
 }
 
-
-void FileManager::writeFileS(QString filename, QString contents)
+void FileManager::appendDataFileB(QString filename, QByteArray contents)
 {
-    FileManager::writeFileB(filename, contents.toUtf8());
+//    QString path = FileManager::dataPath() + filename;
+    QFile_ file = FileManager::dataFile(filename);
+    file->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+    file->write(contents);
+    file->close();
+//    qDebug() << "appendDataFileB: writing file " << filename << endl
+//             << contents << endl;
 }
 
 
-QString FileManager::readFileS(QString filename)
+void FileManager::writeDataFileS(QString filename, QString contents)
+{
+    FileManager::writeDataFileB(filename, contents.toUtf8());
+}
+
+void FileManager::appendDataFileS(QString filename, QString contents)
+{
+    FileManager::appendDataFileB(filename, contents.toUtf8());
+}
+
+
+QString FileManager::readDataFileS(QString filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
-    qDebug() << "readFileS: reading file " << path;
+    qDebug() << "readDataFileS: reading file " << path;
     return file.readAll();
 }
 
-QByteArray FileManager::readFileB(QString filename)
+QByteArray FileManager::readDataFileB(QString filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly);
-    qDebug() << "readFileB: reading file " << path;
+    qDebug() << "readDataFileB: reading file " << path;
     return file.readAll();
 }
 

@@ -82,7 +82,8 @@ bool SearchDB::execMany(const QStringList& lines)
         QSqlQuery query = _db.exec(l);
         QSqlError error = query.lastError();
         if (error.isValid()) {
-            qDebug() << "SearchDB::execMany error when executing" << l << error.type() << error.text();
+            qCritical() << "SearchDB::execMany error when executing" << l
+                        << error;
             return false;
         }
     }
@@ -96,13 +97,15 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
-        qDebug() << "SearchDB::updateWebpage didn't find the webpage" << url;
+        qCritical() << "SearchDB::updateWebpage didn't find the webpage" << url
+                    << _webpage->lastError();
         return false;
     }
     QSqlRecord record = _webpage->record(0);
     record.setValue(property, value);
     if (! _webpage->setRecord(0, record)) {
-        qDebug() << "SearchDB::updateWebpage failed" << url;
+        qCritical() << "SearchDB::updateWebpage failed" << url
+                    << _webpage->lastError();
         return false;
     }
     _webpage->submitAll();
@@ -117,7 +120,8 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
-        qDebug() << "SearchDB::addSymbols didn't find the webpage";
+        qCritical() << "SearchDB::addSymbols didn't find the webpage" << url
+                    << _webpage->lastError();
         return false;
     }
     const QSqlRecord wpRecord = _webpage->record(0);
@@ -126,7 +130,7 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
          i++) {
         QString hash = (*i);
         QString text = symbols[hash].value<QString>();
-        _symbol->setFilter("hash = '" + hash + "' AND text = '"+ text +"'");
+        _symbol->setFilter("hash='"+hash+"'" + (text.length() ? " AND text='"+ text +"'" : ""));
         _symbol->select();
         QSqlRecord syRecord;
         if (_symbol->rowCount() == 0) {
@@ -135,14 +139,14 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
             syRecord.setValue("hash", hash);
             syRecord.setValue("text", text);
             if (! _symbol->insertRecord(-1, syRecord)) {
-                qDebug() << _symbol->lastError();
+                qCritical() << _symbol->lastError();
                 continue;
             }
         }
         _symbol->submitAll();
         _symbol->select();
         if (_symbol->rowCount() == 0) {
-            qDebug() << "SearchDB::addSymbols this should not have happened"
+            qCritical() << "SearchDB::addSymbols failed!" << hash
                      << _symbol->lastError();
             continue;
         }
@@ -169,7 +173,7 @@ bool SearchDB::addWebpage(const QString& url)
     if (! (_webpage->insertRecord(-1, wpRecord)
            && _webpage->submitAll()))
     {
-        qDebug() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
+        qCritical() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
         return false;
     };
     //    search(_currentWord);
@@ -182,7 +186,7 @@ bool SearchDB::removeWebpage(const QString& url)
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
-        qDebug() << "SearchDB::removeWebpage didn't find the webpage";
+        qCritical() << "SearchDB::removeWebpage didn't find the webpage" << url;
         return false;
     }
     const QSqlRecord wpr = _webpage->record(0);
@@ -191,20 +195,20 @@ bool SearchDB::removeWebpage(const QString& url)
     _webpage_symbol->select();
     if (_webpage_symbol->rowCount() > 0) {
         if (! _webpage_symbol->removeRows(0, _webpage_symbol->rowCount())) {
-            qDebug() << "SearchDB::removeWebpage couldn't remove row from _webpage_symbol"
+            qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage_symbol"
                      << _webpage_symbol->lastError();
             goto whenFailed;
         }
     }
     if (! _webpage->removeRows(0, _webpage->rowCount())) {
-        qDebug() << "SearchDB::removeWebpage couldn't remove row from _webpage"
+        qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage"
                  << _webpage->lastError();
         goto whenFailed;
     }
     _webpage->submitAll();
     return _webpage_symbol->submitAll();
 whenFailed:
-    qDebug() << "SearchDB::removeWebpage failed";
+    qCritical() << "SearchDB::removeWebpage failed";
     _webpage->revertAll();
     _webpage_symbol->revertAll();
     return false;
@@ -217,7 +221,7 @@ Webpage_ SearchDB::findWebpage_(const QString& url) const
     _webpage->setFilter(query);
     _webpage->select();
     if (_webpage->rowCount() == 0) {
-        qDebug() << "ERROR: SearchDB::findWebpage_ not found!" << url;
+        qCritical() << "SearchDB::findWebpage_ not found!" << url;
         return QSharedPointer<Webpage>(nullptr);
     }
     QSqlRecord r = _webpage->record(0);
@@ -232,13 +236,13 @@ Webpage_ SearchDB::findWebpage_(const QString& url) const
 
 QVariantMap SearchDB::findWebpage(const QString& url) const
 {
+    qDebug() << "SearchDB::findWebpage" << url;
     Webpage_ p = SearchDB::findWebpage_(url);
     if (p.isNull()) {
-        qDebug() << "ERROR: SearchDB::findWebpage not found!" << url;
+        qCritical() << "SearchDB::findWebpage not found!" << url;
         return QVariantMap();
     }
     return p->toQVariantMap();
-
 }
 
 bool SearchDB::setBookmarked(const QString& url, bool bk)
@@ -248,10 +252,9 @@ bool SearchDB::setBookmarked(const QString& url, bool bk)
 
 bool SearchDB::bookmarked(const QString& url) const
 {
+    if (! hasWebpage(url)) { return false; }
     Webpage_ w = findWebpage_(url);
-    if (w.isNull()) {
-        return false;
-    }
+    if (w.isNull()) { return false; }
     return ! w->temporary();
 }
 
@@ -301,15 +304,21 @@ void SearchDB::search(const QString& word)
                 q += " AND ";
             }
         }
+        q += " ORDER BY CASE WHEN LENGTH(symbol.text) = 0 OR symbol.text IS NULL THEN 99999 ELSE LENGTH(symbol.text) END ASC";
+        q += ", CASE WHEN LENGTH(symbol.hash) = 0 OR symbol.hash IS NULL THEN 99999 ELSE LENGTH(symbol.hash) END ASC";
+        q += ", CASE WHEN LENGTH(webpage.title) = 0 OR webpage.title IS NULL THEN 99999 ELSE LENGTH(webpage.title) END ASC";
+        q += ", LENGTH(url) ASC";
         q += " LIMIT 50";
         qDebug() << "SearchDB::search" << q;
         QSqlQuery r = _db.exec(q);
         if (r.lastError().isValid()) {
-            qDebug() << "SearchDB::search failed" << r.lastError();
+            qCritical() << "SearchDB::search failed" << r.lastError();
             return;
         }
-        while (r.next()) {
+        r.first();
+        while (r.isValid()) {
             QSqlRecord record = r.record();
+            qDebug() << "SearchDB::search found" << record;
             QString url = record.value("url").value<QString>();
             QStringList path = url.split(QRegularExpression("/"), QString::SkipEmptyParts);
             QString last = path.length() > 0 ? path[path.length() - 1] : "";
@@ -319,11 +328,13 @@ void SearchDB::search(const QString& word)
             QString display =
                     (symbol.length() > 0 ? "@"+symbol+"  " : "") +
                     (hash.length() > 0 ? "#"+hash+"  " : "") +
+                    "/"+last+"  " +
                     (title.length() > 0 ? "\""+title+"\"" : "") +
-                    (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? "/"+last+"  " : "") +
                     (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? ""+url+"  " : "");
-            _searchResult.insertTab(0, url + (hash.length()>0 ? ("#"+hash) : ""));
-            _searchResult.updateTab(0, "title", display);
+            int i = _searchResult.count();
+            _searchResult.insertTab(i, url + (hash.length()>0 ? ("#"+hash) : ""));
+            _searchResult.updateTab(i, "title", display);
+            r.next();
         }
     }
     qDebug() << "SearchDB::search found" << _searchResult.count();

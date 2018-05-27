@@ -13,7 +13,7 @@ class Properties {
 }
 
 class Heuristic {
-    public maxMarginPaddingAllowed = 50
+    public maxMarginPaddingAllowed = 25
     public maxWidthAllowed = 100
 }
 
@@ -49,7 +49,7 @@ class Docview {
                     || k == "float") {
                     // do not copy
                 } else if ((k == "background-color")) {
-                    if (['PRE','CODE'].includes(n.tagName)
+                    if (['PRE','CODE','SPAN'].includes(n.tagName)
                         || styles.fontFamily.includes("monospace")
                         || styles.fontStyle.includes("italic")) {
                         _styles += k + ":" + v + ";"
@@ -66,6 +66,12 @@ class Docview {
                     // if (parseInt(v) < 50) {
                     //     _styles += k + ":" + v + ";"
                     // }
+                } else if (k == "display") {
+                    if (styles["position"] === "sticky") {
+                        _styles += k + ":none;"
+                    } else {
+                        _styles += k + ":" + v + ";"
+                    }
                 } else if (k == "font-family") {
                     _styles += 'font-family: "Source Sans Pro", sans-serif;'
                 } else {
@@ -137,7 +143,7 @@ class Docview {
             //     n.className += " docview-garbage"
             // } else 
             // navbar
-            const nav = /nav/ig
+            const nav = /nav|toc|table-of-contents/ig
             if (nav.test(n.className) 
                 || nav.test(n.id) 
                 || nav.test(n.tagName)
@@ -174,63 +180,6 @@ class Docview {
                 }
             }
         }
-        // let root = document.body
-        // for (let i = 0; i < level; i++) {
-        //     // prone every node that has more than X controls
-        //     // use the first node that has > 80% page content as root
-        //     let attempt1 =
-        //         this.guessRoot(
-        //             root,
-        //             (n) => (! this.nonDiv.includes(n.tagName))
-        //                     && (n.scrollHeight > 0.90 * root.scrollHeight)
-        //                     && (n.scrollWidth > 0.50 * root.scrollWidth)
-        //                     && (n.innerText.length > 0.50 * root.innerText.length),
-        //             1
-        //         )
-        //     if (root != attempt1) {
-        //         root = attempt1
-        //         continue
-        //     }
-        //     let attempt2 =
-        //         this.guessRoot(
-        //             root,
-        //             (n) => (! this.nonDiv.includes(n.tagName))
-        //                     && (n.scrollHeight > 0.75 * root.scrollHeight)
-        //                     && (n.scrollWidth > 0.50 * root.scrollWidth)
-        //                     && (n.innerText.length > 0.50 * root.innerText.length),
-        //             1
-        //         )
-        //     if (root != attempt2) {
-        //         root = attempt2
-        //         continue
-        //     }
-        //     // let attempt3 =
-        //     //     this.guessRoot(
-        //     //         root,
-        //     //         (n) => (! this.nonDiv.includes(n.tagName))
-        //     //                 && (n.scrollHeight > 0.90 * root.scrollHeight)
-        //     //                 && (n.innerText.length > 0.5 * root.innerText.length),
-        //     //         1
-        //     //     )
-        //     // if (root != attempt3) {
-        //     //     root = attempt3
-        //     //     continue
-        //     // }
-        //     // let attempt4 =
-        //     //     this.guessRoot(
-        //     //         root,
-        //     //         (n) => (! this.nonDiv.includes(n.tagName))
-        //     //                 && (n.scrollHeight > 0.75 * root.scrollHeight)
-        //     //                 && (n.innerText.length > 0.5 * root.innerText.length),
-        //     //         1
-        //     //     )
-        //     // if (root != attempt4) {
-        //     //     root = attempt4
-        //     //     continue
-        //     // }
-        //     // reach here if nothing changed
-        //     break
-        // }
         const bb = document.createElement("body")
         var link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
@@ -297,9 +246,10 @@ class Docview {
 
     public crawler(): 
         {
-            symbols: {string: string}, 
-            links: string[], 
-            referer: string
+            links: string[], // what to craw next
+            referer: string, // the root of links
+            symbols: {string: string}, // symbols on referer
+            title: string // referer's title
         } 
     {
         // console.log("finding symbols")
@@ -313,21 +263,31 @@ class Docview {
             const url = new URL(k, location.href)            
             const txt = hrefs[k]
             // const i = k.indexOf("#")
-            if (url.hash.length > 1 
-                // anything with a space is probably not a symbol
-                && (! (txt.includes(" ") && ! txt.includes("("))) 
+            if (url.hash.length > 1 // the first char is always #
+                && (! url.hash.includes('%')) // no space in hash
                 && url.pathname === location.pathname 
                 && url.hostname == location.hostname) { 
-                    // console.log(url.pathname, location.pathname)
-                symbols[url.hash.substr(1)] = txt
-            } else if (url.hostname == location.hostname) {
+                if (txt.length > 0) {
+                    // anything with a space is probably not a symbol
+                    if (((! txt.includes(" ")) || txt.includes("(") || txt.includes("[") || txt.includes("{"))
+                        && /^[a-z,A-Z,_]/.test(txt) // must start with an alphabet or _
+                        && /^[\x00-\x7F]+$/.test(txt)) // confirm ascii
+                    {
+                        symbols[url.hash.substr(1)] = txt
+                    }
+                } else {
+                    symbols[url.hash.substr(1)] = null
+                }
+            } else if (url.hostname == location.hostname 
+                       && url.pathname !== location.pathname) {
                 links[url.origin + url.pathname] = 1
             }
         }
         return {
             symbols: symbols, 
             links: Object.keys(links), 
-            referer: location.origin + location.pathname
+            referer: location.origin + location.pathname,
+            title: document.title
         }
     }
 

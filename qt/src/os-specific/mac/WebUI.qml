@@ -16,13 +16,13 @@ Item {
     id: webUI
 
     function bookmark() {
-        if (SearchDB.setBookmarked(url(), true)) {
+        if (SearchDB.setBookmarked(noHash(webview.url), true)) {
             bookmarked = true
         }
     }
 
     function unbookmark() {
-        if (SearchDB.setBookmarked(url(), false)) {
+        if (SearchDB.setBookmarked(noHash(webview.url), false)) {
             bookmarked = false
         }
     }
@@ -79,6 +79,30 @@ Item {
         request.openIn(webview)
     }
 
+    function warning() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.warn.apply(null, args)
+    }
+
+    function info() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.info.apply(null, args)
+    }
+
+    function error() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.error.apply(null, args)
+    }
+
+    function logging() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.log.apply(null, args)
+    }
+
     Component.onCompleted: {
         var url = TabsModel.at(index).url
         goTo(url)
@@ -90,10 +114,79 @@ Item {
         width: browserWebViews.width
         height: browserWebViews.height
         onNewViewRequested: {
-            console.log("onNewViewRequested", request, JSON.stringify(request));
+            logging("webview onNewViewRequested", request, JSON.stringify(request));
             userRequestsNewView(request)
         }
         settings.focusOnNavigationEnabled: false
+
+        onTitleChanged: {
+            logging('webview title changed', title)
+            if (title) {
+                TabsModel.updateTab(index, "title", title)
+                if (SearchDB.hasWebpage(noHash(url))) {
+                    SearchDB.updateWebpage(noHash(url), "title", title)
+                }
+            }
+        }
+        onUrlChanged: {
+            logging('webview url changed', url)
+            if (url) {
+                TabsModel.updateTab(index, "url", webUI.href)
+                bookmarked = SearchDB.bookmarked(noHash(url))
+            }
+        }
+        onLoadProgressChanged: {
+            logging('webview load progress', loadProgress)
+        }
+        onNavigationRequested: {
+            logging("webview navigation requested", request.url)
+            webViewNavRequested(index)
+        }
+        onLoadingChanged: {
+            logging("webview loading changed", loading)
+            if (loadRequest.status == WebEngineView.LoadStartedStatus) {
+                docviewLoaded = false
+                logging("webview loading started", loadRequest.url)
+                if (! SearchDB.hasWebpage(noHash(loadRequest.url))) {
+                    SearchDB.addWebpage(noHash(loadRequest.url))
+                }
+                if (! SearchDB.bookmarked(noHash(loadRequest.url))) {
+                    // when the url's domain is in the auto-bookmark.txt list
+                    var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+                    var domain = noHash(loadRequest.url).split("/")[2]
+                    SearchDB.setBookmarked(noHash(loadRequest.url), arr.indexOf(domain) > -1)
+                }
+                SearchDB.updateWebpage(noHash(loadRequest.url), "crawling", true)
+            } else {
+                switch (loadRequest.status) {
+                case WebEngineView.LoadFailedStatus:
+                    error("webview loading failed", loadRequest.url)
+                    break
+                case WebEngineView.LoadStoppedStatus:
+                    error("webview loading stopped", loadRequest.url)
+                    break
+                case WebEngineView.LoadSucceededStatus:
+                    logging("webview loading suceeded", loadRequest.url)
+                    break
+                }
+                logging("webview injecting docview.js on", loadRequest.url)
+                var requestURL = loadRequest.url
+                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                    logging("webview calling Docview.crawler() on", requestURL)
+                    runJavaScript("Docview.crawler()", function(result) {
+                        logging("webview Docview.crawler() returns from", result.referer)
+                        if (! SearchDB.hasWebpage(result.referer)) {
+                            SearchDB.addWebpage(result.referer)
+                        }
+                        SearchDB.addSymbols(result.referer, result.symbols)
+                        SearchDB.updateWebpage(result.referer, "crawling", false)
+                        SearchDB.updateWebpage(result.referer, "title", result.title)
+                        // loading done
+                        crawler.queueLinks(result.referer, result.links)
+                    })
+                })
+            }
+        }
     }
 
     function noHash(u) {
@@ -106,60 +199,81 @@ Item {
     }
 
     WebEngineView {
-
         id: docview
         visible: false
         height: browserWebViews.height
         width: browserWebViews.width
         url: webview.url
         settings.focusOnNavigationEnabled: false
-        onTitleChanged: {
-            if (title) {
-                TabsModel.updateTab(index, "title", title)
-                if (SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.updateWebpage(noHash(url), "title", title)
-                }
-            }
-        }
-        onUrlChanged: {
-            TabsModel.updateTab(index, "url", webUI.href)
-            bookmarked = SearchDB.bookmarked(noHash(url))
-        }
-        onLoadProgressChanged: {
-            if (loading) {
-                console.log("onLoadProgressChanged", index, loadProgress)
-                // webViewLoadingProgressChanged(index, loadProgress)
-            }
-        }
+//        onTitleChanged: {
+//            logging('docview title changed', title)
+//            if (title) {
+//                TabsModel.updateTab(index, "title", title)
+//                if (SearchDB.hasWebpage(noHash(url))) {
+//                    SearchDB.updateWebpage(noHash(url), "title", title)
+//                }
+//            }
+//        }
+//        onUrlChanged: {
+//            logging('docview url changed', url)
+//            if (url) {
+//                TabsModel.updateTab(index, "url", webUI.href)
+//                bookmarked = SearchDB.bookmarked(noHash(url))
+//            }
+//        }
+//        onLoadProgressChanged: {
+//            logging('docview load progress', loadProgress)
+//        }
         onNewViewRequested: {
             userRequestsNewView(request)
         }
         onNavigationRequested: {
-            console.log("onWebViewNavRequested", index)
+            logging("docview navigation requested", request.url)
             webViewNavRequested(index)
         }
         onLoadingChanged: {
+            logging("docview loading changed", loading)
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
-                console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                if (! SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.addWebpage(noHash(url))
-                }
-                if (! SearchDB.bookmarked(noHash(url))) {
-                    // when the url's domain is in the auto-bookmark.txt list
-                    var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
-                    var domain = noHash(url).split("/")[2]
-                    SearchDB.setBookmarked(noHash(url), arr.indexOf(domain) > -1)
-                }
-                SearchDB.updateWebpage(noHash(url), "crawling", true)
+                logging("docview loading started", loadRequest.url)
+//                if (! SearchDB.hasWebpage(noHash(loadRequest.url))) {
+//                    SearchDB.addWebpage(noHash(loadRequest.url))
+//                }
+//                if (! SearchDB.bookmarked(noHash(loadRequest.url))) {
+//                    // when the url's domain is in the auto-bookmark.txt list
+//                    var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+//                    var domain = noHash(loadRequest.url).split("/")[2]
+//                    SearchDB.setBookmarked(noHash(loadRequest.url), arr.indexOf(domain) > -1)
+//                }
+//                SearchDB.updateWebpage(noHash(loadRequest.url), "crawling", true)
             } else {
-                SearchDB.updateWebpage(noHash(url), "crawling", false)
+                switch (loadRequest.status) {
+                case WebEngineView.LoadFailedStatus:
+                    error("docview loading failed", loadRequest.url)
+                    break
+                case WebEngineView.LoadStoppedStatus:
+                    error("docview loading stopped", loadRequest.url)
+                    break
+                case WebEngineView.LoadSucceededStatus:
+                    logging("docview loading suceeded", loadRequest.url)
+                    break
+                }
+                logging("docview injecting docview.js on", loadRequest.url)
+                var requestURL = loadRequest.url
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    runJavaScript("Docview.crawler()", function(result) {
-                        SearchDB.addSymbols(noHash(url), result.symbols)
-                        // loading done
-                        crawler.queueLinks(noHash(url), result.links)
-                    })
+//                    logging("docview calling Docview.crawler() on", requestURL)
+//                    runJavaScript("Docview.crawler()", function(result) {
+//                        logging("docview Docview.crawler() returns from", result.referer)
+//                        if (! SearchDB.hasWebpage(result.referer)) {
+//                            SearchDB.addWebpage(result.referer)
+//                        }
+//                        SearchDB.addSymbols(result.referer, result.symbols)
+//                        SearchDB.updateWebpage(result.referer, "crawling", false)
+//                        SearchDB.updateWebpage(result.referer, "title", result.title)
+//                        // loading done
+//                        crawler.queueLinks(result.referer, result.links)
+//                    })
+                    logging("docview calling Docview.docviewOn() on", requestURL)
                     runJavaScript("Docview.docviewOn()", function() {
                         if (inDocview) {
                             docviewOn()
@@ -213,6 +327,7 @@ Item {
                 queue.push(url)
             }
             queue.forEach(function(l) {
+                logging("crawler aborting", l)
                 SearchDB.updateWebpage(l, "crawling", false)
             })
         }
@@ -220,11 +335,11 @@ Item {
         property var queue: []
         //        url: queue.length ? queue[0] : ""
         function queueLinks(referer, links) {
-            console.log("crawler.queueLinks", referer, links)
+            logging("crawler.queueLinks", referer, links)
             // check if referer is fully crawled
             var incomplete = []
             var unstarted = []
-            var arr = FileManager.readFileS("auto-bookmark.txt").split("\n")
+            var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
             for (var i = 0; i < links.length; i++) {
                 var l = links[i]
                 if (! SearchDB.hasWebpage(l)) {
@@ -247,14 +362,14 @@ Item {
                 SearchDB.updateWebpage(referer, "crawled", true)
             }
             queue = queue.concat(unstarted)
-            console.log("unstarted", unstarted)
+            logging("unstarted", unstarted)
             crawNext()
         }
         function crawNext() {
-            console.log("crawNext")
+            logging("crawNext called")
             if (queue.length) {
                 var u = queue.shift()
-                console.log("crawling next", u)
+                logging("crawling next", u)
                 url = u
             }
         }
@@ -268,12 +383,32 @@ Item {
         onLoadingChanged: {
             switch (loadRequest.status) {
             case WebEngineView.LoadStartedStatus:
+                logging("crawler loading", loadRequest.url)
                 break
             default:
-                SearchDB.updateWebpage(url, "crawling", false)
+                switch (loadRequest.status) {
+                case WebEngineView.LoadFailedStatus:
+                    error("crawler loading failed", loadRequest.url)
+                    break
+                case WebEngineView.LoadStoppedStatus:
+                    error("crawler loading stopped", loadRequest.url)
+                    break
+                case WebEngineView.LoadSucceededStatus:
+                    logging("crawler loading suceeded", loadRequest.url)
+                    break
+                }
+                logging("crawler injecting docview.js on", loadRequest.url)
+                var requestURL = loadRequest.url
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                    logging("crawler calling Docview.crawler() on", requestURL)
                     runJavaScript("Docview.crawler()", function(result) {
-                        SearchDB.addSymbols(url, result.symbols)
+                        logging("crawler Docview.crawler() returns from", requestURL)
+                        if (! SearchDB.hasWebpage(result.referer)) {
+                            SearchDB.addWebpage(result.referer)
+                        }
+                        SearchDB.addSymbols(result.referer, result.symbols)
+                        SearchDB.updateWebpage(result.referer, "crawling", false)
+                        SearchDB.updateWebpage(result.referer, "title", result.title)
                         // loading done
                         crawNext()
                     })
