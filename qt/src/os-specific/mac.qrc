@@ -38,6 +38,6 @@
         <file alias="TitleBar.qml">mac/window/TitleBar.qml</file>
         <file alias="TitleBarForm.qml">mac/window/TitleBarForm.ui.qml</file>
         <file alias="WelcomePageForm.qml">mac/WelcomePageForm.ui.qml</file>
-        <file>mac/Crawler.qml</file>
+        <file alias="Crawler.qml">mac/Crawler.qml</file>
     </qresource>
 </RCC>

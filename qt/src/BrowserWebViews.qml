@@ -7,6 +7,7 @@ BrowserWebViewsForm {
     signal userRequestsNewView(var request)
     signal webViewNavRequested(int index)
     property var currentWebView: repeater.itemAt(currentIndex)
+    property alias crawler: crawler
 
     repeaterModel: TabsModel
 
@@ -27,6 +28,10 @@ BrowserWebViewsForm {
 
     function reloadCurrentWebView() {
         reloadWebViewAt(currentIndex)
+    }
+
+    Crawler {
+        id: crawler
     }
 
     repeaterDelegate: WebUI {}
