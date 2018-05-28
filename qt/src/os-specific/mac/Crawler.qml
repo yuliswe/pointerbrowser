@@ -30,15 +30,18 @@ WebEngineView {
         id: timeout
         triggeredOnStart: false
         onTriggered: {
+            console.info("crawler timed out", crawling)
             crawler.stop()
         }
+        interval: 30000 // 30s
+        repeat: false
+
     }
 
     property var queue: ({})
     property string crawling: ""
-    function queueLinks(referer, links) {
-        console.log("crawler.queueLinks", referer, links)
-//        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+    function queueLinks(links) {
+        console.log("crawler.queueLinks", links)
         for (var i = 0; i < links.length; i++) {
             var l = links[i]
             crawler.queue[l] = true
@@ -52,6 +55,7 @@ WebEngineView {
             if (! crawler.loading) {
                 url = first
                 crawling = first
+                timeout.restart()
                 console.log("crawNext", url)
                 delete crawler.queue[first]
             } else {
@@ -72,16 +76,19 @@ WebEngineView {
             switch (loadRequest.status) {
             case WebEngineView.LoadFailedStatus:
                 console.info("crawler loading failed", loadRequest.url)
+                crawler.queue[crawler.crawling] = true // retry later
                 break
             case WebEngineView.LoadStoppedStatus:
                 console.info("crawler loading stopped", loadRequest.url)
+                crawler.queue[crawler.crawling] = true // retry later
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("crawler loading suceeded", loadRequest.url)
                 break
             }
-            console.log("crawler injecting docview.js on", loadRequest.url)
+            timeout.stop()
             var requestURL = loadRequest.url
+            console.log("crawler injecting docview.js on", loadRequest.url)
             runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                 console.log("crawler calling Docview.crawler() on", requestURL)
                 runJavaScript("Docview.crawler()", function(result) {

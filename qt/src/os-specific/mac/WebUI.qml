@@ -13,18 +13,46 @@ Item {
     property bool inDocview: false
     property bool bookmarked: false
     property alias href: webview.url
+    property string url: noHash(href)
     id: webUI
 
+
+    function setBookmarked(hostname) {
+        logging("setBookmarked", hostname)
+        // when the url's domain is in the auto-bookmark.txt list
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webUI.bookmarked = (arr.indexOf(hostname) > -1)
+    }
+
     function bookmark() {
-        if (SearchDB.setBookmarked(noHash(webview.url), true)) {
-            bookmarked = true
-        }
+        logging("bookmark", hostname)
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webview.runJavaScript("location.hostname", function(hostname) {
+            var i = arr.indexOf(hostname)
+            if (i > -1) {
+                info("bookmark called on already bookmarked hostname", hostname)
+            } else {
+                arr.push(hostname)
+                FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            }
+            FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            webUI.bookmarked = true
+        })
     }
 
     function unbookmark() {
-        if (SearchDB.setBookmarked(noHash(webview.url), false)) {
-            bookmarked = false
-        }
+        logging("unbookmark", hostname)
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webview.runJavaScript("location.hostname", function(hostname) {
+            var i = arr.indexOf(hostname)
+            if (i === -1) {
+                info("unbookmark called on non-bookmarked hostname", hostname)
+            } else {
+                arr.splice(i,1)
+                FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            }
+            webUI.bookmarked = false
+        })
     }
 
     function docviewOn() {
@@ -106,7 +134,6 @@ Item {
     Component.onCompleted: {
         var url = TabsModel.at(index).url
         goTo(url)
-        bookmarked = SearchDB.bookmarked(url)
     }
 
     WebEngineView {
@@ -132,7 +159,6 @@ Item {
             logging('webview url changed', url)
             if (url) {
                 TabsModel.updateTab(index, "url", webUI.href)
-                bookmarked = SearchDB.bookmarked(noHash(url))
             }
         }
         onLoadProgressChanged: {
@@ -169,22 +195,23 @@ Item {
                     logging("webview loading suceeded", loadRequest.url)
                     break
                 }
-                logging("webview injecting docview.js on", loadRequest.url)
                 var requestURL = loadRequest.url
-                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    logging("webview calling Docview.crawler() on", requestURL)
-                    runJavaScript("Docview.crawler()", function(result) {
-                        logging("webview Docview.crawler() returns from", result.referer)
-                        if (! SearchDB.hasWebpage(result.referer)) {
-                            SearchDB.addWebpage(result.referer)
-                        }
-                        SearchDB.addSymbols(result.referer, result.symbols)
-                        SearchDB.updateWebpage(result.referer, "crawling", false)
-                        SearchDB.updateWebpage(result.referer, "title", result.title)
-                        // loading done
-                        console.log("calling crawler", browserWebViews.crawler, crawler)
-                        crawler.queueLinks(result.referer, result.links)
-                    })
+                runJavaScript("location.hostname", function(hostname) {
+                    logging("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
+                    webUI.setBookmarked(hostname)
+                    if (webUI.bookmarked) {
+                        logging("hostname is bookmarked", hostname)
+                        console.log("webview injecting docview.js on", loadRequest.url)
+                        runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                            console.log("webview calling Docview.crawler() on", requestURL)
+                            runJavaScript("Docview.crawler()", function(result) {
+                                result.links.push(requestURL)
+                                crawler.queueLinks(result.links)
+                            })
+                        })
+                    } else {
+                        logging("hostname is not bookmarked", hostname)
+                    }
                 })
             }
         }

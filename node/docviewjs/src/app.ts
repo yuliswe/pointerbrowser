@@ -266,7 +266,9 @@ class Docview {
             if (url.hash.length > 1 // the first char is always #
                 && (! url.hash.includes('%')) // no space in hash
                 && url.pathname === location.pathname 
-                && url.hostname == location.hostname) { 
+                && url.hostname == location.hostname
+                && /^[\x00-\x7F]+$/.test(url.hash)) // confirm ascii 
+            { 
                 if (txt.length > 0) {
                     // anything with a space is probably not a symbol
                     if (((! txt.includes(" ")) || txt.includes("(") || txt.includes("[") || txt.includes("{"))
@@ -276,7 +278,7 @@ class Docview {
                         symbols[url.hash.substr(1)] = txt
                     }
                 } else {
-                    symbols[url.hash.substr(1)] = null
+                    symbols[url.hash.substr(1)] = ""
                 }
             } else if (url.hostname == location.hostname 
                        && url.pathname !== location.pathname) {

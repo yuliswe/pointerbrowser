@@ -75,6 +75,9 @@ TabsPanelForm {
                 filterModelBySymbol("")
             }
         }
+        onTextCleared: {
+            filterModelBySymbol("")
+        }
         onAccepted: {
             filterModelBySymbol(searchTextField.text)
         }

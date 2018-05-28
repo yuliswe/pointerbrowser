@@ -39,7 +39,7 @@ void TabsModel::insertWebpage(int idx, Webpage_ page)
 void TabsModel::insertTab(int idx, QString url)
 {
     qDebug() << "TabsModel::insertTab" << idx << url;
-    Webpage_ page = Webpage::create(url);
+    Webpage_ page = Webpage_::create(url);
     insertWebpage(idx, page);
 }
 

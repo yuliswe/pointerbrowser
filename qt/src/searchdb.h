@@ -29,12 +29,11 @@ class SearchDB : public QObject
         void disconnect();
         bool execMany(const QStringList& lines);
         bool addWebpage(const QString& url);
-        bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
         bool addSymbols(const QString& url, const QVariantMap& symbols);
+        bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
+        bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
         Webpage_ findWebpage_(const QString& url) const;
         QVariantMap findWebpage(const QString& url) const;
-        bool setBookmarked(const QString& url, bool bk);
-        bool bookmarked(const QString& url) const;
         bool hasWebpage(const QString& url) const;
         bool removeWebpage(const QString& url);
         void search(const QString& word);

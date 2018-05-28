@@ -1,17 +1,21 @@
+PRAGMA foreign_keys=ON;
+BEGIN TRANSACTION;
+
 CREATE TABLE IF NOT EXISTS webpage (
     id INTEGER PRIMARY KEY,
     url TEXT UNIQUE NOT NULL,
-    temporary BOOLEAN NOT NULL,
-    crawling BOOLEAN NOT NULL,
-    crawled BOOLEAN NOT NULL,
-    title TEXT,
-    html TEXT
+    title TEXT NOT NULL,
+    html TEXT NOT NULL,
+    visited INTEGER NOT NULL
 );
+
 CREATE TABLE IF NOT EXISTS symbol (
     id INTEGER PRIMARY KEY,
     hash TEXT NOT NULL,
-    text TEXT
+    text TEXT NOT NULL,
+    visited INTEGER NOT NULL
 );
+
 CREATE TABLE IF NOT EXISTS webpage_symbol (
     id INTEGER PRIMARY KEY,
     webpage INTEGER NOT NULL,
@@ -19,3 +23,5 @@ CREATE TABLE IF NOT EXISTS webpage_symbol (
     FOREIGN KEY(webpage) REFERENCES webpage(id),
     FOREIGN KEY(symbol) REFERENCES symbol(id)
 );
+
+COMMIT;

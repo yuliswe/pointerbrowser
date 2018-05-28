@@ -33,6 +33,9 @@ bool SearchDB::connect() {
         return false;
     }
     qDebug() << "SearchDB: connection ok";
+
+//    execMany(QStringList("PRAGMA foreign_keys = ON;"));
+
     _webpage = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
     _webpage->setTable("webpage");
     _webpage->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -72,7 +75,7 @@ void SearchDB::disconnect() {
 bool SearchDB::execScript(QString filename)
 {
     QString s = FileManager::readQrcFileS(filename);
-    return execMany(s.split("\n"));
+    return execMany(s.replace("\n","").split(";", QString::SkipEmptyParts));
 }
 
 bool SearchDB::execMany(const QStringList& lines)
@@ -87,13 +90,15 @@ bool SearchDB::execMany(const QStringList& lines)
             return false;
         }
     }
-    //    search(_currentWord);
+    //    if (! _db.commit()) {
+    //        qCritical() << "SearchDB::execMany" << _db.lastError();
+    //    }
     return true;
 }
 
 bool SearchDB::updateWebpage(const QString& url, const QString& property, const QVariant& value)
 {
-    qDebug() << "SearchDB::updateWebpage " << url << property << value;
+    qDebug() << "SearchDB::updateWebpage " << property << value << url;
     _webpage->setFilter("url = '" + url + "'");
     _webpage->select();
     if (_webpage->rowCount() == 0) {
@@ -109,7 +114,28 @@ bool SearchDB::updateWebpage(const QString& url, const QString& property, const 
         return false;
     }
     _webpage->submitAll();
-    //    search(_currentWord);
+    return true;
+}
+
+
+bool SearchDB::updateSymbol(const QString &hash, const QString &property, const QVariant &value)
+{
+    qDebug() << "SearchDB::updateSymbol " << property << value << hash;
+    _symbol->setFilter("hash = '" + hash + "'");
+    _symbol->select();
+    if (_symbol->rowCount() == 0) {
+        qCritical() << "SearchDB::updateSymbol didn't find the symbol" << hash
+                    << _symbol->lastError();
+        return false;
+    }
+    QSqlRecord record = _symbol->record(0);
+    record.setValue(property, value);
+    if (! _symbol->setRecord(0, record)) {
+        qCritical() << "SearchDB::updateSymbol failed" << hash
+                    << _symbol->lastError();
+        return false;
+    }
+    _symbol->submitAll();
     return true;
 }
 
@@ -134,10 +160,11 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
         _symbol->select();
         QSqlRecord syRecord;
         if (_symbol->rowCount() == 0) {
-            qDebug() << "SearchDB::addSymbols create new symbol" << (*i);
+            qDebug() << "SearchDB::addSymbols create new symbol" << hash << text;
             syRecord = _symbol->record();
             syRecord.setValue("hash", hash);
             syRecord.setValue("text", text);
+            syRecord.setValue("visited", 0);
             if (! _symbol->insertRecord(-1, syRecord)) {
                 qCritical() << _symbol->lastError();
                 continue;
@@ -146,8 +173,8 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
         _symbol->submitAll();
         _symbol->select();
         if (_symbol->rowCount() == 0) {
-            qCritical() << "SearchDB::addSymbols failed!" << hash
-                     << _symbol->lastError();
+            qCritical() << "SearchDB::addSymbols failed!" << hash << text
+                        << _symbol->lastError();
             continue;
         }
         syRecord = _symbol->record(0);
@@ -155,11 +182,17 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
         rel.setValue("symbol", syRecord.value("id"));
         rel.setValue("webpage", wpRecord.value("id"));
         if (! _webpage_symbol->insertRecord(-1, rel)) {
-            qDebug() << _webpage_symbol->lastError();
+            qCritical() << "SearchDB::addSymbols failed!" << hash << text
+                        << _webpage_symbol->lastError();
             continue;
         }
     }
-    return _webpage_symbol->submitAll();
+    if (! _webpage_symbol->submitAll()) {
+        qCritical() << "SearchDB::addSymbols failed!"
+                    << _webpage_symbol->lastError();
+        return false;
+    }
+    return true;
 }
 
 bool SearchDB::addWebpage(const QString& url)
@@ -167,16 +200,15 @@ bool SearchDB::addWebpage(const QString& url)
     qDebug() << "SearchDB::addWebpage" << url;
     QSqlRecord wpRecord = _webpage->record();
     wpRecord.setValue("url", url);
-    wpRecord.setValue("temporary", true);
-    wpRecord.setValue("crawling", false);
-    wpRecord.setValue("crawled", false);
+    wpRecord.setValue("html", "");
+    wpRecord.setValue("title", "");
+    wpRecord.setValue("visited", 0);
     if (! (_webpage->insertRecord(-1, wpRecord)
            && _webpage->submitAll()))
     {
         qCritical() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
         return false;
     };
-    //    search(_currentWord);
     return true;
 }
 
@@ -196,13 +228,13 @@ bool SearchDB::removeWebpage(const QString& url)
     if (_webpage_symbol->rowCount() > 0) {
         if (! _webpage_symbol->removeRows(0, _webpage_symbol->rowCount())) {
             qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage_symbol"
-                     << _webpage_symbol->lastError();
+                        << _webpage_symbol->lastError();
             goto whenFailed;
         }
     }
     if (! _webpage->removeRows(0, _webpage->rowCount())) {
         qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage"
-                 << _webpage->lastError();
+                    << _webpage->lastError();
         goto whenFailed;
     }
     _webpage->submitAll();
@@ -226,11 +258,9 @@ Webpage_ SearchDB::findWebpage_(const QString& url) const
     }
     QSqlRecord r = _webpage->record(0);
     qDebug() << "SearchDB::findWebpage_ found " << r;
-    Webpage_ wp = Webpage::create(url);
-    wp->setTitle(r.value("title").value<QString>());
-    wp->setTemporary(r.value("temporary").value<bool>());
-    wp->setCrawling(r.value("crawling").value<bool>());
-    wp->setCrawled(r.value("crawled").value<bool>());
+    Webpage_ wp = Webpage_::create(url);
+    wp->set_title(r.value("title").value<QString>());
+    wp->set_visited(r.value("visited").value<int>());
     return wp;
 }
 
@@ -245,27 +275,14 @@ QVariantMap SearchDB::findWebpage(const QString& url) const
     return p->toQVariantMap();
 }
 
-bool SearchDB::setBookmarked(const QString& url, bool bk)
-{
-    return updateWebpage(url, "temporary", ! bk);
-}
-
-bool SearchDB::bookmarked(const QString& url) const
-{
-    if (! hasWebpage(url)) { return false; }
-    Webpage_ w = findWebpage_(url);
-    if (w.isNull()) { return false; }
-    return ! w->temporary();
-}
-
 bool SearchDB::hasWebpage(const QString& url) const
 {
-     const QString query = "url = '" + url + "'";
-     _webpage->setFilter(query);
-     _webpage->select();
-     bool b = _webpage->rowCount() > 0;
-     qDebug() << "SearchDB::hasWebpage" << url << b;
-     return b;
+    const QString query = "url = '" + url + "'";
+    _webpage->setFilter(query);
+    _webpage->select();
+    bool b = _webpage->rowCount() > 0;
+    qDebug() << "SearchDB::hasWebpage" << url << b;
+    return b;
 }
 
 void SearchDB::search(const QString& word)
@@ -274,7 +291,7 @@ void SearchDB::search(const QString& word)
     _currentWord = word;
     _searchResult.clear();
     if (word == "") {
-        _webpage->setFilter("temporary = 0");
+        _webpage->setFilter("");
         _webpage->select();
         int upper = std::min(100, _webpage->rowCount());
         for (int i = 0; i < upper; i++) {
@@ -288,34 +305,40 @@ void SearchDB::search(const QString& word)
         QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
         if (ws.length() == 0) { return; }
         QString q = QStringLiteral() +
-                "SELECT DISTINCT webpage.id, url, title, hash, text FROM webpage" +
-                " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-                " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
-                " WHERE ";
+                    "SELECT DISTINCT" +
+                    "   webpage.id, url, COALESCE(title, '') as title"
+                    " , CASE WHEN hash IS NULL THEN webpage.visited ELSE symbol.visited END as visited" +
+                    " , hash, COALESCE(symbol.text,'') as symbol" +
+                    " FROM webpage" +
+                    " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+                    " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+                    " WHERE ";
         for (auto w = ws.begin(); w != ws.end(); w++) {
             q += QStringLiteral() +
-                    " (" +
-                    "    INSTR(LOWER(symbol.text),LOWER('" + (*w) + "'))" +
-                    "    OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "'))" +
-                    "    OR INSTR(LOWER(webpage.title),LOWER('" + (*w) + "'))" +
-                    "    OR INSTR(LOWER(webpage.url),LOWER('" + (*w) + "'))" +
-                    " )";
+                 " (" +
+                 "    INSTR(LOWER(symbol.text),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(webpage.title),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(webpage.url),LOWER('" + (*w) + "'))" +
+                 " )";
             if (w != ws.end() - 1) {
                 q += " AND ";
             }
         }
-        q += " ORDER BY CASE WHEN LENGTH(symbol.text) = 0 OR symbol.text IS NULL THEN 99999 ELSE LENGTH(symbol.text) END ASC";
-        q += ", CASE WHEN LENGTH(symbol.hash) = 0 OR symbol.hash IS NULL THEN 99999 ELSE LENGTH(symbol.hash) END ASC";
-        q += ", CASE WHEN LENGTH(webpage.title) = 0 OR webpage.title IS NULL THEN 99999 ELSE LENGTH(webpage.title) END ASC";
+        q += " ORDER BY visited DESC";
+        q += ", CASE WHEN LENGTH(symbol.text) = 0 THEN 99999 ELSE LENGTH(symbol.text) END ASC";
+        q += ", CASE WHEN LENGTH(symbol.hash) = 0 THEN 99999 ELSE LENGTH(symbol.hash) END ASC";
+        q += ", CASE WHEN LENGTH(webpage.title) = 0 THEN 99999 ELSE LENGTH(webpage.title) END ASC";
         q += ", LENGTH(url) ASC";
         q += " LIMIT 50";
-        qDebug() << "SearchDB::search" << q;
+        qWarning() << "SearchDB::search" << q;
         QSqlQuery r = _db.exec(q);
         if (r.lastError().isValid()) {
             qCritical() << "SearchDB::search failed" << r.lastError();
             return;
         }
         r.first();
+        QRegularExpression searchRegex(ws.join("|"), QRegularExpression::CaseInsensitiveOption);
         while (r.isValid()) {
             QSqlRecord record = r.record();
             qDebug() << "SearchDB::search found" << record;
@@ -323,7 +346,7 @@ void SearchDB::search(const QString& word)
             QStringList path = url.split(QRegularExpression("/"), QString::SkipEmptyParts);
             QString last = path.length() > 0 ? path[path.length() - 1] : "";
             QString title = record.value("title").value<QString>();
-            QString symbol = record.value("text").value<QString>();
+            QString symbol = record.value("symbol").value<QString>();
             QString hash = record.value("hash").value<QString>();
             QString display =
                     (symbol.length() > 0 ? "@"+symbol+"  " : "") +
@@ -332,8 +355,17 @@ void SearchDB::search(const QString& word)
                     (title.length() > 0 ? "\""+title+"\"" : "") +
                     (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? ""+url+"  " : "");
             int i = _searchResult.count();
-            _searchResult.insertTab(i, url + (hash.length()>0 ? ("#"+hash) : ""));
-            _searchResult.updateTab(i, "title", display);
+            Webpage_ wp = Webpage_::create(url);
+            wp->set_title(title);
+            wp->set_symbol(symbol);
+            wp->set_hash(hash);
+            wp->set_display(display);
+            _searchResult.insertWebpage(i, wp);
+
+//            _searchResult.updateTab(i, "title_matched", searchRegex.match(title).hasMatch());
+//            _searchResult.updateTab(i, "symbol_matched", searchRegex.match(symbol).hasMatch());
+//            _searchResult.updateTab(i, "hash_matched", searchRegex.match(hash).hasMatch());
+//            _searchResult.updateTab(i, "url_matched", searchRegex.match(url).hasMatch());
             r.next();
         }
     }

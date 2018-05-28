@@ -1,4 +1,7 @@
-DELETE FROM webpage WHERE temporary = 1;
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+
 DELETE FROM webpage_symbol WHERE webpage NOT IN (SELECT id from webpage);
 DELETE FROM symbol WHERE id NOT IN (SELECT symbol from webpage_symbol);
-UPDATE webpage SET crawling = 0;
+
+COMMIT;

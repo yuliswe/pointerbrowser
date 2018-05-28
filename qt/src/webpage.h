@@ -7,66 +7,42 @@
 #include <QVariantMap>
 #include <QSharedPointer>
 
+#define QPROP_DEC(type, prop) \
+    Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
+    public: type prop() const; \
+    public: void set_##prop(type); \
+    private: type _##prop; \
+    Q_SIGNAL void prop##_changed(type); \
+
+
 class Webpage;
 typedef QSharedPointer<Webpage> Webpage_;
 typedef QList<Webpage_> WebpageList;
 
+
 class Webpage : public QObject
 {
-        Q_OBJECT
-        Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-        Q_PROPERTY(QString url READ url WRITE setUrl NOTIFY urlChanged)
-        Q_PROPERTY(QString storeFile READ storeFile WRITE setStoreFile NOTIFY storeFileChanged)
-        Q_PROPERTY(QString html READ html WRITE setHtml NOTIFY htmlChanged)
-        Q_PROPERTY(bool temporary READ temporary WRITE setTemporary NOTIFY temporaryChanged)
-        Q_PROPERTY(bool crawling READ crawling WRITE setCrawling NOTIFY crawlingChanged)
-        Q_PROPERTY(bool crawled READ crawled WRITE setCrawled NOTIFY crawledChanged)
+    Q_OBJECT
 
+    QPROP_DEC(QString, title)
+    QPROP_DEC(QString, url)
+    QPROP_DEC(QString, html)
+    QPROP_DEC(QString, symbol)
+    QPROP_DEC(QString, hash)
+    QPROP_DEC(QString, display)
+    QPROP_DEC(quint64, visited)
+    QPROP_DEC(bool, url_matched)
+    QPROP_DEC(bool, title_matched)
+    QPROP_DEC(bool, hash_matched)
+    QPROP_DEC(bool, symbol_matched)
 
     public:
-        explicit Webpage(QObject *parent = nullptr);
-        Webpage(QString url);
-        Webpage(QString url, QString title, QString html);
+        explicit Webpage(QString url);
 
-        QString title() const;
-        QString html() const;
-        QString url() const;
-        QString storeFile() const;
-        bool temporary() const;
-        bool crawling() const;
-        bool crawled() const;
-        void setTitle(QString);
-        void setHtml(QString);
-        void setUrl(QString);
-        void setStoreFile(QString);
-        void setTemporary(bool);
-        void setCrawling(bool);
-        void setCrawled(bool);
         QVariantMap toQVariantMap();
         static Webpage_ fromQVariantMap(QVariantMap&);
         QJsonObject toQJsonObject();
         static Webpage_ fromQJsonObject(QJsonObject&);
-        static Webpage_ create(const QString& url);
-
-    signals:
-        void titleChanged(QString);
-        void urlChanged(QString);
-        void storeFileChanged(QString);
-        void htmlChanged(QString);
-        void temporaryChanged(bool);
-        void crawlingChanged(bool);
-        void crawledChanged(bool);
-
-    public slots:
-
-    private:
-        QString _title;
-        QString _url;
-        QString _storeFile;
-        QString _html;
-        bool _temporary;
-        bool _crawling;
-        bool _crawled;
 };
 
 Q_DECLARE_METATYPE(Webpage*)

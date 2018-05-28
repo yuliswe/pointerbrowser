@@ -34,7 +34,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: "Find in document"
-                rectangle.opacity: 0.8
                 rightPadding: counter.width + 10
 
                 Text {

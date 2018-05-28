@@ -4,21 +4,31 @@
 #include <QKeyEvent>
 #include "eventfilter.h"
 
+#define QPROP_FUNC(TYPE, PROP) \
+    TYPE EventFilter::PROP() const { return _##PROP; } \
+    void EventFilter::set_##PROP(TYPE x) { _##PROP = x; }
+
+QPROP_FUNC(bool, ctrlKeyDown)
+QPROP_FUNC(bool, escapeKeyDown)
+
 bool EventFilter::eventFilter(QObject *obj, QEvent *event)
 {
+    qDebug() << event;
     switch(event->type()) {
     case QEvent::KeyPress: {
         QKeyEvent* e = static_cast<QKeyEvent *>(event);
-//        qDebug() << "EventFilter::eventFilter" << obj << e->modifiers() << e->key() << e->isAutoRepeat();
-        if (e->key() == Qt::Key_Control) {
-            setCtrlKeyDown(true);
+        qDebug() << "EventFilter::eventFilter" << obj << e->modifiers() << e->key() << e->isAutoRepeat();
+        switch(e->key()) {
+            case Qt::Key_Control: set_ctrlKeyDown(true); return true;
+            case Qt::Key_Escape: set_escapeKeyDown(true); return false;
         }
         break;
     }
     case QEvent::KeyRelease: {
         QKeyEvent* e = static_cast<QKeyEvent *>(event);
-        if (e->key() == Qt::Key_Control) {
-            setCtrlKeyDown(false);
+        switch(e->key()) {
+            case Qt::Key_Control: set_ctrlKeyDown(false); return true;
+            case Qt::Key_Escape: set_escapeKeyDown(false); return false;
         }
         break;
     }
@@ -27,7 +37,3 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event)
     }
     return false;
 }
-
-void EventFilter::setCtrlKeyDown(bool b) { _ctrlKeyDown = b; emit ctrlKeyDownChanged(); }
-bool EventFilter::ctrlKeyDown() { return _ctrlKeyDown; }
-

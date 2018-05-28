@@ -68,7 +68,15 @@ BrowserForm {
 
     function openSavedTab(index) {
         console.log("openSavedTab", index)
-        newTab(SearchDB.searchResult.at(index).url, true)
+        var wp = SearchDB.searchResult.at(index)
+        console.error(JSON.stringify(wp))
+        if (wp.hash) {
+            SearchDB.updateSymbol(wp.hash, 'visited', Date.now())
+        }
+//        if (wp.title || wp.url_matched) {
+            SearchDB.updateWebpage(wp.url, 'visited', Date.now())
+//        }
+        newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true)
     }
 
 
@@ -88,14 +96,11 @@ BrowserForm {
         if (opened !== -1) {
             return openTab(opened)
         }
-        if (currentWebViewIndex === -1) {
-            TabsModel.insertTab(0, url, "", "")
-        } else {
-            TabsModel.insertTab(0, url, "", "")
-            openTab(currentWebViewIndex + 1)
-        }
+        TabsModel.insertTab(0, url, "", "")
         if (switchToView) {
             openTab(0)
+        } else if (currentWebView > -1) {
+            openTab(currentWebViewIndex + 1)
         }
         return browserWebViews.webViewAt(0)
     }
@@ -148,14 +153,6 @@ BrowserForm {
 
     Connections {
         target: browserWebViews
-//        onUserOpensLinkInWebView: {
-//            //            browserAddressBar.update(url, "")
-//            //            browserAddressBar.updateProgress(currentWebView.loadProgress)
-//            //            currentWebView.forceActiveFocus()
-//        }
-//        onUserOpensLinkInNewTab: {
-//            newTab(url)
-//        }
         onUserRequestsNewView: {
             if (request.requestedUrl) {
                 var opened = TabsModel.findTab(request.requestedUrl);
@@ -166,22 +163,6 @@ BrowserForm {
             var wv = newTab()
             wv.handleNewViewRequest(request)
         }
-//        onWebViewLoadingSucceeded: {
-//            if (index === currentWebViewIndex) {
-//            }
-//        }
-//        onWebViewLoadingStarted: {
-//            if (index === currentWebViewIndex) {
-//            }
-//        }
-//        onWebViewLoadingStopped: {
-//            if (index === currentWebViewIndex) {
-//            }
-//        }
-//        onWebViewLoadingProgressChanged: {
-//            if (index === currentWebViewIndex) {
-//            }
-//        }
     }
 
     Connections {
@@ -305,7 +286,9 @@ BrowserForm {
     Shortcut {
         sequence: "Ctrl+Shift+P"
         onActivated: {
-            SearchDB.execScript("db/deleteAll.sqlite3")
+            TabsModel.clear()
+            if (! SearchDB.execScript("db/dropAll.sqlite3")) { return }
+            if (! SearchDB.execScript("db/setup.sqlite3")) { return }
             var r = FileManager.readQrcFileS('defaults/dbgen.txt').split('\n')
             for (var i = 0; i < r.length; i++) {
                 if (! r[i]) { continue; }

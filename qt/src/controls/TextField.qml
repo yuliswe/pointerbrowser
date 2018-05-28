@@ -34,6 +34,10 @@ T.TextField {
                 target: rectangle
                 radius: 3
             }
+            PropertyChanges {
+                target: textfield
+                renderType: Text.QtRendering
+            }
         }
     ]
     font.pixelSize: pal.input_font_size
@@ -56,6 +60,15 @@ T.TextField {
             text = placeholderText
         } else if (activeFocus && text == placeholderText) {
             text = ""
+        }
+    }
+    signal textCleared()
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Escape) {
+            event.accepted = true;
+            textfield.focus = false
+            textfield.text = placeholderText
+            textCleared()
         }
     }
 }

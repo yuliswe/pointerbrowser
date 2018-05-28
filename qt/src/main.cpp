@@ -19,6 +19,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     case QtFatalMsg: txt = QString("Fatal: %1\n").arg(msg); break;
     case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
     case QtWarningMsg: txt = QString("Warning: %1\n").arg(msg); break;
+    case QtInfoMsg: txt = QString("Info: %1\n").arg(msg); break;
     case QtDebugMsg: txt = QString("Debug: %1\n").arg(msg); break;
     }
     switch (type) {
@@ -28,6 +29,8 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
         FileManager::appendDataFileS("critical.log", txt);
     case QtWarningMsg:
         FileManager::appendDataFileS("warning.log", txt);
+    case QtInfoMsg:
+        FileManager::appendDataFileS("info.log", txt);
     case QtDebugMsg:
         FileManager::appendDataFileS("debug.log", txt);
     }
@@ -63,7 +66,7 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
 #endif
 
-    app.installEventFilter(QMLRegister::eventFilter);
+//    app.installEventFilter(QMLRegister::eventFilter);
 
     // load qmls
     QQmlApplicationEngine engine;

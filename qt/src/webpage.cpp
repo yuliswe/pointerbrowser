@@ -5,10 +5,25 @@
 #include <QJsonObject>
 #include <QQmlEngine>
 
-Webpage::Webpage(QObject *parent) : QObject(parent)
-{
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-}
+#define WP_PROP_1 (QString, title)
+
+
+
+#define QPROP_FUNC(TYPE, PROP) \
+    TYPE Webpage::PROP() const { return _##PROP; } \
+    void Webpage::set_##PROP(TYPE x) { _##PROP = x; }
+
+QPROP_FUNC(QString, title)
+QPROP_FUNC(QString, html)
+QPROP_FUNC(QString, url)
+QPROP_FUNC(QString, hash)
+QPROP_FUNC(QString, symbol)
+QPROP_FUNC(QString, display)
+QPROP_FUNC(quint64, visited)
+QPROP_FUNC(bool, url_matched)
+QPROP_FUNC(bool, title_matched)
+QPROP_FUNC(bool, hash_matched)
+QPROP_FUNC(bool, symbol_matched)
 
 Webpage::Webpage(QString url)
 {
@@ -16,44 +31,29 @@ Webpage::Webpage(QString url)
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
-Webpage::Webpage(QString url, QString title, QString html)
-{
-    _url = url;
-    _title = title;
-    _html = html;
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-}
-
-QString Webpage::title() const { return _title; }
-QString Webpage::url() const { return _url; }
-QString Webpage::storeFile() const { return _storeFile; }
-QString Webpage::html() const { return _html; }
-bool Webpage::temporary() const { return _temporary; }
-bool Webpage::crawling() const { return _crawling; }
-bool Webpage::crawled() const { return _crawled; }
-
-void Webpage::setTitle(QString x) { _title = x; }
-void Webpage::setUrl(QString x) { _url = x; }
-void Webpage::setStoreFile(QString x) { _storeFile = x; }
-void Webpage::setHtml(QString x) { _html = x; }
-void Webpage::setTemporary(bool x) { _temporary = x; }
-void Webpage::setCrawling(bool x) { _crawling = x; }
-void Webpage::setCrawled(bool x) { _crawled = x; }
 
 QVariantMap Webpage::toQVariantMap()
 {
     QVariantMap map;
-    map.insert("title", title());
-    map.insert("url", url());
-    map.insert("crawling", crawling());
-    map.insert("crawled", crawled());
+#define MAP_INSERT(NAME) map.insert(#NAME, NAME())
+    MAP_INSERT(title);
+    MAP_INSERT(url);
+    MAP_INSERT(html);
+    MAP_INSERT(visited);
+    MAP_INSERT(hash);
+    MAP_INSERT(symbol);
+    MAP_INSERT(display);
+    MAP_INSERT(url_matched);
+    MAP_INSERT(title_matched);
+    MAP_INSERT(hash_matched);
+    MAP_INSERT(symbol_matched);
     return map;
 }
 
 Webpage_ Webpage::fromQVariantMap(QVariantMap& map)
 {
-    Webpage_ webpage = Webpage::create(map["url"].value<QString>());
-    webpage->setTitle(map["title"].value<QString>());
+    Webpage_ webpage = Webpage_::create(map["url"].value<QString>());
+    webpage->set_title(map["title"].value<QString>());
     return webpage;
 }
 
@@ -67,14 +67,13 @@ QJsonObject Webpage::toQJsonObject()
 
 Webpage_ Webpage::fromQJsonObject(QJsonObject& map)
 {
-    Webpage_ webpage = QSharedPointer<Webpage>::create();
-    webpage->setTitle(map["title"].toString());
-    webpage->setUrl(map["url"].toString());
+    Webpage_ webpage = QSharedPointer<Webpage>::create(map["url"].toString());
+    webpage->set_title(map["title"].toString());
     return webpage;
 }
 
-Webpage_ Webpage::create(const QString& url)
-{
-    Webpage_ webpage = QSharedPointer<Webpage>::create(url);
-    return webpage;
-}
+//Webpage_ Webpage::create(const QString& url)
+//{
+//    Webpage_ webpage = QSharedPointer<Webpage>::create(url);
+//    return webpage;
+//}
