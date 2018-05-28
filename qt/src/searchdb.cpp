@@ -89,10 +89,10 @@ bool SearchDB::execMany(const QStringList& lines)
                         << error;
             return false;
         }
+        if (! _db.commit()) {
+            qCritical() << "SearchDB::execMany" << _db.lastError();
+        }
     }
-    //    if (! _db.commit()) {
-    //        qCritical() << "SearchDB::execMany" << _db.lastError();
-    //    }
     return true;
 }
 

@@ -98,9 +98,15 @@ BrowserForm {
         }
         TabsModel.insertTab(0, url, "", "")
         if (switchToView) {
+            if (currentWebViewIndex === 0) {
+                openTab(1) // trigger binding update
+            }
             openTab(0)
-        } else if (currentWebView > -1) {
-            openTab(currentWebViewIndex + 1)
+        } else {
+            // in case we are at the welcome page
+            if (currentWebViewIndex > -1) {
+                openTab(currentWebViewIndex + 1)
+            }
         }
         return browserWebViews.webViewAt(0)
     }

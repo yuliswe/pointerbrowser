@@ -25,7 +25,7 @@ Item {
     }
 
     function bookmark() {
-        logging("bookmark", hostname)
+        logging("bookmark")
         var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
         webview.runJavaScript("location.hostname", function(hostname) {
             var i = arr.indexOf(hostname)
@@ -41,7 +41,7 @@ Item {
     }
 
     function unbookmark() {
-        logging("unbookmark", hostname)
+        logging("unbookmark")
         var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
         webview.runJavaScript("location.hostname", function(hostname) {
             var i = arr.indexOf(hostname)
@@ -173,16 +173,6 @@ Item {
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
                 logging("webview loading started", loadRequest.url)
-                if (! SearchDB.hasWebpage(noHash(loadRequest.url))) {
-                    SearchDB.addWebpage(noHash(loadRequest.url))
-                }
-                if (! SearchDB.bookmarked(noHash(loadRequest.url))) {
-                    // when the url's domain is in the auto-bookmark.txt list
-                    var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
-                    var domain = noHash(loadRequest.url).split("/")[2]
-                    SearchDB.setBookmarked(noHash(loadRequest.url), arr.indexOf(domain) > -1)
-                }
-                SearchDB.updateWebpage(noHash(loadRequest.url), "crawling", true)
             } else {
                 switch (loadRequest.status) {
                 case WebEngineView.LoadFailedStatus:
