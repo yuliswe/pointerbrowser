@@ -63,12 +63,26 @@ T.TextField {
         }
     }
     signal textCleared()
+    signal delayedTextEdited()
+    Timer {
+        id: timeout
+        repeat: false
+        triggeredOnStart: false
+        interval: 100
+        onTriggered: {
+            delayedTextEdited(textfield.text)
+        }
+    }
+    onTextEdited: {
+        timeout.restart()
+    }
     Keys.onReleased: {
         if (event.key === Qt.Key_Escape) {
             event.accepted = true;
             textfield.focus = false
             textfield.text = placeholderText
             textCleared()
+            timeout.stop()
         }
     }
 }

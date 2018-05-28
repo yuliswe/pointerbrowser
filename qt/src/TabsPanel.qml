@@ -68,7 +68,7 @@ TabsPanelForm {
     }
 
     searchTextField {
-        onTextEdited: {
+        onDelayedTextEdited: {
             if (searchTextField.text.length > 1) {
                 filterModelBySymbol(searchTextField.text)
             } else if (searchTextField.text.length === 0) {
