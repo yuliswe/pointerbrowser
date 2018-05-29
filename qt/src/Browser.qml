@@ -69,7 +69,6 @@ BrowserForm {
     function openSavedTab(index) {
         console.log("openSavedTab", index)
         var wp = SearchDB.searchResult.at(index)
-        console.error(JSON.stringify(wp))
         if (wp.hash) {
             SearchDB.updateSymbol(wp.hash, 'visited', Date.now())
         }

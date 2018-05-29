@@ -75,11 +75,11 @@ WebEngineView {
         default:
             switch (loadRequest.status) {
             case WebEngineView.LoadFailedStatus:
-                console.info("crawler loading failed", loadRequest.url)
+                console.warn("crawler loading failed", loadRequest.url)
                 crawler.queue[crawler.crawling] = true // retry later
                 break
             case WebEngineView.LoadStoppedStatus:
-                console.info("crawler loading stopped", loadRequest.url)
+                console.warn("crawler loading stopped", loadRequest.url)
                 crawler.queue[crawler.crawling] = true // retry later
                 break
             case WebEngineView.LoadSucceededStatus:
