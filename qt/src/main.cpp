@@ -40,7 +40,9 @@ int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
 
+#ifdef QT_DEBUG
     qInstallMessageHandler(myMessageHandler);
+#endif
 
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

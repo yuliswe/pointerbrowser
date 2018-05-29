@@ -150,47 +150,38 @@ bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)
                     << _webpage->lastError();
         return false;
     }
-    const QSqlRecord wpRecord = _webpage->record(0);
+    const QVariant wid = _webpage->record(0).value("id");
     for (auto i = symbols.keyBegin();
          i != symbols.keyEnd();
          i++) {
         QString hash = (*i);
         QString text = symbols[hash].value<QString>();
-        _symbol->setFilter("hash='"+hash+"'" + (text.length() ? " AND text='"+ text +"'" : ""));
-        _symbol->select();
-        QSqlRecord syRecord;
-        if (_symbol->rowCount() == 0) {
-            qDebug() << "SearchDB::addSymbols create new symbol" << hash << text;
-            syRecord = _symbol->record();
-            syRecord.setValue("hash", hash);
-            syRecord.setValue("text", text);
-            syRecord.setValue("visited", 0);
-            if (! _symbol->insertRecord(-1, syRecord)) {
-                qCritical() << _symbol->lastError();
-                continue;
+        QSqlQuery query;
+        query.prepare("INSERT INTO symbol (hash,text,visited) VALUES (:hash,:text,:visited)");
+        query.bindValue(":hash", hash);
+        query.bindValue(":text", text);
+        query.bindValue(":visited", 0);
+        if (query.exec()) {
+            QVariant sid = query.lastInsertId();
+            if (sid.isValid()) {
+                QSqlQuery query2;
+                query2.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
+                query2.bindValue(":symbol", sid);
+                query2.bindValue(":webpage", wid);
+                if (query2.exec()) {
+                    qDebug() << "SearchDB::addSymbols inserted" << hash << text;
+                } else {
+                    qDebug() << "SearchDB::addSymbols failed to insert into webpage_symbol" << hash << text
+                             << query2.lastError();
+                }
+            } else {
+                qCritical() << "SearchDB::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
+                return false;
             }
+        } else {
+            qCritical() << "SearchDB::addSymbols failed to insert to symbol" << hash << text
+                        << query.lastError();
         }
-        _symbol->submitAll();
-        _symbol->select();
-        if (_symbol->rowCount() == 0) {
-            qCritical() << "SearchDB::addSymbols failed!" << hash << text
-                        << _symbol->lastError();
-            continue;
-        }
-        syRecord = _symbol->record(0);
-        QSqlRecord rel = _webpage_symbol->record();
-        rel.setValue("symbol", syRecord.value("id"));
-        rel.setValue("webpage", wpRecord.value("id"));
-        if (! _webpage_symbol->insertRecord(-1, rel)) {
-            qCritical() << "SearchDB::addSymbols failed!" << hash << text
-                        << _webpage_symbol->lastError();
-            continue;
-        }
-    }
-    if (! _webpage_symbol->submitAll()) {
-        qCritical() << "SearchDB::addSymbols failed!"
-                    << _webpage_symbol->lastError();
-        return false;
     }
     return true;
 }
@@ -293,7 +284,7 @@ void SearchDB::search(const QString& word)
     if (word == "") {
         _webpage->setFilter("");
         _webpage->select();
-        int upper = std::min(100, _webpage->rowCount());
+        int upper = std::min(50, _webpage->rowCount());
         for (int i = 0; i < upper; i++) {
             QSqlRecord record = _webpage->record(i);
             QString url = record.value("url").value<QString>();
