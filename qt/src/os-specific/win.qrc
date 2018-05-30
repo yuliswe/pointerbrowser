@@ -10,5 +10,6 @@
         <file alias="icons/minus2.svg">win/window/icons/minus2.svg</file>
         <file alias="icons/plus2.svg">win/window/icons/plus2.svg</file>
         <file alias="WelcomePageForm.qml">win/WelcomePageForm.ui.qml</file>
+        <file alias="Crawler.qml">win/Crawler.qml</file>
     </qresource>
 </RCC>

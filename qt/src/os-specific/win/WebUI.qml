@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQml 2.2
-import QtWebEngine 1.7
+import QtWebEngine 1.5
 import Backend 1.0
 import QtQuick.Layouts 1.3
 
@@ -8,32 +8,51 @@ Item {
     property alias canGoBack: webview.canGoBack
     property alias canGoForward: webview.canGoForward
     property alias title: webview.title
-    property alias loadProgress: docview.loadProgress
+    property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
     property bool bookmarked: false
     property alias href: webview.url
+    property string url: noHash(href)
     id: webUI
 
+
+    function setBookmarked(hostname) {
+        logging("setBookmarked", hostname)
+        // when the url's domain is in the auto-bookmark.txt list
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webUI.bookmarked = (arr.indexOf(hostname) > -1)
+    }
+
     function bookmark() {
-        if (SearchDB.setBookmarked(url(), true)) {
-            bookmarked = true
-        }
+        logging("bookmark")
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webview.runJavaScript("location.hostname", function(hostname) {
+            var i = arr.indexOf(hostname)
+            if (i > -1) {
+                info("bookmark called on already bookmarked hostname", hostname)
+            } else {
+                arr.push(hostname)
+                FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            }
+            FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            webUI.bookmarked = true
+        })
     }
 
     function unbookmark() {
-        if (SearchDB.setBookmarked(url(), false)) {
-            bookmarked = false
-        }
-    }
-
-    function url() {
-        var s = webview.url.toString()
-        var i = s.indexOf("#")
-        if (i > -1) {
-            return s.substring(0, i)
-        }
-        return s
+        logging("unbookmark")
+        var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
+        webview.runJavaScript("location.hostname", function(hostname) {
+            var i = arr.indexOf(hostname)
+            if (i === -1) {
+                info("unbookmark called on non-bookmarked hostname", hostname)
+            } else {
+                arr.splice(i,1)
+                FileManager.writeDataFileS("auto-bookmark.txt", arr.join('\n'))
+            }
+            webUI.bookmarked = false
+        })
     }
 
     function docviewOn() {
@@ -88,200 +107,170 @@ Item {
         request.openIn(webview)
     }
 
+    function warning() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.warn.apply(null, args)
+    }
+
+    function info() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.info.apply(null, args)
+    }
+
+    function error() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.error.apply(null, args)
+    }
+
+    function logging() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift("WebUI", index);
+        console.log.apply(null, args)
+    }
+
     Component.onCompleted: {
         var url = TabsModel.at(index).url
         goTo(url)
-        bookmarked = SearchDB.bookmarked(url)
     }
 
     WebEngineView {
         id: webview
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
+        width: browserWebViews.width
+        height: browserWebViews.height
         onNewViewRequested: {
-            console.log("onNewViewRequested", request, JSON.stringify(request));
-//            userRequestsNewView(request)
-
+            logging("webview onNewViewRequested", request, JSON.stringify(request));
+            userRequestsNewView(request)
         }
         settings.focusOnNavigationEnabled: false
+
+        onTitleChanged: {
+            logging('webview title changed', title)
+            if (title) {
+                TabsModel.updateTab(index, "title", title)
+                if (SearchDB.hasWebpage(noHash(url))) {
+                    SearchDB.updateWebpage(noHash(url), "title", title)
+                }
+            }
+        }
+        onUrlChanged: {
+            logging('webview url changed', url)
+            if (url) {
+                TabsModel.updateTab(index, "url", webUI.href)
+            }
+        }
+        onLoadProgressChanged: {
+            logging('webview load progress', loadProgress)
+        }
+        onNavigationRequested: {
+            logging("webview navigation requested", request.url)
+            webViewNavRequested(index)
+        }
+        onLoadingChanged: {
+            logging("webview loading changed", loading)
+            if (loadRequest.status == WebEngineView.LoadStartedStatus) {
+                docviewLoaded = false
+                logging("webview loading started", loadRequest.url)
+            } else {
+                switch (loadRequest.status) {
+                case WebEngineView.LoadFailedStatus:
+                    error("webview loading failed", loadRequest.url)
+                    break
+                case WebEngineView.LoadStoppedStatus:
+                    error("webview loading stopped", loadRequest.url)
+                    break
+                case WebEngineView.LoadSucceededStatus:
+                    logging("webview loading suceeded", loadRequest.url)
+                    break
+                }
+                var requestURL = loadRequest.url
+                runJavaScript("location.hostname", function(hostname) {
+                    logging("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
+                    webUI.setBookmarked(hostname)
+                    if (webUI.bookmarked) {
+                        logging("hostname is bookmarked", hostname)
+                        console.log("webview injecting docview.js on", loadRequest.url)
+                        runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                            console.log("webview calling Docview.crawler() on", requestURL)
+                            runJavaScript("Docview.crawler()", function(result) {
+                                result.links.push(requestURL)
+                                crawler.queueLinks(result.links)
+                            })
+                        })
+                    } else {
+                        logging("hostname is not bookmarked", hostname)
+                    }
+                })
+            }
+        }
+    }
+
+    function noHash(u) {
+        var s = u.toString()
+        var i = s.indexOf("#")
+        if (i > -1) {
+            return s.substring(0, i)
+        }
+        return s
     }
 
     WebEngineView {
         id: docview
         visible: false
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
+        height: browserWebViews.height
+        width: browserWebViews.width
         url: webview.url
         settings.focusOnNavigationEnabled: false
-        onTitleChanged: {
-            TabsModel.updateTab(index, "title", title)
-            if (SearchDB.hasWebpage(webUI.url())) {
-                SearchDB.updateWebpage(webUI.url(), "title", title)
-            }
-        }
-        onUrlChanged: {
-            TabsModel.updateTab(index, "url", webUI.href)
-            bookmarked = SearchDB.bookmarked(webUI.url())
-        }
-        onLoadProgressChanged: {
-            if (loading) {
-                console.log("onLoadProgressChanged", index, loadProgress)
-                webViewLoadingProgressChanged(index, loadProgress)
-            }
-        }
         onNewViewRequested: {
             userRequestsNewView(request)
         }
         onNavigationRequested: {
-            console.log("onWebViewNavRequested", index)
+            logging("docview navigation requested", request.url)
             webViewNavRequested(index)
         }
         onLoadingChanged: {
-            switch (loadRequest.status) {
-            case WebEngineView.LoadStartedStatus:
+            logging("docview loading changed", loading)
+            if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
-                console.log("WebEngineView.LoadStartedStatus", loadRequest.errorString)
-                if (! SearchDB.hasWebpage(webUI.url())) {
-                    SearchDB.addWebpage(webUI.url())
+                logging("docview loading started", loadRequest.url)
+            } else {
+                switch (loadRequest.status) {
+                case WebEngineView.LoadFailedStatus:
+                    error("docview loading failed", loadRequest.url)
+                    break
+                case WebEngineView.LoadStoppedStatus:
+                    error("docview loading stopped", loadRequest.url)
+                    break
+                case WebEngineView.LoadSucceededStatus:
+                    logging("docview loading suceeded", loadRequest.url)
+                    break
                 }
-                if (! SearchDB.bookmarked(webUI.url())) {
-                    // when the url's domain is in the auto-bookmark.txt list
-                    var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
-                    var domain = webUI.url().split("/")[2]
-                    SearchDB.setBookmarked(webUI.url(), arr.indexOf(domain) > -1)
-                }
-                webViewLoadingStarted(index, webUI.href)
-                break
-            case WebEngineView.LoadSucceededStatus:
-                console.log("WebEngineView.LoadSucceededStatus", loadRequest.errorString)
-                SearchDB.updateWebpage(webUI.url(), "crawling", true)
-                SearchDB.updateWebpage(webUI.url(), "title", title)
+                logging("docview injecting docview.js on", loadRequest.url)
+                var requestURL = loadRequest.url
                 runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    runJavaScript("Docview.crawler()", function(result) {
-                        console.log(result.referer, result.symbols, result.links)
-                        console.log(result.referer, webUI.url())
-                        SearchDB.addSymbols(result.referer, result.symbols)
-                        SearchDB.updateWebpage(result.referer, "crawling", false)
-                        // loading done
-                        crawler.queueLinks(result.referer, result.links)
-                    })
+                    logging("docview calling Docview.docviewOn() on", requestURL)
                     runJavaScript("Docview.docviewOn()", function() {
                         if (inDocview) {
                             docviewOn()
                         }
                         docviewLoaded = true
                     })
-                    webViewLoadingSucceeded(index, webUI.url())
-                    webViewLoadingStopped(index, webUI.url())
                 })
-                break
-            case WebEngineView.LoadFailedStatus:
-                console.log("WebEngineView.LoadFailedStatus",
-                            loadRequest.errorString)
-                webViewLoadingFailed(index, webUI.url())
-                webViewLoadingStopped(index, webUI.url())
-                break
-            case WebEngineView.LoadStoppedStatus:
-                console.log("WebEngineView.LoadStoppedStatus",
-                            loadRequest.errorString)
-                webViewLoadingStopped(index, webUI.url())
-                break
             }
         }
         settings {
             focusOnNavigationEnabled: false
             pluginsEnabled: false
             linksIncludedInFocusChain: false
-            autoLoadImages: false
-            autoLoadIconsForPage: false
             javascriptCanOpenWindows: false
             allowGeolocationOnInsecureOrigins: false
-            allowWindowActivationFromJavaScript: false
+            //            allowWindowActivationFromJavaScript: false
             allowRunningInsecureContent: false
             webGLEnabled: false
-            playbackRequiresUserGesture: true
-            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
-        }
-    }
-
-
-    WebEngineView {
-        id: crawler
-        implicitHeight: browserWebViews.height
-        implicitWidth: browserWebViews.width
-        visible: false
-        focus: false
-        activeFocusOnPress: false
-//        JavaScriptConsoleMessageLevel:
-        settings {
-            focusOnNavigationEnabled: false
-            pluginsEnabled: false
-            linksIncludedInFocusChain: false
-            errorPageEnabled: false
-            autoLoadImages: false
-            autoLoadIconsForPage: false
-            javascriptCanOpenWindows: false
-            allowGeolocationOnInsecureOrigins: false
-            allowWindowActivationFromJavaScript: false
-            allowRunningInsecureContent: false
-            webGLEnabled: false
-            playbackRequiresUserGesture: true
-            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
-        }
-
-        property var queue: []
-//        url: queue.length ? queue[0] : ""
-        function queueLinks(referer, links) {
-            console.log("crawler.queueLinks", referer, links)
-            // check if referer is fully crawled
-            var incomplete = []
-            var unstarted = []
-            for (var i = 0; i < links.length; i++) {
-                var l = links[i]
-                if (! SearchDB.hasWebpage(l)) {
-                    SearchDB.addWebpage(l)
-                }
-                var w = SearchDB.findWebpage(l)
-                if (w.crawling) {
-                    incomplete.push(l)
-                } else if (! w.crawled) {
-                    unstarted.push(l)
-                    SearchDB.updateWebpage(l, "crawling", true)
-                }
-            }
-            if (incomplete.length == 0 && unstarted.length == 0) {
-                SearchDB.updateWebpage(referer, "crawled", true)
-            }
-            queue = queue.concat(unstarted)
-//            console.log("now queue is", loading, queue.length)
-            crawNext()
-        }
-        function crawNext() {
-            if (queue.length && ! loading) {
-                var u = queue.shift()
-                console.log("crawling", u)
-                url = u
-            }
-        }
-        onLoadingChanged: {
-            switch (loadRequest.status) {
-            case WebEngineView.LoadStartedStatus:
-                if (! SearchDB.hasWebpage(url)) {
-                    SearchDB.addWebpage(url)
-                }
-                break
-            default:
-                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    runJavaScript("Docview.crawler()", function(result) {
-                        SearchDB.addSymbols(result.referer, result.symbols)
-                        SearchDB.updateWebpage(result.referer, "crawling", false)
-                        SearchDB.updateWebpage(result.referer, "title", title)
-                        // loading done
-//                        queueLinks(result.referer, result.links)
-                        crawNext()
-                    })
-                })
-            }
+            //            playbackRequiresUserGesture: true
+            //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
         }
     }
 }
