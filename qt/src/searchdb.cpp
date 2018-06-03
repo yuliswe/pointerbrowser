@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 #include <QString>
 #include <QMap>
+#include <QtConcurrent>
 #include <algorithm>
 #include "searchdb.h"
 #include "filemanager.h"
@@ -134,6 +135,13 @@ bool SearchDB::updateSymbol(const QString &hash, const QString &property, const 
     }
     _symbol->submitAll();
     return true;
+}
+
+void SearchDB::addSymbolsAsync(const QString& url, const QVariantMap& symbols)
+{
+    QtConcurrent::run([=]() {
+        SearchDB::addSymbols(url, symbols);
+    });
 }
 
 bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols)

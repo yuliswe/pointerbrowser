@@ -30,6 +30,7 @@ class SearchDB : public QObject
         bool execMany(const QStringList& lines);
         bool addWebpage(const QString& url);
         bool addSymbols(const QString& url, const QVariantMap& symbols);
+        void addSymbolsAsync(const QString& url, const QVariantMap& symbols);
         bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
         bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
         Webpage_ findWebpage_(const QString& url) const;
