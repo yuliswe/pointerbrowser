@@ -139,8 +139,11 @@ bool SearchDB::updateSymbol(const QString &hash, const QString &property, const 
 
 void SearchDB::addSymbolsAsync(const QString& url, const QVariantMap& symbols)
 {
+    static QSemaphore sem(1);
     QtConcurrent::run([=]() {
+        sem.acquire(1);
         SearchDB::addSymbols(url, symbols);
+        sem.release(1);
     });
 }
 
