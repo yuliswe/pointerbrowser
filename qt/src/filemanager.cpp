@@ -42,7 +42,7 @@ void FileManager::rmDataDir()
 
 void FileManager::rmDataFile(const QString& filename)
 {
-    qDebug() << "FileManager::rmDataFile"<< FileManager::dataPath();
+    qDebug() << "FileManager::rmDataFile"<< filename;
     QDir dir(FileManager::dataPath());
     dir.remove(filename);
 }
