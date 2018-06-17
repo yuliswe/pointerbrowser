@@ -43,6 +43,8 @@ public slots:
     bool addWebpage(const QString& url);
     bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
     bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
+    bool execScript(QString filename);
+    bool execMany(const QStringList& lines);
 };
 
 typedef QSharedPointer<UpdateWorker> UpdateWorker_;
@@ -68,7 +70,6 @@ signals:
 public slots:
     bool connect();
     void disconnect();
-    bool execMany(const QStringList& lines);
 //    void searchAsync(const QString& words);
     Webpage_ findWebpage_(const QString& url) const;
     QVariantMap findWebpage(const QString& url) const;
@@ -77,7 +78,6 @@ public slots:
     QSqlRelationalTableModel* webpageTable() const;
     TabsModel* searchResult();
     void setSearchResult(const Webpage_List& results);
-    bool execScript(QString filename);
 
 protected:
     QString _dbPath;

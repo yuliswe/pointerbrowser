@@ -83,9 +83,6 @@ bool SearchDB::connect() {
 //}
 
 void SearchDB::disconnect() {
-    if (! execScript("db/exit.sqlite3")) {
-        qDebug() << "SearchDB::disconnect failed";
-    }
     _db.close();
     _searchWorkerThread.quit();
     _searchWorkerThread.wait();
@@ -94,19 +91,19 @@ void SearchDB::disconnect() {
     qDebug() << "SearchDB: disconnected";
 }
 
-bool SearchDB::execScript(QString filename)
+bool UpdateWorker::execScript(QString filename)
 {
     QString s = FileManager::readQrcFileS(filename);
     return execMany(s.replace("\n","").split(";", QString::SkipEmptyParts));
 }
 
-bool SearchDB::execMany(const QStringList& lines)
+bool UpdateWorker::execMany(const QStringList& lines)
 {
     for (const QString l : lines) {
-        qDebug() << "SearchDB::execMany" << l;
+        qDebug() << "UpdateWorker::execMany" << l;
         QSqlQuery query = _db.exec(l);
         if (query.lastError().isValid()) {
-            qCritical() << "SearchDB::execMany error when executing"
+            qCritical() << "UpdateWorker::execMany error when executing"
                         << query.lastQuery()
                         << query.lastError();
             return false;
@@ -304,8 +301,12 @@ UpdateWorker::UpdateWorker(const QSqlDatabase& db, QThread& _thread, QThread& _q
     _db.open();
     qDebug() << "UpdateWorker::UpdateWorker initialized and moved to thread" << &_thread;
 }
+
 UpdateWorker::~UpdateWorker()
 {
+    if (! execScript("db/exit.sqlite3")) {
+        qDebug() << "UpdateWorker::disconnect failed";
+    }
     _db.close();
 }
 
