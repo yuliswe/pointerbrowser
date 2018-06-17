@@ -39,10 +39,9 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--remote-debugging-port=666 --overscroll-history-navigation=2 --disable-logging");
 
-#ifdef QT_DEBUG
     qInstallMessageHandler(myMessageHandler);
-#endif
 
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -77,12 +76,17 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    //        QMLRegister::tabsModel->loadTabs();
+    QMLRegister::tabsModel->loadTabs();
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();
         QMLRegister::searchDB->disconnect();
+#ifndef QT_DEBUG
+        FileManager::rmDataFile("debug.log");
+        FileManager::rmDataFile("info.log");
+        FileManager::rmDataFile("warning.log");
+        FileManager::rmDataFile("critical.log");
+#endif
     });
-
     return app.exec();
 }

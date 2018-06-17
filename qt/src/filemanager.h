@@ -16,22 +16,23 @@ class FileManager : public QObject
         explicit FileManager(QObject *parent = nullptr);
         void static mkDataDir();
         void static rmDataDir();
+        void static rmDataFile(const QString&);
 
     signals:
 
     public slots:
         static QString dataPath();
-        static QFile_ dataFile(QString file);
-        static QFile_ qrcFile(QString file);
-        static QString readQrcFileS(QString file);
-        static QByteArray readQrcFileB(QString file);
-        static void writeDataFileB(QString file, QByteArray contents);
-        static void writeDataFileS(QString file, QString contents);
-        static void appendDataFileB(QString file, QByteArray contents);
-        static void appendDataFileS(QString file, QString contents);
-        static QString readDataFileS(QString file);
-        static QByteArray readDataFileB(QString file);
-        static void defaultOpenUrl(QString file);
+        static QFile_ dataFile(const QString& file);
+        static QFile_ qrcFile(const QString& file);
+        static QString readQrcFileS(const QString& file);
+        static QByteArray readQrcFileB(const QString& file);
+        static void writeDataFileB(const QString& file, const QByteArray& contents);
+        static void writeDataFileS(const QString& file, const QString& contents);
+        static void appendDataFileB(const QString& file, const QByteArray& contents);
+        static void appendDataFileS(const QString& file, const QString& contents);
+        static QString readDataFileS(const QString& file);
+        static QByteArray readDataFileB(const QString& file);
+        static void defaultOpenUrl(const QString& file);
 };
 
 #endif // FILEMANAGER_H

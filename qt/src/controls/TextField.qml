@@ -68,7 +68,7 @@ T.TextField {
         id: timeout
         repeat: false
         triggeredOnStart: false
-        interval: 100
+        interval: 250
         onTriggered: {
             delayedTextEdited(textfield.text)
         }

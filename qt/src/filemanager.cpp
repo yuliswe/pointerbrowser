@@ -40,14 +40,21 @@ void FileManager::rmDataDir()
     dir.removeRecursively();
 }
 
-QFile_ FileManager::dataFile(QString filename)
+void FileManager::rmDataFile(const QString& filename)
+{
+    qDebug() << "FileManager::rmDataFile"<< FileManager::dataPath();
+    QDir dir(FileManager::dataPath());
+    dir.remove(filename);
+}
+
+QFile_ FileManager::dataFile(const QString& filename)
 {
     QString path = FileManager::dataPath() + filename;
     return QFile_::create(path);
 }
 
 
-QFile_ FileManager::qrcFile(QString filename)
+QFile_ FileManager::qrcFile(const QString& filename)
 {
     return QFile_::create(":/" + filename);
 }
@@ -58,7 +65,7 @@ QString FileManager::dataPath()
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
 }
 
-QString FileManager::readQrcFileS(QString file)
+QString FileManager::readQrcFileS(const QString& file)
 {
     QFile input(":/" + file);
     input.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -66,14 +73,14 @@ QString FileManager::readQrcFileS(QString file)
     return ts.readAll();
 }
 
-QByteArray FileManager::readQrcFileB(QString file)
+QByteArray FileManager::readQrcFileB(const QString& file)
 {
     QFile input(":/" + file);
     input.open(QIODevice::ReadOnly);
     return input.readAll();
 }
 
-void FileManager::writeDataFileB(QString filename, QByteArray contents)
+void FileManager::writeDataFileB(const QString& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
     QFile_ file = FileManager::dataFile(filename);
@@ -84,7 +91,7 @@ void FileManager::writeDataFileB(QString filename, QByteArray contents)
 //             << contents << endl;
 }
 
-void FileManager::appendDataFileB(QString filename, QByteArray contents)
+void FileManager::appendDataFileB(const QString& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
     QFile_ file = FileManager::dataFile(filename);
@@ -96,18 +103,18 @@ void FileManager::appendDataFileB(QString filename, QByteArray contents)
 }
 
 
-void FileManager::writeDataFileS(QString filename, QString contents)
+void FileManager::writeDataFileS(const QString& filename, const QString& contents)
 {
     FileManager::writeDataFileB(filename, contents.toUtf8());
 }
 
-void FileManager::appendDataFileS(QString filename, QString contents)
+void FileManager::appendDataFileS(const QString& filename, const QString& contents)
 {
     FileManager::appendDataFileB(filename, contents.toUtf8());
 }
 
 
-QString FileManager::readDataFileS(QString filename)
+QString FileManager::readDataFileS(const QString& filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
@@ -116,7 +123,7 @@ QString FileManager::readDataFileS(QString filename)
     return file.readAll();
 }
 
-QByteArray FileManager::readDataFileB(QString filename)
+QByteArray FileManager::readDataFileB(const QString& filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
@@ -125,7 +132,7 @@ QByteArray FileManager::readDataFileB(QString filename)
     return file.readAll();
 }
 
-void FileManager::defaultOpenUrl(QString filename)
+void FileManager::defaultOpenUrl(const QString& filename)
 {
     QUrl url(filename);
     url.setScheme("file");

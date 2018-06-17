@@ -11,13 +11,13 @@
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
     public: type prop() const; \
     public: void set_##prop(type); \
-    private: type _##prop; \
+    public: type _##prop; \
     Q_SIGNAL void prop##_changed(type); \
 
 
 class Webpage;
 typedef QSharedPointer<Webpage> Webpage_;
-typedef QList<Webpage_> WebpageList;
+typedef QList<Webpage_> Webpage_List;
 
 
 class Webpage : public QObject

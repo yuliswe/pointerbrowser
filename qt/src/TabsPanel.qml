@@ -16,7 +16,7 @@ TabsPanelForm {
     }
 
     function filterModelBySymbol(sym) {
-        SearchDB.search(sym)
+        SearchDB.searchAsync(sym)
     }
 
 //    flickable {
@@ -58,10 +58,10 @@ TabsPanelForm {
         }
     }
 
+
     searchTabsList {
         height: SearchDB.searchResult.count * tabHeight
         model: SearchDB.searchResult
-
         onUserDoubleClicksTab: {
             userOpensSavedTab(index)
         }

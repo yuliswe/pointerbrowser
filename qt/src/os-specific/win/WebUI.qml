@@ -16,7 +16,6 @@ Item {
     property string url: noHash(href)
     id: webUI
 
-
     function setBookmarked(hostname) {
         logging("setBookmarked", hostname)
         // when the url's domain is in the auto-bookmark.txt list
@@ -136,6 +135,13 @@ Item {
         goTo(url)
     }
 
+    WebEngineScript {
+        id: noOverscroll
+        injectionPoint: WebEngineScript.DocumentReady
+        sourceCode: "document.getElementById(id).style"
+
+    }
+
     WebEngineView {
         id: webview
         width: browserWebViews.width
@@ -151,7 +157,7 @@ Item {
             if (title) {
                 TabsModel.updateTab(index, "title", title)
                 if (SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.updateWebpage(noHash(url), "title", title)
+                    SearchDB.updateWebpageAsync(noHash(url), "title", title)
                 }
             }
         }
