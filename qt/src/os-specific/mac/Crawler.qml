@@ -92,10 +92,10 @@ WebEngineView {
                 runJavaScript("Docview.crawler()", function(result) {
                     console.log("crawler Docview.crawler() returns from", requestURL)
                     if (! SearchDB.hasWebpage(result.referer)) {
-                        SearchDB.addWebpage(result.referer)
+                        SearchDB.addWebpageAsync(result.referer)
                     }
                     SearchDB.addSymbolsAsync(result.referer, result.symbols)
-                    SearchDB.updateWebpage(result.referer, "title", result.title)
+                    SearchDB.updateWebpageAsync(result.referer, "title", result.title)
                     // loading done
                     crawler.crawNext()
                 })

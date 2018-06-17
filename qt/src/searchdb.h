@@ -40,6 +40,9 @@ public:
     ~UpdateWorker();
 public slots:
     bool addSymbols(const QString& url, const QVariantMap& symbols);
+    bool addWebpage(const QString& url);
+    bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
+    bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
 };
 
 typedef QSharedPointer<UpdateWorker> UpdateWorker_;
@@ -58,15 +61,15 @@ signals:
     void searchResultChanged();
     void searchAsync(const QString& words);
     void addSymbolsAsync(const QString& url, const QVariantMap& symbols);
+    bool addWebpageAsync(const QString& url);
+    bool updateWebpageAsync(const QString& url, const QString& property, const QVariant& value);
+    bool updateSymbolAsync(const QString& hash, const QString& property, const QVariant& value);
 
 public slots:
     bool connect();
     void disconnect();
     bool execMany(const QStringList& lines);
 //    void searchAsync(const QString& words);
-    bool addWebpage(const QString& url);
-    bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
-    bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
     Webpage_ findWebpage_(const QString& url) const;
     QVariantMap findWebpage(const QString& url) const;
     bool hasWebpage(const QString& url) const;

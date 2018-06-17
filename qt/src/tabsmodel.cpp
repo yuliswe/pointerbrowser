@@ -29,11 +29,9 @@ QVariant TabsModel::at(int i)
 
 void TabsModel::replaceModel(const Webpage_List& pages)
 {
-    emit beginInsertRows(QModelIndex(), 0, pages.count() > 0 ? pages.count() - 1 : 0);
+    emit beginResetModel();
     _tabs = pages;
-    // make sure they are on the same thread
-//    page->moveToThread(TabsModel::thread());
-    emit endInsertRows();
+    emit endResetModel();
     emit countChanged();
 }
 

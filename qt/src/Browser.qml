@@ -73,7 +73,7 @@ BrowserForm {
             SearchDB.updateSymbol(wp.hash, 'visited', Date.now())
         }
 //        if (wp.title || wp.url_matched) {
-            SearchDB.updateWebpage(wp.url, 'visited', Date.now())
+            SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
 //        }
         newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true)
     }

@@ -97,8 +97,8 @@ WebEngineView {
                         SearchDB.addWebpage(result.referer)
                     }
                     SearchDB.addSymbols(result.referer, result.symbols)
-                    SearchDB.updateWebpage(result.referer, "crawling", false)
-                    SearchDB.updateWebpage(result.referer, "title", result.title)
+                    SearchDB.updateWebpageAsync(result.referer, "crawling", false)
+                    SearchDB.updateWebpageAsync(result.referer, "title", result.title)
                     // loading done
                     crawler.crawNext()
                 })

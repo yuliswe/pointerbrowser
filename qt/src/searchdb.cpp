@@ -29,6 +29,7 @@ bool SearchDB::connect() {
     _dbPath = FileManager::dataPath() + "search.db";
     qDebug() << "SearchDB: connecting" << _dbPath;
     _db.setDatabaseName(_dbPath);
+    _db.setConnectOptions("QSQLITE_OPEN_READONLY");
     if (! _db.open()) {
         qFatal("SearchDB Error: connection with database failed");
     }
@@ -69,6 +70,9 @@ bool SearchDB::connect() {
     _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
     _updateWorkerThread.start();
     QObject::connect(this, &SearchDB::addSymbolsAsync, _updateWorker.data(), &UpdateWorker::addSymbols);
+    QObject::connect(this, &SearchDB::addWebpageAsync, _updateWorker.data(), &UpdateWorker::addWebpage);
+    QObject::connect(this, &SearchDB::updateSymbolAsync, _updateWorker.data(), &UpdateWorker::updateSymbol);
+    QObject::connect(this, &SearchDB::updateWebpageAsync, _updateWorker.data(), &UpdateWorker::updateWebpage);
     return true;
 }
 
@@ -101,85 +105,61 @@ bool SearchDB::execMany(const QStringList& lines)
     for (const QString l : lines) {
         qDebug() << "SearchDB::execMany" << l;
         QSqlQuery query = _db.exec(l);
-        QSqlError error = query.lastError();
-        if (error.isValid()) {
-            qCritical() << "SearchDB::execMany error when executing" << l
-                        << error;
+        if (query.lastError().isValid()) {
+            qCritical() << "SearchDB::execMany error when executing"
+                        << query.lastQuery()
+                        << query.lastError();
             return false;
         }
     }
     return true;
 }
 
-bool SearchDB::updateWebpage(const QString& url, const QString& property, const QVariant& value)
+bool UpdateWorker::updateWebpage(const QString& url, const QString& property, const QVariant& value)
 {
     qDebug() << "SearchDB::updateWebpage" << property << value << url;
-    _webpage->setFilter("url = '" + url + "'");
-    _webpage->select();
-    if (_webpage->rowCount() == 0) {
-        qCritical() << "SearchDB::updateWebpage didn't find the webpage" << url
-                    << _webpage->lastError();
+    QSqlQuery query(_db);
+    query.prepare("UPDATE webpage SET " + property + "= ':value' WHERE url = ':url'");
+    query.bindValue(":url", url);
+    //    query.bindValue(":property", property);
+    query.bindValue(":value", value);
+    if (! query.exec()) {
+        qCritical() << "UpdateWorker::updateWebpage failed" << url << property << value
+                    << query.lastQuery()
+                    << query.lastError();
         return false;
     }
-    QSqlRecord record = _webpage->record(0);
-    record.setValue(property, value);
-    if (! _webpage->setRecord(0, record)) {
-        qCritical() << "SearchDB::updateWebpage failed" << url
-                    << _webpage->lastError();
-        return false;
-    }
-    _webpage->submitAll();
     return true;
 }
 
 
-bool SearchDB::updateSymbol(const QString &hash, const QString &property, const QVariant &value)
+bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, const QVariant &value)
 {
     qDebug() << "SearchDB::updateSymbol" << property << value << hash;
-    _symbol->setFilter("hash = '" + hash + "'");
-    _symbol->select();
-    if (_symbol->rowCount() == 0) {
-        qCritical() << "SearchDB::updateSymbol didn't find the symbol" << hash
-                    << _symbol->lastError();
+    QSqlQuery query(_db);
+    query.prepare("UPDATE symbol SET :property = :value WHERE hash = :hash");
+    query.bindValue(":hash", hash);
+    query.bindValue(":property", property);
+    query.bindValue(":value", value);
+    if (! query.exec()) {
+        qCritical() << "UpdateWorker::updateSymbol failed" << hash << property << value
+                    << query.lastQuery()
+                    << query.lastError();
         return false;
     }
-    QSqlRecord record = _symbol->record(0);
-    record.setValue(property, value);
-    if (! _symbol->setRecord(0, record)) {
-        qCritical() << "SearchDB::updateSymbol failed" << hash
-                    << _symbol->lastError();
-        return false;
-    }
-    _symbol->submitAll();
     return true;
 }
-
-//void SearchDB::addSymbolsAsync(const QString url, const QVariantMap symbols)
-//{
-//    qDebug() << "SearchDB::addSymbolsAsync" << url << symbols;
-//    this->semaphore.acquire(1);
-//    QtConcurrent::run([=]() {
-//        QSqlDatabase tmpDB = QSqlDatabase::cloneDatabase(_db, "addSymbolsAsync");
-//        if (! tmpDB.open()) {
-//            qFatal("SearchDB Error: connection with database failed");
-//        }
-//        tmpDB.exec("PRAGMA journal_mode=WAL");
-//        qDebug() << "SearchDB: connection ok";
-//        SearchDB::addSymbols(tmpDB, url, symbols);
-//        tmpDB.close();
-//        this->semaphore.release(1);
-//    });
-//}
 
 
 bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
 {
-    qDebug() << "SearchDB::addSymbols" << url << symbols;
+    qDebug() << "UpdateWorker::addSymbols" << url << symbols;
     QSqlQuery query0(_db);
     query0.prepare("SELECT id FROM webpage WHERE url = :url");
     query0.bindValue(":url", url);
     if (! query0.exec() || ! query0.first() || !query0.isValid()) {
-        qCritical() << "SearchDB::addSymbols didn't find the webpage" << url
+        qCritical() << "UpdateWorker::addSymbols didn't find the webpage" << url
+                    << query0.lastQuery()
                     << query0.lastError();
         return false;
     }
@@ -200,35 +180,31 @@ bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
                 query0.bindValue(":symbol", sid);
                 query0.bindValue(":webpage", wid);
                 if (query0.exec()) {
-                    qDebug() << "SearchDB::addSymbols inserted" << hash << text;
+                    qDebug() << "UpdateWorker::addSymbols inserted" << hash << text;
                 } else {
-                    qDebug() << "SearchDB::addSymbols failed to insert into webpage_symbol" << hash << text
+                    qDebug() << "UpdateWorker::addSymbols failed to insert into webpage_symbol" << hash << text
                              << query0.lastError();
                 }
             } else {
-                qCritical() << "SearchDB::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
+                qCritical() << "UpdateWorker::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
                 return false;
             }
         } else {
-            qCritical() << "SearchDB::addSymbols failed to insert to symbol" << hash << text
+            qCritical() << "UpdateWorker::addSymbols failed to insert to symbol" << hash << text
                         << query0.lastError();
         }
     }
     return true;
 }
 
-bool SearchDB::addWebpage(const QString& url)
+bool UpdateWorker::addWebpage(const QString& url)
 {
-    qDebug() << "SearchDB::addWebpage" << url;
-    QSqlRecord wpRecord = _webpage->record();
-    wpRecord.setValue("url", url);
-    wpRecord.setValue("html", "");
-    wpRecord.setValue("title", "");
-    wpRecord.setValue("visited", 0);
-    if (! (_webpage->insertRecord(-1, wpRecord)
-           && _webpage->submitAll()))
-    {
-        qCritical() << "ERROR: SearchDB::addWebpage failed!" << _webpage->lastError();
+    qDebug() << "UpdateWorker::addWebpage" << url;
+    QSqlQuery query(_db);
+    query.prepare("REPLACE INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
+    query.bindValue(":url", url);
+    if (! query.exec()) {
+        qCritical() << "ERROR: UpdateWorker::addWebpage failed!" << query.lastError();
         return false;
     };
     return true;
@@ -311,6 +287,7 @@ SearchWorker::SearchWorker(const QSqlDatabase& db, QThread& _thread, QThread& _q
     : _db(QSqlDatabase::cloneDatabase(db, "SearchWorker")), _qmlThread(&_qmlThread)
 {
     this->moveToThread(&_thread);
+    _db.setConnectOptions("QSQLITE_OPEN_READONLY");
     _db.open();
     qDebug() << "SearchWorker::SearchWorker initialized and moved to thread" << &_thread;
 }
@@ -323,6 +300,7 @@ UpdateWorker::UpdateWorker(const QSqlDatabase& db, QThread& _thread, QThread& _q
     : _db(QSqlDatabase::cloneDatabase(db, "UpdateWorker")), _qmlThread(&_qmlThread)
 {
     this->moveToThread(&_thread);
+    _db.setConnectOptions();
     _db.open();
     qDebug() << "UpdateWorker::UpdateWorker initialized and moved to thread" << &_thread;
 }

@@ -157,7 +157,7 @@ Item {
             if (title) {
                 TabsModel.updateTab(index, "title", title)
                 if (SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.updateWebpage(noHash(url), "title", title)
+                    SearchDB.updateWebpageAsync(noHash(url), "title", title)
                 }
             }
         }
