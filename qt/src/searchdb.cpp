@@ -58,22 +58,25 @@ bool SearchDB::connect() {
     } else {
         qDebug() << "found table 'webpage_symbol'";
     };
+    /* SearchWorker setup */
     _searchWorker = SearchWorker_::create(_db, _searchWorkerThread, *QThread::currentThread());
     _searchWorkerThread.start();
     qRegisterMetaType<Webpage_List>();
-    QObject::connect(this, &SearchDB::searchAsyncCalled,
-                     _searchWorker.data(), &SearchWorker::search);
-    QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged,
-                     this, &SearchDB::setSearchResult);
+    QObject::connect(this, &SearchDB::searchAsync, _searchWorker.data(), &SearchWorker::search);
+    QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, &SearchDB::setSearchResult);
     searchAsync("");
+    /* UpdateWorker setup */
+    _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
+    _updateWorkerThread.start();
+    QObject::connect(this, &SearchDB::addSymbolsAsync, _updateWorker.data(), &UpdateWorker::addSymbols);
     return true;
 }
 
-void SearchDB::searchAsync(const QString& words)
-{
-    qDebug() << "SearchDB::searchAsync" << words;
-    emit searchAsyncCalled(words);
-}
+//void SearchDB::searchAsync(const QString& words)
+//{
+//    qDebug() << "SearchDB::searchAsync" << words;
+//    emit searchAsyncCalled(words);
+//}
 
 void SearchDB::disconnect() {
     if (! execScript("db/exit.sqlite3")) {
@@ -82,6 +85,8 @@ void SearchDB::disconnect() {
     _db.close();
     _searchWorkerThread.quit();
     _searchWorkerThread.wait();
+    _updateWorkerThread.quit();
+    _updateWorkerThread.wait();
     qDebug() << "SearchDB: disconnected";
 }
 
@@ -149,31 +154,28 @@ bool SearchDB::updateSymbol(const QString &hash, const QString &property, const 
     return true;
 }
 
-void SearchDB::addSymbolsAsync(const QString url, const QVariantMap symbols)
-{
-    qDebug() << "SearchDB::addSymbolsAsync" << url << symbols;
-    this->semaphore.acquire(1);
-    QtConcurrent::run([=]() {
-        QSqlDatabase tmpDB = QSqlDatabase::cloneDatabase(_db, "addSymbolsAsync");
-        if (! tmpDB.open()) {
-            qFatal("SearchDB Error: connection with database failed");
-        }
-        tmpDB.exec("PRAGMA journal_mode=WAL");
-        qDebug() << "SearchDB: connection ok";
-        SearchDB::addSymbols(tmpDB, url, symbols);
-        tmpDB.close();
-        this->semaphore.release(1);
-    });
-}
+//void SearchDB::addSymbolsAsync(const QString url, const QVariantMap symbols)
+//{
+//    qDebug() << "SearchDB::addSymbolsAsync" << url << symbols;
+//    this->semaphore.acquire(1);
+//    QtConcurrent::run([=]() {
+//        QSqlDatabase tmpDB = QSqlDatabase::cloneDatabase(_db, "addSymbolsAsync");
+//        if (! tmpDB.open()) {
+//            qFatal("SearchDB Error: connection with database failed");
+//        }
+//        tmpDB.exec("PRAGMA journal_mode=WAL");
+//        qDebug() << "SearchDB: connection ok";
+//        SearchDB::addSymbols(tmpDB, url, symbols);
+//        tmpDB.close();
+//        this->semaphore.release(1);
+//    });
+//}
 
-bool SearchDB::addSymbols(const QString& url, const QVariantMap& symbols) {
-    return addSymbols(_db, url, symbols);
-}
 
-bool SearchDB::addSymbols(const QSqlDatabase& db, const QString& url, const QVariantMap& symbols)
+bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
 {
     qDebug() << "SearchDB::addSymbols" << url << symbols;
-    QSqlQuery query0(db);
+    QSqlQuery query0(_db);
     query0.prepare("SELECT id FROM webpage WHERE url = :url");
     query0.bindValue(":url", url);
     if (! query0.exec() || ! query0.first() || !query0.isValid()) {
@@ -306,10 +308,27 @@ bool SearchDB::hasWebpage(const QString& url) const
 }
 
 SearchWorker::SearchWorker(const QSqlDatabase& db, QThread& _thread, QThread& _qmlThread)
-    : _db(db), _qmlThread(&_qmlThread)
+    : _db(QSqlDatabase::cloneDatabase(db, "SearchWorker")), _qmlThread(&_qmlThread)
 {
     this->moveToThread(&_thread);
+    _db.open();
     qDebug() << "SearchWorker::SearchWorker initialized and moved to thread" << &_thread;
+}
+SearchWorker::~SearchWorker()
+{
+    _db.close();
+}
+
+UpdateWorker::UpdateWorker(const QSqlDatabase& db, QThread& _thread, QThread& _qmlThread)
+    : _db(QSqlDatabase::cloneDatabase(db, "UpdateWorker")), _qmlThread(&_qmlThread)
+{
+    this->moveToThread(&_thread);
+    _db.open();
+    qDebug() << "UpdateWorker::UpdateWorker initialized and moved to thread" << &_thread;
+}
+UpdateWorker::~UpdateWorker()
+{
+    _db.close();
 }
 
 void SearchWorker::search(const QString& word)

@@ -22,13 +22,27 @@ class SearchWorker : public QObject
     QThread* _qmlThread;
 public:
     explicit SearchWorker(const QSqlDatabase& db, QThread& workerThread, QThread& qmlThread);
+    ~SearchWorker();
 public slots:
     void search(const QString& words);
 signals:
     void resultChanged(const Webpage_List& results);
 };
-
 typedef QSharedPointer<SearchWorker> SearchWorker_;
+
+class UpdateWorker : public QObject
+{
+    Q_OBJECT
+    QSqlDatabase _db;
+    QThread* _qmlThread;
+public:
+    explicit UpdateWorker(const QSqlDatabase& db, QThread& workerThread, QThread& qmlThread);
+    ~UpdateWorker();
+public slots:
+    bool addSymbols(const QString& url, const QVariantMap& symbols);
+};
+
+typedef QSharedPointer<UpdateWorker> UpdateWorker_;
 
 class SearchDB : public QObject
 {
@@ -42,17 +56,15 @@ public:
 
 signals:
     void searchResultChanged();
-    void searchAsyncCalled(const QString& words);
+    void searchAsync(const QString& words);
+    void addSymbolsAsync(const QString& url, const QVariantMap& symbols);
 
 public slots:
     bool connect();
     void disconnect();
     bool execMany(const QStringList& lines);
-    void searchAsync(const QString& words);
+//    void searchAsync(const QString& words);
     bool addWebpage(const QString& url);
-    bool addSymbols(const QString& url, const QVariantMap& symbols);
-    bool addSymbols(const QSqlDatabase& db, const QString& url, const QVariantMap& symbols);
-    void addSymbolsAsync(const QString url, const QVariantMap symbols);
     bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
     bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
     Webpage_ findWebpage_(const QString& url) const;
@@ -74,6 +86,9 @@ protected:
 
     QThread _searchWorkerThread;
     SearchWorker_ _searchWorker;
+
+    QThread _updateWorkerThread;
+    UpdateWorker_ _updateWorker;
 };
 
 

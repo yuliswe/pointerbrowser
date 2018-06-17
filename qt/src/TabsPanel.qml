@@ -99,11 +99,4 @@ TabsPanelForm {
         }
     }
 
-    Shortcut {
-        sequences: ["Ctrl+Shift+X"]
-        onActivated: {
-                console.log("onSearchResultChanged model:", searchTabsList.model.clear())
-                console.log("onSearchResultChanged SearchDB.searchResult:", SearchDB.searchResult.clear())
-        }
-    }
 }
