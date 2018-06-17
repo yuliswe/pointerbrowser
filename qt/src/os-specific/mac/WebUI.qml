@@ -16,7 +16,6 @@ Item {
     property string url: noHash(href)
     id: webUI
 
-
     function setBookmarked(hostname) {
         logging("setBookmarked", hostname)
         // when the url's domain is in the auto-bookmark.txt list
@@ -134,6 +133,13 @@ Item {
     Component.onCompleted: {
         var url = TabsModel.at(index).url
         goTo(url)
+    }
+
+    WebEngineScript {
+        id: noOverscroll
+        injectionPoint: WebEngineScript.DocumentReady
+        sourceCode: "document.getElementById(id).style"
+
     }
 
     WebEngineView {

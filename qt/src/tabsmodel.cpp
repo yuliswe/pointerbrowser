@@ -27,7 +27,17 @@ QVariant TabsModel::at(int i)
     return v;
 }
 
-void TabsModel::insertWebpage(int idx, Webpage_ page)
+void TabsModel::replaceModel(const Webpage_List& pages)
+{
+    emit beginInsertRows(QModelIndex(), 0, pages.count() > 0 ? pages.count() - 1 : 0);
+    _tabs = pages;
+    // make sure they are on the same thread
+//    page->moveToThread(TabsModel::thread());
+    emit endInsertRows();
+    emit countChanged();
+}
+
+void TabsModel::insertWebpage(int idx, const Webpage_ page)
 {
     emit beginInsertRows(QModelIndex(), idx, idx);
     _tabs.insert(idx, page);
@@ -133,8 +143,7 @@ QHash<int, QByteArray> TabsModel::roleNames() const {
 }
 
 void TabsModel::clear() {
-    if (count() == 0) { return; }
-    emit beginRemoveRows(QModelIndex(), 0, count() - 1);
+    emit beginRemoveRows(QModelIndex(), 0, count() > 0 ? count() - 1 : 0);
     _tabs.clear();
     emit endRemoveRows();
     emit countChanged();

@@ -16,7 +16,7 @@ TabsPanelForm {
     }
 
     function filterModelBySymbol(sym) {
-        SearchDB.search(sym)
+        SearchDB.searchAsync(sym)
     }
 
 //    flickable {
@@ -58,10 +58,10 @@ TabsPanelForm {
         }
     }
 
+
     searchTabsList {
         height: SearchDB.searchResult.count * tabHeight
         model: SearchDB.searchResult
-
         onUserDoubleClicksTab: {
             userOpensSavedTab(index)
         }
@@ -99,4 +99,11 @@ TabsPanelForm {
         }
     }
 
+    Shortcut {
+        sequences: ["Ctrl+Shift+X"]
+        onActivated: {
+                console.log("onSearchResultChanged model:", searchTabsList.model.clear())
+                console.log("onSearchResultChanged SearchDB.searchResult:", SearchDB.searchResult.clear())
+        }
+    }
 }

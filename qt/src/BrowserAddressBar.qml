@@ -49,9 +49,9 @@ BrowserAddressBarForm {
 
     textField.onAccepted: {
         var url = textField.text
-        var exp = new RegExp("http://|https://")
+        var exp = new RegExp(".+://")
         if (!exp.test(url)) {
-            url = "http://www.google.com/search?q=" + url
+            url = "http://www.google.com/search?q=" + encodeURIComponent(url)
         }
         textField.focus = false
         console.log("userEntersUrl", url)

@@ -15,7 +15,7 @@ class TabsModel : public QAbstractListModel
         explicit TabsModel(QObject *parent = nullptr);
         QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
         int rowCount(const QModelIndex &parent) const;
-        void insertWebpage(int idx, Webpage_ wp);
+        void insertWebpage(int idx, const Webpage_ wp);
         QHash<int, QByteArray> roleNames() const;
 
     signals:
@@ -31,9 +31,12 @@ class TabsModel : public QAbstractListModel
         void loadTabs();
         void clear();
         QVariant at(int index);
+        void replaceModel(const Webpage_List& wp);
 
     private:
-        WebpageList _tabs;
+        Webpage_List _tabs;
 };
+
+Q_DECLARE_METATYPE(Webpage_List);
 
 #endif // TABSMODEL_H
