@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import Backend 1.0
 import "qrc:/controls" as C
 
-ItemDelegate {
+MouseArea {
     id: tabButton
     property alias closeButton: closeButton
     property alias rectangle: rectangle
@@ -11,8 +11,9 @@ ItemDelegate {
 
     state: Qt.platform.os
 
-    readonly property var pal: highlighted ? Palette.selected : hovered ? Palette.hovered : Palette.normal
-    hoverEnabled: true
+    property bool highlighted: false
+    property var pal: highlighted ? Palette.selected : hovered ? Palette.hovered : Palette.normal
+    //    hoverEnabled: true
     property bool showCloseButton: true
     states: [
         State {
@@ -30,9 +31,9 @@ ItemDelegate {
             }
         }
     ]
-    background: Rectangle {
+    Rectangle {
         id: rectangle
-        width: parent.width
+        anchors.fill: parent
         radius: 2
         color: pal.list_item_background
         RoundButton {
@@ -47,7 +48,6 @@ ItemDelegate {
             z: 2
             contentItem: Image {
                 source: "icon/cross.svg"
-                //                color: pal.button_icon
             }
             background: Item {
             }

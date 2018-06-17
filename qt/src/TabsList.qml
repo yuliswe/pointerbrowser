@@ -7,7 +7,7 @@ TabsListForm {
     signal userClicksTab(int index)
     signal userClosesTab(int index)
     signal userDoubleClicksTab(int index)
-    property bool showCloseButton: true
+    property bool showCloseButton: false
     property bool hoverHighlight: false
 
     function setHighlightAt(index) {

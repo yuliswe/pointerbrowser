@@ -80,6 +80,7 @@ BrowserForm {
 
 
     Component.onCompleted: {
+        TabsModel.loadTabs()
         if (TabsModel.count > 0) {
             openTab(0)
         }

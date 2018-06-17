@@ -57,7 +57,7 @@ Item {
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
-//                ScrollViewStyle.transientScrollBars: true
+        //                ScrollViewStyle.transientScrollBars: true
 
         //        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
         //        contentWidth: form.width
@@ -93,6 +93,7 @@ Item {
                 tabHeight: form.tabHeight
                 interactive: false
                 highlightFollowsCurrentItem: false
+                showCloseButton: true
             }
 
             C.Text {
