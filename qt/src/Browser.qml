@@ -70,7 +70,7 @@ BrowserForm {
         console.log("openSavedTab", index)
         var wp = SearchDB.searchResult.at(index)
         if (wp.hash) {
-            SearchDB.updateSymbol(wp.hash, 'visited', Date.now())
+            SearchDB.updateSymbolAsync(wp.hash, 'visited', Date.now())
         }
 //        if (wp.title || wp.url_matched) {
             SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
