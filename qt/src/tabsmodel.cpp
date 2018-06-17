@@ -101,19 +101,15 @@ void TabsModel::loadTabs(void) {
     QJsonDocument doc = QJsonDocument::fromJson(contents);
     QJsonArray jarr = doc.array();
     qDebug() << jarr;
-    _tabs.clear();
-    int idx = 0;
     qDebug() << "TabsModel::loadTabs";
-    int cnt = jarr.size();
-    emit beginInsertRows(QModelIndex(), 0, cnt - 1);
+    emit beginResetModel();
+    _tabs.clear();
     for (QJsonValue jval : jarr) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
         _tabs << page_;
-        qDebug() << page_;
-        idx++;
     }
-    emit endInsertRows();
+    emit endResetModel();
     emit countChanged();
 }
 
