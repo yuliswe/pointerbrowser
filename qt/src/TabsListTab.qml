@@ -10,8 +10,18 @@ Item {
     signal clicked()
     property bool highlighted: true
     property bool showCloseButton: true
+    property bool expandEnabled: true
     property var pal: form.highlighted ? Palette.selected : mouseArea.containsMouse ? Palette.hovered : Palette.normal
 
+    //    property int nlines: 0
+    //    Component.onCompleted: {
+    //        if (model.title) { nlines++ }
+    //        if (model.hash) { nlines++ }
+    //        if (model.symbol) { nlines++ }
+    //        if (model.url) { nlines++ }
+    //    }
+    property bool expanded: false
+    height: 30 //* (expandEnabled && expanded ? nlines : 1)
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -23,7 +33,11 @@ Item {
                 form.userClosesTab()
             } else {
                 form.clicked()
+                if (form.expandEnabled) { form.expanded = !form.expanded }
             }
+        }
+        onExited: {
+            form.expanded = false;
         }
         onDoubleClicked: form.doubleClicked()
         states: [

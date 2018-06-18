@@ -114,17 +114,18 @@ bool UpdateWorker::execMany(const QStringList& lines)
 
 bool UpdateWorker::updateWebpage(const QString& url, const QString& property, const QVariant& value)
 {
-    qDebug() << "SearchDB::updateWebpage" << property << value << url;
+    qDebug() << "UpdateWorker::updateWebpage" << property << value << url;
     QSqlQuery query(_db);
-    query.prepare("UPDATE webpage SET " + property + " = ':value' WHERE url = ':url'");
-    query.bindValue(":url", url);
-//    query.bindValue(":property", property);
-    query.bindValue(":value", value);
-    if (! query.exec()) {
+    query.prepare("UPDATE webpage SET " + property + " = ? WHERE url = '" + url + "'");
+    query.addBindValue(value);
+    if (! query.exec() || query.numRowsAffected() < 1) {
         qCritical() << "UpdateWorker::updateWebpage failed" << url << property << value
+                    << query.numRowsAffected()
                     << query.executedQuery()
                     << query.lastError();
         return false;
+    } else {
+        qDebug() << "UpdateWorker::updateWebpage" << query.executedQuery();
     }
     return true;
 }
@@ -134,15 +135,16 @@ bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, co
 {
     qDebug() << "SearchDB::updateSymbol" << property << value << hash;
     QSqlQuery query(_db);
-    query.prepare("UPDATE symbol SET " + property + "= ':value' WHERE hash = ':hash'");
-    query.bindValue(":hash", hash);
-    query.bindValue(":property", property);
+    query.prepare("UPDATE symbol SET " + property + " = :value WHERE hash = '" + hash +"'");
     query.bindValue(":value", value);
-    if (! query.exec()) {
+    if (! query.exec() || query.numRowsAffected() < 1) {
         qCritical() << "UpdateWorker::updateSymbol failed" << hash << property << value
+                    << query.numRowsAffected()
                     << query.executedQuery()
                     << query.lastError();
         return false;
+    } else {
+        qDebug() << "UpdateWorker::updateSymbol" << query.executedQuery();
     }
     return true;
 }
@@ -171,14 +173,14 @@ bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
         query.bindValue(":hash", hash);
         query.bindValue(":text", text);
         query.bindValue(":visited", 0);
-        if (query.exec()) {
+        if (query.exec() && query.numRowsAffected() > 0) {
             QVariant sid = query.lastInsertId();
             if (sid.isValid()) {
                 query.clear();
                 query.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
                 query.bindValue(":symbol", sid);
                 query.bindValue(":webpage", wid);
-                if (query.exec()) {
+                if (query.exec() && query.numRowsAffected() > 0) {
                     qDebug() << "UpdateWorker::addSymbols inserted" << hash << text;
                 } else {
                     qDebug() << "UpdateWorker::addSymbols failed to insert into webpage_symbol" << hash << text

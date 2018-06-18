@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
-import "qrc:/controls" as C
+import "controls" as C
 
 C.SplitView {
     id: splitView
@@ -119,7 +119,7 @@ C.SplitView {
             }
         }
 
-//        Layout.minimumWidth: 300
+        //        Layout.minimumWidth: 300
         Layout.fillWidth: true
         Layout.fillHeight: true
     }

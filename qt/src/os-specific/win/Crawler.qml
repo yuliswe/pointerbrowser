@@ -30,11 +30,12 @@ WebEngineView {
         id: timeout
         triggeredOnStart: false
         onTriggered: {
-            console.info("crawler timed out", crawling)
+            console.log("crawler timed out", crawler.crawling)
             crawler.stop()
+            crawler.crawNext()
         }
         interval: 30000 // 30s
-        repeat: false
+        repeat: true
 
     }
 
@@ -81,10 +82,9 @@ WebEngineView {
                 console.warn("crawler loading stopped", loadRequest.url)
                 break
             case WebEngineView.LoadSucceededStatus:
-                console.log("crawler loading suceeded", loadRequest.url)
+                console.log("crawler loading succeeded", loadRequest.url)
                 break
             }
-            timeout.stop()
             var requestURL = loadRequest.url
             console.log("crawler injecting docview.js on", loadRequest.url)
             runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
