@@ -313,20 +313,24 @@ void SearchWorker::search(const QString& word)
         QString url = record.value("url").value<QString>();
         QStringList path = url.split(slash, QString::SkipEmptyParts);
         QString last = path.length() > 0 ? path[path.length() - 1] : "";
+        path.removeLast();
+        QString head = path.length() > 0 ? path.join("/") + "/" : "";
         QString title = record.value("title").value<QString>();
         QString symbol = record.value("symbol").value<QString>();
         QString hash = record.value("hash").value<QString>();
-        QString display =
-                (0 < symbol.length()  && hash.length() < 32 ? "@"+symbol+"  " : "") +
-                (0 < hash.length() && hash.length() < 32 ? "#"+hash+"  " : "") +
-                "/"+last+"  " +
-                (title.length() > 0 ? "\""+title+"\"" : "") +
-                (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? ""+url+"  " : "");
+        QString display_symbol = (0 < symbol.length()  && hash.length() < 32 ? "@"+symbol+"  " : "");
+        QString display_hash = (0 < hash.length() && hash.length() < 32 ? "#"+hash+"  " : "");
+        QString display_tail = "./"+last+"  ";
+        QString display_title = (title.length() > 0 ? title + "  " : "");
+        QString display_url = head.length() > 0 ? head + "  " : "";
+        QString display = display_symbol + display_hash + display_tail + display_title + display_url;
+        QString expanded_display = display_title + "\n" + display_symbol + display_hash + display_tail + "\n" + display_url;
         Webpage_ wp = Webpage_::create(url);
         wp->_title = title;
         wp->_symbol = symbol;
         wp->_hash = hash;
         wp->_display = display;
+        wp->_expanded_display = expanded_display;
         pages << wp;
         wp->moveToThread(_qmlThread);
         r.next();

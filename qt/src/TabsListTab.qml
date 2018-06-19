@@ -12,15 +12,8 @@ Item {
     property bool showCloseButton: true
     property var pal: form.highlighted ? Palette.selected : mouseArea.containsMouse ? Palette.hovered : Palette.normal
 
-        property int nlines: 0
-        Component.onCompleted: {
-            if (model.title) { nlines++ }
-            if (model.hash) { nlines++ }
-            if (model.symbol) { nlines++ }
-            if (model.url) { nlines++ }
-        }
     property bool expanded: false
-    height: 30 * (expanded ? nlines : 1)
+    height: expanded ? 50 : 30
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -75,6 +68,19 @@ Item {
                     form.userClosesTab()
                 }
             }
+            Rectangle {
+                id: hr
+                color: "#eee"
+                height: 1
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: 10
+                    rightMargin: 10
+                    top: parent.top
+                }
+                visible: (index != 0) && expanded && ! highlighted
+            }
             C.Text {
                 id: text1
                 color: highlighted ? pal.list_item_text : pal.button_text
@@ -83,13 +89,13 @@ Item {
                 anchors.right: parent.right
                 textFormat: Text.PlainText
                 anchors.left: closeButton.right
-//                anchors.verticalCenter: parent.verticalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+//                anchors.top: parent.top
+//                anchors.topMargin: 8
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
-                text: (model.display || model.title || model.url || "Loading")
+                text: (expanded ? model.expanded_display : model.display) || "Loading"
             }
         }
     }

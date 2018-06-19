@@ -29,7 +29,7 @@ ListView {
     delegate: TabsListTab {
         id: tab
         showCloseButton: tabsList.showCloseButton
-        expanded: tabsList.expandMultipleEnabled ? false : (tabsList.currentExpandedIndex == index);
+        expanded: tabsList.expandEnabled // tabsList.expandMultipleEnabled ? false : (tabsList.currentExpandedIndex == index);
         highlighted: (index === currentIndex) // || (hoverHighlight && hovered)
         width: parent.width
         onClicked: {

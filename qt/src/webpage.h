@@ -30,6 +30,7 @@ class Webpage : public QObject
     QPROP_DEC(QString, symbol)
     QPROP_DEC(QString, hash)
     QPROP_DEC(QString, display)
+    QPROP_DEC(QString, expanded_display)
     QPROP_DEC(quint64, visited)
     QPROP_DEC(bool, url_matched)
     QPROP_DEC(bool, title_matched)

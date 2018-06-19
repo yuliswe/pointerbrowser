@@ -19,6 +19,7 @@ QPROP_FUNC(QString, url)
 QPROP_FUNC(QString, hash)
 QPROP_FUNC(QString, symbol)
 QPROP_FUNC(QString, display)
+QPROP_FUNC(QString, expanded_display)
 QPROP_FUNC(quint64, visited)
 QPROP_FUNC(bool, url_matched)
 QPROP_FUNC(bool, title_matched)
@@ -43,6 +44,7 @@ QVariantMap Webpage::toQVariantMap()
     MAP_INSERT(hash);
     MAP_INSERT(symbol);
     MAP_INSERT(display);
+    MAP_INSERT(expanded_display);
     MAP_INSERT(url_matched);
     MAP_INSERT(title_matched);
     MAP_INSERT(hash_matched);

@@ -181,7 +181,7 @@ Item {
                 hoverHighlight: true
                 anchors.top: text2.bottom
                 showCloseButton: false
-                expandEnabled: false
+                expandEnabled: true
                 model: SearchDB.searchResult
                 onUserClicksTab: {
                     tabsPanel.userOpensSavedTab(index)

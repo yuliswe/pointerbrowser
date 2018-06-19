@@ -48,6 +48,8 @@ void TabsModel::insertTab(int idx, QString url)
 {
     qDebug() << "TabsModel::insertTab" << idx << url;
     Webpage_ page = Webpage_::create(url);
+    page->set_display(page->title().length() > 0 ? page->title() : page->url());
+    page->set_expanded_display(page->title().length() > 0 ? page->title() : page->url());
     insertWebpage(idx, page);
 }
 
@@ -60,6 +62,10 @@ void TabsModel::updateTab(int index, QString property, QVariant value)
     QVariant current = page.data()->property(str);
     if (value == current) { return; }
     page.data()->setProperty(str, value);
+    if (property == "title" || property == "url") {
+        page->set_display(page->title().length() > 0 ? page->title() : page->url());
+        page->set_expanded_display(page->title().length() > 0 ? page->title() : page->url());
+    }
     QModelIndex i = TabsModel::index(index);
     emit dataChanged(i,i);
 }
