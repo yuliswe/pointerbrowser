@@ -293,8 +293,8 @@ BrowserForm {
         sequence: "Ctrl+Shift+P"
         onActivated: {
             TabsModel.clear()
-            if (! SearchDB.execScript("db/dropAll.sqlite3")) { return }
-            if (! SearchDB.execScript("db/setup.sqlite3")) { return }
+            SearchDB.execScriptAsync("db/dropAll.sqlite3")
+            SearchDB.execScriptAsync("db/setup.sqlite3")
             var r = FileManager.readQrcFileS('defaults/dbgen.txt').split('\n')
             for (var i = 0; i < r.length; i++) {
                 if (! r[i]) { continue; }

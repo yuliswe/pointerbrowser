@@ -78,6 +78,7 @@ Item {
 
     function goTo(u) {
         docviewOff()
+        logging("Goto", u)
         webview.url = u
     }
 

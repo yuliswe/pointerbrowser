@@ -264,24 +264,30 @@ class Docview {
             const txt = hrefs[k]
             // const i = k.indexOf("#")
             if (url.hash.length > 1 // the first char is always #
+                && url.hash.length < 36 // longer than 35 might be an md5 hash 
                 && (! url.hash.includes('%')) // no space in hash
-                && url.pathname === location.pathname 
+                && url.pathname === location.pathname // on the same page
                 && url.hostname == location.hostname
-                && /^[\x00-\x7F]+$/.test(url.hash)) // confirm ascii 
+                && /^[\x00-\x7F]+$/.test(url.hash) // confirm ascii 
+                // these symbols are not popular unless appear with brackets
+                && (/^[^\s\*\&\?\!\@\#\%\^\+\=\|\/\,\;\'\"\`\~\\]+$/.test(txt)
+                    || txt.includes("(") 
+                    || txt.includes("{"))
+                // must start with an alphabet or _, 
+                // optionally preceded by $ or brackets
+                && /^[\$,\(,\{]*[a-z,A-Z,\_]/.test(txt) 
+                // ignore symbols of just one character
+                && 1 < txt.length 
+                // also symbols that are too long might be an md5 hash
+                && txt.length < 36
+                // confirm ascii
+                && /^[\x00-\x7F]+$/.test(txt)) 
             { 
-                if (txt.length > 0) {
-                    // anything with a space is probably not a symbol
-                    if (((! txt.includes(" ")) || txt.includes("(") || txt.includes("[") || txt.includes("{"))
-                        && /^[a-z,A-Z,_]/.test(txt) // must start with an alphabet or _
-                        && /^[\x00-\x7F]+$/.test(txt)) // confirm ascii
-                    {
-                        symbols[url.hash.substr(1)] = txt
-                    }
-                } else {
-                    symbols[url.hash.substr(1)] = ""
-                }
+                /* These are taken as symbols */
+                symbols[url.hash.substr(1)] = txt
             } else if (url.hostname == location.hostname 
                        && url.pathname !== location.pathname) {
+                /* These are to be crawled */
                 links[url.origin + url.pathname] = 1
             }
         }

@@ -35,30 +35,6 @@ bool SearchDB::connect() {
     }
     qDebug() << "SearchDB: connection ok";
     _db.exec("PRAGMA journal_mode=WAL");
-    _webpage = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
-    _webpage->setTable("webpage");
-    _webpage->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    _symbol = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
-    _symbol->setTable("symbol");
-    _symbol->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    _webpage_symbol = QSharedPointer<QSqlRelationalTableModel>::create(nullptr, _db);
-    _webpage_symbol->setTable("webpage_symbol");
-    _webpage_symbol->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    if (! _webpage->select()) {
-        qDebug() << "cannot find table 'webpage'";
-    } else {
-        qDebug() << "found table 'webpage'";
-    };
-    if (! _symbol->select()) {
-        qDebug() << "cannot find table 'symbol'";
-    } else {
-        qDebug() << "found table 'symbol'";
-    };
-    if (! _webpage_symbol->select()) {
-        qDebug() << "cannot find table 'webpage_symbol'";
-    } else {
-        qDebug() << "found table 'webpage_symbol'";
-    };
     /* SearchWorker setup */
     _searchWorker = SearchWorker_::create(_db, _searchWorkerThread, *QThread::currentThread());
     _searchWorkerThread.start();
@@ -73,14 +49,9 @@ bool SearchDB::connect() {
     QObject::connect(this, &SearchDB::addWebpageAsync, _updateWorker.data(), &UpdateWorker::addWebpage);
     QObject::connect(this, &SearchDB::updateSymbolAsync, _updateWorker.data(), &UpdateWorker::updateSymbol);
     QObject::connect(this, &SearchDB::updateWebpageAsync, _updateWorker.data(), &UpdateWorker::updateWebpage);
+    QObject::connect(this, &SearchDB::execScriptAsync, _updateWorker.data(), &UpdateWorker::execScript);
     return true;
 }
-
-//void SearchDB::searchAsync(const QString& words)
-//{
-//    qDebug() << "SearchDB::searchAsync" << words;
-//    emit searchAsyncCalled(words);
-//}
 
 void SearchDB::disconnect() {
     _db.close();
@@ -91,7 +62,7 @@ void SearchDB::disconnect() {
     qDebug() << "SearchDB: disconnected";
 }
 
-bool UpdateWorker::execScript(QString filename)
+bool UpdateWorker::execScript(const QString& filename)
 {
     QString s = FileManager::readQrcFileS(filename);
     return execMany(s.replace("\n","").split(";", QString::SkipEmptyParts));
@@ -215,48 +186,20 @@ bool UpdateWorker::addWebpage(const QString& url)
 bool SearchDB::removeWebpage(const QString& url)
 {
     qDebug() << "SearchDB::removeWebpage" << url;
-    _webpage->setFilter("url = '" + url + "'");
-    _webpage->select();
-    if (_webpage->rowCount() == 0) {
-        qCritical() << "SearchDB::removeWebpage didn't find the webpage" << url;
-        return false;
-    }
-    const QSqlRecord wpr = _webpage->record(0);
-    _webpage_symbol->setFilter("webpage = '" + wpr.value("id").value<QString>() + "'");
-    qDebug() << "SearchDB::removeWebpage removing _webpage_symbol where" << "webpage = '" + wpr.value("id").value<QString>() + "'";
-    _webpage_symbol->select();
-    if (_webpage_symbol->rowCount() > 0) {
-        if (! _webpage_symbol->removeRows(0, _webpage_symbol->rowCount())) {
-            qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage_symbol"
-                        << _webpage_symbol->lastError();
-            goto whenFailed;
-        }
-    }
-    if (! _webpage->removeRows(0, _webpage->rowCount())) {
-        qCritical() << "SearchDB::removeWebpage couldn't remove row from _webpage"
-                    << _webpage->lastError();
-        goto whenFailed;
-    }
-    _webpage->submitAll();
-    return _webpage_symbol->submitAll();
-whenFailed:
-    qCritical() << "SearchDB::removeWebpage failed";
-    _webpage->revertAll();
-    _webpage_symbol->revertAll();
     return false;
 }
 
 Webpage_ SearchDB::findWebpage_(const QString& url) const
 {
     qDebug() << "SearchDB::findWebpage_" << url;
-    const QString query = "url = '" + url + "'";
-    _webpage->setFilter(query);
-    _webpage->select();
-    if (_webpage->rowCount() == 0) {
+    QSqlQuery query(_db);
+    query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
+    query.addBindValue(url);
+    if (! query.first()) {
         qCritical() << "SearchDB::findWebpage_ not found!" << url;
         return QSharedPointer<Webpage>(nullptr);
     }
-    QSqlRecord r = _webpage->record(0);
+    QSqlRecord r = query.record();
     qDebug() << "SearchDB::findWebpage_ found " << r;
     Webpage_ wp = Webpage_::create(url);
     wp->set_title(r.value("title").value<QString>());
@@ -277,10 +220,10 @@ QVariantMap SearchDB::findWebpage(const QString& url) const
 
 bool SearchDB::hasWebpage(const QString& url) const
 {
-    const QString query = "url = '" + url + "'";
-    _webpage->setFilter(query);
-    _webpage->select();
-    bool b = _webpage->rowCount() > 0;
+    QSqlQuery query(_db);
+    query.prepare("SELECT url FROM webpage WHERE url = ? LIMIT 1");
+    query.addBindValue(url);
+    bool b = query.first();
     qDebug() << "SearchDB::hasWebpage" << url << b;
     return b;
 }
@@ -374,8 +317,8 @@ void SearchWorker::search(const QString& word)
         QString symbol = record.value("symbol").value<QString>();
         QString hash = record.value("hash").value<QString>();
         QString display =
-                (symbol.length() > 0 ? "@"+symbol+"  " : "") +
-                (hash.length() > 0 ? "#"+hash+"  " : "") +
+                (0 < symbol.length()  && hash.length() < 32 ? "@"+symbol+"  " : "") +
+                (0 < hash.length() && hash.length() < 32 ? "#"+hash+"  " : "") +
                 "/"+last+"  " +
                 (title.length() > 0 ? "\""+title+"\"" : "") +
                 (symbol.length() == 0 && hash.length() == 0 && title.length() == 0 ? ""+url+"  " : "");
@@ -392,10 +335,6 @@ void SearchWorker::search(const QString& word)
     qDebug() << "SearchWorker::search found" << pages.count();
 }
 
-QSqlRelationalTableModel* SearchDB::webpageTable() const
-{
-    return _webpage.data();
-}
 
 TabsModel* SearchDB::searchResult()
 {

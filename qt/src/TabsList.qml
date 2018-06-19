@@ -9,29 +9,40 @@ ListView {
     signal userDoubleClicksTab(int index)
     property bool showCloseButton: false
     property bool expandEnabled: false
+    property bool expandMultipleEnabled: false
+    property int currentExpandedIndex: -1
     property bool hoverHighlight: false
 
     function setHighlightAt(index) {
         tabsList.currentIndex = index
     }
-    height: {
-        var h = 0;
-        for (var i = 0; i < tabsList.count; i++) {
-            h += tabsList.itemAt(i,0).height
-        }
-        return h
-    }
+    height: contentHeight
+//    height: {
+//        var h = 0;
+//        for (var i = 0; i < tabsList.count; i++) {
+//            console.warn(h)
+//            h += tabsList.itemAt(i,0).height
+//        }
+//        return h
+//    }
 
     delegate: TabsListTab {
         id: tab
         showCloseButton: tabsList.showCloseButton
-        expandEnabled: tabsList.expandEnabled
+        expanded: tabsList.expandMultipleEnabled ? false : (tabsList.currentExpandedIndex == index);
         highlighted: (index === currentIndex) // || (hoverHighlight && hovered)
         width: parent.width
         onClicked: {
             tab.forceActiveFocus()
             userClicksTab(index)
-//            if (expandEnabled) { expanded = !expanded }
+            if (tabsList.expandEnabled) {
+                if (tabsList.expandMultipleEnabled) {
+                    expanded = !expanded
+//                    expanded = Qt.binding(function() {return tabsList.currentExpandedIndex == index})
+                } else {
+                    tabsList.currentExpandedIndex = index
+                }
+            }
         }
         onDoubleClicked: {
             userDoubleClicksTab(index)

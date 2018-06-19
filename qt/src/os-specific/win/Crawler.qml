@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtWebEngine 1.5
+import QtWebEngine 1.7
 import Backend 1.0
 
 WebEngineView {
@@ -11,19 +11,31 @@ WebEngineView {
     activeFocusOnPress: false
     //        JavaScriptConsoleMessageLevel:
     settings {
-        focusOnNavigationEnabled: false
-        pluginsEnabled: false
-        linksIncludedInFocusChain: false
+        // efficiency
         errorPageEnabled: false
         autoLoadImages: false
         autoLoadIconsForPage: false
-        javascriptCanOpenWindows: false
-        allowGeolocationOnInsecureOrigins: false
-        //            allowWindowActivationFromJavaScript: false
-        allowRunningInsecureContent: false
+        touchIconsEnabled: false
+        // security
+        playbackRequiresUserGesture: true
+        spatialNavigationEnabled: false
+        focusOnNavigationEnabled: false
+        linksIncludedInFocusChain: false
+        localStorageEnabled: false
+        //        javascriptEnabled: false
         webGLEnabled: false
-        //            playbackRequiresUserGesture: true
-        //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+        pluginsEnabled: false
+        screenCaptureEnabled: false
+        allowRunningInsecureContent: false
+        unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+        allowGeolocationOnInsecureOrigins: false
+        //        fullscreenSupportEnabled: false
+        localContentCanAccessFileUrls: false
+        localContentCanAccessRemoteUrls: false
+        webRTCPublicInterfacesOnly: true
+        // js
+        javascriptCanOpenWindows: false
+        allowWindowActivationFromJavaScript: false
     }
 
     Timer {
@@ -31,10 +43,11 @@ WebEngineView {
         triggeredOnStart: false
         onTriggered: {
             console.log("crawler timed out", crawler.crawling)
+            crawler.url = ""
             crawler.stop()
-            crawler.crawNext()
+            crawler.crawNext(true)
         }
-        interval: 30000 // 30s
+        interval: 5000
         repeat: true
 
     }
@@ -50,10 +63,10 @@ WebEngineView {
         crawler.crawNext()
     }
 
-    function crawNext() {
+    function crawNext(forced) {
         console.log("crawNext called on", Object.keys(crawler.queue).length, "links")
         for (var first in crawler.queue) {
-            if (! crawler.loading) {
+            if (forced || ! crawler.loading) {
                 url = first
                 crawling = first
                 timeout.restart()
@@ -68,7 +81,23 @@ WebEngineView {
         console.log("crawler queue is empty")
     }
 
+    Timer {
+        id: pullReady
+        interval: 500
+        repeat: true
+        onTriggered: {
+            console.log("cralwer pulling document ready..")
+            runJavaScript("document.readyState", function(ready) {
+                if (ready !== "complete") { return }
+                onReady()
+                pullReady.stop()
+            })
+        }
+        property var onReady: null
+    }
+
     onLoadingChanged: {
+        pullReady.stop()
         switch (loadRequest.status) {
         case WebEngineView.LoadStartedStatus:
             console.log("crawler loading", loadRequest.url)
@@ -83,23 +112,26 @@ WebEngineView {
                 break
             case WebEngineView.LoadSucceededStatus:
                 console.log("crawler loading succeeded", loadRequest.url)
+                console.log("crawler injecting docview.js on", loadRequest.url)
+                pullReady.onReady = function() {
+                    runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                        console.log("crawler calling Docview.crawler() on", requestURL)
+                        runJavaScript("Docview.crawler()", function(result) {
+                            console.log("crawler Docview.crawler() returns from", requestURL)
+                            if (! SearchDB.hasWebpage(result.referer)) {
+                                SearchDB.addWebpageAsync(result.referer)
+                            }
+                            SearchDB.addSymbolsAsync(result.referer, result.symbols)
+                            SearchDB.updateWebpageAsync(result.referer, "title", result.title)
+                            // loading done
+                            crawler.crawNext(true)
+                        })
+                    })
+                }
+                pullReady.restart()
                 break
             }
             var requestURL = loadRequest.url
-            console.log("crawler injecting docview.js on", loadRequest.url)
-            runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                console.log("crawler calling Docview.crawler() on", requestURL)
-                runJavaScript("Docview.crawler()", function(result) {
-                    console.log("crawler Docview.crawler() returns from", requestURL)
-                    if (! SearchDB.hasWebpage(result.referer)) {
-                        SearchDB.addWebpageAsync(result.referer)
-                    }
-                    SearchDB.addSymbolsAsync(result.referer, result.symbols)
-                    SearchDB.updateWebpageAsync(result.referer, "title", result.title)
-                    // loading done
-                    crawler.crawNext()
-                })
-            })
         }
     }
 }

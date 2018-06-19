@@ -43,7 +43,7 @@ public slots:
     bool addWebpage(const QString& url);
     bool updateWebpage(const QString& url, const QString& property, const QVariant& value);
     bool updateSymbol(const QString& hash, const QString& property, const QVariant& value);
-    bool execScript(QString filename);
+    bool execScript(const QString& filename);
     bool execMany(const QStringList& lines);
 };
 
@@ -66,6 +66,7 @@ signals:
     bool addWebpageAsync(const QString& url);
     bool updateWebpageAsync(const QString& url, const QString& property, const QVariant& value);
     bool updateSymbolAsync(const QString& hash, const QString& property, const QVariant& value);
+    void execScriptAsync(const QString& filename);
 
 public slots:
     bool connect();
@@ -75,16 +76,16 @@ public slots:
     QVariantMap findWebpage(const QString& url) const;
     bool hasWebpage(const QString& url) const;
     bool removeWebpage(const QString& url);
-    QSqlRelationalTableModel* webpageTable() const;
+//    QSqlRelationalTableModel* webpageTable() const;
     TabsModel* searchResult();
     void setSearchResult(const Webpage_List& results);
 
 protected:
     QString _dbPath;
     QSqlDatabase _db;
-    QRelTable_ _symbol;
-    QRelTable_ _webpage;
-    QRelTable_ _webpage_symbol;
+//    QRelTable_ _symbol;
+//    QRelTable_ _webpage;
+//    QRelTable_ _webpage_symbol;
     TabsModel _searchResult; // cache search function
 
     QThread _searchWorkerThread;

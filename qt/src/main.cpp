@@ -39,7 +39,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
-    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--remote-debugging-port=666 --overscroll-history-navigation=2 --disable-logging");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
 
     qInstallMessageHandler(myMessageHandler);
 
