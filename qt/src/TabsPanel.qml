@@ -15,6 +15,7 @@ Item {
 
     property alias searchFieldActiveFocus: searchTextField.activeFocus
     property bool searchMode: false
+    property int buttonSize: 25
 
     function setCurrentIndex(i) {
         tabsList.setHighlightAt(i)
@@ -183,7 +184,6 @@ Item {
         }
     ]
 
-    property int buttonSize: 40
     clip: true
 
     Shortcut {

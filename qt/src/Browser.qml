@@ -2,48 +2,18 @@ import Backend 1.0
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtWebEngine 1.5
+import QtQuick.Layouts 1.3
+import "controls" as C
 
-BrowserForm {
+C.SplitView {
     id: browser
 
     state: Qt.platform.os
 
-
-    browserDocviewButton {
-        checkable: false
-        enabled: currentWebView && currentWebView.docviewLoaded
-        active: currentWebView && currentWebView.inDocview
-        onClicked: currentWebView && (currentWebView.inDocview ? currentWebView.docviewOff() : currentWebView.docviewOn())
-    }
-
-    browserBookmarkButton {
-        checkable: false
-        enabled: currentWebView
-        active: currentWebView && currentWebView.bookmarked
-        onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
-    }
-
-    welcomePage {
-        visible: ! currentWebView
-    }
-
-    browserRefreshButton {
-        enabled: currentWebView
-    }
-
-    browserBackButton {
-        enabled: currentWebView && currentWebView.canGoBack
-    }
-
-    browserForwardButton {
-        enabled: currentWebView && currentWebView.canGoForward
-    }
-
-    browserAddressBar {
-        url: currentWebView ? currentWebView.href : ""
-        title: currentWebView ? currentWebView.title : ""
-        progress: currentWebView ? currentWebView.loadProgress : 0
-    }
+    property alias currentWebView: browserWebViews.currentWebView
+    property alias currentWebViewIndex: browserWebViews.currentIndex
+    property int buttonSize: 25
+    property alias searchMode: tabsPanel.searchFieldActiveFocus
 
     function refreshCurrentWebview() {
         browserWebViews.reloadCurrentWebView()
@@ -68,18 +38,10 @@ BrowserForm {
         if (wp.hash) {
             SearchDB.updateSymbolAsync(wp.hash, 'visited', Date.now())
         }
-//        if (wp.title || wp.url_matched) {
-            SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
-//        }
+        //        if (wp.title || wp.url_matched) {
+        SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
+        //        }
         newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true)
-    }
-
-
-    Component.onCompleted: {
-        TabsModel.loadTabs()
-        if (TabsModel.count > 0) {
-            openTab(0)
-        }
     }
 
     function newTabHome() {
@@ -88,7 +50,7 @@ BrowserForm {
 
     function newTab(url, switchToView) {
         console.log("newTab:", url, switchToView)
-        var opened = TabsModel.findTab(url);
+        var opened = TabsModel.findTab(url)
         if (opened !== -1) {
             return openTab(opened)
         }
@@ -108,14 +70,18 @@ BrowserForm {
     }
 
     function openTab(index) {
-        console.log("openTab", "index=", index, "TabsModel.count=", TabsModel.count)
+        console.log("openTab", "index=", index, "TabsModel.count=",
+                    TabsModel.count)
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setCurrentIndex(index)
     }
 
     function closeTab(index) {
-        console.log("closeTab", "index=", index, "TabsModel.count=", TabsModel.count)
-        if (index < 0) { return }
+        console.log("closeTab", "index=", index, "TabsModel.count=",
+                    TabsModel.count)
+        if (index < 0) {
+            return
+        }
         if (currentWebViewIndex === index) {
             // when removing current tab
             // if there's one after, open that
@@ -123,13 +89,11 @@ BrowserForm {
                 TabsModel.removeTab(index)
                 browserWebViews.setCurrentIndex(-1) // force update binding
                 openTab(index)
-            }
-            // if there's one before, open that
+            } // if there's one before, open that
             else if (index >= 1) {
                 TabsModel.removeTab(index)
                 openTab(index - 1)
-            }
-            // if this is the only one
+            } // if this is the only one
             else {
                 TabsModel.removeTab(index)
                 browserWebViews.setCurrentIndex(-1)
@@ -142,116 +106,262 @@ BrowserForm {
         }
     }
 
-    tabsPanel.buttonSize: buttonSize
+    handleDelegate: Item {
+    }
 
-    Connections {
-        target: tabsPanel
+    TabsPanel {
+        id: tabsPanel
+        Layout.minimumWidth: 150
+        Layout.preferredWidth: 300
+        width: 300
+        buttonSize: buttonSize
         onUserOpensNewTab: newTabHome()
         onUserOpensTab: openTab(index)
         onUserClosesTab: closeTab(index)
         onUserOpensSavedTab: openSavedTab(index)
     }
 
-
-    Connections {
-        target: browserWebViews
-        onUserRequestsNewView: {
-            if (request.requestedUrl) {
-                var opened = TabsModel.findTab(request.requestedUrl);
-                if (opened !== -1) {
-                    return openTab(opened)
+    Rectangle {
+        id: mainPanel
+        color: "#00000000"
+        RowLayout {
+            id: toolbar
+            height: buttonSize
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.rightMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 3
+            readonly property int buttonWidth: buttonSize * (Qt.platform.os == "ios" ? 1 : 1)
+            //            spacing: (Qt.platform.os == "ios") ? 0 : 2
+            C.Button {
+                id: back_Button
+                Layout.minimumWidth: toolbar.buttonWidth
+                Layout.preferredHeight: parent.height
+                iconSource: "icon/left.svg"
+                enabled: currentWebView && currentWebView.canGoBack
+                onClicked: {
+                    currentWebView.goBack()
                 }
             }
-            var wv = newTab()
-            wv.handleNewViewRequest(request)
-        }
-    }
 
-    Connections {
-        target: browserSearch
-        onUserSearchesNextInBrowser: {
-            if (currentWebView !== null) {
-                currentWebView.findNext(browserSearch.textfield.text, function(cnt) {
-                    browserSearch.showCount()
-                    var cur = browserSearch.current()
-                    browserSearch.updateCount(cnt)
-                    if (cnt === 0) {
-                        browserSearch.updateCurrent(0)
-                    } else if (cur === cnt) {
-                        browserSearch.updateCurrent(1)
+            C.Button {
+                id: forward_Button
+                width: height
+                Layout.minimumWidth: toolbar.buttonWidth
+                Layout.preferredHeight: parent.height
+                iconSource: "icon/right.svg"
+                enabled: currentWebView && currentWebView.canGoForward
+                onClicked: {
+                    currentWebView.goForward()
+                }
+            }
+
+            C.Button {
+                id: refresh_Button
+                Layout.minimumWidth: toolbar.buttonWidth
+                Layout.preferredHeight: parent.height
+                iconSource: "icon/refresh.svg"
+                enabled: currentWebView
+                onClicked: refreshCurrentWebview()
+            }
+
+            BrowserAddressBar {
+                id: addressBar
+                Layout.fillWidth: true
+                Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
+                url: currentWebView ? currentWebView.href : ""
+                title: currentWebView ? currentWebView.title : ""
+                progress: currentWebView ? currentWebView.loadProgress : 0
+                onUserEntersUrl: {
+                    if (EventFilter.ctrlKeyDown || currentWebViewIndex === -1) {
+                        EventFilter.ctrlKeyDown = false
+                        newTab(url, true)
                     } else {
-                        browserSearch.updateCurrent(cur + 1)
+                        currentWebView.goTo(url)
                     }
-                })
+                }
             }
-        }
-        onUserSearchesPreviousInBrowser: {
-            if (currentWebView !== null) {
-                currentWebView.findPrev(browserSearch.textfield.text, function(cnt) {
-                    browserSearch.showCount()
-                    var cur = browserSearch.current()
-                    browserSearch.updateCount(cnt)
-                    if (cnt === 0) {
-                        browserSearch.updateCurrent(0)
-                    } else if (cur <= 1) {
-                        browserSearch.updateCurrent(cnt)
+
+            C.Button {
+                id: docview_Button
+                checkable: true
+                Layout.minimumWidth: toolbar.buttonWidth
+                Layout.preferredHeight: parent.height
+                iconSource: "icon/list.svg"
+                enabled: currentWebView && currentWebView.docviewLoaded
+                active: currentWebView && currentWebView.inDocview
+                onClicked: currentWebView && (currentWebView.inDocview ? currentWebView.docviewOff() : currentWebView.docviewOn())
+                onCheckedChanged: {
+                    if (docview_Button.checked) {
+                        currentWebView().docviewOn()
                     } else {
-                        browserSearch.updateCurrent(cur - 1)
+                        currentWebView().docviewOff()
                     }
-                })
-            }
-        }
-        onUserClosesSearch: hideBrowserSearch()
-        onUserTypesInSearch: {
-            browserSearch.updateCount(0)
-            browserSearch.updateCurrent(0)
-            browserSearch.hideCount()
-            if (currentWebView !== null) {
-                currentWebView.clearFindText()
-            }
-        }
-    }
-
-    Connections {
-        target: browserAddressBar
-        onUserEntersUrl: {
-            if (EventFilter.ctrlKeyDown || currentWebViewIndex === -1) {
-                EventFilter.ctrlKeyDown = false
-                newTab(url, true)
-            } else {
-                currentWebView.goTo(url)
-            }
-        }
-    }
-
-    Connections {
-        target: browserBackButton
-        onClicked: {
-            currentWebView.goBack()
-        }
-    }
-
-    Connections {
-        target: browserForwardButton
-        onClicked: {
-            currentWebView.goForward()
-        }
-    }
-
-    Connections {
-        target: browserRefreshButton
-        onClicked: refreshCurrentWebview()
-    }
-
-    Connections {
-        target: browserDocviewButton
-        onCheckedChanged: {
-            if (browserDocviewButton.checked) {
-                currentWebView().docviewOn()
-            } else {
-                currentWebView().docviewOff()
+                }
             }
 
+            C.Button {
+                id: bookmark_Button
+                Layout.minimumWidth: toolbar.buttonWidth
+                Layout.preferredHeight: parent.height
+                iconSource: bookmark_Button.checked ? "icon/bookmark.svg" : "icon/book.svg"
+                checkable: false
+                enabled: currentWebView
+                active: currentWebView && currentWebView.bookmarked
+                onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
+            }
+        }
+
+        BrowserWebViews {
+            id: browserWebViews
+            anchors.top: toolbar.bottom
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.topMargin: 3
+            onUserRequestsNewView: {
+                if (request.requestedUrl) {
+                    var opened = TabsModel.findTab(request.requestedUrl);
+                    if (opened !== -1) {
+                        return openTab(opened)
+                    }
+                }
+                var wv = newTab()
+                wv.handleNewViewRequest(request)
+            }
+
+            WelcomePageForm {
+                id: welcomePage
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                opacity: 0.5
+                visible: ! currentWebView
+            }
+
+            BrowserSearch {
+                id: browserSearch
+                width: 300
+                height: 30
+                visible: false
+                anchors.right: parent.right
+                anchors.top: parent.top
+                onUserSearchesNextInBrowser: {
+                    if (currentWebView !== null) {
+                        currentWebView.findNext(browserSearch.textfield.text, function(cnt) {
+                            browserSearch.showCount()
+                            var cur = browserSearch.current()
+                            browserSearch.updateCount(cnt)
+                            if (cnt === 0) {
+                                browserSearch.updateCurrent(0)
+                            } else if (cur === cnt) {
+                                browserSearch.updateCurrent(1)
+                            } else {
+                                browserSearch.updateCurrent(cur + 1)
+                            }
+                        })
+                    }
+                }
+                onUserSearchesPreviousInBrowser: {
+                    if (currentWebView !== null) {
+                        currentWebView.findPrev(browserSearch.textfield.text, function(cnt) {
+                            browserSearch.showCount()
+                            var cur = browserSearch.current()
+                            browserSearch.updateCount(cnt)
+                            if (cnt === 0) {
+                                browserSearch.updateCurrent(0)
+                            } else if (cur <= 1) {
+                                browserSearch.updateCurrent(cnt)
+                            } else {
+                                browserSearch.updateCurrent(cur - 1)
+                            }
+                        })
+                    }
+                }
+                onUserClosesSearch: hideBrowserSearch()
+                onUserTypesInSearch: {
+                    browserSearch.updateCount(0)
+                    browserSearch.updateCurrent(0)
+                    browserSearch.hideCount()
+                    if (currentWebView !== null) {
+                        currentWebView.clearFindText()
+                    }
+                }
+            }
+        }
+
+        //        Layout.minimumWidth: 300
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+    }
+
+    states: [
+        State {
+            name: "osx"
+
+            PropertyChanges {
+                target: docview_Button
+                padding: 4
+            }
+
+            PropertyChanges {
+                target: bookmark_Button
+                padding: 4
+            }
+
+            PropertyChanges {
+                target: back_Button
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: forward_Button
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: refresh_Button
+                padding: 3
+            }
+        },
+        State {
+            name: "ios"
+        },
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: docview_Button
+                padding: 3
+            }
+
+            PropertyChanges {
+                target: bookmark_Button
+                padding: 3
+            }
+
+            PropertyChanges {
+                target: back_Button
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: forward_Button
+                padding: 6
+            }
+
+            PropertyChanges {
+                target: refresh
+                padding: 3
+            }
+        }
+    ]
+
+    Component.onCompleted: {
+        TabsModel.loadTabs()
+        if (TabsModel.count > 0) {
+            openTab(0)
         }
     }
 

@@ -3,7 +3,6 @@
         <file>main.qml</file>
         <file>TabsPanel.qml</file>
         <file>Browser.qml</file>
-        <file>BrowserForm.ui.qml</file>
         <file>TabsList.qml</file>
         <file>BrowserWebViews.qml</file>
         <file>BrowserWebViewsForm.ui.qml</file>
