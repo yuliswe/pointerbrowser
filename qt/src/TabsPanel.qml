@@ -13,11 +13,15 @@ Item {
     signal userOpensTab(int index)
     signal userOpensNewTab()
 
+    property alias searchFieldActiveFocus: searchTextField.activeFocus
+    property bool searchMode: false
+
     function setCurrentIndex(i) {
         tabsList.setHighlightAt(i)
     }
 
     function filterModelBySymbol(sym) {
+        tabsPanel.searchMode = (sym !== "")
         SearchDB.searchAsync(sym)
     }
 
@@ -118,35 +122,14 @@ Item {
             boundsBehavior: Flickable.StopAtBounds
             //            flickDeceleration: 10
             //            maximumFlickVelocity: 1000
-            contentHeight: text1.height + tabsList.height + text2.height + searchList.height + 10
-            C.Text {
-                id: text1
-                width: tabsPanel.width
-                color: Palette.normal.label_text
-                text: qsTr("Open Tabs")
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                verticalAlignment: Text.AlignBottom
-                anchors.top: parent.top
-                anchors.topMargin: 5
-                topPadding: 5
-                bottomPadding: 5
-                leftPadding: 5
-                font.bold: false
-                font.capitalization: Font.AllUppercase
-                font.pixelSize: 9
-            }
-
+            contentHeight: tabsList.height + searchList.height + 10
             TabsList {
                 id: tabsList
                 width: tabsPanel.width
-                anchors.top: text1.bottom
-                interactive: false
-                highlightFollowsCurrentItem: false
                 showCloseButton: true
                 expandEnabled: false
                 model: TabsModel
-
+                name: "Open Tabs"
                 onUserClosesTab: {
                     tabsPanel.userClosesTab(index)
                 }
@@ -154,38 +137,20 @@ Item {
                     tabsPanel.setCurrentIndex(index)
                     tabsPanel.userOpensTab(index)
                 }
+                anchors.top: searchMode ? searchList.bottom : parent.top
             }
-
-            C.Text {
-                id: text2
-                width: tabsPanel.width
-                color: Palette.normal.label_text
-                text: qsTr("Bookmarks")
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                verticalAlignment: Text.AlignBottom
-                anchors.top: tabsList.bottom
-                anchors.topMargin: 5
-                bottomPadding: 5
-                leftPadding: 5
-                topPadding: 5
-                font.capitalization: Font.AllUppercase
-                font.bold: false
-                font.pixelSize: 9
-            }
-
             TabsList {
                 id: searchList
-                //            height: 500
+                name: "Bookmarks"
                 width: tabsPanel.width
                 hoverHighlight: true
-                anchors.top: text2.bottom
                 showCloseButton: false
                 expandEnabled: true
                 model: SearchDB.searchResult
                 onUserClicksTab: {
                     tabsPanel.userOpensSavedTab(index)
                 }
+                anchors.top: searchMode ? parent.top : tabsList.bottom
             }
         }
     }

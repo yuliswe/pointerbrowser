@@ -21,6 +21,7 @@ C.SplitView {
     property alias welcomePage: welcomePage
     property alias mainPanel: mainPanel
     property int buttonSize: 25
+    property alias searchMode: tabsPanel.searchFieldActiveFocus
 
     handleDelegate: Item {
     }
@@ -30,6 +31,7 @@ C.SplitView {
         Layout.minimumWidth: 150
         Layout.preferredWidth: 300
         width: 300
+//        searchMode: splitView.searchMode
     }
 
     Rectangle {

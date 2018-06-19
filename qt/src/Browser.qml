@@ -6,10 +6,6 @@ import QtWebEngine 1.5
 BrowserForm {
     id: browser
 
-    function webViewAt(i) {
-        return browserWebViews.webViewAt(i)
-    }
-
     state: Qt.platform.os
 
 

@@ -87,7 +87,7 @@ Item {
                 font.pixelSize: 11
                 anchors.rightMargin: 10
                 anchors.right: parent.right
-                textFormat: Text.PlainText
+//                textFormat: Text.PlainText
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
 //                anchors.top: parent.top
@@ -96,6 +96,7 @@ Item {
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
                 text: (expanded ? model.expanded_display : model.display) || "Loading"
+                clip: true
             }
         }
     }
