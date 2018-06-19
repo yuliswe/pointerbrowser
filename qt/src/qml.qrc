@@ -8,7 +8,6 @@
         <file>BrowserWebViewsForm.ui.qml</file>
         <file>TabsListTab.qml</file>
         <file>BrowserAddressBar.qml</file>
-        <file>BrowserAddressBarForm.ui.qml</file>
         <file>BrowserWindow.qml</file>
         <file>BrowserSearch.qml</file>
         <file>BrowserSearchForm.ui.qml</file>
