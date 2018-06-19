@@ -3,84 +3,86 @@ import QtQuick.Templates 2.2 as T
 import QtQuick.Controls 2.2
 import Backend 1.0
 
-T.TextField {
+TextField {
     id: textfield
+    property bool fakeActiveFocusUntilEmpty: false
+    readonly property bool fakeActiveFocus: (fakeActiveFocusUntilEmpty && text) || activeFocus
     readonly property var pal: {
-        if (activeFocus) { return Palette.selected }
+        if (fakeActiveFocus) { return Palette.selected }
         return Palette.normal
     }
     state: Qt.platform.os
     color: text == placeholderText ? pal.input_placeholder : pal.input_text
-    property alias rectangle: rectangle
+//    property alias rectangle: rectangle
     selectByMouse: true
     selectionColor: pal.text_background
     selectedTextColor: pal.text
-    text: placeholderText
-    states: [
-        State {
-            name: "windows"
-            PropertyChanges {
-                target: rectangle
-                radius: 0
-            }
-            PropertyChanges {
-                target: textfield
-                renderType: Text.NativeRendering
-            }
-        },
-        State {
-            name: "mac"
-            PropertyChanges {
-                target: rectangle
-                radius: 3
-            }
-            PropertyChanges {
-                target: textfield
-                renderType: Text.QtRendering
-            }
-        }
-    ]
+    placeholderText: ""
+    renderType: Text.NativeRendering
+//    text: placeholderText
+//    states: [
+//        State {
+//            name: "windows"
+//            PropertyChanges {
+//                target: rectangle
+//                radius: 0
+//            }
+//            PropertyChanges {
+//                target: textfield
+//                renderType: Text.NativeRendering
+//            }
+//        },
+//        State {
+//            name: "mac"
+//            PropertyChanges {
+//                target: rectangle
+//                radius: 3
+//            }
+//            PropertyChanges {
+//                target: textfield
+//                renderType: Text.QtRendering
+//            }
+//        }
+//    ]
     font.pixelSize: pal.input_font_size
     background: Rectangle {
         id: rectangle
         border.width: 1
         border.color: pal.input_border
-        color: textfield.activeFocus ? pal.input_background : pal.input_background
+        color: fakeActiveFocus ? pal.input_background : pal.input_background
         anchors.fill: textfield
         radius: (Qt.platform.os == "ios" ? 10 : 3)
     }
     verticalAlignment: TextInput.AlignVCenter
     leftPadding: 5
     rightPadding: 5
-    onActiveFocusChanged: {
-        if (! activeFocus) {
+    onFakeActiveFocusChanged: {
+        if (! fakeActiveFocus) {
             focus = false
         }
-        if (! activeFocus && ! text) {
-            text = placeholderText
-        } else if (activeFocus && text == placeholderText) {
-            text = ""
-        }
+//        if (! fakeActiveFocus && ! text) {
+//            text = placeholderText
+//        } else if (fakeActiveFocus && text == placeholderText) {
+//            text = ""
+//        }
     }
     signal textCleared()
-    signal delayedTextEdited()
+    signal delayedTextChanged()
     Timer {
         id: timeout
         repeat: false
         triggeredOnStart: false
         interval: 250
         onTriggered: {
-            delayedTextEdited(textfield.text)
+            delayedTextChanged(textfield.text)
         }
     }
-    onTextEdited: {
+    onTextChanged: {
         timeout.restart()
     }
     Keys.onReleased: {
         if (event.key === Qt.Key_Escape) {
             event.accepted = true;
-            textfield.focus = false
-            textfield.text = placeholderText
             textCleared()
             timeout.stop()
         }

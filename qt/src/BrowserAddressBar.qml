@@ -20,9 +20,9 @@ BrowserAddressBarForm {
     function update(url, title) {
         console.log("addressBar update", url, title)
         if (title !== "") {
-            titleDisplay.text = title
+            textField.placeholderText = title
         } else {
-            titleDisplay.text = url
+            textField.placeholderText = url
         }
     }
 
@@ -70,7 +70,9 @@ BrowserAddressBarForm {
         } else {
             textField.deselect()
             //            textField.horizontalAlignment = Text.AlignHCenter
-            textField.color = "transparent"
+            textField.text = ""
+            textField.placeholderText = form.url
+//            textField.color = "transparent"
         }
     }
 

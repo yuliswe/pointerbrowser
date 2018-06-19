@@ -10,30 +10,29 @@ Item {
     id: form
     property alias textField: textField
     property alias progressBar: progressBar
-    property alias titleDisplay: titleDisplay
 
+    //    property alias titleDisplay: titleDisplay
     C.TextField {
         id: textField
         horizontalAlignment: Text.AlignHCenter
         anchors.fill: parent
     }
 
-    Text {
-        id: titleDisplay
-        font.pixelSize: Palette.normal.input_font_size
-        fontSizeMode: Text.FixedSize
-        elide: Text.ElideRight
-        clip: true
-        rightPadding: 5
-        leftPadding: 5
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.fill: parent
-        color: Palette.normal.input_placeholder
-        renderType: Text.NativeRendering
-        visible: !textField.activeFocus
-    }
-
+    //    Text {
+    //        id: titleDisplay
+    //        font.pixelSize: Palette.normal.input_font_size
+    //        fontSizeMode: Text.FixedSize
+    //        elide: Text.ElideRight
+    //        clip: true
+    //        rightPadding: 5
+    //        leftPadding: 5
+    //        horizontalAlignment: Text.AlignHCenter
+    //        verticalAlignment: Text.AlignVCenter
+    //        anchors.fill: parent
+    //        color: Palette.normal.input_placeholder
+    //        renderType: Text.NativeRendering
+    //        visible: !textField.activeFocus
+    //    }
     Rectangle {
         id: progressBar
         color: "green"

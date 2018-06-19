@@ -26,6 +26,10 @@ Item {
         SearchDB.searchAsync(sym)
     }
 
+    function clearSearchField() {
+        searchTextField.clear()
+    }
+
     //    flickable {
     //        rebound: Transition {
     //            NumberAnimation {
@@ -70,7 +74,8 @@ Item {
             Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
             placeholderText: "Search"
             selectByMouse: true
-            onDelayedTextEdited: {
+            fakeActiveFocusUntilEmpty: true
+            onDelayedTextChanged: {
                 if (searchTextField.text.length > 1) {
                     filterModelBySymbol(searchTextField.text)
                 } else if (searchTextField.text.length === 0) {
@@ -142,7 +147,7 @@ Item {
             }
             TabsList {
                 id: searchList
-                name: "Bookmarks"
+                name: searchMode ? "Search Result" : "Bookmarks"
                 width: tabsPanel.width
                 hoverHighlight: true
                 showCloseButton: false

@@ -13,7 +13,7 @@ C.SplitView {
     property alias currentWebView: browserWebViews.currentWebView
     property alias currentWebViewIndex: browserWebViews.currentIndex
     property int buttonSize: 25
-    property alias searchMode: tabsPanel.searchFieldActiveFocus
+    property alias searchMode: tabsPanel.searchMode
 
     function refreshCurrentWebview() {
         browserWebViews.reloadCurrentWebView()
@@ -38,23 +38,24 @@ C.SplitView {
         if (wp.hash) {
             SearchDB.updateSymbolAsync(wp.hash, 'visited', Date.now())
         }
-        //        if (wp.title || wp.url_matched) {
         SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
-        //        }
-        newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true)
+        newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true, searchMode)
     }
 
     function newTabHome() {
         newTab("https://www.google.ca/", true)
     }
 
-    function newTab(url, switchToView) {
+    function newTab(url, switchToView, previewMode) {
         console.log("newTab:", url, switchToView)
         var opened = TabsModel.findTab(url)
         if (opened !== -1) {
             return openTab(opened)
         }
-        TabsModel.insertTab(0, url, "", "")
+        TabsModel.insertTab(0, url)
+        if (previewMode) {
+            TabsModel.updateTab(0,"preview_mode",true)
+        }
         if (switchToView) {
             if (currentWebViewIndex === 0) {
                 openTab(1) // trigger binding update
@@ -296,6 +297,14 @@ C.SplitView {
         Layout.fillHeight: true
     }
 
+    onSearchModeChanged: {
+        for (var i = TabsModel.count - 1; i >= 0; i--) {
+            if (TabsModel.at(i).preview_mode) {
+                closeTab(i)
+            }
+        }
+    }
+
     states: [
         State {
             name: "osx"
@@ -389,7 +398,12 @@ C.SplitView {
     }
     Shortcut {
         sequence: "Esc"
-        onActivated: hideBrowserSearch()
+        onActivated: {
+            if (searchMode) {
+                return tabsPanel.clearSearchField()
+            }
+            hideBrowserSearch()
+        }
     }
     Shortcut {
         sequence: "Ctrl+K"
