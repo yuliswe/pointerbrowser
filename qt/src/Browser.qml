@@ -233,8 +233,12 @@ C.SplitView {
                 title: currentWebView ? currentWebView.title : ""
                 progress: currentWebView ? currentWebView.loadProgress : 0
                 onUserEntersUrl: {
-                    if (EventFilter.ctrlKeyDown || currentWebViewIndex === -1) {
+                    if (currentWebViewIndex === -1) {
+                        openOrNewTab(url, true)
+                    } else if (EventFilter.ctrlKeyDown) {
                         EventFilter.ctrlKeyDown = false
+                        openOrNewTab(url, true)
+                    } else if (TabsModel.at(currentWebViewIndex).preview_mode) {
                         openOrNewTab(url, true)
                     } else {
                         currentWebView.goTo(url)
