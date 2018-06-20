@@ -138,7 +138,12 @@ Item {
             }
             TabsList {
                 id: searchList
-                name: searchMode ? "Search Result" : "Bookmarks"
+                name: searchMode ? (SearchDB.searchInProgress ?
+                                        "Searching" :
+                                        "BOOKMARKS - "
+                                        + (SearchDB.searchResult.count === 0 ? "nothing" : SearchDB.searchResult.count)
+                                        + (SearchDB.searchResult.count >= 50 ? "+" : "")
+                                        + " found") : "Bookmarks"
                 width: tabsPanel.width
                 loading: SearchDB.searchInProgress && tabsPanel.searchMode
                 hoverHighlight: true

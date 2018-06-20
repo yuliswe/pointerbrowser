@@ -43,8 +43,11 @@ bool SearchDB::connect() {
     QObject::connect(this, &SearchDB::searchAsync, _searchWorker.data(), &SearchWorker::search);
     QObject::connect(this, &SearchDB::searchAsync, this, [=]() { this->set_searchInProgress(true); });
     QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, &SearchDB::setSearchResult);
-    QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result) {
-        this->set_searchInProgress(result.count() == 0);
+    QObject::connect(_searchWorker.data(), &SearchWorker::searchStarted, this, [=]() {
+        this->set_searchInProgress(true);
+    });
+    QObject::connect(_searchWorker.data(), &SearchWorker::searchFinished, this, [=]() {
+        this->set_searchInProgress(false);
     });
     searchAsync("");
     /* UpdateWorker setup */
@@ -269,6 +272,7 @@ void SearchWorker::search(const QString& word)
 {
     qDebug() << "SearchWorker::search" << word;
     Webpage_List pages;
+    emit searchStarted();
     emit resultChanged(pages);
     QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QString q;
@@ -341,6 +345,7 @@ void SearchWorker::search(const QString& word)
         r.next();
     }
     emit resultChanged(pages);
+    emit searchFinished();
     qDebug() << "SearchWorker::search found" << pages.count();
 }
 

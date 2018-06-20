@@ -46,7 +46,7 @@ Column {
             anchors.left: parent.right
             height: 20
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -1
+            anchors.verticalCenterOffset: -2
             color: Palette.normal.label_text
         }
     }

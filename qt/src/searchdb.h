@@ -27,6 +27,8 @@ public slots:
     void search(const QString& words);
 signals:
     void resultChanged(const Webpage_List& results);
+    void searchStarted();
+    void searchFinished();
 };
 typedef QSharedPointer<SearchWorker> SearchWorker_;
 
