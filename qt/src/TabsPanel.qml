@@ -140,8 +140,7 @@ Item {
                 id: searchList
                 name: searchMode ? (SearchDB.searchInProgress ?
                                         "Searching" :
-                                        "BOOKMARKS - "
-                                        + (SearchDB.searchResult.count === 0 ? "nothing" : SearchDB.searchResult.count)
+                                        (SearchDB.searchResult.count === 0 ? "nothing" : "BOOKMARKS - " + SearchDB.searchResult.count)
                                         + (SearchDB.searchResult.count >= 50 ? "+" : "")
                                         + " found") : "Bookmarks"
                 width: tabsPanel.width
