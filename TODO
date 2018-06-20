@@ -1,4 +1,4 @@
-Deadlines:
+ROAD MAP:
 
 March:
   (done) FEATURE: symbol extractor
@@ -17,7 +17,7 @@ May:
   (done) FEATURE: docview mode
 
 June:
-  FEATURE: offline mode
+ IMPROVEMENT: better
 
 July:
   FEATURE: software settings
@@ -26,5 +26,6 @@ August:
   FEATURE: drag and sort tabs
 
 September:
+  FEATURE: offline mode
   FEATURE: finalize
 

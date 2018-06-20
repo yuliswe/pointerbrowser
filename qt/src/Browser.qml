@@ -254,12 +254,11 @@ C.SplitView {
                 iconSource: "icon/list.svg"
                 enabled: currentWebView && currentWebView.docviewLoaded
                 active: currentWebView && currentWebView.inDocview
-                onClicked: currentWebView && (currentWebView.inDocview ? currentWebView.docviewOff() : currentWebView.docviewOn())
                 onCheckedChanged: {
                     if (docview_Button.checked) {
-                        currentWebView().docviewOn()
+                        currentWebView.docviewOn()
                     } else {
-                        currentWebView().docviewOff()
+                        currentWebView.docviewOff()
                     }
                 }
             }
