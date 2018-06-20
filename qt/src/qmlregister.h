@@ -16,6 +16,7 @@ class QMLRegister : public QObject
         explicit QMLRegister(QObject *parent = nullptr);
         static FileManager* fileManager;
         static TabsModel* tabsModel;
+        static TabsModel* previewTabsModel;
         static EventFilter* eventFilter;
         static SearchDB* searchDB;
         static Palette* palette;

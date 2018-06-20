@@ -340,6 +340,8 @@ void SearchWorker::search(const QString& word)
         wp->_hash = hash;
         wp->_display = display;
         wp->_expanded_display = expanded_display;
+        wp->_preview_mode = false;
+        wp->_open = false;
         pages << wp;
         wp->moveToThread(_qmlThread);
         r.next();

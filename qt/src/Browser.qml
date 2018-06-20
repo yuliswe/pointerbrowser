@@ -32,30 +32,48 @@ C.SplitView {
         }
     }
 
-    function openSavedTab(index) {
+    function openSavedTab(index, previewMode) {
         console.log("openSavedTab", index)
         var wp = SearchDB.searchResult.at(index)
         if (wp.hash) {
             SearchDB.updateSymbolAsync(wp.hash, 'visited', Date.now())
         }
-        SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
-        newTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true, searchMode)
+        openOrNewTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true, previewMode)
+        if (previewMode) {
+            tabsPanel.setSavedTabsCurrentIndex(index)
+        } else {
+            //            SearchDB.searchResult.removeTab(index)
+            SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
+            //            tabsPanel.setSavedTabsCurrentIndex(-1)
+        }
     }
 
     function newTabHome() {
-        newTab("https://www.google.ca/", true)
+        openOrNewTab("https://www.google.ca/", true)
     }
 
-    function newTab(url, switchToView, previewMode) {
+    function openOrNewTab(url, switchToView, previewMode) {
         console.log("newTab:", url, switchToView)
         var opened = TabsModel.findTab(url)
         if (opened !== -1) {
+            if (! previewMode) {
+                TabsModel.updateTab(opened, "open", true)
+                TabsModel.updateTab(opened, "preview_mode", false)
+                browserWebViews.setPreviewMode(opened, false)
+                browserWebViews.reloadWebViewAt(opened)
+            }
+            if (! TabsModel.at(opened).open && previewMode) {
+                TabsModel.updateTab(opened, "preview_mode", true)
+            }
             return openTab(opened)
         }
-        TabsModel.insertTab(0, url)
-        if (previewMode) {
-            TabsModel.updateTab(0,"preview_mode",true)
+        var newtab = {
+            url: url,
+            preview_mode: previewMode,
+            open: ! previewMode
         }
+        TabsModel.insertTab(0, newtab)
+
         if (switchToView) {
             if (currentWebViewIndex === 0) {
                 openTab(1) // trigger binding update
@@ -74,7 +92,35 @@ C.SplitView {
         console.log("openTab", "index=", index, "TabsModel.count=",
                     TabsModel.count)
         browserWebViews.setCurrentIndex(index)
-        tabsPanel.setCurrentIndex(index)
+        tabsPanel.setOpenTabsCurrentIndex(index)
+        tabsPanel.setSavedTabsCurrentIndex(-1)
+    }
+
+    //    function closeAllPreviewTabs() {
+    //        if (curr)
+    //    }
+    //    function nextOpenTab(index) {
+    //        for
+    //        if (TabsModel.at(currentWebViewIndex).preview_mode) {
+    //            //            closeAllPreviewTabs()
+    //            //                for (var i = 0; i < TabsModel.count; i++) {
+    //            //                    if (! TabsModel.at(i).preview_mode) {
+    //            //                        return openTab(i)
+    //            //                    }
+    //            //                }
+    //            TabsModel.clear()
+    //        } else {
+
+    //        }
+    //    }
+
+    function closeAllPreviewTabs() {
+        for (var i = TabsModel.count - 1; i >= 0; i--) {
+            if (TabsModel.at(i).preview_mode) {
+                TabsModel.removeTab(i)
+            }
+        }
+        tabsPanel.setSavedTabsCurrentIndex(-1)
     }
 
     function closeTab(index) {
@@ -83,6 +129,16 @@ C.SplitView {
         if (index < 0) {
             return
         }
+        if (TabsModel.at(index).preview_mode) {
+            closeAllPreviewTabs()
+            if (TabsModel.count > 0) {
+                openTab(0)
+            } else {
+                browserWebViews.setCurrentIndex(-1)
+            }
+            return
+        }
+        closeAllPreviewTabs()
         if (currentWebViewIndex === index) {
             // when removing current tab
             // if there's one after, open that
@@ -120,6 +176,7 @@ C.SplitView {
         onUserOpensTab: openTab(index)
         onUserClosesTab: closeTab(index)
         onUserOpensSavedTab: openSavedTab(index)
+        onUserPreviewsSavedTab: openSavedTab(index, true)
     }
 
     Rectangle {
@@ -178,7 +235,7 @@ C.SplitView {
                 onUserEntersUrl: {
                     if (EventFilter.ctrlKeyDown || currentWebViewIndex === -1) {
                         EventFilter.ctrlKeyDown = false
-                        newTab(url, true)
+                        openOrNewTab(url, true)
                     } else {
                         currentWebView.goTo(url)
                     }
@@ -229,7 +286,7 @@ C.SplitView {
                         return openTab(opened)
                     }
                 }
-                var wv = newTab()
+                var wv = openOrNewTab()
                 wv.handleNewViewRequest(request)
             }
 
@@ -298,11 +355,7 @@ C.SplitView {
     }
 
     onSearchModeChanged: {
-        for (var i = TabsModel.count - 1; i >= 0; i--) {
-            if (TabsModel.at(i).preview_mode) {
-                closeTab(i)
-            }
-        }
+        closeAllPreviewTabs()
     }
 
     states: [
@@ -418,7 +471,7 @@ C.SplitView {
             var r = FileManager.readQrcFileS('defaults/dbgen.txt').split('\n')
             for (var i = 0; i < r.length; i++) {
                 if (! r[i]) { continue; }
-                newTab(r[i], true)
+                openOrNewTab(r[i], true)
             }
         }
     }

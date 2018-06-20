@@ -19,18 +19,29 @@ QPROP_FUNC(QString, symbol)
 QPROP_FUNC(QString, display)
 QPROP_FUNC(QString, expanded_display)
 QPROP_FUNC(quint64, visited)
+QPROP_FUNC(bool, open)
 QPROP_FUNC(bool, preview_mode)
 QPROP_FUNC(bool, url_matched)
 QPROP_FUNC(bool, title_matched)
 QPROP_FUNC(bool, hash_matched)
 QPROP_FUNC(bool, symbol_matched)
 
-Webpage::Webpage(QString url)
+Webpage::Webpage(const QString& url)
 {
     _url = url;
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
+Webpage::Webpage(const QVariantMap map)
+{
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+#define MAP_K(T, PROP) _##PROP = map[#PROP].value<T>();
+    MAP_K(QString, url);
+    MAP_K(bool, open);
+    MAP_K(bool, preview_mode);
+}
+
+Webpage::~Webpage() {}
 
 QVariantMap Webpage::toQVariantMap()
 {

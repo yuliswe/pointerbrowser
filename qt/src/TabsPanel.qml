@@ -9,16 +9,24 @@ Item {
     id: tabsPanel
 
     signal userOpensSavedTab(int index)
+    signal userPreviewsSavedTab(int index)
     signal userClosesTab(int index)
     signal userOpensTab(int index)
     signal userOpensNewTab()
 
-    property alias searchFieldActiveFocus: searchTextField.activeFocus
     property bool searchMode: false
     property int buttonSize: 25
 
     function setCurrentIndex(i) {
         tabsList.setHighlightAt(i)
+    }
+
+    function setOpenTabsCurrentIndex(i) {
+        tabsList.setHighlightAt(i)
+    }
+
+    function setSavedTabsCurrentIndex(i) {
+        searchList.setHighlightAt(i)
     }
 
     function filterModelBySymbol(sym) {
@@ -134,7 +142,7 @@ Item {
                     tabsPanel.userOpensTab(index)
                 }
                 anchors.top: parent.top
-                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
+//                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
             }
             TabsList {
                 id: searchList
@@ -149,11 +157,17 @@ Item {
                 showCloseButton: false
                 expandEnabled: true
                 model: SearchDB.searchResult
-                onUserClicksTab: {
+                onUserDoubleClicksTab: {
                     tabsPanel.userOpensSavedTab(index)
+//                    searchList.setHighlightAt(-1)
                 }
-                anchors.top: parent.top
-                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
+                onUserClicksTab: {
+//                    searchList.setHighlightAt(index)
+                    tabsPanel.userPreviewsSavedTab(index)
+                }
+                anchors.top: tabsList.bottom
+//                anchors.top: parent.top
+//                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
             }
         }
     }
@@ -196,4 +210,5 @@ Item {
         }
     }
 
+    property alias searchFieldActiveFocus: searchTextField.activeFocus
 }

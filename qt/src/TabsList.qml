@@ -16,8 +16,6 @@ Column {
     property int currentExpandedIndex: -1
     property bool hoverHighlight: false
     property string name: "name"
-    property alias model: listview.model
-    property alias loading: busyIndicator.visible
 
     function setHighlightAt(index) {
         listview.currentIndex = index
@@ -106,4 +104,7 @@ Column {
             }
         }
     }
+
+    property alias loading: busyIndicator.visible
+    property alias model: listview.model
 }

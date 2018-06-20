@@ -7,11 +7,11 @@
 #include <QVariantMap>
 #include <QSharedPointer>
 
-#define QPROP_DEC(type, prop) \
+#define QPROP_DEC(type, prop, defval) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
     public: type prop() const; \
     public: void set_##prop(type); \
-    public: type _##prop; \
+    public: type _##prop = defval; \
     Q_SIGNAL void prop##_changed(type); \
 
 
@@ -24,27 +24,31 @@ class Webpage : public QObject
 {
     Q_OBJECT
 
-    QPROP_DEC(QString, title)
-    QPROP_DEC(QString, url)
-    QPROP_DEC(QString, html)
-    QPROP_DEC(QString, symbol)
-    QPROP_DEC(QString, hash)
-    QPROP_DEC(QString, display)
-    QPROP_DEC(QString, expanded_display)
-    QPROP_DEC(quint64, visited)
-    QPROP_DEC(bool, preview_mode)
-    QPROP_DEC(bool, url_matched)
-    QPROP_DEC(bool, title_matched)
-    QPROP_DEC(bool, hash_matched)
-    QPROP_DEC(bool, symbol_matched)
+public:
 
-    public:
-        explicit Webpage(QString url);
+    ~Webpage();
+    explicit Webpage(const QString& url);
+    explicit Webpage(const QVariantMap);
 
-        QVariantMap toQVariantMap();
-        static Webpage_ fromQVariantMap(QVariantMap&);
-        QJsonObject toQJsonObject();
-        static Webpage_ fromQJsonObject(QJsonObject&);
+    QVariantMap toQVariantMap();
+    static Webpage_ fromQVariantMap(QVariantMap&);
+    QJsonObject toQJsonObject();
+    static Webpage_ fromQJsonObject(QJsonObject&);
+
+    QPROP_DEC(QString, title, "")
+    QPROP_DEC(QString, url, "")
+    QPROP_DEC(QString, html, "")
+    QPROP_DEC(QString, symbol, "")
+    QPROP_DEC(QString, hash, "")
+    QPROP_DEC(QString, display, "")
+    QPROP_DEC(QString, expanded_display, "")
+    QPROP_DEC(quint64, visited, 0)
+    QPROP_DEC(bool, preview_mode, false)
+    QPROP_DEC(bool, open, false)
+    QPROP_DEC(bool, url_matched, false)
+    QPROP_DEC(bool, title_matched, false)
+    QPROP_DEC(bool, hash_matched, false)
+    QPROP_DEC(bool, symbol_matched, false)
 };
 
 Q_DECLARE_METATYPE(Webpage*)

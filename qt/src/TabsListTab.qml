@@ -13,7 +13,8 @@ Item {
     property var pal: form.highlighted ? Palette.selected : mouseArea.containsMouse ? Palette.hovered : Palette.normal
 
     property bool expanded: false
-    height: expanded ? 50 : 30
+    height: model.preview_mode ? 0 : expanded ? 50 : 30
+    visible: ! model.preview_mode
     MouseArea {
         id: mouseArea
         anchors.fill: parent

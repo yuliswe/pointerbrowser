@@ -30,6 +30,10 @@ BrowserWebViewsForm {
         reloadWebViewAt(currentIndex)
     }
 
+    function setPreviewMode(index, mode) {
+        browserWebViews.repeater.itemAt(index).previewMode = mode;
+    }
+
     Crawler {
         id: crawler
     }

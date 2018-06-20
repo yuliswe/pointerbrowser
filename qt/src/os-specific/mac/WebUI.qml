@@ -13,7 +13,9 @@ Item {
     property bool inDocview: false
     property bool bookmarked: false
     property alias href: webview.url
-    property string url: noHash(href)
+    property var model
+    readonly property string url: noHash(href)
+    property bool previewMode: false
     id: webUI
 
     function setBookmarked(hostname) {
@@ -132,8 +134,9 @@ Item {
     }
 
     Component.onCompleted: {
-        var url = TabsModel.at(index).url
-        goTo(url)
+        var tab = TabsModel.at(index)
+        webUI.previewMode = tab.preview_mode
+        goTo(tab.url)
     }
 
     WebEngineScript {
@@ -198,6 +201,9 @@ Item {
                     webUI.setBookmarked(hostname)
                     if (webUI.bookmarked) {
                         logging("hostname is bookmarked", hostname)
+                        if (webUI.previewMode) {
+                            return
+                        }
                         console.log("webview injecting docview.js on", loadRequest.url)
                         runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                             console.log("webview calling Docview.crawler() on", requestURL)
@@ -225,6 +231,7 @@ Item {
 
     WebEngineView {
         id: docview
+        enabled: ! previewMode
         visible: false
         height: browserWebViews.height
         width: browserWebViews.width

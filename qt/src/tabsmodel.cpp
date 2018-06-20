@@ -44,10 +44,19 @@ void TabsModel::insertWebpage(int idx, const Webpage_ page)
     emit countChanged();
 }
 
-void TabsModel::insertTab(int idx, QString url)
+void TabsModel::insertTab(int idx, const QString& url)
 {
     qDebug() << "TabsModel::insertTab" << idx << url;
     Webpage_ page = Webpage_::create(url);
+    page->set_display(page->title().length() > 0 ? page->title() : page->url());
+    page->set_expanded_display(page->title().length() > 0 ? page->title() : page->url());
+    insertWebpage(idx, page);
+}
+
+void TabsModel::insertTab(int idx, const QVariantMap& map)
+{
+    qDebug() << "TabsModel::insertTab" << idx << map;
+    Webpage_ page = Webpage_::create(map);
     page->set_display(page->title().length() > 0 ? page->title() : page->url());
     page->set_expanded_display(page->title().length() > 0 ? page->title() : page->url());
     insertWebpage(idx, page);
