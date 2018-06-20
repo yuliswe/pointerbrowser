@@ -19,6 +19,7 @@
 #include "qmlregister.h"
 #include "tabsmodel.h"
 
+
 SearchDB::SearchDB()
 {
 }
@@ -40,7 +41,11 @@ bool SearchDB::connect() {
     _searchWorkerThread.start();
     qRegisterMetaType<Webpage_List>();
     QObject::connect(this, &SearchDB::searchAsync, _searchWorker.data(), &SearchWorker::search);
+    QObject::connect(this, &SearchDB::searchAsync, this, [=]() { this->set_searchInProgress(true); });
     QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, &SearchDB::setSearchResult);
+    QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result) {
+        this->set_searchInProgress(result.count() == 0);
+    });
     searchAsync("");
     /* UpdateWorker setup */
     _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
@@ -268,7 +273,7 @@ void SearchWorker::search(const QString& word)
     QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QString q;
     if (word == "") {
-        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited LIMIT 50");
+        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
     } else {
         if (ws.length() == 0) { return; }
         q = QStringLiteral() +
@@ -351,10 +356,11 @@ void SearchDB::setSearchResult(const Webpage_List& results)
 }
 
 
+#define QPROP_FUNC(TYPE, PROP) \
+    TYPE SearchDB::PROP() const { return _##PROP; } \
+    void SearchDB::set_##PROP(TYPE x) { _##PROP = x; qDebug() << " PROP##_changed " << endl; emit PROP##_changed(x); }
 
-
-
-
+QPROP_FUNC(bool, searchInProgress)
 
 
 

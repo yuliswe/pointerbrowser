@@ -49,43 +49,45 @@ public slots:
 
 typedef QSharedPointer<UpdateWorker> UpdateWorker_;
 
+#define QPROP_DEC(type, prop) \
+    Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
+    public: type prop() const; \
+    public: void set_##prop(type); \
+    public: type _##prop; \
+    Q_SIGNAL void prop##_changed(type); \
+
+
 class SearchDB : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged)
+    Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged())
+    QPROP_DEC(bool, searchInProgress)
 
 public:
     explicit SearchDB();
-    QSemaphore semaphore{1};
-    QSemaphore searchSemaphore{1};
 
 signals:
-    void searchResultChanged();
     void searchAsync(const QString& words);
     void addSymbolsAsync(const QString& url, const QVariantMap& symbols);
     bool addWebpageAsync(const QString& url);
     bool updateWebpageAsync(const QString& url, const QString& property, const QVariant& value);
     bool updateSymbolAsync(const QString& hash, const QString& property, const QVariant& value);
     void execScriptAsync(const QString& filename);
+    void searchResultChanged(TabsModel* searchResult);
 
 public slots:
     bool connect();
     void disconnect();
-//    void searchAsync(const QString& words);
     Webpage_ findWebpage_(const QString& url) const;
     QVariantMap findWebpage(const QString& url) const;
     bool hasWebpage(const QString& url) const;
     bool removeWebpage(const QString& url);
-//    QSqlRelationalTableModel* webpageTable() const;
     TabsModel* searchResult();
     void setSearchResult(const Webpage_List& results);
 
 protected:
     QString _dbPath;
     QSqlDatabase _db;
-//    QRelTable_ _symbol;
-//    QRelTable_ _webpage;
-//    QRelTable_ _webpage_symbol;
     TabsModel _searchResult; // cache search function
 
     QThread _searchWorkerThread;

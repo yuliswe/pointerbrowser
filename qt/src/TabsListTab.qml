@@ -53,9 +53,9 @@ Item {
                 id: closeButton
                 width: 15
                 height: 15
-                anchors.leftMargin: 2
+//                anchors.leftMargin: 2
                 padding: 4
-                anchors.left: parent.left
+//                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 visible: form.showCloseButton && mouseArea.containsMouse
                 z: 2
@@ -85,8 +85,8 @@ Item {
                 id: text1
                 color: highlighted ? pal.list_item_text : pal.button_text
                 font.pixelSize: 11
-                anchors.rightMargin: 10
-                anchors.right: parent.right
+//                anchors.rightMargin: 10
+//                anchors.right: parent.right
 //                textFormat: Text.PlainText
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter

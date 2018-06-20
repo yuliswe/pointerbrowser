@@ -107,31 +107,21 @@ Item {
     ScrollView {
         id: scrollView
         clip: true
-        //        interactive: true
-        //        boundsBehavior: Flickable.DragOverBounds
-        //        flickableDirection: Flickable.VerticalFlick
-        //        clip: true
         anchors.bottomMargin: 5
         anchors.top: topControls.bottom
         anchors.right: parent.right
         anchors.bottom: bottomControls.top
         anchors.left: parent.left
         anchors.topMargin: 3
-        //                ScrollViewStyle.transientScrollBars: true
-
-        //        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-        //        contentWidth: tabsPanel.width
-        //        contentHeight: 1000 //text1.height + tabsList.height + text2.height + searchList.height
         Flickable {
             id: flickable
             clip: false
             boundsBehavior: Flickable.StopAtBounds
-            //            flickDeceleration: 10
-            //            maximumFlickVelocity: 1000
             contentHeight: tabsList.height + searchList.height + 10
             TabsList {
                 id: tabsList
                 width: tabsPanel.width
+                loading: false
                 showCloseButton: true
                 expandEnabled: false
                 model: TabsModel
@@ -143,12 +133,14 @@ Item {
                     tabsPanel.setCurrentIndex(index)
                     tabsPanel.userOpensTab(index)
                 }
-                anchors.top: searchMode ? searchList.bottom : parent.top
+                anchors.top: parent.top
+                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
             }
             TabsList {
                 id: searchList
                 name: searchMode ? "Search Result" : "Bookmarks"
                 width: tabsPanel.width
+                loading: SearchDB.searchInProgress && tabsPanel.searchMode
                 hoverHighlight: true
                 showCloseButton: false
                 expandEnabled: true
@@ -156,7 +148,8 @@ Item {
                 onUserClicksTab: {
                     tabsPanel.userOpensSavedTab(index)
                 }
-                anchors.top: searchMode ? parent.top : tabsList.bottom
+                anchors.top: parent.top
+                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
             }
         }
     }

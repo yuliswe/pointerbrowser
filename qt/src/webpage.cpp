@@ -7,11 +7,9 @@
 
 #define WP_PROP_1 (QString, title)
 
-
-
 #define QPROP_FUNC(TYPE, PROP) \
     TYPE Webpage::PROP() const { return _##PROP; } \
-    void Webpage::set_##PROP(TYPE x) { _##PROP = x; }
+    void Webpage::set_##PROP(TYPE x) { _##PROP = x; emit PROP##_changed(x); }
 
 QPROP_FUNC(QString, title)
 QPROP_FUNC(QString, html)

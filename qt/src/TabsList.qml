@@ -1,9 +1,10 @@
 import QtQuick 2.7
 import Backend 1.0
 import QtQuick.Controls 2.2
+import QtQuick.Controls.Styles 1.4
 import "controls" as C
 
-Item {
+Column {
 
     id: tabsList
     signal userClicksTab(int index)
@@ -16,29 +17,38 @@ Item {
     property bool hoverHighlight: false
     property string name: "name"
     property alias model: listview.model
+    property alias loading: busyIndicator.visible
 
     function setHighlightAt(index) {
         listview.currentIndex = index
     }
 
-    height: listview.contentHeight + name_Text.height + 5
+//    height: name_Text.height + listview.height
+//    height: listview.contentHeight + busyIndicator.height + name_Text.height + 5
 
     C.Text {
         id: name_Text
-        width: tabsPanel.width
+        height: 25
+//        width: tabsPanel.width
         color: Palette.normal.label_text
         text: tabsList.name
         anchors.left: parent.left
         anchors.leftMargin: 5
-        verticalAlignment: Text.AlignBottom
-        anchors.top: parent.top
-        anchors.topMargin: 5
-        topPadding: 5
-        bottomPadding: 5
+        verticalAlignment: Text.AlignVCenter
         leftPadding: 5
         font.bold: false
         font.capitalization: Font.AllUppercase
-        font.pixelSize: 9
+        font.pixelSize: 10
+
+        C.BusyIndicator {
+            id: busyIndicator
+            anchors.leftMargin: 5
+            anchors.left: parent.right
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -1
+            color: Palette.normal.label_text
+        }
     }
 
     ListView {
@@ -46,8 +56,9 @@ Item {
         height: contentHeight
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.top: name_Text.bottom
+
+        //        anchors.leftMargin: 0
+        //        anchors.top: name_Text.bottom
         //    height: {
         //        var h = 0;
         //        for (var i = 0; i < tabsList.count; i++) {

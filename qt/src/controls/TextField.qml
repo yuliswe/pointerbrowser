@@ -13,7 +13,7 @@ TextField {
     }
     state: Qt.platform.os
     color: text == placeholderText ? pal.input_placeholder : pal.input_text
-//    property alias rectangle: rectangle
+    property alias rectangle: rectangle
     selectByMouse: true
     selectionColor: pal.text_background
     selectedTextColor: pal.text
