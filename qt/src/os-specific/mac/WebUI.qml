@@ -231,7 +231,6 @@ Item {
 
     WebEngineView {
         id: docview
-        enabled: ! previewMode
         visible: false
         height: browserWebViews.height
         width: browserWebViews.width

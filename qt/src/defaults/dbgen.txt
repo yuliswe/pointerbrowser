@@ -1,8 +1,5 @@
 https://api.jquery.com
 https://docs.python.org/3/library/
-https://developer.mozilla.org/en-US/docs/Web/JavaScript
-https://developer.mozilla.org/en-US/docs/Web/CSS
-https://developer.mozilla.org/en-US/docs/Web/HTML
 http://www.cplusplus.com/reference/
 https://getbootstrap.com/docs
 https://devdocs.io/python
