@@ -85,8 +85,8 @@ Item {
                 id: text1
                 color: highlighted ? pal.list_item_text : pal.button_text
                 font.pixelSize: 11
-//                anchors.rightMargin: 10
-//                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.right: parent.right
 //                textFormat: Text.PlainText
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
