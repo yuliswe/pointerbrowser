@@ -208,8 +208,9 @@ Item {
                         runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
                             console.log("webview calling Docview.crawler() on", requestURL)
                             runJavaScript("Docview.crawler()", function(result) {
-                                result.links.push(requestURL)
                                 crawler.queueLinks(result.links)
+                                 // crawler is a stack
+                                crawler.queueLinks([requestURL])
                             })
                         })
                     } else {

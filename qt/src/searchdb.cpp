@@ -365,7 +365,7 @@ void SearchDB::setSearchResult(const Webpage_List& results)
 
 #define QPROP_FUNC(TYPE, PROP) \
     TYPE SearchDB::PROP() const { return _##PROP; } \
-    void SearchDB::set_##PROP(TYPE x) { _##PROP = x; qDebug() << " PROP##_changed " << endl; emit PROP##_changed(x); }
+    void SearchDB::set_##PROP(TYPE x) { _##PROP = x; emit PROP##_changed(x); }
 
 QPROP_FUNC(bool, searchInProgress)
 

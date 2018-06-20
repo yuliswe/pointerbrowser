@@ -58,27 +58,39 @@ WebEngineView {
         console.log("crawler.queueLinks", links)
         for (var i = 0; i < links.length; i++) {
             var l = links[i]
-            crawler.queue[l] = true
+            crawler.queue[l] = Date.now()
         }
         crawler.crawNext()
     }
 
     function crawNext(forced) {
         console.log("crawNext called on", Object.keys(crawler.queue).length, "links")
-        for (var first in crawler.queue) {
-            if (forced || ! crawler.loading) {
-                url = first
-                crawling = first
-                timeout.restart()
-                console.log("crawNext", url)
-                delete crawler.queue[first]
-            } else {
-                console.log("crawNext aborted because the crawler is still loading")
+        var latest = {
+            url: "",
+            time: -1
+        }
+        for (var url in crawler.queue) {
+            if (crawler.queue[url] > latest.time) {
+                latest.url = url
+                latest.time = crawler.queue[url]
             }
+        }
+        if (latest.time === -1) {
+            crawling = ""
+            timeout.stop()
+            console.log("crawler queue is empty, timer stopped.")
             return
         }
-        crawling = ""
-        console.log("crawler queue is empty")
+        console.log("crawler next", latest.url)
+        if (forced || ! crawler.loading) {
+            crawler.url = latest.url
+            crawler.crawling = latest.url
+            timeout.restart()
+            console.log("cralwer timer restarted", latest.url)
+            delete crawler.queue[latest.url]
+        } else {
+            console.log("crawNext aborted because the crawler is still loading")
+        }
     }
 
     Timer {
