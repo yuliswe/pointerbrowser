@@ -417,7 +417,7 @@ C.SplitView {
             }
 
             PropertyChanges {
-                target: refresh
+                target: refresh_Button
                 padding: 3
             }
         }
