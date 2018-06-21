@@ -1,10 +1,11 @@
-import QtQuick 2.7
-import QtQuick.Templates 2.2 as T
-import QtQuick.Controls 2.2
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+import QtQuick.Controls.impl 2.4
+import QtQuick.Templates 2.4 as T
 import Backend 1.0
 
 TextField {
-    id: textfield
+    id: control
     property bool fakeActiveFocusUntilEmpty: false
     readonly property bool fakeActiveFocus: (fakeActiveFocusUntilEmpty && text) || activeFocus
     readonly property var pal: {
@@ -20,38 +21,29 @@ TextField {
     placeholderText: ""
     renderType: Text.NativeRendering
 //    text: placeholderText
-//    states: [
-//        State {
-//            name: "windows"
-//            PropertyChanges {
-//                target: rectangle
-//                radius: 0
-//            }
-//            PropertyChanges {
-//                target: textfield
-//                renderType: Text.NativeRendering
-//            }
-//        },
-//        State {
-//            name: "mac"
-//            PropertyChanges {
-//                target: rectangle
-//                radius: 3
-//            }
-//            PropertyChanges {
-//                target: textfield
-//                renderType: Text.QtRendering
-//            }
-//        }
-//    ]
+    states: [
+        State {
+            name: "windows"
+            PropertyChanges {
+                target: rectangle
+                radius: 0
+            }
+        },
+        State {
+            name: "mac"
+            PropertyChanges {
+                target: rectangle
+                radius: 3
+            }
+        }
+    ]
     font.pixelSize: pal.input_font_size
     background: Rectangle {
         id: rectangle
         border.width: 1
         border.color: pal.input_border
         color: fakeActiveFocus ? pal.input_background : pal.input_background
-        anchors.fill: textfield
-        radius: (Qt.platform.os == "ios" ? 10 : 3)
+        anchors.fill: control
     }
     verticalAlignment: TextInput.AlignVCenter
     leftPadding: 5
@@ -74,7 +66,7 @@ TextField {
         triggeredOnStart: false
         interval: 250
         onTriggered: {
-            delayedTextChanged(textfield.text)
+            delayedTextChanged(control.text)
         }
     }
     onTextChanged: {
@@ -87,4 +79,5 @@ TextField {
             timeout.stop()
         }
     }
+
 }
