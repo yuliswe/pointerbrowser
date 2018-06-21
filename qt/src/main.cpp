@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();
+        QMLRegister::tabsModel->clear();
         QMLRegister::searchDB->disconnect();
 #ifndef QT_DEBUG
         FileManager::rmDataFile("debug.log");
