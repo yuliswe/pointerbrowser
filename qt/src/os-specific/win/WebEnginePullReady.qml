@@ -8,13 +8,15 @@ Timer {
     id: timer
     interval: 500
     repeat: true
-    property var target: parent
+    property WebEngineView target: parent
+    property string debugName: ""
     onTriggered: {
-        console.log("docview pulling document ready..")
+        console.log(debugName, "pulling document ready..")
         target.runJavaScript("document.readyState", function(ready) {
-            if (ready !== "complete") { return }
-            timer.onReady()
-            timer.stop()
+            if (ready === "complete") {
+                timer.onReady()
+                timer.stop()
+            }
         })
     }
     property var onReady: null
