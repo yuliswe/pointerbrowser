@@ -4,8 +4,34 @@ import QtQuick.Controls.impl 2.4
 import QtQuick.Templates 2.4 as T
 import Backend 1.0
 
-TextField {
+T.TextField {
     id: control
+    /* Qt 11.1 source with duplicated properties removed */
+    implicitWidth: Math.max(background ? background.implicitWidth : 0,
+                            placeholderText ? placeholder.implicitWidth + leftPadding + rightPadding : 0)
+                            || contentWidth + leftPadding + rightPadding
+    implicitHeight: Math.max(contentHeight + topPadding + bottomPadding,
+                             background ? background.implicitHeight : 0,
+                             placeholder.implicitHeight + topPadding + bottomPadding)
+
+    PlaceholderText {
+        id: placeholder
+        x: control.leftPadding
+        y: control.topPadding
+        width: control.width - (control.leftPadding + control.rightPadding)
+        height: control.height - (control.topPadding + control.bottomPadding)
+
+        text: control.placeholderText
+        font: control.font
+        opacity: 0.5
+        color: control.color
+        verticalAlignment: control.verticalAlignment
+        visible: !control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter)
+        elide: Text.ElideRight
+        renderType: Text.NativeRendering
+    }
+
+    /* Our implementation */
     property bool fakeActiveFocusUntilEmpty: false
     readonly property bool fakeActiveFocus: (fakeActiveFocusUntilEmpty && text) || activeFocus
     readonly property var pal: {
@@ -20,7 +46,6 @@ TextField {
     selectedTextColor: pal.text
     placeholderText: ""
     renderType: Text.NativeRendering
-//    text: placeholderText
     states: [
         State {
             name: "windows"
@@ -52,11 +77,6 @@ TextField {
         if (! fakeActiveFocus) {
             focus = false
         }
-//        if (! fakeActiveFocus && ! text) {
-//            text = placeholderText
-//        } else if (fakeActiveFocus && text == placeholderText) {
-//            text = ""
-//        }
     }
     signal textCleared()
     signal delayedTextChanged()
@@ -81,3 +101,4 @@ TextField {
     }
 
 }
+
