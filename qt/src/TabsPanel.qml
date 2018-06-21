@@ -182,23 +182,6 @@ Item {
         Layout.fillWidth: true
         Layout.margins: 5
     }
-    states: [
-        State {
-            name: "windows"
-
-            PropertyChanges {
-                target: text1
-                renderType: Text.NativeRendering
-                font.pixelSize: 11
-            }
-
-            PropertyChanges {
-                target: text2
-                renderType: Text.NativeRendering
-                font.pixelSize: 11
-            }
-        }
-    ]
 
     clip: true
 

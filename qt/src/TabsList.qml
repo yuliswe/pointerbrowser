@@ -21,6 +21,8 @@ Column {
         listview.currentIndex = index
     }
 
+    state: Qt.platform.os
+
 //    height: name_Text.height + listview.height
 //    height: listview.contentHeight + busyIndicator.height + name_Text.height + 5
 
@@ -104,6 +106,20 @@ Column {
             }
         }
     }
+    states: [
+        State {
+            name: "osx"
+        },
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: name_Text
+                font.pixelSize: 11
+                renderType: Text.NativeRendering
+            }
+        }
+    ]
 
     property alias loading: busyIndicator.visible
     property alias model: listview.model
