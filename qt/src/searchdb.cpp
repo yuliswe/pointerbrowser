@@ -280,60 +280,91 @@ void SearchWorker::search(const QString& word)
         q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
     } else {
         if (ws.length() == 0) { return; }
-        q = QStringLiteral() +
-            "SELECT DISTINCT" +
-            "   webpage.id, url, COALESCE(title, '') as title"
-            " , CASE WHEN hash IS NULL THEN webpage.visited ELSE symbol.visited END as visited" +
-            " , hash, COALESCE(symbol.text,'') as symbol" +
+        /* WITH LEFT JOIN */
+        q = QStringLiteral("SELECT DISTINCT * FROM (");
+        q += QStringLiteral() +
+            "SELECT " +
+            "   url, title, symbol.visited AS visited, hash, symbol.text AS symbol " +
             " FROM webpage" +
-            " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-            " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+            " INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+            " INNER JOIN symbol ON symbol.id = webpage_symbol.symbol" +
             " WHERE ";
         for (auto w = ws.begin(); w != ws.end(); w++) {
             q += QStringLiteral() +
                  " (" +
-                 "    INSTR(LOWER(symbol.text),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(symbol.hash),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(webpage.title),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(webpage.url),LOWER('" + (*w) + "'))" +
+                 "    INSTR(LOWER(text),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(hash),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
                  " )";
             if (w != ws.end() - 1) {
                 q += " AND ";
             }
         }
+        q += " UNION ";
+        /* WITHOUT LEFT JOIN */
+        q += QStringLiteral() +
+            "SELECT " +
+            "  url, title, visited, '' AS hash, '' AS symbol" +
+            " FROM webpage WHERE ";
+        for (auto w = ws.begin(); w != ws.end(); w++) {
+            q += QStringLiteral() +
+                 " (" +
+                 "    INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
+                 "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
+                 " )";
+            if (w != ws.end() - 1) {
+                q += " AND ";
+            }
+        }
+        q += ") ";
         q += " ORDER BY visited DESC";
-        q += ", CASE WHEN LENGTH(symbol.text) = 0 THEN 99999 ELSE LENGTH(symbol.text) END ASC";
-        q += ", CASE WHEN LENGTH(symbol.hash) = 0 THEN 99999 ELSE LENGTH(symbol.hash) END ASC";
-        q += ", CASE WHEN LENGTH(webpage.title) = 0 THEN 99999 ELSE LENGTH(webpage.title) END ASC";
+        q += ", CASE WHEN LENGTH(symbol) = 0 THEN 99999 ELSE LENGTH(symbol) END ASC";
+        q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
+        q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";
         q += ", LENGTH(url) ASC";
-        q += " LIMIT 50";
+        q += " LIMIT 200";
     }
     qDebug() << "SearchWorker::search" << q;
     QSqlQuery r = _db.exec(q);
     if (r.lastError().isValid()) {
-        qCritical() << "SearchWorker::search failed" << r.lastError();
+        qCritical() << "SearchWorker::search failed"
+                    << q
+                    << r.lastError();
         return;
     }
     r.first();
     QRegularExpression searchRegex(ws.join("|"), QRegularExpression::CaseInsensitiveOption);
     QRegularExpression slash("/");
+    QRegularExpression protocal("^(.+://)");
     while (r.isValid()) {
         QSqlRecord record = r.record();
         QString url = record.value("url").value<QString>();
+        QRegularExpressionMatch protocal_match = protocal.match(url);
+        int url_domain_start = protocal_match.capturedLength();
         QStringList path = url.split(slash, QString::SkipEmptyParts);
         QString last = path.length() > 0 ? path[path.length() - 1] : "";
-        path.removeLast();
-        QString head = path.length() > 0 ? path.join("/") + "/" : "";
+        int last_index = url.lastIndexOf(last);
+        QString display_last = "./" + last + "  ";
+        QString display_head = "";
+        display_head += url.leftRef(last_index);
+        // special case when at root domain
+        if (last_index == url_domain_start) {
+            display_head = url;
+            if (path.length() >= 2) {
+                display_last = path[1];
+            } else {
+                display_last = "./index";
+            }
+        }
         QString title = record.value("title").value<QString>();
         QString symbol = record.value("symbol").value<QString>();
         QString hash = record.value("hash").value<QString>();
         QString display_symbol = (0 < symbol.length()  && hash.length() < 32 ? "@"+symbol+"  " : "");
         QString display_hash = (0 < hash.length() && hash.length() < 32 ? "#"+hash+"  " : "");
-        QString display_tail = "./"+last+"  ";
         QString display_title = (title.length() > 0 ? title + "  " : "");
-        QString display_url = head.length() > 0 ? head + "  " : "";
-        QString display = display_symbol + display_hash + display_tail + display_title + display_url;
-        QString expanded_display = display_title + "\n" + display_symbol + display_hash + display_tail + "\n" + display_url;
+        QString display = display_symbol + display_hash + display_last + display_title + display_head;
+        QString expanded_display = display_title + "\n" + display_symbol + display_hash + display_last + "\n" + display_head;
         Webpage_ wp = Webpage_::create(url);
         wp->_title = title;
         wp->_symbol = symbol;
