@@ -125,6 +125,7 @@ WebEngineView {
             case WebEngineView.LoadSucceededStatus:
                 console.log("crawler loading succeeded", loadRequest.url)
                 console.log("crawler injecting docview.js on", loadRequest.url)
+                var requestURL = loadRequest.url
                 pullReady.onReady = function() {
                     runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
                         console.log("crawler calling Docview.crawler() on", requestURL)
@@ -143,7 +144,6 @@ WebEngineView {
                 pullReady.restart()
                 break
             }
-            var requestURL = loadRequest.url
         }
     }
 }
