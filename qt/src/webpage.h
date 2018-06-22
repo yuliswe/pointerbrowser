@@ -28,12 +28,12 @@ public:
 
     ~Webpage();
     explicit Webpage(const QString& url);
-    explicit Webpage(const QVariantMap);
+    explicit Webpage(const QVariantMap&);
 
     QVariantMap toQVariantMap();
-    static Webpage_ fromQVariantMap(QVariantMap&);
+    static Webpage_ fromQVariantMap(const QVariantMap&);
     QJsonObject toQJsonObject();
-    static Webpage_ fromQJsonObject(QJsonObject&);
+    static Webpage_ fromQJsonObject(const QJsonObject&);
 
     QPROP_DEC(QString, title, "")
     QPROP_DEC(QString, url, "")

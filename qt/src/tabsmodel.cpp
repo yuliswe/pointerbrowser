@@ -105,7 +105,9 @@ void TabsModel::saveTabs(void) {
     qDebug() << "TabsModel::saveTabs";
     QJsonArray tabs;
     for (Webpage_ tab : _tabs) {
-        tabs << tab->toQJsonObject();
+        if (tab->open()) {
+            tabs << tab->toQJsonObject();
+        }
     }
     QJsonDocument doc(tabs);
     FileManager::writeDataFileB("open.json", doc.toJson());
@@ -122,6 +124,7 @@ void TabsModel::loadTabs(void) {
     for (QJsonValue jval : jarr) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
+        page_->_open = true;
         _tabs << page_;
     }
     emit endResetModel();

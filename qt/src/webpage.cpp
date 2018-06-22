@@ -32,7 +32,7 @@ Webpage::Webpage(const QString& url)
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
-Webpage::Webpage(const QVariantMap map)
+Webpage::Webpage(const QVariantMap& map)
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 #define MAP_K(T, PROP) _##PROP = map[#PROP].value<T>();
@@ -49,39 +49,33 @@ QVariantMap Webpage::toQVariantMap()
 #define MAP_INSERT(NAME) map.insert(#NAME, NAME())
     MAP_INSERT(title);
     MAP_INSERT(url);
-    MAP_INSERT(html);
-    MAP_INSERT(visited);
-    MAP_INSERT(hash);
-    MAP_INSERT(symbol);
-    MAP_INSERT(display);
-    MAP_INSERT(expanded_display);
-    MAP_INSERT(url_matched);
-    MAP_INSERT(title_matched);
-    MAP_INSERT(hash_matched);
-    MAP_INSERT(symbol_matched);
+//    MAP_INSERT(open);
+//    MAP_INSERT(html);
+//    MAP_INSERT(visited);
+//    MAP_INSERT(hash);
+//    MAP_INSERT(symbol);
+//    MAP_INSERT(display);
+//    MAP_INSERT(expanded_display);
+//    MAP_INSERT(url_matched);
+//    MAP_INSERT(title_matched);
+//    MAP_INSERT(hash_matched);
+//    MAP_INSERT(symbol_matched);
     return map;
 }
 
-Webpage_ Webpage::fromQVariantMap(QVariantMap& map)
+Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
 {
-    Webpage_ webpage = Webpage_::create(map["url"].value<QString>());
-    webpage->set_title(map["title"].value<QString>());
-    return webpage;
+    return Webpage_::create(map);
 }
 
 QJsonObject Webpage::toQJsonObject()
 {
-    QJsonObject map;
-    map.insert("title", title());
-    map.insert("url", url());
-    return map;
+    return QJsonObject::fromVariantMap(toQVariantMap());
 }
 
-Webpage_ Webpage::fromQJsonObject(QJsonObject& map)
+Webpage_ Webpage::fromQJsonObject(const QJsonObject& map)
 {
-    Webpage_ webpage = QSharedPointer<Webpage>::create(map["url"].toString());
-    webpage->set_title(map["title"].toString());
-    return webpage;
+    return Webpage::fromQVariantMap(map.toVariantMap());
 }
 
 //Webpage_ Webpage::create(const QString& url)
