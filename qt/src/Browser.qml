@@ -335,7 +335,7 @@ C.SplitView {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 opacity: 0.5
-                visible: ! currentWebView
+                visible: currentWebViewIndex == -1
             }
 
             BrowserSearch {
