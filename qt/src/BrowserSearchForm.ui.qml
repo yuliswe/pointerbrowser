@@ -46,7 +46,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignTop
                     font.pixelSize: 12
-                    color: pal.input_placeholder
+                    color: pal.input_placeholder_text
                 }
             }
 
