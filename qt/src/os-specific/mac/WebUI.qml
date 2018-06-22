@@ -154,7 +154,10 @@ Item {
             logging("webview onNewViewRequested", request, JSON.stringify(request));
             userRequestsNewView(request)
         }
-        settings.focusOnNavigationEnabled: false
+        settings {
+            playbackRequiresUserGesture: true
+            focusOnNavigationEnabled: false
+        }
 
         onTitleChanged: {
             logging('webview title changed', title)
@@ -178,8 +181,13 @@ Item {
             logging("webview navigation requested", request.url)
             webViewNavRequested(index)
         }
+        WebEnginePullReady {
+            id: webviewPullReady_Timer
+            debugName: "webview"
+        }
         onLoadingChanged: {
             logging("webview loading changed", loading)
+            webviewPullReady_Timer.stop()
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
                 logging("webview loading started", loadRequest.url)
@@ -193,30 +201,33 @@ Item {
                     break
                 case WebEngineView.LoadSucceededStatus:
                     logging("webview loading suceeded", loadRequest.url)
+                    var requestURL = loadRequest.url
+                    webviewPullReady_Timer.onReady = function() {
+                        runJavaScript("location.hostname", function(hostname) {
+                            logging("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
+                            webUI.setBookmarked(hostname)
+                            if (webUI.bookmarked) {
+                                logging("hostname is bookmarked", hostname)
+                                if (webUI.previewMode) {
+                                    return
+                                }
+                                console.log("webview injecting docview.js on", requestURL)
+                                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                                    console.log("webview calling Docview.crawler() on", requestURL)
+                                    runJavaScript("Docview.crawler()", function(result) {
+                                        crawler.queueLinks(result.links)
+                                        // crawler is a stack
+                                        crawler.queueLinks([requestURL])
+                                    })
+                                })
+                            } else {
+                                logging("hostname is not bookmarked", hostname)
+                            }
+                        })
+                    }
+                    webviewPullReady_Timer.restart()
                     break
                 }
-                var requestURL = loadRequest.url
-                runJavaScript("location.hostname", function(hostname) {
-                    logging("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
-                    webUI.setBookmarked(hostname)
-                    if (webUI.bookmarked) {
-                        logging("hostname is bookmarked", hostname)
-                        if (webUI.previewMode) {
-                            return
-                        }
-                        console.log("webview injecting docview.js on", loadRequest.url)
-                        runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                            console.log("webview calling Docview.crawler() on", requestURL)
-                            runJavaScript("Docview.crawler()", function(result) {
-                                crawler.queueLinks(result.links)
-                                 // crawler is a stack
-                                crawler.queueLinks([requestURL])
-                            })
-                        })
-                    } else {
-                        logging("hostname is not bookmarked", hostname)
-                    }
-                })
             }
         }
     }
@@ -244,8 +255,13 @@ Item {
             logging("docview navigation requested", request.url)
             webViewNavRequested(index)
         }
+        WebEnginePullReady {
+            id: docviewPullReady_Timer
+            debugName: "docview"
+        }
         onLoadingChanged: {
             logging("docview loading changed", loading)
+            docviewPullReady_Timer.stop()
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
                 logging("docview loading started", loadRequest.url)
@@ -259,32 +275,28 @@ Item {
                     break
                 case WebEngineView.LoadSucceededStatus:
                     logging("docview loading suceeded", loadRequest.url)
+                    var requestURL = loadRequest.url
+                    docviewPullReady_Timer.onReady = function() {
+                        logging("docview injecting docview.js on", requestURL)
+                        docview.runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                            logging("docview calling Docview.docviewOn() on", requestURL)
+                            docview.runJavaScript("Docview.docviewOn()", function() {
+                                if (inDocview) {
+                                    docviewOn()
+                                }
+                                docviewLoaded = true
+                            })
+                        })
+                    }
+                    docviewPullReady_Timer.restart()
                     break
                 }
-                logging("docview injecting docview.js on", loadRequest.url)
-                var requestURL = loadRequest.url
-                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
-                    logging("docview calling Docview.docviewOn() on", requestURL)
-                    runJavaScript("Docview.docviewOn()", function() {
-                        if (inDocview) {
-                            docviewOn()
-                        }
-                        docviewLoaded = true
-                    })
-                })
             }
         }
         settings {
             focusOnNavigationEnabled: false
-            pluginsEnabled: false
-            linksIncludedInFocusChain: false
             javascriptCanOpenWindows: false
-            allowGeolocationOnInsecureOrigins: false
-            //            allowWindowActivationFromJavaScript: false
-            allowRunningInsecureContent: false
-            webGLEnabled: false
-            //            playbackRequiresUserGesture: true
-            //            unknownUrlSchemePolicy: WebEngineSettings.DisallowUnknownUrlSchemes
+            playbackRequiresUserGesture: true
         }
     }
 }
