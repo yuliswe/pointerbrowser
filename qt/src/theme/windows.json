@@ -10,7 +10,7 @@
     "button_border": ["#ccc","#9bc0ff","#9bc0ff","#ddd"],
     "input_text": ["#000"],
     "input_font_size": [13],
-    "input_placeholder_text": ["#666","#666","#666","#aaa"],
+    "input_placeholder_text": ["#888","#888","#888","#ddd"],
     "input_background": ["transparent","#fff","#fff","#fff"],
     "input_border": ["#ccc","#84b3ff","#ccc","#ddd"],
     "list_item_text": ["#333","#eee","#333","#333"],

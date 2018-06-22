@@ -13,7 +13,7 @@ Item {
     property int progress: 0
     signal userEntersUrl(string url)
 
-    state: "mac"
+    state: Qt.platform.os
 
     onUrlChanged: update(url, title)
     onTitleChanged: update(url, title)
@@ -124,5 +124,15 @@ Item {
             textField.selectAll()
         }
     }
+    states: [
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                target: textField
+                placeholder.opacity: 0.5
+            }
+        }
+    ]
 
 }
