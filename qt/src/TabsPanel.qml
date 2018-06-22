@@ -83,15 +83,13 @@ Item {
             placeholderText: "Search"
             selectByMouse: true
             fakeActiveFocusUntilEmpty: true
+            clearOnEsc: false
             onDelayedTextChanged: {
                 if (searchTextField.text.length > 1) {
                     filterModelBySymbol(searchTextField.text)
                 } else if (searchTextField.text.length === 0) {
                     filterModelBySymbol("")
                 }
-            }
-            onTextCleared: {
-                filterModelBySymbol("")
             }
             onAccepted: {
                 filterModelBySymbol(searchTextField.text)

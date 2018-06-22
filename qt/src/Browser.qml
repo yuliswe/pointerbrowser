@@ -21,14 +21,49 @@ C.SplitView {
 
     function showBrowserSearch() {
         browserSearch.visible = true
-        browserSearch.textfield.focus = true
+        browserSearch.textfield.forceActiveFocus()
         browserSearch.textfield.selectAll()
     }
 
     function hideBrowserSearch() {
         browserSearch.visible = false
+        browserSearch.textfield.focus = false
         if (currentWebView !== null) {
             currentWebView.clearFindText()
+        }
+    }
+
+    function browserSearchNext(text) {
+        if (currentWebView !== null) {
+            currentWebView.findNext(text, function(cnt) {
+                browserSearch.showCount()
+                var cur = browserSearch.current()
+                browserSearch.updateCount(cnt)
+                if (cnt === 0) {
+                    browserSearch.updateCurrent(0)
+                } else if (cur === cnt) {
+                    browserSearch.updateCurrent(1)
+                } else {
+                    browserSearch.updateCurrent(cur + 1)
+                }
+            })
+        }
+    }
+
+    function browserSearchPrev(text) {
+        if (currentWebView !== null) {
+            currentWebView.findPrev(text, function(cnt) {
+                browserSearch.showCount()
+                var cur = browserSearch.current()
+                browserSearch.updateCount(cnt)
+                if (cnt === 0) {
+                    browserSearch.updateCurrent(0)
+                } else if (cur <= 1) {
+                    browserSearch.updateCurrent(cnt)
+                } else {
+                    browserSearch.updateCurrent(cur - 1)
+                }
+            })
         }
     }
 
@@ -94,6 +129,8 @@ C.SplitView {
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setOpenTabsCurrentIndex(index)
         tabsPanel.setSavedTabsCurrentIndex(-1)
+        hideBrowserSearch()
+        browserSearch.hideCount()
     }
 
     //    function closeAllPreviewTabs() {
@@ -308,38 +345,8 @@ C.SplitView {
                 visible: false
                 anchors.right: parent.right
                 anchors.top: parent.top
-                onUserSearchesNextInBrowser: {
-                    if (currentWebView !== null) {
-                        currentWebView.findNext(browserSearch.textfield.text, function(cnt) {
-                            browserSearch.showCount()
-                            var cur = browserSearch.current()
-                            browserSearch.updateCount(cnt)
-                            if (cnt === 0) {
-                                browserSearch.updateCurrent(0)
-                            } else if (cur === cnt) {
-                                browserSearch.updateCurrent(1)
-                            } else {
-                                browserSearch.updateCurrent(cur + 1)
-                            }
-                        })
-                    }
-                }
-                onUserSearchesPreviousInBrowser: {
-                    if (currentWebView !== null) {
-                        currentWebView.findPrev(browserSearch.textfield.text, function(cnt) {
-                            browserSearch.showCount()
-                            var cur = browserSearch.current()
-                            browserSearch.updateCount(cnt)
-                            if (cnt === 0) {
-                                browserSearch.updateCurrent(0)
-                            } else if (cur <= 1) {
-                                browserSearch.updateCurrent(cnt)
-                            } else {
-                                browserSearch.updateCurrent(cur - 1)
-                            }
-                        })
-                    }
-                }
+                onUserSearchesNextInBrowser: browserSearchNext(text)
+                onUserSearchesPreviousInBrowser: browserSearchPrev(text)
                 onUserClosesSearch: hideBrowserSearch()
                 onUserTypesInSearch: {
                     browserSearch.updateCount(0)
@@ -455,10 +462,12 @@ C.SplitView {
     Shortcut {
         sequence: "Esc"
         onActivated: {
+            if (browserSearch.visible) {
+                return hideBrowserSearch()
+            }
             if (searchMode) {
                 return tabsPanel.clearSearchField()
             }
-            hideBrowserSearch()
         }
     }
     Shortcut {

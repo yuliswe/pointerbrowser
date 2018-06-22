@@ -35,7 +35,7 @@ Item {
                 Layout.fillHeight: true
                 placeholderText: "Find in document"
                 rightPadding: counter.width + 10
-
+                clearOnEsc: false
                 Text {
                     id: counter
                     text: currentHighlight + "/" + highlightCount

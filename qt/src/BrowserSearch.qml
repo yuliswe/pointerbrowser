@@ -1,11 +1,14 @@
 import QtQuick 2.7
 
 BrowserSearchForm {
-//    signal userSearchesWordInBrowser(string word)
-    signal userSearchesNextInBrowser()
-    signal userSearchesPreviousInBrowser()
+    //    signal userSearchesWordInBrowser(string word)
+    signal userSearchesNextInBrowser(string text)
+    signal userSearchesPreviousInBrowser(string text)
     signal userClosesSearch()
-    signal userTypesInSearch()
+    signal userTypesInSearch(string text)
+    function setText(t) {
+        textfield.text = t
+    }
     function updateCount(count) {
         highlightCount = count
         console.log("updateCount " + highlightCount)
@@ -14,6 +17,12 @@ BrowserSearchForm {
         currentHighlight = current
         console.log("updateCurrent " + currentHighlight)
     }
+
+    function setResult(current, count) {
+        updateCount(count)
+        updateCurrent(current)
+    }
+
     function current() {
         return currentHighlight;
     }
@@ -26,42 +35,21 @@ BrowserSearchForm {
     function showCount() {
         counter.visible = true
     }
-    //    function lock() {
-    //        locked = true
-    //    }
-    //    function unlock() {
-    //        locked = false
-    //    }
     property bool locked: false
     id: form
     counter.visible: false
     textfield.onAccepted: {
-//        if (locked) {
-        if (textfield.text) {
-            userSearchesNextInBrowser()
-        }
-//        } else {
-//            userSearchesWordInBrowser(textfield.text)
-//            updateCount(0)
-//            updateCurrent(-1)
-//        }
-//        locked = true
-//        console.log("userSearchesWordInBrowser", textfield.text)
+        userSearchesNextInBrowser(textfield.text)
     }
-    textfield.onTextEdited: {
-//        if (locked) {
-            userTypesInSearch()
-//            updateCount(0)
-//            updateCurrent(-1)
-//            locked = false
-//        }
+    textfield.onTextChanged: {
+        userTypesInSearch(textfield.text)
     }
     prevBtn.onClicked: {
-        userSearchesPreviousInBrowser()
+        userSearchesPreviousInBrowser(textfield.text)
         console.log("userSearchesPreviousInBrowser")
     }
     nextBtn.onClicked: {
-        userSearchesNextInBrowser()
+        userSearchesNextInBrowser(textfield.text)
         console.log("userSearchesNextInBrowser")
     }
     closeBtn.onClicked: {

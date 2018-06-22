@@ -8,11 +8,11 @@ T.TextField {
     id: control
     /* Qt 11.1 source with duplicated properties removed */
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
-                            placeholderText ? placeholder.implicitWidth + leftPadding + rightPadding : 0)
-                            || contentWidth + leftPadding + rightPadding
+                                         placeholderText ? placeholder.implicitWidth + leftPadding + rightPadding : 0)
+                   || contentWidth + leftPadding + rightPadding
     implicitHeight: Math.max(contentHeight + topPadding + bottomPadding,
                              background ? background.implicitHeight : 0,
-                             placeholder.implicitHeight + topPadding + bottomPadding)
+                                          placeholder.implicitHeight + topPadding + bottomPadding)
 
     PlaceholderText {
         id: placeholder
@@ -41,6 +41,7 @@ T.TextField {
     state: Qt.platform.os
     color: pal.input_text
     property alias rectangle: rectangle
+    property bool clearOnEsc: true
     selectByMouse: true
     selectionColor: pal.text_background
     selectedTextColor: pal.text
@@ -78,7 +79,6 @@ T.TextField {
             focus = false
         }
     }
-    signal textCleared()
     signal delayedTextChanged()
     Timer {
         id: timeout
@@ -92,11 +92,17 @@ T.TextField {
     onTextChanged: {
         timeout.restart()
     }
+    Keys.onShortcutOverride: {
+        if (event.key === Qt.Key_Escape
+                && text.length > 0
+                && clearOnEsc) {
+            event.accepted = true
+        }
+    }
     Keys.onReleased: {
-        if (event.key === Qt.Key_Escape) {
+        if (event.key === Qt.Key_Escape && clearOnEsc) {
             event.accepted = true;
-            textCleared()
-            timeout.stop()
+            text = ""
         }
     }
     property alias placeholder: placeholder
