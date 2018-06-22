@@ -126,7 +126,7 @@ WebEngineView {
                 console.log("crawler loading succeeded", loadRequest.url)
                 console.log("crawler injecting docview.js on", loadRequest.url)
                 pullReady.onReady = function() {
-                    runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                    runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
                         console.log("crawler calling Docview.crawler() on", requestURL)
                         runJavaScript("Docview.crawler()", function(result) {
                             console.log("crawler Docview.crawler() returns from", requestURL)

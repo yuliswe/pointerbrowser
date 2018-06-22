@@ -212,7 +212,7 @@ Item {
                                     return
                                 }
                                 console.log("webview injecting docview.js on", requestURL)
-                                runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                                runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
                                     console.log("webview calling Docview.crawler() on", requestURL)
                                     runJavaScript("Docview.crawler()", function(result) {
                                         crawler.queueLinks(result.links)
@@ -278,7 +278,7 @@ Item {
                     var requestURL = loadRequest.url
                     docviewPullReady_Timer.onReady = function() {
                         logging("docview injecting docview.js on", requestURL)
-                        docview.runJavaScript(FileManager.readQrcFileS("js/docview.js"), function() {
+                        docview.runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
                             logging("docview calling Docview.docviewOn() on", requestURL)
                             docview.runJavaScript("Docview.docviewOn()", function() {
                                 if (inDocview) {

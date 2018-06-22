@@ -39,5 +39,6 @@
         <file alias="TitleBarForm.qml">mac/window/TitleBarForm.ui.qml</file>
         <file alias="WelcomePageForm.qml">mac/WelcomePageForm.ui.qml</file>
         <file alias="Crawler.qml">mac/Crawler.qml</file>
+        <file alias="WebEnginePullReady.qml">mac/WebEnginePullReady.qml</file>
     </qresource>
 </RCC>
