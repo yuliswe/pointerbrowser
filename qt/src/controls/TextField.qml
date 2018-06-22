@@ -23,8 +23,8 @@ T.TextField {
 
         text: control.placeholderText
         font: control.font
-        opacity: 0.5
-        color: control.color
+        opacity: 1
+        color: control.pal.input_placeholder_text
         verticalAlignment: control.verticalAlignment
         visible: !control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter)
         elide: Text.ElideRight
@@ -39,7 +39,7 @@ T.TextField {
         return Palette.normal
     }
     state: Qt.platform.os
-    color: text == placeholderText ? pal.input_placeholder : pal.input_text
+    color: pal.input_text
     property alias rectangle: rectangle
     selectByMouse: true
     selectionColor: pal.text_background
@@ -55,7 +55,7 @@ T.TextField {
             }
         },
         State {
-            name: "mac"
+            name: "osx"
             PropertyChanges {
                 target: rectangle
                 radius: 3
@@ -99,6 +99,6 @@ T.TextField {
             timeout.stop()
         }
     }
-
+    property alias placeholder: placeholder
 }
 

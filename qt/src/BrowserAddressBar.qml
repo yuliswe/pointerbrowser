@@ -51,6 +51,10 @@ Item {
                 //            textField.color = "transparent"
             }
         }
+        placeholder {
+            color: textField.color
+            opacity: 0.8
+        }
     }
 
     Rectangle {
