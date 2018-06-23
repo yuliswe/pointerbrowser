@@ -126,6 +126,10 @@ C.SplitView {
     function openTab(index) {
         console.log("openTab", "index=", index, "TabsModel.count=",
                     TabsModel.count)
+        if (index < 0 || index >= TabsModel.count) { return }
+        if (currentWebViewIndex === index) {
+            browserWebViews.setCurrentIndex(-1) // force update binding
+        }
         browserWebViews.setCurrentIndex(index)
         tabsPanel.setOpenTabsCurrentIndex(index)
         tabsPanel.setSavedTabsCurrentIndex(-1)
@@ -181,7 +185,6 @@ C.SplitView {
             // if there's one after, open that
             if (index + 1 < TabsModel.count) {
                 TabsModel.removeTab(index)
-                browserWebViews.setCurrentIndex(-1) // force update binding
                 openTab(index)
             } // if there's one before, open that
             else if (index >= 1) {
