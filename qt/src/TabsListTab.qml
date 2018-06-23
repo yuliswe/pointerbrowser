@@ -95,7 +95,6 @@ Item {
 //                anchors.topMargin: 8
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
-                elide: Text.ElideRight
                 text: (expanded ? model.expanded_display : model.display) || "Loading"
                 clip: true
             }
