@@ -46,7 +46,6 @@ Column {
             anchors.left: parent.right
             height: 20
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -2
             color: Palette.normal.label_text
         }
     }
@@ -121,6 +120,6 @@ Column {
         }
     ]
 
-    property alias loading: busyIndicator.visible
+    property alias loading: busyIndicator.running
     property alias model: listview.model
 }
