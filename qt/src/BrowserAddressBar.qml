@@ -64,7 +64,6 @@ Item {
         anchors.bottomMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
-        radius: textField.rectangle.radius
         width: 0
         opacity: 0.3
 
