@@ -139,13 +139,6 @@ Item {
         goTo(tab.url)
     }
 
-    WebEngineScript {
-        id: noOverscroll
-        injectionPoint: WebEngineScript.DocumentReady
-        sourceCode: "document.getElementById(id).style"
-
-    }
-
     WebEngineView {
         id: webview
         width: browserWebViews.width
