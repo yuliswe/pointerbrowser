@@ -333,12 +333,16 @@ C.SplitView {
                 wv.handleNewViewRequest(request)
             }
 
-            WelcomePageForm {
+            Item {
+                anchors.fill: parent
+                clip: true
                 id: welcomePage
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
                 opacity: 0.5
                 visible: currentWebViewIndex == -1
+                WelcomePageForm {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
 
             BrowserSearch {

@@ -96,7 +96,7 @@ Item {
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
                 text: (expanded ? model.expanded_display : model.display) || "Loading"
-                clip: true
+                clip: true // so that text has a proper right margin
             }
         }
     }

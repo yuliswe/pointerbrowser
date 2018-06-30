@@ -20,7 +20,6 @@ Item {
     Rectangle {
         id: rectangle
         radius: 3
-        clip: true
         anchors.fill: parent
         color: pal.window_background
 

@@ -5,12 +5,12 @@
         <file>Browser.qml</file>
         <file>TabsList.qml</file>
         <file>BrowserWebViews.qml</file>
-        <file>BrowserWebViewsForm.ui.qml</file>
+        <file>BrowserWebViewsForm.qml</file>
         <file>TabsListTab.qml</file>
         <file>BrowserAddressBar.qml</file>
         <file>BrowserWindow.qml</file>
         <file>BrowserSearch.qml</file>
-        <file>BrowserSearchForm.ui.qml</file>
+        <file>BrowserSearchForm.qml</file>
         <file>icon/cross.svg</file>
         <file>icon/cycle.svg</file>
         <file>icon/left.svg</file>

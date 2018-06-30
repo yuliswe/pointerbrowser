@@ -13,7 +13,6 @@ Item {
     property alias maxBtn: maxBtn
     property bool maximized: false
     property bool fullscreened: false
-    clip: true
 
     readonly property var pal: active ? Palette.selected : Palette.normal
 

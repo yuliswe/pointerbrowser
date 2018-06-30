@@ -121,7 +121,6 @@ Item {
         anchors.topMargin: 3
         Flickable {
             id: flickable
-            clip: false
             boundsBehavior: Flickable.StopAtBounds
             contentHeight: tabsList.height + searchList.height + 10
             TabsList {
@@ -180,8 +179,6 @@ Item {
         Layout.fillWidth: true
         Layout.margins: 5
     }
-
-    clip: true
 
     Shortcut {
         sequences: ["Ctrl+Shift+F", "Ctrl+D"]

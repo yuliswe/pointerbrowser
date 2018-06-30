@@ -126,8 +126,6 @@ Item {
     }
 
     Item {
-        clip: true
-        z: 0
         anchors.rightMargin: form.loaderMargin
         anchors.leftMargin: form.loaderMargin
         anchors.bottomMargin: form.loaderMargin
@@ -136,10 +134,7 @@ Item {
 
         TitleBar {
             id: titleBar
-            x: 0
-            y: 0
             height: 20
-            clip: false
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.top: parent.top
