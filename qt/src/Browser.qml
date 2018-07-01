@@ -328,6 +328,7 @@ C.SplitView {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.topMargin: 3
+            model: TabsModel
             onUserRequestsNewView: {
                 if (request.requestedUrl) {
                     var opened = TabsModel.findTab(request.requestedUrl);

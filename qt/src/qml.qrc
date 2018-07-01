@@ -5,7 +5,6 @@
         <file>Browser.qml</file>
         <file>TabsList.qml</file>
         <file>BrowserWebViews.qml</file>
-        <file>BrowserWebViewsForm.qml</file>
         <file>TabsListTab.qml</file>
         <file>BrowserAddressBar.qml</file>
         <file>BrowserWindow.qml</file>
