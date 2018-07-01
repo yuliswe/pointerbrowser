@@ -10,7 +10,6 @@ Window {
     height: 600
     minimumWidth: 200
     minimumHeight: 200
-    property alias titleBar: form.titleBar
     property int startX: -1
     property int startY: -1
     property int startW: -1
@@ -23,7 +22,6 @@ Window {
     color: "#00000000"
 
     readonly property int customFlags: {
-//        if (Qt.platform.os == "ios") { return Qt.Window }
         return Qt.Window | Qt.FramelessWindowHint
     }
 
@@ -89,141 +87,24 @@ Window {
         }
     }
 
-    FramelessWindowForm {
-        id: form
-        loader.sourceComponent: body
-        active: mainWindow.active
-        width: mainWindow.width
-        height: mainWindow.height
-        // title bar dragging
-        titleBar.onUserStopsDraggingTitleBar: stopDragging()
-        titleBar.onUserStartsDraggingTitleBar: {
-            console.log("onUserStartsDraggingTitleBar")
-            mainWindow.startX = mainWindow.x
-            mainWindow.startY = mainWindow.y
-            mainWindow.draggingResetted = true
-        }
-        titleBar.onUserDraggingTitleBar: {
-            // console.log("onUserDraggingTitleBar", deltaX, deltaY)
-            if (mainWindow.draggingResetted) {
-                mainWindow.x = startX + deltaX
-                mainWindow.y = startY + deltaY
-            }
-        }
-        function macosRenderBugFix() {
-            if (Qt.platform.os === "osx") {
-                mainWindow.visible = false
-                mainWindow.visible = true
-            }
-        }
-        // control buttons
-        Timer {
-            id: afterFullscreened
-            triggeredOnStart: false
-            interval: 500
-            repeat: false
-            running: (Qt.platform.os == 'osx') && (mainWindow.visibility == Window.FullScreen)
-            onTriggered: {
-                titleBar.hideTitleBar()
-            }
-        }
-        titleBar.onUserMaximizesWindow: {
-            switch (mainWindow.visibility) {
-            case Window.FullScreen:
-                normalizeWindow()
-                //                macosRenderBugFix()
-                break
-            default:
-                mainWindow.showFullScreen()
-            }
-        }
-        titleBar.onUserDoubleClicksTitleBar: {
-            switch (mainWindow.visibility) {
-            case Window.Maximized:
-                normalizeWindow()
-                break
-            default:
-                maximizeWindow()
-            }
-            macosRenderBugFix()
-        }
-        titleBar.onUserClosesWindow: {
-            mainWindow.close()
-        }
-        titleBar.onUserMinimizesWindow: {
-            if (Qt.platform.os === 'osx') {
-                mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowMinMaxButtonsHint
-            }
-            minimizeWindow()
-        }
+    property int resizerThreshold: 5
 
-        titleBar.height: {
-            if (Qt.platform.os == "ios") {
-                return 0
-            }
-            return 25
-        }
-        titleBar.visible: {
-            if (Qt.platform.os == "ios") {
-                return false
-            }
-            return true
-        }
+    readonly property var palette: active ? Palette.selected : Palette.normal
 
-        // Resizers
-        property int resizeThreshold: 1
-        function resetDragging() {
-            mainWindow.startW = mainWindow.width
-            mainWindow.startH = mainWindow.height
-            mainWindow.startX = mainWindow.x
-            mainWindow.startY = mainWindow.y
-            mainWindow.draggingResetted = true
-            mainWindow.resizing = true
-        }
-        function stopDragging() {
-            mainWindow.draggingResetted = false
-            mainWindow.resizing = false
-            macosRenderBugFix()
-        }
-        rResizer.onDraggingStarts: resetDragging()
-        bResizer.onDraggingStarts: resetDragging()
-        tResizer.onDraggingStarts: resetDragging()
-        lResizer.onDraggingStarts: resetDragging()
-        brResizer.onDraggingStarts: resetDragging()
-        trResizer.onDraggingStarts: resetDragging()
-        tlResizer.onDraggingStarts: resetDragging()
-        blResizer.onDraggingStarts: resetDragging()
-        rResizer.onDraggingStops: stopDragging()
-        lResizer.onDraggingStops: stopDragging()
-        tResizer.onDraggingStops: stopDragging()
-        bResizer.onDraggingStops: stopDragging()
-        blResizer.onDraggingStops: stopDragging()
-        brResizer.onDraggingStops: stopDragging()
-        tlResizer.onDraggingStops: stopDragging()
-        trResizer.onDraggingStops: stopDragging()
-        rResizer.enabled: (Qt.platform.os != "ios")
-        lResizer.enabled: (Qt.platform.os != "ios")
-        tResizer.enabled: (Qt.platform.os != "ios")
-        bResizer.enabled: (Qt.platform.os != "ios")
-        trResizer.enabled: (Qt.platform.os != "ios")
-        tlResizer.enabled: (Qt.platform.os != "ios")
-        brResizer.enabled: (Qt.platform.os != "ios")
-        blResizer.enabled: (Qt.platform.os != "ios")
-        rResizer.onDragging: {
-            if (mainWindow.draggingResetted) {
-                if (startW + deltaX >= minimumWidth) {
-                    mainWindow.width = startW + deltaX
-                }
-            }
-        }
-        bResizer.onDragging: {
-            if (mainWindow.draggingResetted) {
-                if (startH + deltaY >= minimumHeight) {
-                    mainWindow.height = startH + deltaY
-                }
-            }
-        }
-        tResizer.onDragging: {
+    Draggable {
+        id: vertiTSizer
+        height: resizerThreshold
+        hoverEnabled: true
+        anchors.rightMargin: 0
+        anchors.leftMargin: 0
+        z: 2
+        cursorShape: Qt.SplitVCursor
+        anchors.right: diagTRSizer.left
+        anchors.left: diagTLSizer.right
+        anchors.top: parent.top
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startH + deltaY >= minimumHeight) {
                     mainWindow.height = startH - deltaY
@@ -231,7 +112,22 @@ Window {
                 }
             }
         }
-        lResizer.onDragging: {
+    }
+
+    Draggable {
+        id: horiLSizer
+        width: resizerThreshold
+        anchors.bottomMargin: 0
+        anchors.topMargin: 0
+        hoverEnabled: true
+        z: 2
+        cursorShape: Qt.SplitHCursor
+        anchors.top: diagTLSizer.bottom
+        anchors.bottom: diagBLSizer.top
+        anchors.left: parent.left
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW - deltaX >= minimumWidth) {
                     mainWindow.x = startX + deltaX
@@ -239,7 +135,65 @@ Window {
                 }
             }
         }
-        brResizer.onDragging: {
+    }
+
+    Draggable {
+        id: vertiBSizer
+        height: resizerThreshold
+        hoverEnabled: true
+        anchors.rightMargin: 0
+        anchors.leftMargin: 0
+        anchors.right: diagBRSizer.left
+        anchors.left: diagBLSizer.right
+        anchors.bottom: parent.bottom
+        z: 2
+        cursorShape: Qt.SplitVCursor
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startH + deltaY >= minimumHeight) {
+                    mainWindow.height = startH + deltaY
+                }
+            }
+        }
+    }
+
+    Draggable {
+        id: horiRSizer
+        y: 0
+        width: resizerThreshold
+        hoverEnabled: true
+        anchors.bottomMargin: 0
+        anchors.topMargin: 0
+        anchors.bottom: diagBRSizer.top
+        anchors.top: diagTRSizer.bottom
+        anchors.right: parent.right
+        z: 2
+        cursorShape: Qt.SplitHCursor
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
+            if (mainWindow.draggingResetted) {
+                if (startW + deltaX >= minimumWidth) {
+                    mainWindow.width = startW + deltaX
+                }
+            }
+        }
+    }
+
+    Draggable {
+        id: diagBRSizer
+        width: resizerThreshold * 2
+        height: resizerThreshold * 2
+        hoverEnabled: true
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        z: 2
+        cursorShape: Qt.SizeFDiagCursor
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
                     mainWindow.width = startW + deltaX
@@ -249,7 +203,20 @@ Window {
                 }
             }
         }
-        tlResizer.onDragging: {
+    }
+
+    Draggable {
+        id: diagTLSizer
+        width: resizerThreshold * 2
+        height: resizerThreshold * 2
+        hoverEnabled: true
+        z: 2
+        cursorShape: Qt.SizeFDiagCursor
+        anchors.left: parent.left
+        anchors.top: parent.top
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW - deltaX >= minimumWidth) {
                     mainWindow.x = startX + deltaX
@@ -261,7 +228,20 @@ Window {
                 }
             }
         }
-        blResizer.onDragging: {
+    }
+
+    Draggable {
+        id: diagBLSizer
+        width: resizerThreshold * 2
+        height: resizerThreshold * 2
+        hoverEnabled: true
+        z: 2
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW - deltaX >= minimumWidth) {
                     mainWindow.width = startW - deltaX
@@ -272,7 +252,20 @@ Window {
                 }
             }
         }
-        trResizer.onDragging: {
+    }
+
+    Draggable {
+        id: diagTRSizer
+        width: resizerThreshold * 2
+        height: resizerThreshold * 2
+        hoverEnabled: true
+        z: 2
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        onDraggingStarts: resetDragging()
+        onDraggingStops: stopDragging()
+        onDragging: {
             if (mainWindow.draggingResetted) {
                 if (startW + deltaX >= minimumWidth) {
                     mainWindow.width = startW + deltaX
@@ -283,5 +276,107 @@ Window {
                 }
             }
         }
+    }
+
+
+    Rectangle {
+        TitleBar {
+            id: titleBar
+            height: 20
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.top: parent.top
+            onUserStopsDraggingTitleBar: stopDragging()
+            onUserStartsDraggingTitleBar: {
+                console.log("onUserStartsDraggingTitleBar")
+                mainWindow.startX = mainWindow.x
+                mainWindow.startY = mainWindow.y
+                mainWindow.draggingResetted = true
+            }
+            onUserDraggingTitleBar: {
+                console.log("onUserDraggingTitleBar", deltaX, deltaY)
+                if (mainWindow.draggingResetted) {
+                    mainWindow.x = mainWindow.startX + deltaX
+                    mainWindow.y = mainWindow.startY + deltaY
+                    if (mainWindow.y > 0 && mainWindow.startY + deltaY < -mainWindow.height/2) {
+                        mainWindow.y = -mainWindow.height
+                        mainWindow.y = -mainWindow.height / 2 - 1
+                    }
+                }
+            }
+            onUserMaximizesWindow: {
+                switch (mainWindow.visibility) {
+                case Window.FullScreen:
+                    normalizeWindow()
+                    //                macosRenderBugFix()
+                    break
+                default:
+                    mainWindow.showFullScreen()
+                }
+            }
+            onUserDoubleClicksTitleBar: {
+                switch (mainWindow.visibility) {
+                case Window.Maximized:
+                    normalizeWindow()
+                    break
+                default:
+                    maximizeWindow()
+                }
+                macosRenderBugFix()
+            }
+            onUserClosesWindow: {
+                mainWindow.close()
+            }
+            onUserMinimizesWindow: {
+                if (Qt.platform.os === 'osx') {
+                    mainWindow.flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowMinMaxButtonsHint
+                }
+                minimizeWindow()
+            }
+        }
+
+        color: palette.window_background
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        Loader {
+            id: loader
+            anchors.fill: parent
+            anchors.topMargin: titleBar.height
+            sourceComponent: mainWindow.body
+        }
+        radius: 4
+    }
+
+    function macosRenderBugFix() {
+        mainWindow.visible = false
+        mainWindow.visible = true
+    }
+    // control buttons
+    Timer {
+        id: afterFullscreened
+        triggeredOnStart: false
+        interval: 500
+        repeat: false
+        running: mainWindow.visibility == Window.FullScreen
+        onTriggered: {
+            titleBar.hideTitleBar()
+        }
+    }
+    // Resizers
+    property int resizeThreshold: 1
+    function resetDragging() {
+        mainWindow.startW = mainWindow.width
+        mainWindow.startH = mainWindow.height
+        mainWindow.startX = mainWindow.x
+        mainWindow.startY = mainWindow.y
+        mainWindow.draggingResetted = true
+        mainWindow.resizing = true
+    }
+    function stopDragging() {
+        mainWindow.draggingResetted = false
+        mainWindow.resizing = false
+        macosRenderBugFix()
     }
 }
