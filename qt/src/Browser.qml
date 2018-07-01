@@ -352,23 +352,24 @@ C.SplitView {
                 }
             }
 
-            BrowserSearch {
-                id: browserSearch
-                width: 300
-                height: 30
-                visible: false
-                anchors.right: parent.right
-                anchors.top: parent.top
-                onUserSearchesNextInBrowser: browserSearchNext(text)
-                onUserSearchesPreviousInBrowser: browserSearchPrev(text)
-                onUserClosesSearch: hideBrowserSearch()
-                onUserTypesInSearch: {
-                    browserSearch.updateCount(0)
-                    browserSearch.updateCurrent(0)
-                    browserSearch.hideCount()
-                    if (currentWebView !== null) {
-                        currentWebView.clearFindText()
-                    }
+        }
+
+        BrowserSearch {
+            id: browserSearch
+            width: 300
+            height: 30
+            visible: false
+            anchors.right: parent.right
+            anchors.top: toolbar.bottom
+            onUserSearchesNextInBrowser: browserSearchNext(text)
+            onUserSearchesPreviousInBrowser: browserSearchPrev(text)
+            onUserClosesSearch: hideBrowserSearch()
+            onUserTypesInSearch: {
+                browserSearch.updateCount(0)
+                browserSearch.updateCurrent(0)
+                browserSearch.hideCount()
+                if (currentWebView !== null) {
+                    currentWebView.clearFindText()
                 }
             }
         }
