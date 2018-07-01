@@ -208,9 +208,15 @@ C.SplitView {
 
     TabsPanel {
         id: tabsPanel
-        Layout.minimumWidth: 150
-        Layout.preferredWidth: 300
-        width: 300
+        readonly property int defaultW: 300
+        width: defaultW
+        property int prevW: 0
+        onWidthChanged: {
+            if (width < 50 && prevW > width) {
+                visible = false
+            }
+            prevW = width
+        }
         buttonSize: buttonSize
         onUserOpensNewTab: newTabHome()
         onUserOpensTab: openTab(index)

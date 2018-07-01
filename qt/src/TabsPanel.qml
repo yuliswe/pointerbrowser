@@ -99,10 +99,10 @@ Item {
         C.Button {
             id: newTabButton
             font.bold: true
-            Layout.preferredWidth: parent.height
-            Layout.preferredHeight: parent.height
+            //            Layout.preferredWidth: parent.height
+            //            Layout.preferredHeight: parent.height
             padding: 1
-            Layout.fillHeight: true
+            //            Layout.fillHeight: true
             iconSource: "icon/plus-mid.svg"
             onClicked: {
                 tabsPanel.userOpensNewTab()
@@ -139,7 +139,7 @@ Item {
                     tabsPanel.userOpensTab(index)
                 }
                 anchors.top: parent.top
-//                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
+                //                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
             }
             TabsList {
                 id: searchList
@@ -156,15 +156,15 @@ Item {
                 model: SearchDB.searchResult
                 onUserDoubleClicksTab: {
                     tabsPanel.userOpensSavedTab(index)
-//                    searchList.setHighlightAt(-1)
+                    //                    searchList.setHighlightAt(-1)
                 }
                 onUserClicksTab: {
-//                    searchList.setHighlightAt(index)
+                    //                    searchList.setHighlightAt(index)
                     tabsPanel.userPreviewsSavedTab(index)
                 }
                 anchors.top: tabsList.bottom
-//                anchors.top: parent.top
-//                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
+                //                anchors.top: parent.top
+                //                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
             }
         }
     }
@@ -183,6 +183,10 @@ Item {
     Shortcut {
         sequences: ["Ctrl+Shift+F", "Ctrl+D"]
         onActivated: {
+            if (! tabsPanel.visible) {
+                tabsPanel.visible = true
+                tabsPanel.width = tabsPanel.defaultW
+            }
             searchTextField.forceActiveFocus()
             searchTextField.selectAll()
         }
