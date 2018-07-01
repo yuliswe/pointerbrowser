@@ -45,6 +45,10 @@ int main(int argc, char *argv[])
 
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#ifdef Q_OS_WIN
+    QFont font("Tahoma");
+    QGuiApplication::setFont(font);
+#endif
     QGuiApplication app(argc, argv);
     // set properties
     qDebug() << "FileManager::dataPath()" << FileManager::dataPath();
