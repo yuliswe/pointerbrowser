@@ -12,11 +12,12 @@ Window {
     minimumHeight: 200
     default property var body
 
-    FramelessWindowForm {
-        id: form
-        loader.sourceComponent: body
-        active: mainWindow.active
-        width: mainWindow.width
-        height: mainWindow.height
+    readonly property var palette: active ? Palette.selected : Palette.normal
+
+    Loader {
+        id: loader
+        anchors.fill: parent
+        sourceComponent: body
     }
+
 }
