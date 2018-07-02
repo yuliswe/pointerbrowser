@@ -8,6 +8,7 @@
 #include "searchdb.h"
 #include "palette.h"
 #include "webpage.h"
+#include "keymaps.h"
 
 QMLRegister::QMLRegister(QObject *parent) : QObject(parent)
 {
@@ -45,6 +46,16 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::palette;
     });
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "SettingsModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::settingsModel;
+    });
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "KeyMaps", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::keyMaps;
+    });
 //    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
 }
 
@@ -52,6 +63,8 @@ void QMLRegister::registerToQML() {
 FileManager* QMLRegister::fileManager = new FileManager();
 TabsModel* QMLRegister::tabsModel = new TabsModel();
 TabsModel* QMLRegister::previewTabsModel = new TabsModel();
+KeyMaps* QMLRegister::keyMaps = new KeyMaps();
+SettingsModel* QMLRegister::settingsModel = new SettingsModel();
 EventFilter* QMLRegister::eventFilter = new EventFilter();
 SearchDB* QMLRegister::searchDB = new SearchDB();
 Palette* QMLRegister::palette = new Palette();

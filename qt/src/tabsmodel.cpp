@@ -133,6 +133,7 @@ void TabsModel::loadTabs(void) {
 
 QVariant TabsModel::data(const QModelIndex& idx, int role) const
 {
+    Q_UNUSED(role)
     int row = idx.row();
     if (row < 0 || row >=_tabs.length()) {
         return QVariant();
@@ -145,6 +146,7 @@ QVariant TabsModel::data(const QModelIndex& idx, int role) const
 
 int TabsModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return _tabs.length();
 }
 

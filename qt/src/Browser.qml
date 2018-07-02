@@ -339,20 +339,22 @@ C.SplitView {
                 var wv = openOrNewTab()
                 wv.handleNewViewRequest(request)
             }
-
-            Item {
-                anchors.fill: parent
-                clip: true
-                id: welcomePage
-                opacity: 0.5
-                visible: currentWebViewIndex == -1
-                WelcomePageForm {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
         }
+
+
+        WelcomePage {
+            clip: true
+            id: welcomePage
+            opacity: 0.5
+            visible: currentWebViewIndex == -1
+            anchors {
+                left: mainPanel.left
+                top: toolbar.bottom
+                right: mainPanel.right
+                bottom: mainPanel.bottom
+            }
+        }
+
 
         BrowserSearch {
             id: browserSearch

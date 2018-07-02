@@ -23,10 +23,10 @@ void Palette::setup() {
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(bs, &error);
     if (doc.isNull()) {
-        qDebug() << "Palette::setup " << error.errorString();
+        qDebug() << "Palette::setup" << error.errorString();
     }
     _json = doc.object();
-    qDebug() << "Palette::setup " << _json;
+    qDebug() << "Palette::setup" << _json;
 
     QStringList keys = _json.keys();
     for (QString k: keys) {
@@ -39,7 +39,7 @@ void Palette::setup() {
             _hovered[k] = colors[2];
             _disabled[k] = colors[3];
         }
-        qDebug() << "Palette::setup " << _normal[k];
+        qDebug() << "Palette::setup" << _normal[k];
     }
 
     emit paletteChanged();

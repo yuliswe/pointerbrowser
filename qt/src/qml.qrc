@@ -28,5 +28,6 @@
         <file>theme/macos.json</file>
         <file>theme/windows.json</file>
         <file>icon/loading.svg</file>
+        <file>WelcomePage.qml</file>
     </qresource>
 </RCC>

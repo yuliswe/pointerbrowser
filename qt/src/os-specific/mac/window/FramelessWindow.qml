@@ -294,7 +294,6 @@ Window {
                 mainWindow.draggingResetted = true
             }
             onUserDraggingTitleBar: {
-                console.log("onUserDraggingTitleBar", deltaX, deltaY)
                 if (mainWindow.draggingResetted) {
                     mainWindow.x = mainWindow.startX + deltaX
                     mainWindow.y = mainWindow.startY + deltaY

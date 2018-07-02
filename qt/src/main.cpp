@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     }
     FileManager::mkDataDir();
     QMLRegister::searchDB->connect();
+    QMLRegister::keyMaps->sync();
     QMLRegister::palette->setup();
     QMLRegister::registerToQML();
 #ifdef Q_OS_MACX

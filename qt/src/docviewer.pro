@@ -22,7 +22,8 @@ SOURCES += \
     webpage.cpp \
     palette.cpp \
     eventfilter.cpp \
-    searchdb.cpp
+    searchdb.cpp \
+    keymaps.cpp
 
 RESOURCES += \
     qml.qrc \
@@ -67,7 +68,8 @@ HEADERS += \
     webpage.h \
     palette.h \
     eventfilter.h \
-    searchdb.h
+    searchdb.h \
+    keymaps.h
 
 DISTFILES += \
     defaults/dbgen.txt \
