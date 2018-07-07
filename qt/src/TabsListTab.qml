@@ -36,7 +36,6 @@ Item {
                 PropertyChanges {
                     target: text1
                     font.pixelSize: 11
-                    renderType: Text.NativeRendering
                 }
 
                 PropertyChanges {
@@ -71,7 +70,7 @@ Item {
             }
             Rectangle {
                 id: hr
-                color: "#eee"
+                color: "#ebebeb"
                 height: 1
                 anchors {
                     left: parent.left
@@ -82,20 +81,22 @@ Item {
                 }
                 visible: (index != 0) && expanded && ! highlighted
             }
-            C.Text {
+            Text {
                 id: text1
-                color: highlighted ? pal.list_item_text : pal.button_text
+                color: pal.list_item_text
                 font.pixelSize: 11
                 anchors.rightMargin: 10
                 anchors.right: parent.right
-//                textFormat: Text.PlainText
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
-//                anchors.top: parent.top
+                anchors.verticalCenterOffset: 1
+                anchors.top: parent.top
 //                anchors.topMargin: 8
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
+//                verticalAlignment: Text.AlignTop
+//                horizontalAlignment: Text.AlignLeft
                 text: (expanded ? model.expanded_display : model.display) || "Loading"
+                topPadding: -1
+                verticalAlignment: Text.AlignVCenter
                 clip: true // so that text has a proper right margin
             }
         }

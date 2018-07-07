@@ -26,7 +26,7 @@ Column {
 //    height: name_Text.height + listview.height
 //    height: listview.contentHeight + busyIndicator.height + name_Text.height + 5
 
-    C.Text {
+    Text {
         id: name_Text
         height: 25
 //        width: tabsPanel.width
@@ -115,7 +115,6 @@ Column {
             PropertyChanges {
                 target: name_Text
                 font.pixelSize: 11
-                renderType: Text.NativeRendering
             }
         }
     ]

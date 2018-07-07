@@ -22,25 +22,32 @@ Item {
             id: listModel
         }
         height: contentHeight
+        interactive: false
         width: 225
         delegate: Item {
             id: dele
             height: 30
             Text {
+                font.pixelSize: 12
                 id: text1
                 text: desc
+                color: browserWindow.palette.window_text
             }
             Text {
                 id: text2
+                font.pixelSize: 12
                 text: "-"
                 anchors.left: parent.left
                 anchors.leftMargin: 150
+                color: browserWindow.palette.window_text
             }
             Text {
                 id: text3
+                font.pixelSize: 12
                 text: key
                 anchors.left: parent.left
                 anchors.leftMargin: 175
+                color: browserWindow.palette.window_text
             }
         }
     }

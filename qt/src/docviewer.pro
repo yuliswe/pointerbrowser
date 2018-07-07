@@ -1,13 +1,29 @@
 TARGET = Docviewer
 
 QT += quick sql svg concurrent
-CONFIG += c++11
+CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+
+HEADERS += \
+    tabsmodel.h \
+    filemanager.h \
+    qmlregister.h \
+    webpage.h \
+    palette.h \
+    eventfilter.h \
+    searchdb.h \
+    keymaps.h \
+    os-specific/mac/macwindow.h
+
+DISTFILES += \
+    defaults/dbgen.txt \
+    resetTables.sqlite3 \
+    db/exit.sqlite3
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -25,6 +41,7 @@ SOURCES += \
     searchdb.cpp \
     keymaps.cpp
 
+
 RESOURCES += \
     qml.qrc \
     db.qrc \
@@ -32,14 +49,18 @@ RESOURCES += \
     controls.qrc \
     defaults.qrc
 
-
 macx {
     ICON += chrome.icns
     macx-clang {
         QT += webengine
         RESOURCES += os-specific/mac.qrc
+        SOURCES += os-specific/mac/macwindow.mm
+        HEADERS += os-specific/mac/macwindow.h
+        QMAKE_LFLAGS += -F/System/Library/Frameworks/
+        LIBS += -framework AppKit -framework Quartz
     }
 }
+
 
 win32 {
     RC_ICONS += chrome.ico
@@ -60,19 +81,3 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-HEADERS += \
-    tabsmodel.h \
-    filemanager.h \
-    qmlregister.h \
-    webpage.h \
-    palette.h \
-    eventfilter.h \
-    searchdb.h \
-    keymaps.h
-
-DISTFILES += \
-    defaults/dbgen.txt \
-    resetTables.sqlite3 \
-    db/exit.sqlite3
-

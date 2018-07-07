@@ -1,19 +1,21 @@
 {
-    "window_background": ["#f0fafafa"],
+    "window_background": ["#55fafafa"],
     "window_base_background": ["#f0f0f0"],
     "window_text": ["#000"],
     "text": ["#000"],
-    "text_background": ["transparent","#70a7ff","transparent","transparent"],
+    "text_background": ["transparent","#bbddff","transparent","transparent"],
     "button_text": ["#555"],
     "button_icon": ["#555","#555","#555","#aaa"],
     "button_background": ["transparent","#ddd","#ddd","transparent"],
     "button_border": ["#ccc","#ccc","#ccc","#ddd"],
     "input_text": ["#000"],
     "input_font_size": [13],
-    "input_placeholder_text": ["#aaa","#aaa","#aaa","#ddd"],
-    "input_background": ["transparent","#fafafa","transparent","#fafafa"],
+    "input_placeholder_text": ["#88000000","#aaa","#aaa","#ddd"],
+    "input_background": ["transparent","#fdfdfd","transparent","#fafafa"],
     "input_border": ["#ccc","#ccc","#ccc","#ddd"],
-    "list_item_text": ["#333"],
+    "list_item_text": ["#555"],
     "list_item_background": ["transparent","#ddd","#ececec","transparent"],
-    "label_text": ["#555"]
+    "label_text": ["#555"],
+    "addressbar_progress": ["green"],
+    "addressbar_text": ["#cc000000", "#00000000", "#aa000000", "#aa000000"]
 }

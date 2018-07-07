@@ -19,6 +19,35 @@ Item {
     onTitleChanged: update(url, title)
     onProgressChanged: updateProgress(progress)
 
+    Rectangle {
+        id: progressBar
+        color: Palette.normal.addressbar_progress
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        width: 0
+        radius: 3
+
+        Behavior on width {
+            id: barWidthAnimation
+            enabled: progress < 100
+            SmoothedAnimation {
+                duration: 100
+                velocity: -1
+            }
+        }
+
+        PropertyAnimation {
+            id: fadeProgress
+            target: progressBar
+            properties: "opacity"
+            to: 0
+            duration: 1000
+            alwaysRunToEnd: false
+        }
+    }
+
     //    property alias titleDisplay: titleDisplay
     C.TextField {
         id: textField
@@ -51,38 +80,9 @@ Item {
                 //            textField.color = "transparent"
             }
         }
+        color: activeFocus ? Palette.selected.addressbar_text : Palette.normal.addressbar_text
         placeholder {
-            color: textField.color
-            opacity: 0.8
-        }
-    }
-
-    Rectangle {
-        id: progressBar
-        color: "green"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        width: 0
-        opacity: 0.3
-
-        Behavior on width {
-            id: barWidthAnimation
-            enabled: progress < 100
-            SmoothedAnimation {
-                duration: 100
-                velocity: -1
-            }
-        }
-
-        PropertyAnimation {
-            id: fadeProgress
-            target: progressBar
-            properties: "opacity"
-            to: 0
-            duration: 1000
-            alwaysRunToEnd: false
+            color: Palette.normal.addressbar_text
         }
     }
 
@@ -106,7 +106,7 @@ Item {
             return
         }
         barWidthAnimation.enabled = true
-        progressBar.opacity = 0.3
+        progressBar.opacity = 0.2
         progressBar.width = w
         if (progress === 100) {
             fadeProgress.restart()

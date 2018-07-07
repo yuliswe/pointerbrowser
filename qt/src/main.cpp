@@ -5,8 +5,9 @@
 #include "qmlregister.h"
 #include "palette.h"
 #include "eventfilter.h"
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
 #include <QtWebEngine>
+#include "os-specific/mac/macwindow.h"
 #endif
 #ifdef Q_OS_WIN
 #include <QtWebEngine>
@@ -39,17 +40,28 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
+    qputenv("QT_QUICK_DEFAULT_TEXT_RENDER_TYPE", "NativeRendering");
+    qputenv("QSG_RENDER_LOOP", "basic");
+    qputenv("QML_DISABLE_DISTANCEFIELD", "0");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
 
     qInstallMessageHandler(myMessageHandler);
 
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#ifdef Q_OS_WIN
-    QFont font("Tahoma");
-    QGuiApplication::setFont(font);
+    QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
+    QQuickWindow::setDefaultAlphaBuffer(true);
+#ifdef Q_OS_MACOS
+    QGuiApplication::setFont(QFont("SF Pro Text", 12));
 #endif
-    QGuiApplication app(argc, argv);
+
+#ifdef Q_OS_WIN
+    QGuiApplication::setFont(QFont("Tahoma"));
+#endif
+    QGuiApplication app(argc, argv);    
+    qDebug() << "Using font" << QGuiApplication::font();
+
     // set properties
     qDebug() << "FileManager::dataPath()" << FileManager::dataPath();
     QString currV = FileManager::readQrcFileS("defaults/version");
@@ -64,7 +76,7 @@ int main(int argc, char *argv[])
     QMLRegister::keyMaps->sync();
     QMLRegister::palette->setup();
     QMLRegister::registerToQML();
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
     QtWebEngine::initialize();
 #endif
 #ifdef Q_OS_WIN
@@ -80,6 +92,10 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
+
+#ifdef Q_OS_MACOS
+    MacWindow::initMacWindows();
+#endif
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();

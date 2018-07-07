@@ -10,6 +10,10 @@
 #include "webpage.h"
 #include "keymaps.h"
 
+#ifdef Q_OS_MACOS
+#include "os-specific/mac/macwindow.h"
+#endif
+
 QMLRegister::QMLRegister(QObject *parent) : QObject(parent)
 {
 }
@@ -56,7 +60,10 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::keyMaps;
     });
-//    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
+
+#ifdef Q_OS_MACOS
+    qmlRegisterType<MacWindow>("Backend", 1, 0, "MacWindow");
+#endif
 }
 
 

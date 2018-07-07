@@ -22,13 +22,14 @@ T.TextField {
         height: control.height - (control.topPadding + control.bottomPadding)
 
         text: control.placeholderText
-        font: control.font
-        opacity: 1
+        font.pixelSize: 13
+        font.weight: Font.Thin
+        font.family: control.font.family
+//        opacity: 0.001
         color: control.pal.input_placeholder_text
         verticalAlignment: control.verticalAlignment
         visible: !control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter)
         elide: Text.ElideRight
-        renderType: Text.NativeRendering
     }
 
     /* Our implementation */
@@ -46,7 +47,6 @@ T.TextField {
     selectionColor: pal.text_background
     selectedTextColor: pal.text
     placeholderText: ""
-    renderType: Text.NativeRendering
     states: [
         State {
             name: "windows"

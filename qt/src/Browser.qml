@@ -225,9 +225,8 @@ C.SplitView {
         onUserPreviewsSavedTab: openSavedTab(index, true)
     }
 
-    Rectangle {
+    Item {
         id: mainPanel
-        color: "#00000000"
         RowLayout {
             id: toolbar
             height: buttonSize
