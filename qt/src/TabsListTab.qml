@@ -17,6 +17,8 @@ Item {
         return Palette.normal;
     }
 
+    state: Qt.platform.os
+
     property bool expanded: false
     height: model.preview_mode ? 0 : expanded ? 55 : 30
     visible: ! model.preview_mode
@@ -38,11 +40,6 @@ Item {
         states: [
             State {
                 name: "windows"
-
-                PropertyChanges {
-                    target: text1
-                    font.pixelSize: 11
-                }
 
                 PropertyChanges {
                     target: rectangle
@@ -87,21 +84,7 @@ Item {
                 }
                 visible: (index != 0) && expanded && ! highlighted
             }
-            //                Text {
-            //                    id: text1
-            //                    color: pal.list_item_text
-            //                    font.pixelSize: 12
-            //                    anchors.rightMargin: 10
-            //                    anchors.right: parent.right
-            //                    anchors.left: closeButton.right
-            //                    anchors.verticalCenter: parent.verticalCenter
-            //                    anchors.verticalCenterOffset: 1
-            //                    anchors.top: parent.top
-            //                    text: (expanded ? model.expanded_display : model.display) || "Loading"
-            //                    topPadding: -1
-            //                    verticalAlignment: Text.AlignVCenter
-            //                    clip: true // so that text has a proper right margin
-            //                }
+
             Column {
                 id: column
                 anchors.rightMargin: 10
@@ -110,18 +93,17 @@ Item {
 //                height: parent.height
 //                width: parent.width
                 anchors.right: parent.right
-                anchors.verticalCenterOffset: 1
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
                 clip: true
                 Text {
                     id: line1
                     text: model.expanded_display[0] || model.url
-//                    font.weight: Font.Medium
+                    font.pixelSize: 12
+                    //                    font.weight: Font.Medium
                     anchors.right: parent.right
                     anchors.left: parent.left
                     elide: browser.resizing ? Text.ElideNone : Text.ElideRight
-                    font.pixelSize: 12
                     height: contentHeight
                     color: pal.search_item_line_1_text
                 }
@@ -149,6 +131,23 @@ Item {
             }
         }
     }
+    states: [
+        State {
+            name: "windows"
+            PropertyChanges {
+                target: column
+                anchors.verticalCenterOffset: -1
+            }
+        },
+        State {
+            name: "osx"
+
+            PropertyChanges {
+                target: column
+                anchors.verticalCenterOffset: 1
+            }
+        }
+    ]
 
 }
 

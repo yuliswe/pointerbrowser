@@ -1,6 +1,6 @@
-TARGET = Docviewer
+TARGET = Dereference
 
-QT += quick sql svg concurrent
+QT += qml quick sql svg concurrent
 CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
@@ -17,8 +17,7 @@ HEADERS += \
     palette.h \
     eventfilter.h \
     searchdb.h \
-    keymaps.h \
-    os-specific/mac/macwindow.h
+    keymaps.h
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -42,12 +41,7 @@ SOURCES += \
     keymaps.cpp
 
 
-RESOURCES += \
-    qml.qrc \
-    db.qrc \
-    js.qrc \
-    controls.qrc \
-    defaults.qrc
+RESOURCES += qml.qrc db.qrc js.qrc controls.qrc defaults.qrc
 
 macx {
     ICON += chrome.icns
@@ -67,6 +61,7 @@ win32 {
     win32-msvc {
         QT += webengine
         RESOURCES += os-specific/win.qrc
+        LIBS += -lUser32
     }
 }
 

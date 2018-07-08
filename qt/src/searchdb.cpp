@@ -25,7 +25,6 @@ SearchDB::SearchDB()
 }
 
 bool SearchDB::connect() {
-    qDebug() << "libraryPaths:" << QCoreApplication::libraryPaths();
     _db = QSqlDatabase::addDatabase("QSQLITE");
     _dbPath = FileManager::dataPath() + "search.db";
     qDebug() << "SearchDB: connecting" << _dbPath;

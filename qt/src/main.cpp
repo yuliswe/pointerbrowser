@@ -5,12 +5,15 @@
 #include "qmlregister.h"
 #include "palette.h"
 #include "eventfilter.h"
+#include <QLibraryInfo>
+
 #ifdef Q_OS_MACOS
 #include <QtWebEngine>
 #include "os-specific/mac/macwindow.h"
 #endif
 #ifdef Q_OS_WIN
 #include <QtWebEngine>
+#include <Windows.h>
 #endif
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
@@ -37,29 +40,54 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     }
 }
 
+void dumpLibraryInfo()
+{
+    qDebug() << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
+    qDebug() << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
+    qDebug() << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    qDebug() << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
+    qDebug() << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+}
+
 int main(int argc, char *argv[])
 {
+
+#ifdef Q_OS_MACOS
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
     qputenv("QSG_RENDER_LOOP", "basic");
     qputenv("QML_DISABLE_DISTANCEFIELD", "1");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
 
-    qInstallMessageHandler(myMessageHandler);
-
     // init ui
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
 //    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
     QQuickWindow::setDefaultAlphaBuffer(true);
-#ifdef Q_OS_MACOS
     QGuiApplication::setFont(QFont("SF Pro Text", 12));
 #endif
 
 #ifdef Q_OS_WIN
-    QGuiApplication::setFont(QFont("Tahoma"));
+//    qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
+    qputenv("QSG_RENDER_LOOP", "basic");
+//    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
+//    SetProcessDPIAware();
+    // init ui
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
+    QGuiApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
+    QQuickWindow::setDefaultAlphaBuffer(true);
+    QGuiApplication::setFont(QFont("Tahoma",15));
 #endif
-    QGuiApplication app(argc, argv);    
+
+    qInstallMessageHandler(myMessageHandler);
+
+    QGuiApplication app(argc, argv);
+
+    dumpLibraryInfo();
     qDebug() << "Using font" << QGuiApplication::font();
 
     // set properties
@@ -80,7 +108,6 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
 #endif
 #ifdef Q_OS_WIN
-    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
     QtWebEngine::initialize();
 #endif
 

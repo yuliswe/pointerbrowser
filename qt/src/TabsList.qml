@@ -115,7 +115,7 @@ Column {
 
             PropertyChanges {
                 target: name_Text
-                font.pixelSize: 11
+                font.pixelSize: 12
             }
         }
     ]

@@ -431,16 +431,20 @@ C.SplitView {
 
             PropertyChanges {
                 target: back_Button
+                leftPadding: 5
                 padding: 6
             }
 
             PropertyChanges {
                 target: forward_Button
+                rightPadding: 5
                 padding: 6
             }
 
             PropertyChanges {
                 target: refresh_Button
+                bottomPadding: 2
+                topPadding: 3
                 padding: 3
             }
         }
