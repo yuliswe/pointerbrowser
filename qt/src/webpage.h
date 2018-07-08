@@ -6,6 +6,7 @@
 #include <QList>
 #include <QVariantMap>
 #include <QSharedPointer>
+#include <QStringList>
 
 class Webpage;
 typedef QSharedPointer<Webpage> Webpage_;
@@ -40,7 +41,7 @@ public:
     PROP_DEC(QString, symbol, "")
     PROP_DEC(QString, hash, "")
     PROP_DEC(QString, display, "")
-    PROP_DEC(QString, expanded_display, "")
+    PROP_DEC(QStringList, expanded_display, {})
     PROP_DEC(quint64, visited, 0)
     PROP_DEC(bool, preview_mode, false)
     PROP_DEC(bool, open, false)

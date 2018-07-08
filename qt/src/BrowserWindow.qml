@@ -12,4 +12,8 @@ Window {
         anchors.fill: parent
         anchors.topMargin: contentTopMargin
     }
+
+    onActiveFocusItemChanged: {
+        console.log("new active focus", activeFocusItem);
+    }
 }

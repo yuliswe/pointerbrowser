@@ -32,13 +32,14 @@ Column {
 //        width: tabsPanel.width
         color: Palette.normal.label_text
         text: tabsList.name
+        font.weight: Font.Medium
         anchors.left: parent.left
         anchors.leftMargin: 5
         verticalAlignment: Text.AlignVCenter
         leftPadding: 5
-        font.bold: false
-        font.capitalization: Font.AllUppercase
-        font.pixelSize: 10
+        font.capitalization: Font.Capitalize
+//        font.pointSize: 8
+        font.pixelSize: 11
 
         C.BusyIndicator {
             id: busyIndicator

@@ -28,14 +28,14 @@ Item {
             id: dele
             height: 30
             Text {
-                font.pixelSize: 12
+                font.pixelSize: 13
                 id: text1
                 text: desc
                 color: browserWindow.palette.window_text
             }
             Text {
                 id: text2
-                font.pixelSize: 12
+                font.pixelSize: 13
                 text: "-"
                 anchors.left: parent.left
                 anchors.leftMargin: 150
@@ -43,7 +43,7 @@ Item {
             }
             Text {
                 id: text3
-                font.pixelSize: 12
+                font.pixelSize: 13
                 text: key
                 anchors.left: parent.left
                 anchors.leftMargin: 175

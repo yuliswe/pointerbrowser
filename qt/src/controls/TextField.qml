@@ -63,7 +63,7 @@ T.TextField {
             }
         }
     ]
-    font.pixelSize: pal.input_font_size
+    font.pixelSize: 13
     background: Rectangle {
         id: rectangle
         border.width: 1

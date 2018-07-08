@@ -40,9 +40,8 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
-    qputenv("QT_QUICK_DEFAULT_TEXT_RENDER_TYPE", "NativeRendering");
     qputenv("QSG_RENDER_LOOP", "basic");
-    qputenv("QML_DISABLE_DISTANCEFIELD", "0");
+    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
 
     qInstallMessageHandler(myMessageHandler);
@@ -50,6 +49,7 @@ int main(int argc, char *argv[])
     // init ui
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
 //    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
     QQuickWindow::setDefaultAlphaBuffer(true);
 #ifdef Q_OS_MACOS

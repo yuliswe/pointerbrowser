@@ -298,7 +298,7 @@ C.SplitView {
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/list.svg"
                 enabled: currentWebView && currentWebView.docviewLoaded
-                active: currentWebView && currentWebView.inDocview
+                checked: currentWebView && currentWebView.inDocview
                 onCheckedChanged: {
                     if (docview_Button.checked) {
                         currentWebView.docviewOn()
@@ -315,7 +315,7 @@ C.SplitView {
                 iconSource: bookmark_Button.checked ? "icon/bookmark.svg" : "icon/book.svg"
                 checkable: false
                 enabled: currentWebView
-                active: currentWebView && currentWebView.bookmarked
+                checked: currentWebView && currentWebView.bookmarked
                 onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
             }
         }

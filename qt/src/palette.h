@@ -15,6 +15,7 @@ class Palette: public QObject
     Q_PROPERTY(ColorMap selected READ selected NOTIFY paletteChanged)
     Q_PROPERTY(ColorMap hovered READ hovered NOTIFY paletteChanged)
     Q_PROPERTY(ColorMap disabled READ disabled NOTIFY paletteChanged)
+    Q_PROPERTY(ColorMap pressed READ pressed NOTIFY paletteChanged)
     Q_PROPERTY(QJsonObject json READ json)
 signals:
     void paletteChanged();
@@ -25,6 +26,7 @@ public:
     ColorMap selected() const;
     ColorMap hovered() const;
     ColorMap disabled() const;
+    ColorMap pressed() const;
     QJsonObject json() const;
 
 
@@ -33,6 +35,7 @@ protected:
     ColorMap _selected = ColorMap();
     ColorMap _hovered = ColorMap();
     ColorMap _disabled = ColorMap();
+    ColorMap _pressed = ColorMap();
     QJsonObject _json;
 };
 

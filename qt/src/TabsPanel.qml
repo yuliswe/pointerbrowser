@@ -147,7 +147,7 @@ Item {
                                         "Searching" :
                                         (SearchDB.searchResult.count === 0 ? "nothing" : "BOOKMARKS - " + SearchDB.searchResult.count)
                                         + (SearchDB.searchResult.count >= 200 ? "+" : "")
-                                        + " found") : "Bookmarks"
+                                        + " found") : "Favorites"
                 width: tabsPanel.width
                 loading: SearchDB.searchInProgress && tabsPanel.searchMode
                 hoverHighlight: true

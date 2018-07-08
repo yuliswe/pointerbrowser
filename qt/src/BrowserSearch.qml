@@ -50,7 +50,7 @@ Item {
         id: rectangle
         radius: 3
         anchors.fill: parent
-        color: pal.window_background
+        color: browserWindow.palette.window_background
 
         RowLayout {
             id: rowLayout

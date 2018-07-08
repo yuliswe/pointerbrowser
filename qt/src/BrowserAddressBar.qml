@@ -33,8 +33,8 @@ Item {
             id: barWidthAnimation
             enabled: progress < 100
             SmoothedAnimation {
-                duration: 100
-                velocity: -1
+                duration: 500
+                alwaysRunToEnd: true
             }
         }
 
