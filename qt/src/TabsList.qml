@@ -26,19 +26,20 @@ Column {
 //    height: name_Text.height + listview.height
 //    height: listview.contentHeight + busyIndicator.height + name_Text.height + 5
 
-    C.Text {
+    Text {
         id: name_Text
         height: 25
 //        width: tabsPanel.width
         color: Palette.normal.label_text
         text: tabsList.name
+        font.weight: Font.Medium
         anchors.left: parent.left
         anchors.leftMargin: 5
         verticalAlignment: Text.AlignVCenter
         leftPadding: 5
-        font.bold: false
-        font.capitalization: Font.AllUppercase
-        font.pixelSize: 10
+        font.capitalization: Font.Capitalize
+//        font.pointSize: 8
+        font.pixelSize: 11
 
         C.BusyIndicator {
             id: busyIndicator
@@ -114,8 +115,7 @@ Column {
 
             PropertyChanges {
                 target: name_Text
-                font.pixelSize: 11
-                renderType: Text.NativeRendering
+                font.pixelSize: 12
             }
         }
     ]

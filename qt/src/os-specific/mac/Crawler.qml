@@ -47,7 +47,7 @@ WebEngineView {
             crawler.stop()
             crawler.crawNext(true)
         }
-        interval: 5000
+        interval: 20000
         repeat: true
 
     }

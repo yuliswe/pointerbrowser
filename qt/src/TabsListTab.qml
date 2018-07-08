@@ -10,10 +10,17 @@ Item {
     signal clicked()
     property bool highlighted: true
     property bool showCloseButton: true
-    property var pal: form.highlighted ? Palette.selected : mouseArea.containsMouse ? Palette.hovered : Palette.normal
+    readonly property var pal: {
+        if (activeFocus) { return Palette.pressed; }
+        if (highlighted) { return Palette.selected; }
+        if (mouseArea.containsMouse) { return Palette.hovered; }
+        return Palette.normal;
+    }
+
+    state: Qt.platform.os
 
     property bool expanded: false
-    height: model.preview_mode ? 0 : expanded ? 50 : 30
+    height: model.preview_mode ? 0 : expanded ? 55 : 30
     visible: ! model.preview_mode
     MouseArea {
         id: mouseArea
@@ -25,6 +32,7 @@ Item {
             if (mouse.button == Qt.MidButton) {
                 form.userClosesTab()
             } else {
+                form.forceActiveFocus()
                 form.clicked()
             }
         }
@@ -32,12 +40,6 @@ Item {
         states: [
             State {
                 name: "windows"
-
-                PropertyChanges {
-                    target: text1
-                    font.pixelSize: 11
-                    renderType: Text.NativeRendering
-                }
 
                 PropertyChanges {
                     target: rectangle
@@ -49,14 +51,13 @@ Item {
             id: rectangle
             anchors.fill: parent
             radius: 2
-            color: form.pal.list_item_background
+            anchors.leftMargin: 0
+            color: form.pal.search_item_background
             RoundButton {
                 id: closeButton
                 width: 15
                 height: 15
-//                anchors.leftMargin: 2
                 padding: 4
-//                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 visible: form.showCloseButton && mouseArea.containsMouse
                 z: 2
@@ -69,9 +70,10 @@ Item {
                     form.userClosesTab()
                 }
             }
+
             Rectangle {
                 id: hr
-                color: "#eee"
+                color: "#ebebeb"
                 height: 1
                 anchors {
                     left: parent.left
@@ -82,24 +84,70 @@ Item {
                 }
                 visible: (index != 0) && expanded && ! highlighted
             }
-            C.Text {
-                id: text1
-                color: highlighted ? pal.list_item_text : pal.button_text
-                font.pixelSize: 11
+
+            Column {
+                id: column
                 anchors.rightMargin: 10
+                anchors.bottomMargin: 10
+                anchors.topMargin: 10
+//                height: parent.height
+//                width: parent.width
                 anchors.right: parent.right
-//                textFormat: Text.PlainText
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
-//                anchors.top: parent.top
-//                anchors.topMargin: 8
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                text: (expanded ? model.expanded_display : model.display) || "Loading"
-                clip: true // so that text has a proper right margin
+                clip: true
+                Text {
+                    id: line1
+                    text: model.expanded_display[0] || model.url
+                    font.pixelSize: 12
+                    //                    font.weight: Font.Medium
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+                    elide: browser.resizing ? Text.ElideNone : Text.ElideRight
+                    height: contentHeight
+                    color: pal.search_item_line_1_text
+                }
+                Text {
+                    id: line2
+                    text: model.expanded_display[1] || ""
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+                    font.pixelSize: 12
+                    elide: browser.resizing ? Text.ElideNone : Text.ElideRight
+                    height: model.expanded_display[1] ? contentHeight : 0
+                    color: pal.search_item_line_2_text
+                }
+                Text {
+                    id: line3
+                    text: model.expanded_display[2] || ""
+                    font.weight: Font.Light
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+                    elide: browser.resizing ? Text.ElideNone : Text.ElideRight
+                    font.pixelSize: 11
+                    height: model.expanded_display[2] ? contentHeight : 0
+                    color: pal.search_item_line_3_text
+                }
             }
         }
     }
+    states: [
+        State {
+            name: "windows"
+            PropertyChanges {
+                target: column
+                anchors.verticalCenterOffset: -1
+            }
+        },
+        State {
+            name: "osx"
+
+            PropertyChanges {
+                target: column
+                anchors.verticalCenterOffset: 1
+            }
+        }
+    ]
 
 }
 

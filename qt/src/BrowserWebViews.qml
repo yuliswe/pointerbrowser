@@ -1,19 +1,22 @@
 import QtQuick 2.7
+import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.2
+import QtQml 2.2
+import QtWebEngine 1.5
 import Backend 1.0
 
-BrowserWebViewsForm {
+Item {
     id: browserWebViews
 
-    signal userRequestsNewView(var request)
+    signal userRequestsNewView(WebEngineNewViewRequest request)
     signal webViewNavRequested(int index)
     property var currentWebView: repeater.itemAt(currentIndex)
+    property alias currentIndex: stackLayout.currentIndex
     property alias crawler: crawler
-
-    repeaterModel: TabsModel
+    property alias model: repeater.model
 
     function setCurrentIndex(idx) {
-        browserWebViews.stackLayout.currentIndex = idx
-        console.log("setCurrentIndex", idx, browserWebViews.stackLayout.currentIndex)
+        currentIndex = idx
     }
 
     function reloadWebViewAt(index) {
@@ -23,7 +26,7 @@ BrowserWebViewsForm {
     }
 
     function webViewAt(i) {
-        return browserWebViews.repeater.itemAt(i)
+        return repeater.itemAt(i)
     }
 
     function reloadCurrentWebView() {
@@ -31,22 +34,25 @@ BrowserWebViewsForm {
     }
 
     function setPreviewMode(index, mode) {
-        browserWebViews.repeater.itemAt(index).previewMode = mode;
+        repeater.itemAt(index).previewMode = mode;
     }
 
     Crawler {
         id: crawler
     }
 
-    repeaterDelegate: WebUI {}
 
-    Connections {
-        target: browserWebViews.stackLayout
+    StackLayout {
+        id: stackLayout
+        anchors.fill: parent
         onCurrentIndexChanged: {
-            console.log("browserWebViews.stackLayout.onCurrentIndexChanged",
-                        browserWebViews.stackLayout.currentIndex)
+            console.log("browserWebViews.onCurrentIndexChanged",
+                        browserWebViews.currentIndex)
+        }
+        Repeater {
+            id: repeater
+            delegate: WebUI {}
         }
     }
-
 }
 

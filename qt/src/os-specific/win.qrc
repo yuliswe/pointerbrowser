@@ -1,12 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="FramelessWindow.qml">win/window/FramelessWindow.qml</file>
         <file alias="WebUI.qml">win/WebUI.qml</file>
         <file alias="icons/cross2.svg">win/window/icons/cross2.svg</file>
         <file alias="icons/minus2.svg">win/window/icons/minus2.svg</file>
         <file alias="icons/plus2.svg">win/window/icons/plus2.svg</file>
-        <file alias="WelcomePageForm.qml">win/WelcomePageForm.qml</file>
         <file alias="Crawler.qml">win/Crawler.qml</file>
         <file alias="WebEnginePullReady.qml">win/WebEnginePullReady.qml</file>
+        <file alias="Window.qml">win/Window.qml</file>
     </qresource>
 </RCC>

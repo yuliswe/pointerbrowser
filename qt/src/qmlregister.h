@@ -7,6 +7,7 @@
 #include "eventfilter.h"
 #include "searchdb.h"
 #include "palette.h"
+#include "keymaps.h"
 
 class QMLRegister : public QObject
 {
@@ -15,6 +16,8 @@ class QMLRegister : public QObject
     public:
         explicit QMLRegister(QObject *parent = nullptr);
         static FileManager* fileManager;
+        static SettingsModel* settingsModel;
+        static KeyMaps* keyMaps;
         static TabsModel* tabsModel;
         static TabsModel* previewTabsModel;
         static EventFilter* eventFilter;

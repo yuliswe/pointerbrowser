@@ -51,19 +51,20 @@ public slots:
 
 typedef QSharedPointer<UpdateWorker> UpdateWorker_;
 
+class SearchDB : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged())
+
 #define QPROP_DEC(type, prop) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
     public: type prop() const; \
     public: void set_##prop(type); \
     public: type _##prop; \
-    Q_SIGNAL void prop##_changed(type); \
+    Q_SIGNAL void prop##_changed(type);
 
-
-class SearchDB : public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(TabsModel* searchResult READ searchResult NOTIFY searchResultChanged())
     QPROP_DEC(bool, searchInProgress)
+#undef QPROP_DEC
 
 public:
     explicit SearchDB();

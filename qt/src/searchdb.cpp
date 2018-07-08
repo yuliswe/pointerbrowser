@@ -364,7 +364,10 @@ void SearchWorker::search(const QString& word)
         QString display_hash = (0 < hash.length() && hash.length() < 32 ? "#"+hash+"  " : "");
         QString display_title = (title.length() > 0 ? title + "  " : "");
         QString display = display_symbol + display_hash + display_last + display_title + display_head;
-        QString expanded_display = display_title + "\n" + display_symbol + display_hash + display_last + "\n" + display_head;
+        QStringList expanded_display;
+        expanded_display << display_title
+                         << display_symbol + display_hash + display_last
+                         << display_head;
         Webpage_ wp = Webpage_::create(url);
         wp->_title = title;
         wp->_symbol = symbol;

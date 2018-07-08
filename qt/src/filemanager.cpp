@@ -6,6 +6,8 @@
 #include <QDir>
 #include "filemanager.h"
 #include <QDesktopServices>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
@@ -21,8 +23,8 @@ void FileManager::mkDataDir()
              << "auto-bookmark.txt"
              << "version";
     for (QString file : defaults) {
-        QFile_ dest = FileManager::dataFile(file);
         QFile_ src = FileManager::qrcFile("defaults/"+file);
+        QFile_ dest = FileManager::dataFile(file);
         if (! dest->exists()) {
             qDebug() << "copying" << src->fileName() << "to" << dest->fileName();
             src->copy(dest->fileName());
@@ -80,6 +82,14 @@ QByteArray FileManager::readQrcFileB(const QString& file)
     return input.readAll();
 }
 
+QVariantMap FileManager::readQrcJsonFileM(const QString &file)
+{
+    QByteArray contents = FileManager::readQrcFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonObject jobj = doc.object();
+    return jobj.toVariantMap();
+}
+
 void FileManager::writeDataFileB(const QString& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
@@ -114,6 +124,14 @@ void FileManager::appendDataFileS(const QString& filename, const QString& conten
 }
 
 
+void FileManager::writeDataJsonFileM(const QString& file, const QVariantMap& map)
+{
+    QJsonObject jobj = QJsonObject::fromVariantMap(map);
+    QJsonDocument doc{jobj};
+    FileManager::writeDataFileB(file, doc.toJson());
+}
+
+
 QString FileManager::readDataFileS(const QString& filename)
 {
     QString path = FileManager::dataPath() + filename;
@@ -130,6 +148,14 @@ QByteArray FileManager::readDataFileB(const QString& filename)
     file.open(QIODevice::ReadOnly);
     qDebug() << "readDataFileB: reading file " << path;
     return file.readAll();
+}
+
+QVariantMap FileManager::readDataJsonFileM(const QString &file)
+{
+    QByteArray contents = FileManager::readDataFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonObject jobj = doc.object();
+    return jobj.toVariantMap();
 }
 
 void FileManager::defaultOpenUrl(const QString& filename)

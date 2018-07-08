@@ -5,11 +5,14 @@
 #include "qmlregister.h"
 #include "palette.h"
 #include "eventfilter.h"
-#ifdef Q_OS_MACX
+
+#ifdef Q_OS_MACOS
 #include <QtWebEngine>
+#include "os-specific/mac/macwindow.h"
 #endif
 #ifdef Q_OS_WIN
 #include <QtWebEngine>
+#include <Windows.h>
 #endif
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
@@ -38,18 +41,40 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_MACOS
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
+    qputenv("QSG_RENDER_LOOP", "basic");
+    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
 
-    qInstallMessageHandler(myMessageHandler);
-
     // init ui
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#ifdef Q_OS_WIN
-    QFont font("Tahoma");
-    QGuiApplication::setFont(font);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
+//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
+    QQuickWindow::setDefaultAlphaBuffer(true);
+    QGuiApplication::setFont(QFont("SF Pro Text", 12));
 #endif
+
+#ifdef Q_OS_WIN
+//    qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
+    qputenv("QSG_RENDER_LOOP", "basic");
+//    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
+//    SetProcessDPIAware();
+    // init ui
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
+    QGuiApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
+    QQuickWindow::setDefaultAlphaBuffer(true);
+    QGuiApplication::setFont(QFont("Tahoma",15));
+#endif
+    qInstallMessageHandler(myMessageHandler);
     QGuiApplication app(argc, argv);
+    qDebug() << "Using font" << QGuiApplication::font();
+
     // set properties
     qDebug() << "FileManager::dataPath()" << FileManager::dataPath();
     QString currV = FileManager::readQrcFileS("defaults/version");
@@ -61,13 +86,13 @@ int main(int argc, char *argv[])
     }
     FileManager::mkDataDir();
     QMLRegister::searchDB->connect();
+    QMLRegister::keyMaps->sync();
     QMLRegister::palette->setup();
     QMLRegister::registerToQML();
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
     QtWebEngine::initialize();
 #endif
 #ifdef Q_OS_WIN
-    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
     QtWebEngine::initialize();
 #endif
 
@@ -79,6 +104,10 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
+
+#ifdef Q_OS_MACOS
+    MacWindow::initMacWindows();
+#endif
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
         QMLRegister::tabsModel->saveTabs();

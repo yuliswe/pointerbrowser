@@ -225,9 +225,8 @@ C.SplitView {
         onUserPreviewsSavedTab: openSavedTab(index, true)
     }
 
-    Rectangle {
+    Item {
         id: mainPanel
-        color: "#00000000"
         RowLayout {
             id: toolbar
             height: buttonSize
@@ -299,7 +298,7 @@ C.SplitView {
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/list.svg"
                 enabled: currentWebView && currentWebView.docviewLoaded
-                active: currentWebView && currentWebView.inDocview
+                checked: currentWebView && currentWebView.inDocview
                 onCheckedChanged: {
                     if (docview_Button.checked) {
                         currentWebView.docviewOn()
@@ -316,7 +315,7 @@ C.SplitView {
                 iconSource: bookmark_Button.checked ? "icon/bookmark.svg" : "icon/book.svg"
                 checkable: false
                 enabled: currentWebView
-                active: currentWebView && currentWebView.bookmarked
+                checked: currentWebView && currentWebView.bookmarked
                 onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
             }
         }
@@ -328,6 +327,7 @@ C.SplitView {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.topMargin: 3
+            model: TabsModel
             onUserRequestsNewView: {
                 if (request.requestedUrl) {
                     var opened = TabsModel.findTab(request.requestedUrl);
@@ -338,36 +338,39 @@ C.SplitView {
                 var wv = openOrNewTab()
                 wv.handleNewViewRequest(request)
             }
+        }
 
-            Item {
-                anchors.fill: parent
-                clip: true
-                id: welcomePage
-                opacity: 0.5
-                visible: currentWebViewIndex == -1
-                WelcomePageForm {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+
+        WelcomePage {
+            clip: true
+            id: welcomePage
+            opacity: 0.5
+            visible: currentWebViewIndex == -1
+            anchors {
+                left: mainPanel.left
+                top: toolbar.bottom
+                right: mainPanel.right
+                bottom: mainPanel.bottom
             }
+        }
 
-            BrowserSearch {
-                id: browserSearch
-                width: 300
-                height: 30
-                visible: false
-                anchors.right: parent.right
-                anchors.top: parent.top
-                onUserSearchesNextInBrowser: browserSearchNext(text)
-                onUserSearchesPreviousInBrowser: browserSearchPrev(text)
-                onUserClosesSearch: hideBrowserSearch()
-                onUserTypesInSearch: {
-                    browserSearch.updateCount(0)
-                    browserSearch.updateCurrent(0)
-                    browserSearch.hideCount()
-                    if (currentWebView !== null) {
-                        currentWebView.clearFindText()
-                    }
+
+        BrowserSearch {
+            id: browserSearch
+            width: 300
+            height: 30
+            visible: false
+            anchors.right: parent.right
+            anchors.top: toolbar.bottom
+            onUserSearchesNextInBrowser: browserSearchNext(text)
+            onUserSearchesPreviousInBrowser: browserSearchPrev(text)
+            onUserClosesSearch: hideBrowserSearch()
+            onUserTypesInSearch: {
+                browserSearch.updateCount(0)
+                browserSearch.updateCurrent(0)
+                browserSearch.hideCount()
+                if (currentWebView !== null) {
+                    currentWebView.clearFindText()
                 }
             }
         }
@@ -428,16 +431,20 @@ C.SplitView {
 
             PropertyChanges {
                 target: back_Button
+                leftPadding: 5
                 padding: 6
             }
 
             PropertyChanges {
                 target: forward_Button
+                rightPadding: 5
                 padding: 6
             }
 
             PropertyChanges {
                 target: refresh_Button
+                bottomPadding: 2
+                topPadding: 3
                 padding: 3
             }
         }

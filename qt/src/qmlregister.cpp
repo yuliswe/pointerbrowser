@@ -8,6 +8,11 @@
 #include "searchdb.h"
 #include "palette.h"
 #include "webpage.h"
+#include "keymaps.h"
+
+#ifdef Q_OS_MACOS
+#include "os-specific/mac/macwindow.h"
+#endif
 
 QMLRegister::QMLRegister(QObject *parent) : QObject(parent)
 {
@@ -45,13 +50,28 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::palette;
     });
-//    qmlRegisterType<Webpage>("Backend", 1, 0, "Webpage");
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "SettingsModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::settingsModel;
+    });
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "KeyMaps", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::keyMaps;
+    });
+
+#ifdef Q_OS_MACOS
+    qmlRegisterType<MacWindow>("Backend", 1, 0, "MacWindow");
+#endif
 }
 
 
 FileManager* QMLRegister::fileManager = new FileManager();
 TabsModel* QMLRegister::tabsModel = new TabsModel();
 TabsModel* QMLRegister::previewTabsModel = new TabsModel();
+KeyMaps* QMLRegister::keyMaps = new KeyMaps();
+SettingsModel* QMLRegister::settingsModel = new SettingsModel();
 EventFilter* QMLRegister::eventFilter = new EventFilter();
 SearchDB* QMLRegister::searchDB = new SearchDB();
 Palette* QMLRegister::palette = new Palette();
