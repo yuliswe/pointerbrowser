@@ -26,12 +26,14 @@ class TabsModel : public QAbstractListModel
         void insertTab(int i, const QVariantMap&);
         void updateTab(int i, QString property, QVariant value);
         bool removeTab(int idx);
+        bool removeTab(const QString& url);
         int findTab(QString url);
-        int count();
+        int count() const;
         void saveTabs();
         void loadTabs();
         void clear();
-        QVariant at(int index);
+        QVariant at(int index) const;
+        Webpage_ webpage_(int index) const;
         void replaceModel(const Webpage_List& wp);
 
     private:

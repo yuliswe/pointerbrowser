@@ -15,16 +15,21 @@ TabsModel::TabsModel(QObject *parent) : QAbstractListModel(parent)
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
-int TabsModel::count()
+int TabsModel::count() const
 {
     return _tabs.length();
 }
 
-QVariant TabsModel::at(int i)
+QVariant TabsModel::at(int i) const
 {
     QVariant v;
     v.setValue(_tabs[i].data());
     return v;
+}
+
+Webpage_ TabsModel::webpage_(int i) const
+{
+    return _tabs[i];
 }
 
 void TabsModel::replaceModel(const Webpage_List& pages)
@@ -88,6 +93,12 @@ bool TabsModel::removeTab(int row)
     emit endRemoveRows();
     emit countChanged();
     return true;
+}
+
+bool TabsModel::removeTab(const QString &url)
+{
+    int i = findTab(url);
+    return removeTab(i);
 }
 
 int TabsModel::findTab(QString url) {

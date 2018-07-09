@@ -1,4 +1,4 @@
-TARGET = Dereference
+TARGET = Pointer
 
 QT += qml quick sql svg concurrent
 CONFIG += c++14
@@ -17,7 +17,9 @@ HEADERS += \
     palette.h \
     eventfilter.h \
     searchdb.h \
-    keymaps.h
+    keymaps.h \
+    tabscontroller.h \
+    macros.h
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -38,7 +40,8 @@ SOURCES += \
     palette.cpp \
     eventfilter.cpp \
     searchdb.cpp \
-    keymaps.cpp
+    keymaps.cpp \
+    tabscontroller.cpp
 
 
 RESOURCES += qml.qrc db.qrc js.qrc controls.qrc defaults.qrc

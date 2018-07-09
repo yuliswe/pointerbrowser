@@ -55,6 +55,11 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::settingsModel;
     });
+    qmlRegisterSingletonType<Palette>("TabsController", 1, 0, "TabsController", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::tabsController;
+    });
     qmlRegisterSingletonType<Palette>("Backend", 1, 0, "KeyMaps", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
@@ -75,3 +80,4 @@ SettingsModel* QMLRegister::settingsModel = new SettingsModel();
 EventFilter* QMLRegister::eventFilter = new EventFilter();
 SearchDB* QMLRegister::searchDB = new SearchDB();
 Palette* QMLRegister::palette = new Palette();
+TabsController* QMLRegister::tabsController = new TabsController();

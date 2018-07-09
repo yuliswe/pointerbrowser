@@ -8,6 +8,7 @@
 #include "searchdb.h"
 #include "palette.h"
 #include "keymaps.h"
+#include "tabscontroller.h"
 
 class QMLRegister : public QObject
 {
@@ -23,6 +24,7 @@ class QMLRegister : public QObject
         static EventFilter* eventFilter;
         static SearchDB* searchDB;
         static Palette* palette;
+        static TabsController* tabsController;
         static void registerToQML();
 
     signals:

@@ -51,8 +51,14 @@ Item {
         }
         Repeater {
             id: repeater
+            model: TabsController.open_tabs
             delegate: WebUI {}
         }
+    }
+
+    Repeater {
+        model: TabsController.preview_tabs
+        delegate: WebUI {}
     }
 }
 

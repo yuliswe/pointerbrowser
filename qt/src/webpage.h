@@ -49,7 +49,6 @@ public:
     PROP_DEC(bool, title_matched, false)
     PROP_DEC(bool, hash_matched, false)
     PROP_DEC(bool, symbol_matched, false)
-
 #undef PROP_DEC
 };
 

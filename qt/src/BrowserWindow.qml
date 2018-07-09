@@ -6,7 +6,7 @@ import "controls"
 Window {
     id: browserWindow
 
-    title: "Dereference"
+    title: "Pointer"
     Browser {
         id: browser
         anchors.fill: parent
