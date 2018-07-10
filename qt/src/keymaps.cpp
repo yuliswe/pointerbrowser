@@ -14,7 +14,7 @@ void KeyMaps::loadOverwrite(const QVariantMap& map) {
 #define KEYMAP(name) \
     if (k == #name) { \
     set_##name(val); \
-    qDebug() << "KeyMaps::loadOverwrite" << k << val; \
+    qInfo() << "KeyMaps::loadOverwrite" << k << val; \
     continue; \
     }
 
@@ -38,7 +38,7 @@ const QVariantMap KeyMaps::toVariantMap() const {
 }
 
 void KeyMaps::sync() {
-    qDebug() << "KeyMaps::sync starts";
+    qInfo() << "KeyMaps::sync starts";
     // load default settings
     loadOverwrite(FileManager::readQrcJsonFileM("settings/keymaps.json"));
     if (FileManager::dataFile("keymaps.json")->exists()) {

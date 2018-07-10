@@ -48,9 +48,21 @@ Item {
             }
         ]
         Rectangle {
+            id: hr
+            color: "#ebebeb"
+            height: 1
+            anchors {
+                left: rectangle.left
+                right: rectangle.right
+                leftMargin: 10
+                rightMargin: 10
+                top: rectangle.top
+            }
+            visible: (index != 0) && expanded && ! highlighted
+        }
+        Rectangle {
             id: rectangle
             anchors.fill: parent
-            radius: 2
             anchors.leftMargin: 0
             color: form.pal.search_item_background
             RoundButton {
@@ -71,36 +83,20 @@ Item {
                 }
             }
 
-            Rectangle {
-                id: hr
-                color: "#ebebeb"
-                height: 1
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    leftMargin: 10
-                    rightMargin: 10
-                    top: parent.top
-                }
-                visible: (index != 0) && expanded && ! highlighted
-            }
 
             Column {
                 id: column
                 anchors.rightMargin: 10
                 anchors.bottomMargin: 10
                 anchors.topMargin: 10
-//                height: parent.height
-//                width: parent.width
                 anchors.right: parent.right
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
-                clip: true
+//                clip: true
                 Text {
                     id: line1
-                    text: model.expanded_display[0] || model.url
+                    text: model.title || model.url
                     font.pixelSize: 12
-                    //                    font.weight: Font.Medium
                     anchors.right: parent.right
                     anchors.left: parent.left
                     elide: browser.resizing ? Text.ElideNone : Text.ElideRight
@@ -115,6 +111,7 @@ Item {
                     font.pixelSize: 12
                     elide: browser.resizing ? Text.ElideNone : Text.ElideRight
                     height: model.expanded_display[1] ? contentHeight : 0
+                    visible: model.expanded_display[1] || false
                     color: pal.search_item_line_2_text
                 }
                 Text {
@@ -126,6 +123,7 @@ Item {
                     elide: browser.resizing ? Text.ElideNone : Text.ElideRight
                     font.pixelSize: 11
                     height: model.expanded_display[2] ? contentHeight : 0
+                    visible: model.expanded_display[2] || false
                     color: pal.search_item_line_3_text
                 }
             }

@@ -3,7 +3,6 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QUrl>
 #include <QDebug>
 #include <QAbstractListModel>
 #include <QQmlEngine>
@@ -22,6 +21,9 @@ int TabsModel::count() const
 
 QVariant TabsModel::at(int i) const
 {
+    if (i < 0 || i >= _tabs.length()) {
+        return QVariant();
+    }
     QVariant v;
     v.setValue(_tabs[i].data());
     return v;
@@ -29,6 +31,9 @@ QVariant TabsModel::at(int i) const
 
 Webpage_ TabsModel::webpage_(int i) const
 {
+    if (i < 0 || i >= _tabs.length()) {
+        return Webpage_(nullptr);
+    }
     return _tabs[i];
 }
 
@@ -42,6 +47,7 @@ void TabsModel::replaceModel(const Webpage_List& pages)
 
 void TabsModel::insertWebpage(int idx, const Webpage_ page)
 {
+    if (idx < 0 || idx > _tabs.count()) { return; }
     emit beginInsertRows(QModelIndex(), idx, idx);
     _tabs.insert(idx, page);
     _tabs[idx] = page;
@@ -49,36 +55,32 @@ void TabsModel::insertWebpage(int idx, const Webpage_ page)
     emit countChanged();
 }
 
-void TabsModel::insertTab(int idx, const QString& url)
+void TabsModel::insertTab(int idx, const QString& uri)
 {
-    qDebug() << "TabsModel::insertTab" << idx << url;
-    Webpage_ page = Webpage_::create(url);
-    page->set_display(page->title().length() > 0 ? page->title() : page->url());
-    page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->url()});
+    qInfo() << "TabsModel::insertTab" << idx << uri;
+    Webpage_ page = Webpage_::create(uri);
     insertWebpage(idx, page);
 }
 
 void TabsModel::insertTab(int idx, const QVariantMap& map)
 {
-    qDebug() << "TabsModel::insertTab" << idx << map;
+    qInfo() << "TabsModel::insertTab" << idx << map;
     Webpage_ page = Webpage_::create(map);
-    page->set_display(page->title().length() > 0 ? page->title() : page->url());
-    page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->url()});
     insertWebpage(idx, page);
 }
 
 void TabsModel::updateTab(int index, QString property, QVariant value)
 {
-    qDebug() << "TabsModel::updateTab:" << property << value;
+    qInfo() << "TabsModel::updateTab:" << property << value;
     Webpage_ page = _tabs[index];
     QByteArray ba = property.toLocal8Bit();
     const char *str = ba.data();
     QVariant current = page.data()->property(str);
     if (value == current) { return; }
     page.data()->setProperty(str, value);
-    if (property == "title" || property == "url") {
-        page->set_display(page->title().length() > 0 ? page->title() : page->url());
-        page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->url()});
+    if (property == "title" || property == "uri") {
+        page->set_display(page->title().length() > 0 ? page->title() : page->uri());
+        page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->uri()});
     }
     QModelIndex i = TabsModel::index(index);
     emit dataChanged(i,i);
@@ -95,16 +97,16 @@ bool TabsModel::removeTab(int row)
     return true;
 }
 
-bool TabsModel::removeTab(const QString &url)
+bool TabsModel::removeTab(const QString &uri)
 {
-    int i = findTab(url);
+    int i = findTab(uri);
     return removeTab(i);
 }
 
-int TabsModel::findTab(QString url) {
+int TabsModel::findTab(const QString& uri) {
     int i = 0;
     for (Webpage_ tab : _tabs) {
-        if (tab->url() == url) {
+        if (tab->uri() == uri) {
             return i;
         }
         i++;
@@ -113,12 +115,10 @@ int TabsModel::findTab(QString url) {
 }
 
 void TabsModel::saveTabs(void) {
-    qDebug() << "TabsModel::saveTabs";
+    qInfo() << "TabsModel::saveTabs";
     QJsonArray tabs;
     for (Webpage_ tab : _tabs) {
-        if (tab->open()) {
-            tabs << tab->toQJsonObject();
-        }
+        tabs << tab->toQJsonObject();
     }
     QJsonDocument doc(tabs);
     FileManager::writeDataFileB("open.json", doc.toJson());
@@ -128,14 +128,13 @@ void TabsModel::loadTabs(void) {
     QByteArray contents = QMLRegister::fileManager->readDataFileB("open.json");
     QJsonDocument doc = QJsonDocument::fromJson(contents);
     QJsonArray jarr = doc.array();
-    qDebug() << jarr;
-    qDebug() << "TabsModel::loadTabs";
+    qInfo() << jarr;
+    qInfo() << "TabsModel::loadTabs";
     emit beginResetModel();
     _tabs.clear();
     for (QJsonValue jval : jarr) {
         QJsonObject jobj = jval.toObject();
         Webpage_ page_ = Webpage::fromQJsonObject(jobj);
-        page_->_open = true;
         _tabs << page_;
     }
     emit endResetModel();

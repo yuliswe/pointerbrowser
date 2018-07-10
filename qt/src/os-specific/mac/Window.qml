@@ -18,17 +18,13 @@ Window {
         anchors.fill: parent
         color: palette.window_background
     }
-    MacWindow {
-        id: win
-    }
     MouseArea {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: contentTopMargin
         onDoubleClicked: {
-            win.zoom(mainWindow)
+            MacWindow.zoom(mainWindow)
         }
     }
-
 }

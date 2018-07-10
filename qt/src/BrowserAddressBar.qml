@@ -6,16 +6,19 @@ import Backend 1.0
 
 Item {
     id: form
-    property string url: ""
-    property string title: ""
-    property int progress: 0
+//    property string url: BrowserController.current_webview.url
+//    property string title: BrowserController.current_webview.title
+    property int progress: BrowserController.address_bar_load_progress
     signal userEntersUrl(string url)
 
     state: Qt.platform.os
 
-    onUrlChanged: update(url, title)
-    onTitleChanged: update(url, title)
+//    onUrlChanged: update(url, title)
+//    onTitleChanged: update(url, title)
     onProgressChanged: updateProgress(progress)
+
+
+    //    property alias titleDisplay: titleDisplay
 
     Rectangle {
         id: progressBar
@@ -25,7 +28,6 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 0
         width: 0
-        radius: 3
 
         Behavior on width {
             id: barWidthAnimation
@@ -46,11 +48,11 @@ Item {
         }
     }
 
-    //    property alias titleDisplay: titleDisplay
     C.TextField {
         id: textField
         horizontalAlignment: Text.AlignHCenter
         anchors.fill: parent
+        property var pal: activeFocus ? Palette.selected : Palette.normal
         onAccepted: {
             var url = textField.text
             var exp = new RegExp(".+://")
@@ -58,44 +60,32 @@ Item {
                 url = "http://www.google.com/search?q=" + encodeURIComponent(url)
             }
             textField.focus = false
-            console.log("userEntersUrl", url)
-            userEntersUrl(url)
+            console.info("userEntersUrl", url)
+            BrowserController.newTab(BrowserController.TabStateOpen, url, BrowserController.WhenCreatedSwitchToNew, BrowserController.WhenExistsOpenNew)
         }
+        placeholderText: BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.title : "Welcome"
         onActiveFocusChanged: {
             if (textField.activeFocus) {
-                //            textField.horizontalAlignment = Text.AlignHCenter
-                textField.color = Palette.selected.input_text
-                textField.text = form.url
-                if (Qt.platform.os != "ios") {
-                    textField.ensureVisible(0)
-                }
+                textField.text = BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.url : ""
+                textField.ensureVisible(0)
                 textField.selectAll()
             } else {
                 textField.deselect()
-                //            textField.horizontalAlignment = Text.AlignHCenter
                 textField.text = ""
-                textField.placeholderText = form.title || form.url
-                //            textField.color = "transparent"
             }
         }
-        color: activeFocus ? Palette.selected.addressbar_text : Palette.normal.addressbar_text
+        color: pal.addressbar_text
         placeholder {
-            color: Palette.normal.addressbar_text
+            color: pal.addressbar_text
         }
-    }
 
-    function update(url, title) {
-        console.log("addressBar update", url, title)
-        if (title !== "") {
-            textField.placeholderText = title
-        } else {
-            textField.placeholderText = url
-        }
     }
 
     function updateProgress(progress) {
-        console.log("addressbar updateProgress", progress)
+        console.info("addressbar updateProgress", progress)
         var w = Math.max(10,progress)/100 * textField.width
+        // if we are suddenly visiting a different tab
+        // that has smaller load progress, we want to hide progress bar
         if (progressBar.width >= w) {
             barWidthAnimation.enabled = false
             progressBar.opacity = 0
@@ -104,7 +94,7 @@ Item {
             return
         }
         barWidthAnimation.enabled = true
-        progressBar.opacity = 0.2
+        progressBar.opacity = 0.5
         progressBar.width = w
         if (progress === 100) {
             fadeProgress.restart()
@@ -128,6 +118,24 @@ Item {
             PropertyChanges {
                 target: textField
                 placeholder.opacity: 0.5
+            }
+
+            PropertyChanges {
+                target: progressBar
+                radius: 0
+            }
+        },
+        State {
+            name: "osx"
+
+            PropertyChanges {
+                target: textField
+                placeholder.opacity: 1
+            }
+
+            PropertyChanges {
+                target: progressBar
+                radius: 4
             }
         }
     ]

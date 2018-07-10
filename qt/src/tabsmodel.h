@@ -22,12 +22,12 @@ class TabsModel : public QAbstractListModel
         void countChanged();
 
     public slots:
-        void insertTab(int i, const QString& url);
+        void insertTab(int i, const QString& uri);
         void insertTab(int i, const QVariantMap&);
         void updateTab(int i, QString property, QVariant value);
         bool removeTab(int idx);
-        bool removeTab(const QString& url);
-        int findTab(QString url);
+        bool removeTab(const QString& uri);
+        int findTab(const QString& uri);
         int count() const;
         void saveTabs();
         void loadTabs();

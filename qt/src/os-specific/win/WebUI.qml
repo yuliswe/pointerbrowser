@@ -211,9 +211,9 @@ Item {
                                 if (webUI.previewMode) {
                                     return
                                 }
-                                console.log("webview injecting docview.js on", requestURL)
+                                console.info("webview injecting docview.js on", requestURL)
                                 runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
-                                    console.log("webview calling Docview.crawler() on", requestURL)
+                                    console.info("webview calling Docview.crawler() on", requestURL)
                                     runJavaScript("Docview.crawler()", function(result) {
                                         crawler.queueLinks(result.links)
                                         // crawler is a stack

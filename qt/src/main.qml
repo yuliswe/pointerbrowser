@@ -3,6 +3,6 @@ import QtQuick 2.11
 
 BrowserWindow {
     Component.onCompleted: {
-        console.log("QML running on", Qt.platform.os)
+        console.info("QML running on", Qt.platform.os)
     }
 }

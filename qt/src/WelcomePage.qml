@@ -11,6 +11,12 @@ Item {
         }
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            forceActiveFocus()
+        }
+    }
     ListView {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter

@@ -8,26 +8,14 @@ import Backend 1.0
 Item {
     id: tabsPanel
 
-    signal userOpensSavedTab(int index)
-    signal userPreviewsSavedTab(int index)
-    signal userClosesTab(int index)
-    signal userOpensTab(int index)
-    signal userOpensNewTab()
+    //    signal userOpensSavedTab(int index)
+    //    signal userPreviewsSavedTab(int index)
+    //    signal userClosesTab(int index)
+    //    signal userOpensTab(int index)
+    //    signal userOpensNewTab()
 
     property bool searchMode: false
     property int buttonSize: 25
-
-    function setCurrentIndex(i) {
-        tabsList.setHighlightAt(i)
-    }
-
-    function setOpenTabsCurrentIndex(i) {
-        tabsList.setHighlightAt(i)
-    }
-
-    function setSavedTabsCurrentIndex(i) {
-        searchList.setHighlightAt(i)
-    }
 
     function filterModelBySymbol(sym) {
         tabsPanel.searchMode = (sym !== "")
@@ -36,33 +24,6 @@ Item {
 
     function clearSearchField() {
         searchTextField.clear()
-    }
-
-    //    flickable {
-    //        rebound: Transition {
-    //            NumberAnimation {
-    //                properties: "x,y"
-    //                duration: {
-    //                    switch (Qt.platform.os) {
-    //                    case "ios": return 2500; break;
-    //                    default: return 500
-    //                    }
-    //                }
-    //                easing.type: Easing.OutQuint
-    //            }
-    //        }
-
-    //        boundsBehavior: {
-    //            if (Qt.platform.os == "ios") {
-    //                return Flickable.DragAndOvershootBounds
-    //            } else {
-    //                return Flickable.StopAtBounds
-    //            }
-    //        }
-    //    }
-
-    Component.onCompleted: {
-        searchList.setHighlightAt(-1)
     }
 
     state: Qt.platform.os
@@ -82,7 +43,7 @@ Item {
             Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
             placeholderText: "Search"
             selectByMouse: true
-            fakeActiveFocusUntilEmpty: true
+            useActiveBackgroundColorUntilEmpty: true
             clearOnEsc: false
             onDelayedTextChanged: {
                 if (searchTextField.text.length > 1) {
@@ -99,14 +60,12 @@ Item {
         C.Button {
             id: newTabButton
             font.bold: true
-            //            Layout.preferredWidth: parent.height
-            //            Layout.preferredHeight: parent.height
             padding: 1
-            //            Layout.fillHeight: true
             iconSource: "icon/plus-mid.svg"
-            onClicked: {
-                tabsPanel.userOpensNewTab()
-            }
+            onClicked: BrowserController.newTab(BrowserController.TabStateOpen,
+                                                BrowserController.home_url,
+                                                BrowserController.WhenCreatedSwitchToNew,
+                                                BrowserController.WhenExistsOpenNew)
         }
     }
 
@@ -116,7 +75,7 @@ Item {
         anchors.bottomMargin: 5
         anchors.top: topControls.bottom
         anchors.right: parent.right
-        anchors.bottom: bottomControls.top
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.topMargin: 3
         Flickable {
@@ -129,55 +88,58 @@ Item {
                 loading: false
                 showCloseButton: true
                 expandEnabled: false
-                model: TabsModel
+                model: BrowserController.open_tabs
                 name: "Open Tabs"
-                onUserClosesTab: {
-                    tabsPanel.userClosesTab(index)
-                }
-                onUserClicksTab: {
-                    tabsPanel.setCurrentIndex(index)
-                    tabsPanel.userOpensTab(index)
-                }
+                onUserClosesTab: BrowserController.closeTab(BrowserController.TabStateOpen, index)
+                onUserClicksTab: BrowserController.viewTab(BrowserController.TabStateOpen, index)
                 anchors.top: parent.top
-                //                anchors.topMargin: tabsPanel.searchMode ? searchList.height : 0
+                currentIndex: {
+                    if (BrowserController.current_tab_state === BrowserController.TabStateOpen) {
+                        return BrowserController.current_open_tab_index
+                    }
+                    return -1
+                }
             }
             TabsList {
                 id: searchList
                 name: searchMode ? (SearchDB.searchInProgress ?
                                         "Searching" :
-                                        (SearchDB.searchResult.count === 0 ? "nothing" : "BOOKMARKS - " + SearchDB.searchResult.count)
+                                        (SearchDB.searchResult.count === 0 ? "nothing" : "Bookmarks - " + SearchDB.searchResult.count)
                                         + (SearchDB.searchResult.count >= 200 ? "+" : "")
-                                        + " found") : "Favorites"
+                                        + " found") : "Bookmarks"
                 width: tabsPanel.width
                 loading: SearchDB.searchInProgress && tabsPanel.searchMode
-                hoverHighlight: true
                 showCloseButton: false
                 expandEnabled: true
                 model: SearchDB.searchResult
-                onUserDoubleClicksTab: {
-                    tabsPanel.userOpensSavedTab(index)
-                    //                    searchList.setHighlightAt(-1)
-                }
+
+                onUserDoubleClicksTab: BrowserController.newTab(BrowserController.TabStateOpen,
+                                                                (SearchDB.searchResult.at(index).hash ?
+                                                                     SearchDB.searchResult.at(index).url + "#" + SearchDB.searchResult.at(index).hash
+                                                                   : SearchDB.searchResult.at(index).url),
+                                                                BrowserController.SwithToView,
+                                                                BrowserController.WhenExistsViewExisting)
+
                 onUserClicksTab: {
-                    //                    searchList.setHighlightAt(index)
-                    tabsPanel.userPreviewsSavedTab(index)
+                    BrowserController.newTab(BrowserController.TabStatePreview,
+                                             (SearchDB.searchResult.at(index).hash ?
+                                                  SearchDB.searchResult.at(index).url + "#" + SearchDB.searchResult.at(index).hash
+                                                : SearchDB.searchResult.at(index).url),
+                                             BrowserController.SwithToView,
+                                             BrowserController.WhenExistsViewExisting)
+                    BrowserController.current_tab_search_highlight_index = index;
                 }
+
+                currentIndex: {
+                    if (BrowserController.current_tab_state === BrowserController.TabStatePreview) {
+                        return BrowserController.current_tab_search_highlight_index
+                    }
+                    return -1
+                }
+
                 anchors.top: tabsList.bottom
-                //                anchors.top: parent.top
-                //                anchors.topMargin: tabsPanel.searchMode ? 0 : tabsList.height
             }
         }
-    }
-
-    RowLayout {
-        id: bottomControls
-        x: 0
-        y: 177
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        Layout.maximumHeight: 25
-        Layout.fillWidth: true
-        Layout.margins: 5
     }
 
     Shortcut {

@@ -1,6 +1,6 @@
 {
     "window_background": "#fff",
-    "window_base_background": "#f0f0f0",
+    "window_background_opaque": "#f0f0f0",
     "window_text": "#000",
     "text": {
         "normal": "#000",

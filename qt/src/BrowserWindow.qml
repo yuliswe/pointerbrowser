@@ -14,12 +14,13 @@ Window {
     }
 
     onActiveFocusItemChanged: {
-        console.log("new active focus", activeFocusItem);
+        console.info("new active focus", activeFocusItem);
     }
     onScreenChanged: {
-        console.log("Screen changed", JSON.stringify(screen))
+        console.info("Screen changed", JSON.stringify(screen))
     }
     Component.onCompleted: {
-        console.log("Screen changed", JSON.stringify(screen))
+        console.info("Screen changed", JSON.stringify(screen))
     }
+
 }

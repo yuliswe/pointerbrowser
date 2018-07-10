@@ -42,11 +42,11 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 void dumpLibraryInfo()
 {
-    qDebug() << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
-    qDebug() << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
-    qDebug() << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
-    qDebug() << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
-    qDebug() << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+    qInfo() << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
+    qInfo() << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
+    qInfo() << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    qInfo() << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
+    qInfo() << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
 }
 
 int main(int argc, char *argv[])
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
     qputenv("QSG_RENDER_LOOP", "basic");
     qputenv("QML_DISABLE_DISTANCEFIELD", "1");
-    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4 -c * -o /Users/ylilarry/lab/trace.log");
 
     // init ui
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -88,13 +88,13 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     dumpLibraryInfo();
-    qDebug() << "Using font" << QGuiApplication::font();
+    qInfo() << "Using font" << QGuiApplication::font();
 
     // set properties
-    qDebug() << "FileManager::dataPath()" << FileManager::dataPath();
+    qInfo() << "FileManager::dataPath()" << FileManager::dataPath();
     QString currV = FileManager::readQrcFileS("defaults/version");
     QString dataV = FileManager::readDataFileS("version");
-    qDebug() << "running version" << currV
+    qInfo() << "running version" << currV
              << "data version" << dataV;
     if (currV != dataV) {
         FileManager::rmDataDir();

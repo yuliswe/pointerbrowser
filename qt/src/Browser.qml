@@ -10,198 +10,9 @@ C.SplitView {
 
     state: Qt.platform.os
 
-    property alias currentWebView: browserWebViews.currentWebView
-    property alias currentWebViewIndex: browserWebViews.currentIndex
+    property alias currentWebUI: browserWebViews.currentWebUI
     property int buttonSize: 25
     property alias searchMode: tabsPanel.searchMode
-
-    function refreshCurrentWebview() {
-        browserWebViews.reloadCurrentWebView()
-    }
-
-    function showBrowserSearch() {
-        browserSearch.visible = true
-        browserSearch.textfield.forceActiveFocus()
-        browserSearch.textfield.selectAll()
-    }
-
-    function hideBrowserSearch() {
-        browserSearch.visible = false
-        browserSearch.textfield.focus = false
-        if (currentWebView !== null) {
-            currentWebView.clearFindText()
-        }
-    }
-
-    function browserSearchNext(text) {
-        if (currentWebView !== null) {
-            currentWebView.findNext(text, function(cnt) {
-                browserSearch.showCount()
-                var cur = browserSearch.current()
-                browserSearch.updateCount(cnt)
-                if (cnt === 0) {
-                    browserSearch.updateCurrent(0)
-                } else if (cur === cnt) {
-                    browserSearch.updateCurrent(1)
-                } else {
-                    browserSearch.updateCurrent(cur + 1)
-                }
-            })
-        }
-    }
-
-    function browserSearchPrev(text) {
-        if (currentWebView !== null) {
-            currentWebView.findPrev(text, function(cnt) {
-                browserSearch.showCount()
-                var cur = browserSearch.current()
-                browserSearch.updateCount(cnt)
-                if (cnt === 0) {
-                    browserSearch.updateCurrent(0)
-                } else if (cur <= 1) {
-                    browserSearch.updateCurrent(cnt)
-                } else {
-                    browserSearch.updateCurrent(cur - 1)
-                }
-            })
-        }
-    }
-
-    function openSavedTab(index, previewMode) {
-        console.log("openSavedTab", index)
-        var wp = SearchDB.searchResult.at(index)
-        if (wp.hash) {
-            SearchDB.updateSymbolAsync(wp.hash, 'visited', Date.now())
-        }
-        openOrNewTab(wp.url + (wp.hash ? "#"+wp.hash : ""), true, previewMode)
-        if (previewMode) {
-            tabsPanel.setSavedTabsCurrentIndex(index)
-        } else {
-            //            SearchDB.searchResult.removeTab(index)
-            SearchDB.updateWebpageAsync(wp.url, 'visited', Date.now())
-            //            tabsPanel.setSavedTabsCurrentIndex(-1)
-        }
-    }
-
-    function newTabHome() {
-        openOrNewTab("https://www.google.ca/", true)
-    }
-
-    function openOrNewTab(url, switchToView, previewMode) {
-        console.log("newTab:", url, switchToView)
-        var opened = TabsModel.findTab(url)
-        if (opened !== -1) {
-            if (! previewMode) {
-                TabsModel.updateTab(opened, "open", true)
-                TabsModel.updateTab(opened, "preview_mode", false)
-                browserWebViews.setPreviewMode(opened, false)
-                browserWebViews.reloadWebViewAt(opened)
-            }
-            if (! TabsModel.at(opened).open && previewMode) {
-                TabsModel.updateTab(opened, "preview_mode", true)
-            }
-            return openTab(opened)
-        }
-        var newtab = {
-            url: url,
-            preview_mode: previewMode,
-            open: ! previewMode
-        }
-        TabsModel.insertTab(0, newtab)
-
-        if (switchToView) {
-            if (currentWebViewIndex === 0) {
-                openTab(1) // trigger binding update
-            }
-            openTab(0)
-        } else {
-            // in case we are at the welcome page
-            if (currentWebViewIndex > -1) {
-                openTab(currentWebViewIndex + 1)
-            }
-        }
-        return browserWebViews.webViewAt(0)
-    }
-
-    function openTab(index) {
-        console.log("openTab", "index=", index, "TabsModel.count=",
-                    TabsModel.count)
-        if (index < 0 || index >= TabsModel.count) { return }
-        if (currentWebViewIndex === index) {
-            browserWebViews.setCurrentIndex(-1) // force update binding
-        }
-        browserWebViews.setCurrentIndex(index)
-        tabsPanel.setOpenTabsCurrentIndex(index)
-        tabsPanel.setSavedTabsCurrentIndex(-1)
-        hideBrowserSearch()
-        browserSearch.hideCount()
-    }
-
-    //    function closeAllPreviewTabs() {
-    //        if (curr)
-    //    }
-    //    function nextOpenTab(index) {
-    //        for
-    //        if (TabsModel.at(currentWebViewIndex).preview_mode) {
-    //            //            closeAllPreviewTabs()
-    //            //                for (var i = 0; i < TabsModel.count; i++) {
-    //            //                    if (! TabsModel.at(i).preview_mode) {
-    //            //                        return openTab(i)
-    //            //                    }
-    //            //                }
-    //            TabsModel.clear()
-    //        } else {
-
-    //        }
-    //    }
-
-    function closeAllPreviewTabs() {
-        for (var i = TabsModel.count - 1; i >= 0; i--) {
-            if (TabsModel.at(i).preview_mode) {
-                TabsModel.removeTab(i)
-            }
-        }
-        tabsPanel.setSavedTabsCurrentIndex(-1)
-    }
-
-    function closeTab(index) {
-        console.log("closeTab", "index=", index, "TabsModel.count=",
-                    TabsModel.count)
-        if (index < 0) {
-            return
-        }
-        if (TabsModel.at(index).preview_mode) {
-            closeAllPreviewTabs()
-            if (TabsModel.count > 0) {
-                openTab(0)
-            } else {
-                browserWebViews.setCurrentIndex(-1)
-            }
-            return
-        }
-        closeAllPreviewTabs()
-        if (currentWebViewIndex === index) {
-            // when removing current tab
-            // if there's one after, open that
-            if (index + 1 < TabsModel.count) {
-                TabsModel.removeTab(index)
-                openTab(index)
-            } // if there's one before, open that
-            else if (index >= 1) {
-                TabsModel.removeTab(index)
-                openTab(index - 1)
-            } // if this is the only one
-            else {
-                TabsModel.removeTab(index)
-                browserWebViews.setCurrentIndex(-1)
-            }
-        } else if (currentWebViewIndex > index) {
-            TabsModel.removeTab(index)
-            openTab(currentWebViewIndex - 1)
-        } else {
-            TabsModel.removeTab(index)
-        }
-    }
 
     handleDelegate: Item {
     }
@@ -218,11 +29,6 @@ C.SplitView {
             prevW = width
         }
         buttonSize: buttonSize
-        onUserOpensNewTab: newTabHome()
-        onUserOpensTab: openTab(index)
-        onUserClosesTab: closeTab(index)
-        onUserOpensSavedTab: openSavedTab(index)
-        onUserPreviewsSavedTab: openSavedTab(index, true)
     }
 
     Item {
@@ -236,17 +42,14 @@ C.SplitView {
             anchors.rightMargin: 5
             anchors.leftMargin: 5
             anchors.topMargin: 3
-            readonly property int buttonWidth: buttonSize * (Qt.platform.os == "ios" ? 1 : 1)
-            //            spacing: (Qt.platform.os == "ios") ? 0 : 2
+            readonly property int buttonWidth: buttonSize
             C.Button {
                 id: back_Button
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/left.svg"
-                enabled: currentWebView && currentWebView.canGoBack
-                onClicked: {
-                    currentWebView.goBack()
-                }
+                enabled: currentWebUI && currentWebUI.canGoBack
+                onClicked: currentWebUI.goBack()
             }
 
             C.Button {
@@ -255,10 +58,8 @@ C.SplitView {
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/right.svg"
-                enabled: currentWebView && currentWebView.canGoForward
-                onClicked: {
-                    currentWebView.goForward()
-                }
+                enabled: currentWebUI && currentWebUI.canGoForward
+                onClicked: currentWebUI.goForward()
             }
 
             C.Button {
@@ -266,29 +67,14 @@ C.SplitView {
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/refresh.svg"
-                enabled: currentWebView
-                onClicked: refreshCurrentWebview()
+                enabled: currentWebUI
+                onClicked: currentWebUI.reload()
             }
 
             BrowserAddressBar {
                 id: addressBar
                 Layout.fillWidth: true
-                Layout.preferredHeight: parent.height - (Qt.platform.os == "ios" ? 5 : 0)
-                url: currentWebView ? currentWebView.href : ""
-                title: currentWebView ? currentWebView.title : ""
-                progress: currentWebView ? currentWebView.loadProgress : 0
-                onUserEntersUrl: {
-                    if (currentWebViewIndex === -1) {
-                        openOrNewTab(url, true)
-                    } else if (EventFilter.ctrlKeyDown) {
-                        EventFilter.ctrlKeyDown = false
-                        openOrNewTab(url, true)
-                    } else if (TabsModel.at(currentWebViewIndex).preview_mode) {
-                        openOrNewTab(url, true)
-                    } else {
-                        currentWebView.goTo(url)
-                    }
-                }
+                Layout.preferredHeight: parent.height
             }
 
             C.Button {
@@ -297,13 +83,13 @@ C.SplitView {
                 Layout.minimumWidth: toolbar.buttonWidth
                 Layout.preferredHeight: parent.height
                 iconSource: "icon/list.svg"
-                enabled: currentWebView && currentWebView.docviewLoaded
-                checked: currentWebView && currentWebView.inDocview
+                enabled: currentWebUI && currentWebUI.docviewLoaded
+                checked: currentWebUI && currentWebUI.inDocview
                 onCheckedChanged: {
                     if (docview_Button.checked) {
-                        currentWebView.docviewOn()
+                        currentWebUI.docviewOn()
                     } else {
-                        currentWebView.docviewOff()
+                        currentWebUI.docviewOff()
                     }
                 }
             }
@@ -314,9 +100,9 @@ C.SplitView {
                 Layout.preferredHeight: parent.height
                 iconSource: bookmark_Button.checked ? "icon/bookmark.svg" : "icon/book.svg"
                 checkable: false
-                enabled: currentWebView
-                checked: currentWebView && currentWebView.bookmarked
-                onClicked: currentWebView && (currentWebView.bookmarked ? currentWebView.unbookmark() : currentWebView.bookmark())
+                enabled: currentWebUI
+                checked: currentWebUI && currentWebUI.bookmarked
+                onClicked: currentWebUI && (currentWebUI.bookmarked ? currentWebUI.unbookmark() : currentWebUI.bookmark())
             }
         }
 
@@ -327,17 +113,16 @@ C.SplitView {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.topMargin: 3
-            model: TabsModel
-            onUserRequestsNewView: {
-                if (request.requestedUrl) {
-                    var opened = TabsModel.findTab(request.requestedUrl);
-                    if (opened !== -1) {
-                        return openTab(opened)
-                    }
-                }
-                var wv = openOrNewTab()
-                wv.handleNewViewRequest(request)
-            }
+            //            onUserRequestsNewView: {
+            //                if (request.requestedUrl) {
+            //                    var opened = TabsModel.findTab(request.requestedUrl);
+            //                    if (opened !== -1) {
+            //                        return openTab(opened)
+            //                    }
+            //                }
+            //                var wv = openOrNewTab()
+            //                wv.handleNewViewRequest(request)
+            //            }
         }
 
 
@@ -345,7 +130,7 @@ C.SplitView {
             clip: true
             id: welcomePage
             opacity: 0.5
-            visible: currentWebViewIndex == -1
+            visible: BrowserController.welcome_page_visible
             anchors {
                 left: mainPanel.left
                 top: toolbar.bottom
@@ -359,18 +144,16 @@ C.SplitView {
             id: browserSearch
             width: 300
             height: 30
-            visible: false
             anchors.right: parent.right
             anchors.top: toolbar.bottom
             onUserSearchesNextInBrowser: browserSearchNext(text)
             onUserSearchesPreviousInBrowser: browserSearchPrev(text)
-            onUserClosesSearch: hideBrowserSearch()
             onUserTypesInSearch: {
                 browserSearch.updateCount(0)
                 browserSearch.updateCurrent(0)
                 browserSearch.hideCount()
-                if (currentWebView !== null) {
-                    currentWebView.clearFindText()
+                if (currentWebUI !== null) {
+                    currentWebUI.clearFindText()
                 }
             }
         }
@@ -378,10 +161,6 @@ C.SplitView {
         //        Layout.minimumWidth: 300
         Layout.fillWidth: true
         Layout.fillHeight: true
-    }
-
-    onSearchModeChanged: {
-        closeAllPreviewTabs()
     }
 
     states: [
@@ -460,7 +239,7 @@ C.SplitView {
     Shortcut {
         sequence: "Ctrl+R"
         autoRepeat: false
-        onActivated: refreshCurrentWebview()
+        onActivated: refreshcurrentWebUI()
     }
 
     Shortcut {
@@ -468,22 +247,29 @@ C.SplitView {
         property bool guard: true
         autoRepeat: true
         sequence: "Ctrl+W"
-        onActivated: closeTab(currentWebViewIndex)
+        onActivated: {
+            browser.forceActiveFocus()
+            BrowserController.closeTab(BrowserController.current_tab_state,
+                                       BrowserController.current_open_tab_index)
+        }
     }
 
     Shortcut {
         sequence: "Ctrl+F"
-        onActivated: showBrowserSearch()
+        onActivated: BrowserController.setCurrentPageSearchState(BrowserController.CurrentPageSearchStateBeforeSearch)
     }
     Shortcut {
         sequence: "Ctrl+N"
-        onActivated: newTabHome()
+        onActivated: BrowserController.newTab(BrowserController.TabStateOpen,
+                                              BrowserController.home_url,
+                                              BrowserController.WhenCreatedSwitchToNew,
+                                              BrowserController.WhenExistsOpenNew)
     }
     Shortcut {
         sequence: "Esc"
         onActivated: {
-            if (browserSearch.visible) {
-                return hideBrowserSearch()
+            if (BrowserController.current_page_search_visible) {
+                return browserSearch.clearSearch()
             }
             if (searchMode) {
                 return tabsPanel.clearSearchField()

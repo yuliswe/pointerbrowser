@@ -18,8 +18,8 @@ HEADERS += \
     eventfilter.h \
     searchdb.h \
     keymaps.h \
-    tabscontroller.h \
-    macros.h
+    macros.h \
+    browsercontroller.h
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -41,7 +41,7 @@ SOURCES += \
     eventfilter.cpp \
     searchdb.cpp \
     keymaps.cpp \
-    tabscontroller.cpp
+    browsercontroller.cpp
 
 
 RESOURCES += qml.qrc db.qrc js.qrc controls.qrc defaults.qrc

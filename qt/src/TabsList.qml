@@ -15,21 +15,14 @@ Column {
     property bool expandMultipleEnabled: false
     property int currentExpandedIndex: -1
     property bool hoverHighlight: false
+    property alias currentIndex: listview.currentIndex
     property string name: "name"
 
-    function setHighlightAt(index) {
-        listview.currentIndex = index
-    }
-
     state: Qt.platform.os
-
-//    height: name_Text.height + listview.height
-//    height: listview.contentHeight + busyIndicator.height + name_Text.height + 5
 
     Text {
         id: name_Text
         height: 25
-//        width: tabsPanel.width
         color: Palette.normal.label_text
         text: tabsList.name
         font.weight: Font.Medium
@@ -38,7 +31,6 @@ Column {
         verticalAlignment: Text.AlignVCenter
         leftPadding: 5
         font.capitalization: Font.Capitalize
-//        font.pointSize: 8
         font.pixelSize: 11
 
         C.BusyIndicator {
@@ -57,17 +49,6 @@ Column {
         anchors.right: parent.right
         anchors.left: parent.left
 
-        //        anchors.leftMargin: 0
-        //        anchors.top: name_Text.bottom
-        //    height: {
-        //        var h = 0;
-        //        for (var i = 0; i < tabsList.count; i++) {
-        //            console.warn(h)
-        //            h += tabsList.itemAt(i,0).height
-        //        }
-        //        return h
-        //    }
-
         delegate: TabsListTab {
             id: tab
             showCloseButton: tabsList.showCloseButton
@@ -80,7 +61,6 @@ Column {
                 if (tabsList.expandEnabled) {
                     if (tabsList.expandMultipleEnabled) {
                         expanded = !expanded
-                        //                    expanded = Qt.binding(function() {return tabsList.currentExpandedIndex == index})
                     } else {
                         tabsList.currentExpandedIndex = index
                     }

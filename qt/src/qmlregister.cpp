@@ -55,10 +55,10 @@ void QMLRegister::registerToQML() {
         Q_UNUSED(scriptEngine)
         return QMLRegister::settingsModel;
     });
-    qmlRegisterSingletonType<Palette>("TabsController", 1, 0, "TabsController", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    qmlRegisterSingletonType<Palette>("Backend", 1, 0, "BrowserController", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return QMLRegister::tabsController;
+        return QMLRegister::browserController;
     });
     qmlRegisterSingletonType<Palette>("Backend", 1, 0, "KeyMaps", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
@@ -67,7 +67,11 @@ void QMLRegister::registerToQML() {
     });
 
 #ifdef Q_OS_MACOS
-    qmlRegisterType<MacWindow>("Backend", 1, 0, "MacWindow");
+    qmlRegisterSingletonType<MacWindow>("Backend", 1, 0, "MacWindow", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return QMLRegister::macWindow;
+    });
 #endif
 }
 
@@ -80,4 +84,7 @@ SettingsModel* QMLRegister::settingsModel = new SettingsModel();
 EventFilter* QMLRegister::eventFilter = new EventFilter();
 SearchDB* QMLRegister::searchDB = new SearchDB();
 Palette* QMLRegister::palette = new Palette();
-TabsController* QMLRegister::tabsController = new TabsController();
+BrowserController* QMLRegister::browserController = new BrowserController();
+#ifdef Q_OS_MACOS
+MacWindow* QMLRegister::macWindow = new MacWindow();
+#endif

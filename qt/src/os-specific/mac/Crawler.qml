@@ -42,7 +42,7 @@ WebEngineView {
         id: timeout
         triggeredOnStart: false
         onTriggered: {
-            console.log("crawler timed out", crawler.crawling)
+            console.info("crawler timed out", crawler.crawling)
             crawler.url = ""
             crawler.stop()
             crawler.crawNext(true)
@@ -55,7 +55,7 @@ WebEngineView {
     property var queue: ({})
     property string crawling: ""
     function queueLinks(links) {
-        console.log("crawler.queueLinks", links)
+        console.info("crawler.queueLinks", links)
         for (var i = 0; i < links.length; i++) {
             var l = links[i]
             crawler.queue[l] = Date.now()
@@ -64,7 +64,7 @@ WebEngineView {
     }
 
     function crawNext(forced) {
-        console.log("crawNext called on", Object.keys(crawler.queue).length, "links")
+        console.info("crawNext called on", Object.keys(crawler.queue).length, "links")
         var latest = {
             url: "",
             time: -1
@@ -78,18 +78,18 @@ WebEngineView {
         if (latest.time === -1) {
             crawling = ""
             timeout.stop()
-            console.log("crawler queue is empty, timer stopped.")
+            console.info("crawler queue is empty, timer stopped.")
             return
         }
-        console.log("crawler next", latest.url)
+        console.info("crawler next", latest.url)
         if (forced || ! crawler.loading) {
             crawler.url = latest.url
             crawler.crawling = latest.url
             timeout.restart()
-            console.log("cralwer timer restarted", latest.url)
+            console.info("cralwer timer restarted", latest.url)
             delete crawler.queue[latest.url]
         } else {
-            console.log("crawNext aborted because the crawler is still loading")
+            console.info("crawNext aborted because the crawler is still loading")
         }
     }
 
@@ -98,7 +98,7 @@ WebEngineView {
         interval: 500
         repeat: true
         onTriggered: {
-            console.log("cralwer pulling document ready..")
+            console.info("cralwer pulling document ready..")
             runJavaScript("document.readyState", function(ready) {
                 if (ready !== "complete") { return }
                 onReady()
@@ -112,7 +112,7 @@ WebEngineView {
         pullReady.stop()
         switch (loadRequest.status) {
         case WebEngineView.LoadStartedStatus:
-            console.log("crawler loading", loadRequest.url)
+            console.info("crawler loading", loadRequest.url)
             break
         default:
             switch (loadRequest.status) {
@@ -123,14 +123,14 @@ WebEngineView {
                 console.warn("crawler loading stopped", loadRequest.url)
                 break
             case WebEngineView.LoadSucceededStatus:
-                console.log("crawler loading succeeded", loadRequest.url)
-                console.log("crawler injecting docview.js on", loadRequest.url)
+                console.info("crawler loading succeeded", loadRequest.url)
+                console.info("crawler injecting docview.js on", loadRequest.url)
                 var requestURL = loadRequest.url
                 pullReady.onReady = function() {
                     runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
-                        console.log("crawler calling Docview.crawler() on", requestURL)
+                        console.info("crawler calling Docview.crawler() on", requestURL)
                         runJavaScript("Docview.crawler()", function(result) {
-                            console.log("crawler Docview.crawler() returns from", requestURL)
+                            console.info("crawler Docview.crawler() returns from", requestURL)
                             if (! SearchDB.hasWebpage(result.referer)) {
                                 SearchDB.addWebpageAsync(result.referer)
                             }

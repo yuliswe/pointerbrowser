@@ -6,51 +6,50 @@ import Backend 1.0
 
 Item {
     id: browserSearch
-    //    signal userSearchesWordInBrowser(string word)
     signal userSearchesNextInBrowser(string text)
     signal userSearchesPreviousInBrowser(string text)
-    signal userClosesSearch()
     signal userTypesInSearch(string text)
-    function setText(t) {
-        textfield.text = t
-    }
-    function updateCount(count) {
-        highlightCount = count
-        console.log("updateCount " + highlightCount)
-    }
-    function updateCurrent(current) {
-        currentHighlight = current
-        console.log("updateCurrent " + currentHighlight)
-    }
-
-    function setResult(current, count) {
-        updateCount(count)
-        updateCurrent(current)
-    }
-
-    function current() {
-        return currentHighlight;
-    }
-    function count() {
-        return highlightCount;
-    }
-    function hideCount() {
-        counter.visible = false
-    }
-    function showCount() {
-        counter.visible = true
-    }
 
     property int currentHighlight: 0
     property int highlightCount: 0
 
     readonly property var pal: focus ? Palette.selected : Palette.normal
+    visible: BrowserController.current_page_search_visible
+
+    function searchNext() {
+        if (currentWebUI !== null) {
+            currentWebUI.findNext(textfield.text, function(cnt) {
+                BrowserController.setCurrentPageSearchState(BrowserController.CurrentPageSearchStateAfterSearch,
+                                                            BrowserController.current_page_search_text,
+                                                            BrowserController.current_page_search_current_index + 1,
+                                                            cnt)
+            })
+        }
+    }
+
+    function searchPrev() {
+        if (currentWebUI !== null) {
+            currentWebUI.findPrev(textfield.text, function(cnt) {
+                BrowserController.setCurrentPageSearchState(BrowserController.CurrentPageSearchStateAfterSearch,
+                                                            BrowserController.current_page_search_text,
+                                                            BrowserController.current_page_search_current_index - 1,
+                                                            cnt)
+            })
+        }
+    }
+
+    function clearSearch() {
+        if (currentWebUI) {
+            currentWebUI.clearFindText()
+        }
+        BrowserController.setCurrentPageSearchState(BrowserController.CurrentPageSearchStateClosed)
+    }
 
     Rectangle {
         id: rectangle
         radius: 3
         anchors.fill: parent
-        color: browserWindow.palette.window_background
+        color: browserWindow.palette.window_background_opaque
 
         RowLayout {
             id: rowLayout
@@ -64,10 +63,18 @@ Item {
                 placeholderText: "Find in document"
                 rightPadding: counter.width + 10
                 clearOnEsc: false
+                selectTextOnFocus: true
+                focus: BrowserController.current_page_search_focus
                 Text {
                     id: counter
-                    visible: false
-                    text: currentHighlight + "/" + highlightCount
+                    visible: BrowserController.current_page_search_count_visible
+                    text: {
+                        if (BrowserController.current_page_search_count > 0) {
+                            return 1 + BrowserController.current_page_search_current_index + "/" + BrowserController.current_page_search_count
+                        } else {
+                            return "0/0"
+                        }
+                    }
                     anchors.rightMargin: 5
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -77,12 +84,8 @@ Item {
                     font.pixelSize: 12
                     color: pal.input_placeholder_text
                 }
-                onAccepted: {
-                    userSearchesNextInBrowser(textfield.text)
-                }
-                onTextChanged: {
-                    userTypesInSearch(textfield.text)
-                }
+                onAccepted: searchNext()
+                onTextChanged: BrowserController.setCurrentPageSearchState(BrowserController.CurrentPageSearchStateBeforeSearch, textfield.text)
             }
 
             C.Button {
@@ -92,10 +95,7 @@ Item {
                 image.source: "icon/up.svg"
                 rectangle.border.width: 0
                 padding: 8
-                onClicked: {
-                    userSearchesPreviousInBrowser(textfield.text)
-                    console.log("userSearchesPreviousInBrowser")
-                }
+                onClicked: searchPrev()
             }
             C.Button {
                 id: nextBtn
@@ -104,10 +104,7 @@ Item {
                 image.source: "icon/down.svg"
                 rectangle.border.width: 0
                 padding: 8
-                onClicked: {
-                    userSearchesNextInBrowser(textfield.text)
-                    console.log("userSearchesNextInBrowser")
-                }
+                onClicked: searchNext()
             }
             C.Button {
                 id: closeBtn
@@ -116,9 +113,7 @@ Item {
                 image.source: "icon/cross.svg"
                 rectangle.border.width: 0
                 padding: 10
-                onClicked: {
-                    userClosesSearch()
-                }
+                onClicked: clearSearch()
             }
         }
     }

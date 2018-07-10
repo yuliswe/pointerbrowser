@@ -33,10 +33,11 @@ T.TextField {
     }
 
     /* Our implementation */
-    property bool fakeActiveFocusUntilEmpty: false
-    readonly property bool fakeActiveFocus: (fakeActiveFocusUntilEmpty && text) || activeFocus
+    property bool useActiveBackgroundColorUntilEmpty: false
+    property bool selectTextOnFocus: true
+    readonly property bool useActiveBackgroundColor: (useActiveBackgroundColorUntilEmpty && text) || activeFocus
     readonly property var pal: {
-        if (fakeActiveFocus) { return Palette.selected }
+        if (useActiveBackgroundColor) { return Palette.selected }
         return Palette.normal
     }
     state: Qt.platform.os
@@ -47,6 +48,11 @@ T.TextField {
     selectionColor: pal.text_background
     selectedTextColor: pal.text
     placeholderText: ""
+    onActiveFocusChanged: {
+        if (activeFocus && selectTextOnFocus) {
+            control.selectAll()
+        }
+    }
     states: [
         State {
             name: "windows"
@@ -78,17 +84,12 @@ T.TextField {
         id: rectangle
         border.width: 1
         border.color: pal.input_border
-        color: fakeActiveFocus ? pal.input_background : pal.input_background
+        color: useActiveBackgroundColor ? pal.input_background : pal.input_background
         anchors.fill: control
     }
     verticalAlignment: TextInput.AlignVCenter
     leftPadding: 5
     rightPadding: 5
-    onFakeActiveFocusChanged: {
-        if (! fakeActiveFocus) {
-            focus = false
-        }
-    }
     signal delayedTextChanged()
     Timer {
         id: timeout

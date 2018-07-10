@@ -13,12 +13,12 @@ TitleBarForm {
         userStopsDraggingTitleBar()
     }
     mouseArea.onDraggingStarts: {
-        //        console.log("userStartsDraggingTitleBar()")
+        //        console.info("userStartsDraggingTitleBar()")
         userStartsDraggingTitleBar()
     }
 
     mouseArea.onDragging: {
-        //        console.log("userDraggingTitleBar(%d,%d)", deltaX, deltaY)
+        //        console.info("userDraggingTitleBar(%d,%d)", deltaX, deltaY)
         userDraggingTitleBar(deltaX, deltaY)
     }
 

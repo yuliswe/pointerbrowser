@@ -27,7 +27,7 @@ void Palette::setup() {
         qFatal("Palette::setup failed");
     }
     _json = doc.object();
-    qDebug() << "Palette::setup" << _json;
+    qInfo() << "Palette::setup" << _json;
 
     QStringList keys = _json.keys();
     for (QString k: keys) {
@@ -55,15 +55,15 @@ void Palette::setup() {
         Q_ASSERT(hovered.length());
         Q_ASSERT(disabled.length());
         Q_ASSERT(pressed.length());
-        qDebug() << "Palette::setup" << k << "normal" << normal;
+        qInfo() << "Palette::setup" << k << "normal" << normal;
         _normal[k] = normal;
-        qDebug() << "Palette::setup" << k << "selected" << selected;
+        qInfo() << "Palette::setup" << k << "selected" << selected;
         _selected[k] = selected;
-        qDebug() << "Palette::setup" << k << "hovered" << hovered;
+        qInfo() << "Palette::setup" << k << "hovered" << hovered;
         _hovered[k] = hovered;
-        qDebug() << "Palette::setup" << k << "disabled" << disabled;
+        qInfo() << "Palette::setup" << k << "disabled" << disabled;
         _disabled[k] = disabled;
-        qDebug() << "Palette::setup" << k << "pressed" << pressed;
+        qInfo() << "Palette::setup" << k << "pressed" << pressed;
         _pressed[k] = pressed;
     }
 

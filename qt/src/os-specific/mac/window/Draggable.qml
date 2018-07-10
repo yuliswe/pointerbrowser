@@ -12,7 +12,7 @@ MouseArea {
     drag.target: this
     drag.threshold: 1
     drag.onActiveChanged: {
-//        console.log("mouseArea.drag.active", drag.active)
+//        console.info("mouseArea.drag.active", drag.active)
         if (drag.active) {
             var pos = mapToGlobal(mouseX, mouseY)
             startX = pos.x
@@ -25,7 +25,7 @@ MouseArea {
         }
     }
     onPositionChanged: {
-//        console.log(mouseX, mouseY, startX, startY)
+//        console.info(mouseX, mouseY, startX, startY)
         var pos = mapToGlobal(mouseX, mouseY)
         if (isDragging) {
             dragging(pos.x - startX, pos.y - startY)

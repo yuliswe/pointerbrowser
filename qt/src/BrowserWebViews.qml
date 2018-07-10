@@ -8,57 +8,68 @@ import Backend 1.0
 Item {
     id: browserWebViews
 
-    signal userRequestsNewView(WebEngineNewViewRequest request)
-    signal webViewNavRequested(int index)
-    property var currentWebView: repeater.itemAt(currentIndex)
-    property alias currentIndex: stackLayout.currentIndex
+    function userRequestsNewView(request) {
+        if (request.destination === WebEngineView.NewViewInBackgroundTab) {
+            BrowserController.newTab(BrowserController.TabStateOpen,
+                                     request.requestedUrl,
+                                     BrowserController.WhenCreatedStayOnCurrent,
+                                     BrowserController.WhenExistsViewExisting);
+            open_repeater.itemAt(0).handleNewViewRequest(request)
+        } else {
+            BrowserController.newTab(BrowserController.TabStateOpen,
+                                     request.requestedUrl,
+                                     BrowserController.WhenCreatedSwitchToView,
+                                     BrowserController.WhenExistsViewExisting);
+        }
+    }
+
+    readonly property WebUI currentWebUI: {
+        if (BrowserController.current_tab_state === BrowserController.TabStateOpen) {
+            return open_repeater.itemAt(BrowserController.current_open_tab_index)
+        }
+        if (BrowserController.current_tab_state === BrowserController.TabStatePreview) {
+            return preview_repeater.itemAt(BrowserController.current_preview_tab_index)
+        }
+        return null;
+    }
+
     property alias crawler: crawler
-    property alias model: repeater.model
+    property int loadProgress: currentWebUI.loadProgress
 
-    function setCurrentIndex(idx) {
-        currentIndex = idx
-    }
-
-    function reloadWebViewAt(index) {
-        console.log("reloadWebViewAt", index)
-        var wv = webViewAt(index)
-        wv.reload()
-    }
-
-    function webViewAt(i) {
-        return repeater.itemAt(i)
-    }
-
-    function reloadCurrentWebView() {
-        reloadWebViewAt(currentIndex)
-    }
-
-    function setPreviewMode(index, mode) {
-        repeater.itemAt(index).previewMode = mode;
+    onLoadProgressChanged: {
+        BrowserController.address_bar_load_progress = loadProgress;
     }
 
     Crawler {
         id: crawler
     }
 
+    StackLayout {
+        anchors.fill: parent
+        currentIndex: BrowserController.current_open_tab_index
+        visible: BrowserController.current_tab_state === BrowserController.TabStateOpen
+        Repeater {
+            id: open_repeater
+            model: BrowserController.open_tabs
+            delegate: WebUI {
+                anchors.fill: parent
+            }
+        }
+    }
 
     StackLayout {
-        id: stackLayout
         anchors.fill: parent
-        onCurrentIndexChanged: {
-            console.log("browserWebViews.onCurrentIndexChanged",
-                        browserWebViews.currentIndex)
-        }
+        currentIndex: BrowserController.current_preview_tab_index
+        visible: BrowserController.current_tab_state === BrowserController.TabStatePreview
         Repeater {
-            id: repeater
-            model: TabsController.open_tabs
-            delegate: WebUI {}
+            id: preview_repeater
+            model: BrowserController.preview_tabs
+            delegate: WebUI {
+                anchors.fill: parent
+            }
         }
+
     }
 
-    Repeater {
-        model: TabsController.preview_tabs
-        delegate: WebUI {}
-    }
 }
 
