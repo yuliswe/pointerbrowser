@@ -63,7 +63,7 @@ Item {
             console.info("userEntersUrl", url)
             BrowserController.newTab(BrowserController.TabStateOpen, url, BrowserController.WhenCreatedSwitchToNew, BrowserController.WhenExistsOpenNew)
         }
-        placeholderText: BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.title : "Welcome"
+        placeholderText: (!BrowserController.current_tab_webpage) ? "Welcome" : (BrowserController.current_tab_webpage.title || BrowserController.current_tab_webpage.uri)
         onActiveFocusChanged: {
             if (textField.activeFocus) {
                 textField.text = BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.url : ""
@@ -78,7 +78,10 @@ Item {
         placeholder {
             color: pal.addressbar_text
         }
+    }
 
+    Connections {
+        target: BrowserController
     }
 
     function updateProgress(progress) {
@@ -94,7 +97,7 @@ Item {
             return
         }
         barWidthAnimation.enabled = true
-        progressBar.opacity = 0.5
+        progressBar.opacity = 0.6
         progressBar.width = w
         if (progress === 100) {
             fadeProgress.restart()

@@ -62,13 +62,16 @@ void BrowserController::newTab(TabState state,
 void BrowserController::viewTab(TabState state, int i)
 {
     qInfo() << "BrowserController::viewTab" << i;
+    if (i < 0) { i = 0; }
     Webpage* page = nullptr;
     if (state == TabStateOpen) {
+        if (i >= _open_tabs->count()) { i = _open_tabs->count() - 1; }
         page = _open_tabs->webpage_(i).data();
         set_current_open_tab_index(i);
         set_current_tab_search_highlight_index(-1);
         set_current_preview_tab_index(-1);
     } else if (state == TabStatePreview) {
+        if (i >= _preview_tabs->count()) { i = _preview_tabs->count() - 1; }
         page = _preview_tabs->webpage_(i).data();
         set_current_preview_tab_index(i);
         set_current_open_tab_index(-1);
@@ -144,6 +147,7 @@ void BrowserController::showWelcomePage()
     set_current_open_tab_index(-1);
     set_current_preview_tab_index(-1);
     set_current_tab_search_highlight_index(-1);
+    set_address_bar_load_progress(0);
     set_current_tab_state(TabStateEmpty);
     set_current_tab_webpage(nullptr);
     set_welcome_page_visible(true);
@@ -174,3 +178,52 @@ void BrowserController::setCurrentPageSearchState(CurrentPageSearchState state, 
     }
 }
 
+void BrowserController::loadLastOpen()
+{
+    QVariantList contents = QMLRegister::fileManager->readDataJsonFileA("open.json");
+    qInfo() << "BrowserController::loadLastOpen";
+    Webpage_List tabs;
+    for (const QVariant& item : contents) {
+        tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
+    }
+    _open_tabs_->replaceModel(tabs);
+    if (open_tabs()->count() > 0) {
+        viewTab(TabStateOpen, 0);
+    }
+}
+
+void BrowserController::saveLastOpen() const
+{
+    QVariantList contents;
+    int count = open_tabs()->count();
+    TabsModel* open = open_tabs();
+    for (int i = 0; i < count; i++) {
+        contents << open->webpage_(i)->toQVariantMap();
+        qDebug() << contents;
+    }
+    QMLRegister::fileManager->writeDataJsonFileA("open.json", contents);
+}
+
+
+void BrowserController::moveTab(TabState fromState, int fromIndex, TabState toState, int toIndex)
+{
+    qInfo() << "BrowserController::moveTab" << fromState << fromIndex << toState << toIndex;
+    if (fromIndex < 0 || toIndex < 0
+            || fromIndex > open_tabs()->count()
+            || toIndex > open_tabs()->count()
+            || fromIndex == toIndex - 1
+            || fromIndex == toIndex) {
+        return;
+    }
+    if (fromState == TabStateOpen && toState == TabStateOpen) {
+        _open_tabs->moveTab(fromIndex, toIndex);
+//        set_current_open_tab_highlight_index(toIndex);
+        if (fromIndex <= toIndex) {
+            viewTab(toState, toIndex - 1);
+        } else {
+            viewTab(toState, toIndex);
+        }
+    } else if (fromState == TabStateOpen && toState == TabStateOpen) {
+        QMLRegister::searchDB->searchResult()->moveTab(fromIndex, toIndex);
+    }
+}

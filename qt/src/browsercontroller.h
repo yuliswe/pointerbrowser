@@ -17,7 +17,8 @@ public:
     enum TabState {
         TabStateEmpty,
         TabStateOpen,
-        TabStatePreview
+        TabStatePreview,
+        TabStateSearchResult
     };
     Q_ENUM(TabState)
     enum WhenCreated {
@@ -74,12 +75,15 @@ protected: QSharedPointer<TabsModel> _preview_tabs_ = QSharedPointer<TabsModel>:
     PROP_RWN_D(int, address_bar_load_progress, 0)
 public:
     BrowserController();
+    void loadLastOpen();
+    void saveLastOpen() const;
 
 signals:
 
 public slots:
     Q_INVOKABLE void newTab(TabState, const QString& url, WhenCreated, WhenExists);
     Q_INVOKABLE void viewTab(TabState, int i);
+    Q_INVOKABLE void moveTab(TabState fromState, int fromIndex, TabState toState, int toIndex);
     Q_INVOKABLE void closeTab(TabState, int i);
     Q_INVOKABLE void closeTab(TabState, const QString& url);
     Q_INVOKABLE void showWelcomePage();

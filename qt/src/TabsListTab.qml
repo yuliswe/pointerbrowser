@@ -4,12 +4,15 @@ import Backend 1.0
 import "controls" as C
 
 Item {
-    id: form
+    id: tab
     signal userClosesTab()
     signal doubleClicked()
     signal clicked()
     property bool highlighted: true
     property bool showCloseButton: true
+    property int visualIndex: 0
+    property int tabState: 0
+
     readonly property var pal: {
         if (activeFocus) { return Palette.pressed; }
         if (highlighted) { return Palette.selected; }
@@ -22,56 +25,73 @@ Item {
     property bool expanded: false
     height: model.preview_mode ? 0 : expanded ? 55 : 30
     visible: ! model.preview_mode
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        drag {
+//            axis: Drag.YAxis
+            target: rectangle
+        }
         hoverEnabled: true
-        state: Qt.platform.os
+        scrollGestureEnabled: false
         acceptedButtons: Qt.LeftButton | Qt.MidButton
-        onClicked: {
+        onPressed: {
             if (mouse.button == Qt.MidButton) {
-                form.userClosesTab()
+                tab.userClosesTab()
             } else {
-                form.forceActiveFocus()
-                form.clicked()
+                tab.forceActiveFocus()
+                tab.clicked()
             }
         }
-        onDoubleClicked: form.doubleClicked()
-        states: [
-            State {
-                name: "windows"
-
-                PropertyChanges {
-                    target: rectangle
-                    radius: 0
-                }
-            }
-        ]
+        onDoubleClicked: tab.doubleClicked()
         Rectangle {
             id: hr
             color: "#ebebeb"
             height: 1
             anchors {
-                left: rectangle.left
-                right: rectangle.right
+                left: mouseArea.left
+                right: mouseArea.right
                 leftMargin: 10
                 rightMargin: 10
-                top: rectangle.top
+                top: mouseArea.top
             }
-            visible: (index != 0) && expanded && ! highlighted
+            visible: (visualIndex != 0) && expanded && ! highlighted
         }
         Rectangle {
             id: rectangle
-            anchors.fill: parent
-            anchors.leftMargin: 0
-            color: form.pal.search_item_background
+            //            anchors.fill: parent
+            //            width: parent.width
+//            anchors.left: parent.left
+//            anchors.right: parent.right
+            Drag.active: mouseArea.drag.active
+            Drag.source: tab
+            Drag.hotSpot.x: width / 2
+            Drag.hotSpot.y: height / 2
+
+            Drag.onActiveChanged: {
+                if (Drag.active) {
+                    anchors.fill = undefined
+                    rectangle.z = 2
+                    rectangle.parent = browser
+                } else {
+                    rectangle.z = 0
+                    rectangle.parent = mouseArea
+                    anchors.fill = parent
+                }
+            }
+
+
+            height: mouseArea.height
+            width: mouseArea.width
+            color: tab.pal.search_item_background
             RoundButton {
                 id: closeButton
                 width: 15
                 height: 15
                 padding: 4
                 anchors.verticalCenter: parent.verticalCenter
-                visible: form.showCloseButton && mouseArea.containsMouse
+                visible: tab.showCloseButton && mouseArea.containsMouse
                 z: 2
                 contentItem: Image {
                     source: "icon/cross.svg"
@@ -79,11 +99,9 @@ Item {
                 background: Item {
                 }
                 onClicked: {
-                    form.userClosesTab()
+                    tab.userClosesTab()
                 }
             }
-
-
             Column {
                 id: column
                 anchors.rightMargin: 10
@@ -92,7 +110,7 @@ Item {
                 anchors.right: parent.right
                 anchors.left: closeButton.right
                 anchors.verticalCenter: parent.verticalCenter
-//                clip: true
+                //                clip: true
                 Text {
                     id: line1
                     text: model.title || model.url
@@ -129,6 +147,60 @@ Item {
             }
         }
     }
+
+    DropArea {
+        id: dropBefore
+        anchors {
+            top: parent.top
+            bottom: parent.verticalCenter
+            left: parent.left
+            right: parent.right
+//            margins: rectangle.height / 8
+        }
+        onEntered: {
+//            dropBeforeRec.opacity = 1
+            BrowserController.moveTab(drag.source.tabState,
+                                      drag.source.visualIndex,
+                                      tab.tabState,
+                                      tab.visualIndex)
+        }
+//        onExited: {
+//            dropBeforeRec.opacity = 0.5
+//        }
+//        Rectangle {
+//            id: dropBeforeRec
+//            anchors.fill: parent
+//            color: "red"
+//            opacity: 0.5
+//        }
+    }
+    DropArea {
+        id: dropAfter
+        anchors {
+            top: parent.verticalCenter
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+//            margins: rectangle.height / 8
+        }
+        onEntered: {
+//            dropAfterRec.opacity = 1
+            BrowserController.moveTab(drag.source.tabState,
+                                      drag.source.visualIndex,
+                                      tab.tabState,
+                                      tab.visualIndex + 1)
+        }
+//        onExited: {
+//            dropAfterRec.opacity = 0.5
+//        }
+//        Rectangle {
+//            id: dropAfterRec
+//            anchors.fill: parent
+//            color: "green"
+//            opacity: 0.5
+//        }
+    }
+
     states: [
         State {
             name: "windows"
@@ -146,6 +218,5 @@ Item {
             }
         }
     ]
-
 }
 

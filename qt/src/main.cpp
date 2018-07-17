@@ -125,8 +125,7 @@ int main(int argc, char *argv[])
 #endif
 
     QObject::connect(&app, &QCoreApplication::aboutToQuit, [=]() {
-        QMLRegister::tabsModel->saveTabs();
-        QMLRegister::tabsModel->clear();
+        QMLRegister::browserController->saveLastOpen();
         QMLRegister::searchDB->disconnect();
 #ifndef QT_DEBUG
         FileManager::rmDataFile("debug.log");
@@ -135,5 +134,8 @@ int main(int argc, char *argv[])
         FileManager::rmDataFile("critical.log");
 #endif
     });
+
+    QMLRegister::browserController->loadLastOpen();
+
     return app.exec();
 }

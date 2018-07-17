@@ -16,7 +16,7 @@ Webpage::Webpage(const QString& url)
 Webpage::Webpage(const QVariantMap& map)
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-#define MAP_K(T, PROP) _##PROP = map[#PROP].value<T>();
+#define MAP_K(T, PROP) set_##PROP(map[#PROP].value<T>());
     MAP_K(QString, url);
 }
 
@@ -33,7 +33,7 @@ QVariantMap Webpage::toQVariantMap()
 
 Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
 {
-    return Webpage_::create(map);
+    return Webpage_::create(map); // use constructor
 }
 
 QJsonObject Webpage::toQJsonObject()

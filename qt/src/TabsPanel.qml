@@ -93,6 +93,7 @@ Item {
                 onUserClosesTab: BrowserController.closeTab(BrowserController.TabStateOpen, index)
                 onUserClicksTab: BrowserController.viewTab(BrowserController.TabStateOpen, index)
                 anchors.top: parent.top
+                tabState: BrowserController.TabStateOpen
                 currentIndex: {
                     if (BrowserController.current_tab_state === BrowserController.TabStateOpen) {
                         return BrowserController.current_open_tab_index
@@ -112,7 +113,7 @@ Item {
                 showCloseButton: false
                 expandEnabled: true
                 model: SearchDB.searchResult
-
+                tabState: BrowserController.TabStateSearchResult
                 onUserDoubleClicksTab: BrowserController.newTab(BrowserController.TabStateOpen,
                                                                 (SearchDB.searchResult.at(index).hash ?
                                                                      SearchDB.searchResult.at(index).url + "#" + SearchDB.searchResult.at(index).hash

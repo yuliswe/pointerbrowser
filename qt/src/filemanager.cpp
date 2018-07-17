@@ -8,6 +8,7 @@
 #include <QDesktopServices>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
@@ -131,6 +132,12 @@ void FileManager::writeDataJsonFileM(const QString& file, const QVariantMap& map
     FileManager::writeDataFileB(file, doc.toJson());
 }
 
+void FileManager::writeDataJsonFileA(const QString& file, const QVariantList& ls)
+{
+    QJsonArray jarr = QJsonArray::fromVariantList(ls);
+    QJsonDocument doc{jarr};
+    FileManager::writeDataFileB(file, doc.toJson());
+}
 
 QString FileManager::readDataFileS(const QString& filename)
 {
@@ -156,6 +163,14 @@ QVariantMap FileManager::readDataJsonFileM(const QString &file)
     QJsonDocument doc = QJsonDocument::fromJson(contents);
     QJsonObject jobj = doc.object();
     return jobj.toVariantMap();
+}
+
+QVariantList FileManager::readDataJsonFileA(const QString &file)
+{
+    QByteArray contents = FileManager::readDataFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonArray jarr = doc.array();
+    return jarr.toVariantList();
 }
 
 void FileManager::defaultOpenUrl(const QString& filename)

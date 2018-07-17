@@ -166,6 +166,38 @@ QHash<int, QByteArray> TabsModel::roleNames() const {
     return roles;
 }
 
+void TabsModel::moveTab(int target, int moveBefore)
+{
+    QModelIndex parent;
+    moveRows(parent, target, target, parent, moveBefore);
+}
+
+bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+{
+//    if (sourceRow < 0 || destinationChild < 0
+//            || sourceRow + count - 1 > _tabs.count()
+//            || destinationChild + count - 1 > _tabs.count()
+//            || (sourceRow == destinationChild && count == 1)) {
+//        return false;
+//    }
+    if (! beginMoveRows(sourceParent, sourceRow, count, destinationParent, destinationChild))
+    {
+        return false;
+    }
+    Webpage_ row = _tabs.at(sourceRow);
+    _tabs.insert(destinationChild, row);
+    if (destinationChild <= sourceRow) {
+        _tabs.removeAt(sourceRow + 1);
+    } else {
+        _tabs.removeAt(sourceRow);
+    }
+    emit endMoveRows();
+}
+//Qt::ItemFlags TabsModel::flags(const QModelIndex &index) const
+//{
+//    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+//}
+
 void TabsModel::clear() {
     emit beginResetModel();
     _tabs.clear();

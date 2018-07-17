@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import Backend 1.0
+import QtQml.Models 2.3
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Styles 1.4
 import "controls" as C
@@ -17,6 +18,7 @@ Column {
     property bool hoverHighlight: false
     property alias currentIndex: listview.currentIndex
     property string name: "name"
+    property int tabState: 0
 
     state: Qt.platform.os
 
@@ -49,40 +51,38 @@ Column {
         anchors.right: parent.right
         anchors.left: parent.left
 
-        delegate: TabsListTab {
-            id: tab
-            showCloseButton: tabsList.showCloseButton
-            expanded: tabsList.expandEnabled // tabsList.expandMultipleEnabled ? false : (tabsList.currentExpandedIndex == index);
-            highlighted: (index === listview.currentIndex) // || (hoverHighlight && hovered)
-            width: parent.width
-            onClicked: {
-                tab.forceActiveFocus()
-                userClicksTab(index)
-                if (tabsList.expandEnabled) {
-                    if (tabsList.expandMultipleEnabled) {
-                        expanded = !expanded
-                    } else {
-                        tabsList.currentExpandedIndex = index
-                    }
-                }
-            }
-            onDoubleClicked: {
-                userDoubleClicksTab(index)
-            }
-            onUserClosesTab: {
-                tabsList.userClosesTab(index)
-            }
-        }
         highlightFollowsCurrentItem: false
         interactive: false
-        model: ListModel {
-            ListElement {
-                url: "test"
-                title: "test"
-            }
-            ListElement {
-                url: "longlonglonglonglonglonglonglong"
-                title: "longlonglonglonglonglonglonglong"
+        moveDisplaced: Transition {
+            NumberAnimation { properties: "x,y"; easing.type: Easing.OutQuad; }
+        }
+        model: DelegateModel {
+            id: delegateModel
+            delegate: TabsListTab {
+                id: tab
+                visualIndex: DelegateModel.itemsIndex
+                showCloseButton: tabsList.showCloseButton
+                expanded: tabsList.expandEnabled // tabsList.expandMultipleEnabled ? false : (tabsList.currentExpandedIndex == index);
+                highlighted: (visualIndex === listview.currentIndex) // || (hoverHighlight && hovered)
+                width: parent.width
+                tabState: tabsList.tabState
+                onClicked: {
+                    tab.forceActiveFocus()
+                    userClicksTab(visualIndex)
+                    if (tabsList.expandEnabled) {
+                        if (tabsList.expandMultipleEnabled) {
+                            expanded = !expanded
+                        } else {
+                            tabsList.currentExpandedIndex = visualIndex
+                        }
+                    }
+                }
+                onDoubleClicked: {
+                    userDoubleClicksTab(visualIndex)
+                }
+                onUserClosesTab: {
+                    tabsList.userClosesTab(visualIndex)
+                }
             }
         }
     }
@@ -101,5 +101,5 @@ Column {
     ]
 
     property alias loading: busyIndicator.running
-    property alias model: listview.model
+    property alias model: delegateModel.model
 }

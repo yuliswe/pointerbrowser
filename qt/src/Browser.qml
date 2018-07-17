@@ -229,17 +229,10 @@ C.SplitView {
         }
     ]
 
-    Component.onCompleted: {
-        TabsModel.loadTabs()
-        if (TabsModel.count > 0) {
-            openTab(0)
-        }
-    }
-
     Shortcut {
         sequence: "Ctrl+R"
         autoRepeat: false
-        onActivated: refreshcurrentWebUI()
+        onActivated: if (currentWebUI) { currentWebUI.reload() }
     }
 
     Shortcut {

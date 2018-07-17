@@ -34,7 +34,7 @@ Item {
     }
 
     property alias crawler: crawler
-    property int loadProgress: currentWebUI.loadProgress
+    property int loadProgress: currentWebUI ? currentWebUI.loadProgress : 0
 
     onLoadProgressChanged: {
         BrowserController.address_bar_load_progress = loadProgress;
@@ -52,7 +52,8 @@ Item {
             id: open_repeater
             model: BrowserController.open_tabs
             delegate: WebUI {
-                anchors.fill: parent
+                width: parent.width
+                height: parent.height
             }
         }
     }
@@ -65,7 +66,8 @@ Item {
             id: preview_repeater
             model: BrowserController.preview_tabs
             delegate: WebUI {
-                anchors.fill: parent
+                width: parent.width
+                height: parent.height
             }
         }
 
