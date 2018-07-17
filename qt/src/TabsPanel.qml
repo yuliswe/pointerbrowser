@@ -115,17 +115,13 @@ Item {
                 model: SearchDB.searchResult
                 tabState: BrowserController.TabStateSearchResult
                 onUserDoubleClicksTab: BrowserController.newTab(BrowserController.TabStateOpen,
-                                                                (SearchDB.searchResult.at(index).hash ?
-                                                                     SearchDB.searchResult.at(index).url + "#" + SearchDB.searchResult.at(index).hash
-                                                                   : SearchDB.searchResult.at(index).url),
+                                                                SearchDB.searchResult.at(index).uri,
                                                                 BrowserController.SwithToView,
                                                                 BrowserController.WhenExistsViewExisting)
 
                 onUserClicksTab: {
                     BrowserController.newTab(BrowserController.TabStatePreview,
-                                             (SearchDB.searchResult.at(index).hash ?
-                                                  SearchDB.searchResult.at(index).url + "#" + SearchDB.searchResult.at(index).hash
-                                                : SearchDB.searchResult.at(index).url),
+                                             SearchDB.searchResult.at(index).uri,
                                              BrowserController.SwithToView,
                                              BrowserController.WhenExistsViewExisting)
                     BrowserController.current_tab_search_highlight_index = index;

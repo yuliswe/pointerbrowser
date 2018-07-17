@@ -93,6 +93,7 @@ bool UpdateWorker::execMany(const QStringList& lines)
 bool UpdateWorker::updateWebpage(const QString& url, const QString& property, const QVariant& value)
 {
     qInfo() << "UpdateWorker::updateWebpage" << property << value << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
     query.prepare("UPDATE webpage SET " + property + " = ? WHERE url = '" + url + "'");
     query.addBindValue(value);
@@ -131,6 +132,7 @@ bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, co
 bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
 {
     qInfo() << "UpdateWorker::addSymbols" << url << symbols;
+    Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
     query.prepare("SELECT id FROM webpage WHERE url = :url");
     query.bindValue(":url", url);
@@ -180,6 +182,7 @@ bool UpdateWorker::addSymbols(const QString& url, const QVariantMap& symbols)
 bool UpdateWorker::addWebpage(const QString& url)
 {
     qInfo() << "UpdateWorker::addWebpage" << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
     query.prepare("REPLACE INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
     query.bindValue(":url", url);
@@ -193,12 +196,14 @@ bool UpdateWorker::addWebpage(const QString& url)
 bool SearchDB::removeWebpage(const QString& url)
 {
     qInfo() << "SearchDB::removeWebpage" << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     return false;
 }
 
 Webpage_ SearchDB::findWebpage_(const QString& url) const
 {
     qInfo() << "SearchDB::findWebpage_" << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
     query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
     query.addBindValue(url);
@@ -217,6 +222,7 @@ Webpage_ SearchDB::findWebpage_(const QString& url) const
 QVariantMap SearchDB::findWebpage(const QString& url) const
 {
     qInfo() << "SearchDB::findWebpage" << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     Webpage_ p = SearchDB::findWebpage_(url);
     if (p.isNull()) {
         qCritical() << "SearchDB::findWebpage not found!" << url;
@@ -227,6 +233,8 @@ QVariantMap SearchDB::findWebpage(const QString& url) const
 
 bool SearchDB::hasWebpage(const QString& url) const
 {
+    qInfo() << "SearchDB::hasWebpage" << url;
+    Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
     query.prepare("SELECT url FROM webpage WHERE url = ? LIMIT 1");
     query.addBindValue(url);

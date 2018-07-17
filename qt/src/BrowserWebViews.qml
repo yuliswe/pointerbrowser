@@ -9,7 +9,7 @@ Item {
     id: browserWebViews
 
     function userRequestsNewView(request) {
-        if (request.destination === WebEngineView.NewViewInBackgroundTab) {
+        if (request.userInitiated || request.destination === WebEngineView.NewViewInBackgroundTab) {
             BrowserController.newTab(BrowserController.TabStateOpen,
                                      request.requestedUrl,
                                      BrowserController.WhenCreatedStayOnCurrent,
@@ -20,6 +20,7 @@ Item {
                                      request.requestedUrl,
                                      BrowserController.WhenCreatedSwitchToView,
                                      BrowserController.WhenExistsViewExisting);
+            open_repeater.itemAt(0).handleNewViewRequest(request)
         }
     }
 

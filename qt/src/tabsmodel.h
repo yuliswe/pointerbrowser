@@ -32,8 +32,8 @@ class TabsModel : public QAbstractListModel
         void moveTab(int from, int to);
         int findTab(const QString& uri);
         int count() const;
-        void saveTabs();
-        void loadTabs();
+//        void saveTabs();
+//        void loadTabs();
         void clear();
         QVariant at(int index) const;
         Webpage_ webpage_(int index) const;

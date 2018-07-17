@@ -5,15 +5,15 @@ import Backend 1.0
 import QtQuick.Layouts 1.3
 
 Item {
-    property alias canGoBack: webview.canGoBack
-    property alias canGoForward: webview.canGoForward
-    property alias title: webview.title
-    property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
     property bool bookmarked: false
-    property alias href: webview.url
-    readonly property string url: noHash(href)
+    readonly property alias canGoBack: webview.canGoBack
+    readonly property alias canGoForward: webview.canGoForward
+    readonly property alias title: webview.title
+    readonly property alias loadProgress: webview.loadProgress
+    readonly property string uri: webview.url
+    readonly property string url: noHash(uri)
 
     id: webUI
 
@@ -110,30 +110,48 @@ Item {
 
     function warning() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.warn.apply(null, args)
     }
 
     function info() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.info.apply(null, args)
     }
 
     function error() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.error.apply(null, args)
     }
 
     function logging() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.log.apply(null, args)
     }
 
     Component.onCompleted: {
         goTo(model.uri)
+    }
+
+    onTitleChanged: {
+        info('webview title changed', title)
+        if (title) {
+            model.title = title
+//                model.updateTab(index, "title", title)
+            if (SearchDB.hasWebpage(webUI.url)) {
+                SearchDB.updateWebpageAsync(webUI.url, "title", title)
+            }
+        }
+    }
+
+    onUriChanged: {
+        info('webview uri changed', uri)
+        if (uri) {
+            model.uri = webUI.uri
+        }
     }
 
     WebEngineView {
@@ -150,24 +168,6 @@ Item {
             focusOnNavigationEnabled: false
         }
 
-        onTitleChanged: {
-            info('webview title changed', title)
-            if (title) {
-                model.title = title
-//                model.updateTab(index, "title", title)
-                if (SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.updateWebpageAsync(noHash(url), "title", title)
-                }
-            }
-        }
-
-        onUrlChanged: {
-            info('webview url changed', url)
-            if (url) {
-//                model.updateTab(index, "url", webUI.href)
-                model.url = webUI.href
-            }
-        }
 
         onLoadProgressChanged: {
             info('webview load progress', loadProgress)

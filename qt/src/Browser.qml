@@ -276,13 +276,15 @@ C.SplitView {
     Shortcut {
         sequence: "Ctrl+Shift+P"
         onActivated: {
-            TabsModel.clear()
             SearchDB.execScriptAsync("db/dropAll.sqlite3")
             SearchDB.execScriptAsync("db/setup.sqlite3")
             var r = FileManager.readQrcFileS('defaults/dbgen.txt').split('\n')
             for (var i = 0; i < r.length; i++) {
                 if (! r[i]) { continue; }
-                openOrNewTab(r[i], true)
+                BrowserController.newTab(BrowserController.TabStateOpen,
+                                         r[i],
+                                         BrowserController.WhenCreatedSwitchToNew,
+                                         BrowserController.WhenExistsViewExisting)
             }
         }
     }

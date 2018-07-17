@@ -114,32 +114,32 @@ int TabsModel::findTab(const QString& uri) {
     return -1;
 }
 
-void TabsModel::saveTabs(void) {
-    qInfo() << "TabsModel::saveTabs";
-    QJsonArray tabs;
-    for (Webpage_ tab : _tabs) {
-        tabs << tab->toQJsonObject();
-    }
-    QJsonDocument doc(tabs);
-    FileManager::writeDataFileB("open.json", doc.toJson());
-}
+//void TabsModel::saveTabs(void) {
+//    qInfo() << "TabsModel::saveTabs";
+//    QJsonArray tabs;
+//    for (Webpage_ tab : _tabs) {
+//        tabs << tab->toQJsonObject();
+//    }
+//    QJsonDocument doc(tabs);
+//    FileManager::writeDataFileB("open.json", doc.toJson());
+//}
 
-void TabsModel::loadTabs(void) {
-    QByteArray contents = QMLRegister::fileManager->readDataFileB("open.json");
-    QJsonDocument doc = QJsonDocument::fromJson(contents);
-    QJsonArray jarr = doc.array();
-    qInfo() << jarr;
-    qInfo() << "TabsModel::loadTabs";
-    emit beginResetModel();
-    _tabs.clear();
-    for (QJsonValue jval : jarr) {
-        QJsonObject jobj = jval.toObject();
-        Webpage_ page_ = Webpage::fromQJsonObject(jobj);
-        _tabs << page_;
-    }
-    emit endResetModel();
-    emit countChanged();
-}
+//void TabsModel::loadTabs(void) {
+//    QByteArray contents = QMLRegister::fileManager->readDataFileB("open.json");
+//    QJsonDocument doc = QJsonDocument::fromJson(contents);
+//    QJsonArray jarr = doc.array();
+//    qInfo() << jarr;
+//    qInfo() << "TabsModel::loadTabs";
+//    emit beginResetModel();
+//    _tabs.clear();
+//    for (QJsonValue jval : jarr) {
+//        QJsonObject jobj = jval.toObject();
+//        Webpage_ page_ = Webpage::fromQJsonObject(jobj);
+//        _tabs << page_;
+//    }
+//    emit endResetModel();
+//    emit countChanged();
+//}
 
 QVariant TabsModel::data(const QModelIndex& idx, int role) const
 {
@@ -192,6 +192,7 @@ bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int cou
         _tabs.removeAt(sourceRow);
     }
     emit endMoveRows();
+    return true;
 }
 //Qt::ItemFlags TabsModel::flags(const QModelIndex &index) const
 //{

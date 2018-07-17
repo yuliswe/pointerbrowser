@@ -37,7 +37,8 @@
     protected: type _##prop = defv; \
     Q_SIGNAL void prop##_changed(type);
 
-#define DEC_PROP_RWN_D(type, prop, defv) \
+// define write yourself
+#define PROP_RwN_D(type, prop, defv) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
     public: type prop() const { return _##prop; } \
     public: void set_##prop(type const & val); \

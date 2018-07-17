@@ -18,10 +18,10 @@ class Heuristic {
 }
 
 class DocviewStyle {
-    public fontsizeLarge = '17px'
-    public fontsizeMedium = '14px'
-    public fontsizeSmall = '12px'
-    public fontsizeCode = '12px'
+    public fontsizeLarge = '17pt'
+    public fontsizeMedium = '12pt'
+    public fontsizeSmall = '12pt'
+    public fontsizeCode = '9pt'
 }
 
 class Docview {
@@ -49,7 +49,7 @@ class Docview {
                     || k == "float") {
                     // do not copy
                 } else if ((k == "background-color")) {
-                    if (['PRE','CODE','SPAN'].includes(n.tagName)
+                    if (['PRE', 'CODE', 'SPAN'].includes(n.tagName)
                         || styles.fontFamily.includes("monospace")
                         || styles.fontStyle.includes("italic")) {
                         _styles += k + ":" + v + ";"
@@ -99,10 +99,9 @@ class Docview {
     }
 
     public guessRoot(root: HTMLElement,
-                     test: (HTMLElement) => boolean,
-                     level: number)
-        : HTMLElement
-    {
+        test: (HTMLElement) => boolean,
+        level: number)
+        : HTMLElement {
         for (let i = 0; i < level; i++) {
             let nodes: HTMLElement[] = []// nodes in the current depth
             for (const c in root.childNodes) {
@@ -128,8 +127,7 @@ class Docview {
     }
 
     public docviewHTML(level: number = 8,
-                       docSt: DocviewStyle = new DocviewStyle())
-    {
+        docSt: DocviewStyle = new DocviewStyle()) {
         console.log("docviewHTML called")
         let root = document.body
         // remove garbage
@@ -144,13 +142,13 @@ class Docview {
             // } else 
             // navbar
             const nav = /nav|toc|table-of-contents/ig
-            if (nav.test(n.className) 
-                || nav.test(n.id) 
+            if (nav.test(n.className)
+                || nav.test(n.id)
                 || nav.test(n.tagName)
                 || nav.test(n.getAttribute("role"))) {
                 n.className += " docview-garbage"
                 continue
-            } 
+            }
             // sidebar
             const side = /side.?bar/ig
             if (side.test(n.className)
@@ -158,7 +156,7 @@ class Docview {
                 || side.test(n.id)) {
                 n.className += " docview-garbage"
                 continue
-            } 
+            }
             // header|footer
             const header = /head|foot/ig
             if (header.test(n.tagName)
@@ -167,7 +165,7 @@ class Docview {
                 || header.test(n.className)) {
                 n.className += " docview-garbage"
                 continue
-            } 
+            }
             // controls
             const controls = /input|textarea|button|select/ig
             if (controls.test(n.tagName)) {
@@ -186,7 +184,7 @@ class Docview {
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', 'https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro');
         document.head.appendChild(link);
-        $(bb).css({margin: "1em"})
+        $(bb).css({ margin: "1em" })
         bb.appendChild(root)
         document.body = bb
 
@@ -204,7 +202,7 @@ class Docview {
         const all = $(bb).find("*")
         let avgFontSize: number = 0
         let d: number = 0
-        $(bb).find("*:not(:has(*))").each((i,e) => {
+        $(bb).find("*:not(:has(*))").each((i, e) => {
             if (e.innerText) {
                 const sz = getComputedStyle(e).getPropertyValue("font-size")
                 if (sz.includes("px")) {
@@ -218,11 +216,11 @@ class Docview {
         })
         // console.log("avgFontSize", avgFontSize)
         // regularize font size
-        all.each((i,e) => {
+        all.each((i, e) => {
             if (e.innerText) {
                 const sz = getComputedStyle(e).getPropertyValue("font-size")
                 const s = parseInt(sz)
-                if (! s) { return }
+                if (!s) { return }
                 if (s >= avgFontSize * 1.2) {
                     e.style.fontSize = docSt.fontsizeLarge
                 } else if (s >= avgFontSize * 0.8) {
@@ -234,66 +232,63 @@ class Docview {
             }
         })
         $(bb).find("pre,code,pre *,code *").css({
-              fontSize: docSt.fontsizeCode
+            fontSize: docSt.fontsizeCode
             , fontFamily: "Source Code Pro, monospace"
         })
-        $(bb).css({backgroundColor: "white"})
+        $(bb).css({ backgroundColor: "white" })
         // $(bb).find("*").each((i,e) => { 
         //     e.id = '' 
         //     e.className = ''
         // })
     }
 
-    public crawler(): 
-        {
-            links: string[], // what to craw next
-            referer: string, // the root of links
-            symbols: {string: string}, // symbols on referer
-            title: string // referer's title
-        } 
-    {
+    public crawler(): {
+        links: string[], // what to craw next
+        referer: string, // the root of links
+        symbols: { string: string }, // symbols on referer
+        title: string // referer's title
+    } {
         // console.log("finding symbols")
         let hrefs = {}
-        $('a').each((i,e)=> {
+        $('a').each((i, e) => {
             hrefs[$(e).attr("href")] = e.innerText
         })
-        let symbols = {} as {string:string}
+        let symbols = {} as { string: string }
         let links = {}
         for (let k in hrefs) {
-            const url = new URL(k, location.href)            
+            const url = new URL(k, location.href)
             const txt = hrefs[k]
             // const i = k.indexOf("#")
             if (url.hash.length > 1 // the first char is always #
                 && url.hash.length < 36 // longer than 35 might be an md5 hash 
-                && (! url.hash.includes('%')) // no space in hash
+                && (!url.hash.includes('%')) // no space in hash
                 && url.pathname === location.pathname // on the same page
                 && url.hostname == location.hostname
                 && /^[\x00-\x7F]+$/.test(url.hash) // confirm ascii 
                 // these symbols are not popular unless appear with brackets
                 && (/^[^\s\*\&\?\!\@\#\%\^\+\=\|\/\,\;\'\"\`\~\\]+$/.test(txt)
-                    || txt.includes("(") 
+                    || txt.includes("(")
                     || txt.includes("{"))
                 // must start with an alphabet or _, 
                 // optionally preceded by $ or brackets
-                && /^[\$,\(,\{]*[a-z,A-Z,\_]/.test(txt) 
+                && /^[\$,\(,\{]*[a-z,A-Z,\_]/.test(txt)
                 // ignore symbols of just one character
-                && 1 < txt.length 
+                && 1 < txt.length
                 // also symbols that are too long might be an md5 hash
                 && txt.length < 36
                 // confirm ascii
-                && /^[\x00-\x7F]+$/.test(txt)) 
-            { 
+                && /^[\x00-\x7F]+$/.test(txt)) {
                 /* These are taken as symbols */
                 symbols[url.hash.substr(1)] = txt
-            } else if (url.hostname == location.hostname 
-                       && url.pathname !== location.pathname) {
+            } else if (url.hostname == location.hostname
+                && url.pathname !== location.pathname) {
                 /* These are to be crawled */
                 links[url.origin + url.pathname] = 1
             }
         }
         return {
-            symbols: symbols, 
-            links: Object.keys(links), 
+            symbols: symbols,
+            links: Object.keys(links),
             referer: location.origin + location.pathname,
             title: document.title
         }
@@ -303,7 +298,7 @@ class Docview {
         let i = 0
         let subs = []
         while (i < word.length) {
-            subs.push(word.substring(i, Math.min(i+len, word.length)))
+            subs.push(word.substring(i, Math.min(i + len, word.length)))
             i++
         }
         return subs
@@ -321,7 +316,7 @@ class Docview {
 
     public clearHighlight(): void {
         const span = $(".docview-highlighted")
-        span.each(function() {
+        span.each(function () {
             $(this).replaceWith($(this).text())
         })
     }
@@ -331,14 +326,14 @@ class Docview {
     }
 
     public scrollToNthHighlight(n: number): void {
-        console.log("docview.js:scrollToNthHighlight "+ n)
+        console.log("docview.js:scrollToNthHighlight " + n)
         $(".docview-highlighted span")
-        .css({backgroundColor: "yellow"})
-        .eq(n).css({backgroundColor: "orange"})[0]
-        .scrollIntoView({block: "center", inline: "nearest"})
+            .css({ backgroundColor: "yellow" })
+            .eq(n).css({ backgroundColor: "orange" })[0]
+            .scrollIntoView({ block: "center", inline: "nearest" })
     }
 
-    public highlightWord(word:string): number {
+    public highlightWord(word: string): number {
         this.clearHighlight()
         word = word.toLocaleLowerCase() // case insensitive
         this._highlightWord(word)
@@ -346,7 +341,7 @@ class Docview {
         return this.countHighlight()
     }
 
-    private _highlightWord(word:string, e:NodeList = document.querySelectorAll("body")): any {
+    private _highlightWord(word: string, e: NodeList = document.querySelectorAll("body")): any {
         const rgx = new RegExp(word, 'ig')
         for (let i in e) {
             if (e[i].nodeType == Node.TEXT_NODE) {
@@ -375,7 +370,7 @@ class Docview {
                 const arr = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT"]
                 const html = e[i] as HTMLElement;
                 if (html.scrollHeight > 0 && html.offsetWidth > 0) {
-                    if (! arr.includes(html.tagName)) {
+                    if (!arr.includes(html.tagName)) {
                         // console.log("recurs on", (e[i] as HTMLElement).tagName)
                         this._highlightWord(word, e[i].childNodes)
                     }
@@ -385,8 +380,7 @@ class Docview {
     }
 
     public docviewOn(heu: Heuristic = new Heuristic(),
-                     st: DocviewStyle = new DocviewStyle())
-    {
+        st: DocviewStyle = new DocviewStyle()) {
         this.snapshotHTML(heu)
         this.docviewHTML(8, st)
     }

@@ -21,18 +21,18 @@ class Webpage : public QObject
 public:
 
     ~Webpage();
-    explicit Webpage(const QString& url);
+    explicit Webpage(const QString& uri);
     explicit Webpage(const QVariantMap&);
 
     QVariantMap toQVariantMap();
     static Webpage_ fromQVariantMap(const QVariantMap&);
-    QJsonObject toQJsonObject();
-    static Webpage_ fromQJsonObject(const QJsonObject&);
+//    QJsonObject toQJsonObject();
+//    static Webpage_ fromQJsonObject(const QJsonObject&);
 
     PROP_RWN_D(QString, title, "")
-    DEC_PROP_RWN_D(QString, url, "")
-    DEC_PROP_RWN_D(QString, hash, "")
-    PROP_RN_D(QString, uri, "")
+    PROP_RwN_D(QString, url, "")
+    PROP_RwN_D(QString, hash, "")
+    PROP_RwN_D(QString, uri, "")
     PROP_RWN_D(QString, html, "")
     PROP_RWN_D(QString, symbol, "")
     PROP_RWN_D(QString, display, "")

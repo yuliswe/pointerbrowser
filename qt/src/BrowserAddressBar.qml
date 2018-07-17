@@ -6,8 +6,6 @@ import Backend 1.0
 
 Item {
     id: form
-//    property string url: BrowserController.current_webview.url
-//    property string title: BrowserController.current_webview.title
     property int progress: BrowserController.address_bar_load_progress
     signal userEntersUrl(string url)
 
@@ -66,7 +64,7 @@ Item {
         placeholderText: (!BrowserController.current_tab_webpage) ? "Welcome" : (BrowserController.current_tab_webpage.title || BrowserController.current_tab_webpage.uri)
         onActiveFocusChanged: {
             if (textField.activeFocus) {
-                textField.text = BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.url : ""
+                textField.text = BrowserController.current_tab_webpage ? BrowserController.current_tab_webpage.uri : ""
                 textField.ensureVisible(0)
                 textField.selectAll()
             } else {

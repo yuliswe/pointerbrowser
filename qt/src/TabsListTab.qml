@@ -113,7 +113,7 @@ Item {
                 //                clip: true
                 Text {
                     id: line1
-                    text: model.title || model.url
+                    text: model.title || model.uri || "Loading..."
                     font.pixelSize: 12
                     anchors.right: parent.right
                     anchors.left: parent.left

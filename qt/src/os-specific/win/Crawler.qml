@@ -86,7 +86,7 @@ WebEngineView {
             crawler.url = latest.url
             crawler.crawling = latest.url
             timeout.restart()
-            console.info("cralwer timer restarted", latest.url)
+            console.info("crawler timer restarted", latest.url)
             delete crawler.queue[latest.url]
         } else {
             console.info("crawNext aborted because the crawler is still loading")
@@ -98,7 +98,7 @@ WebEngineView {
         interval: 500
         repeat: true
         onTriggered: {
-            console.info("cralwer pulling document ready..")
+            console.info("crawler pulling document ready..")
             runJavaScript("document.readyState", function(ready) {
                 if (ready !== "complete") { return }
                 onReady()
