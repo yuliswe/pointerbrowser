@@ -5,28 +5,27 @@ import Backend 1.0
 import QtQuick.Layouts 1.3
 
 Item {
-    property alias canGoBack: webview.canGoBack
-    property alias canGoForward: webview.canGoForward
-    property alias title: webview.title
-    property alias loadProgress: webview.loadProgress
     property bool docviewLoaded: false
     property bool inDocview: false
     property bool bookmarked: false
-    property alias href: webview.url
-    property var model
-    readonly property string url: noHash(href)
-    property bool previewMode: false
+    readonly property alias canGoBack: webview.canGoBack
+    readonly property alias canGoForward: webview.canGoForward
+    readonly property alias title: webview.title
+    readonly property alias loadProgress: webview.loadProgress
+    readonly property string uri: webview.url
+    readonly property string url: noHash(uri)
+
     id: webUI
 
     function setBookmarked(hostname) {
-        logging("setBookmarked", hostname)
+        info("setBookmarked", hostname)
         // when the url's domain is in the auto-bookmark.txt list
         var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
         webUI.bookmarked = (arr.indexOf(hostname) > -1)
     }
 
     function bookmark() {
-        logging("bookmark")
+        info("bookmark")
         var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
         webview.runJavaScript("location.hostname", function(hostname) {
             var i = arr.indexOf(hostname)
@@ -42,7 +41,7 @@ Item {
     }
 
     function unbookmark() {
-        logging("unbookmark")
+        info("unbookmark")
         var arr = FileManager.readDataFileS("auto-bookmark.txt").split("\n")
         webview.runJavaScript("location.hostname", function(hostname) {
             var i = arr.indexOf(hostname)
@@ -80,7 +79,7 @@ Item {
 
     function goTo(u) {
         docviewOff()
-        logging("Goto", u)
+        info("Goto", u)
         webview.url = u
     }
 
@@ -111,86 +110,85 @@ Item {
 
     function warning() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.warn.apply(null, args)
     }
 
     function info() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.info.apply(null, args)
     }
 
     function error() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.error.apply(null, args)
     }
 
     function logging() {
         var args = Array.prototype.slice.call(arguments);
-        args.unshift("WebUI", index);
+        args.unshift("WebUI:", index);
         console.log.apply(null, args)
     }
 
     Component.onCompleted: {
-        var tab = TabsModel.at(index)
-        webUI.previewMode = tab.preview_mode
-        goTo(tab.url)
+        goTo(model.uri)
     }
 
-    WebEngineScript {
-        id: noOverscroll
-        injectionPoint: WebEngineScript.DocumentReady
-        sourceCode: "document.getElementById(id).style"
+    onTitleChanged: {
+        info('webview title changed', title)
+        if (title) {
+            model.title = title
+//                model.updateTab(index, "title", title)
+            if (SearchDB.hasWebpage(webUI.url)) {
+                SearchDB.updateWebpageAsync(webUI.url, "title", title)
+            }
+        }
+    }
 
+    onUriChanged: {
+        info('webview uri changed', uri)
+        if (uri) {
+            model.uri = webUI.uri
+        }
     }
 
     WebEngineView {
         id: webview
-        width: browserWebViews.width
-        height: browserWebViews.height
+        anchors.fill: parent
+
         onNewViewRequested: {
-            logging("webview onNewViewRequested", request, JSON.stringify(request));
+            info("webview onNewViewRequested", request, JSON.stringify(request));
             userRequestsNewView(request)
         }
+
         settings {
             playbackRequiresUserGesture: true
             focusOnNavigationEnabled: false
         }
 
-        onTitleChanged: {
-            logging('webview title changed', title)
-            if (title) {
-                TabsModel.updateTab(index, "title", title)
-                if (SearchDB.hasWebpage(noHash(url))) {
-                    SearchDB.updateWebpageAsync(noHash(url), "title", title)
-                }
-            }
-        }
-        onUrlChanged: {
-            logging('webview url changed', url)
-            if (url) {
-                TabsModel.updateTab(index, "url", webUI.href)
-            }
-        }
+
         onLoadProgressChanged: {
-            logging('webview load progress', loadProgress)
+            info('webview load progress', loadProgress)
         }
+
         onNavigationRequested: {
-            logging("webview navigation requested", request.url)
-            webViewNavRequested(index)
+            info("webview navigation requested", request.url)
+//            webViewNavRequested(index)
         }
+
         WebEnginePullReady {
             id: webviewPullReady_Timer
             debugName: "webview"
         }
+
         onLoadingChanged: {
-            logging("webview loading changed", loading)
+            info("webview loading changed", loading)
             webviewPullReady_Timer.stop()
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
-                logging("webview loading started", loadRequest.url)
+                info("webview loading started", loadRequest.url)
             } else {
                 switch (loadRequest.status) {
                 case WebEngineView.LoadFailedStatus:
@@ -200,14 +198,14 @@ Item {
                     error("webview loading stopped", loadRequest.url)
                     break
                 case WebEngineView.LoadSucceededStatus:
-                    logging("webview loading suceeded", loadRequest.url)
+                    info("webview loading suceeded", loadRequest.url)
                     var requestURL = loadRequest.url
                     webviewPullReady_Timer.onReady = function() {
                         runJavaScript("location.hostname", function(hostname) {
-                            logging("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
+                            info("webview checking if hostname is bookmarked", hostname, requestURL, webUI)
                             webUI.setBookmarked(hostname)
                             if (webUI.bookmarked) {
-                                logging("hostname is bookmarked", hostname)
+                                info("hostname is bookmarked", hostname)
                                 if (webUI.previewMode) {
                                     return
                                 }
@@ -221,7 +219,7 @@ Item {
                                     })
                                 })
                             } else {
-                                logging("hostname is not bookmarked", hostname)
+                                info("hostname is not bookmarked", hostname)
                             }
                         })
                     }
@@ -252,19 +250,19 @@ Item {
             userRequestsNewView(request)
         }
         onNavigationRequested: {
-            logging("docview navigation requested", request.url)
-            webViewNavRequested(index)
+            info("docview navigation requested", request.url)
+//            webViewNavRequested(index)
         }
         WebEnginePullReady {
             id: docviewPullReady_Timer
             debugName: "docview"
         }
         onLoadingChanged: {
-            logging("docview loading changed", loading)
+            info("docview loading changed", loading)
             docviewPullReady_Timer.stop()
             if (loadRequest.status == WebEngineView.LoadStartedStatus) {
                 docviewLoaded = false
-                logging("docview loading started", loadRequest.url)
+                info("docview loading started", loadRequest.url)
             } else {
                 switch (loadRequest.status) {
                 case WebEngineView.LoadFailedStatus:
@@ -274,12 +272,12 @@ Item {
                     error("docview loading stopped", loadRequest.url)
                     break
                 case WebEngineView.LoadSucceededStatus:
-                    logging("docview loading suceeded", loadRequest.url)
+                    info("docview loading suceeded", loadRequest.url)
                     var requestURL = loadRequest.url
                     docviewPullReady_Timer.onReady = function() {
-                        logging("docview injecting docview.js on", requestURL)
+                        info("docview injecting docview.js on", requestURL)
                         docview.runJavaScript(FileManager.readQrcFileS("js/docview"), function() {
-                            logging("docview calling Docview.docviewOn() on", requestURL)
+                            info("docview calling Docview.docviewOn() on", requestURL)
                             docview.runJavaScript("Docview.docviewOn()", function() {
                                 if (inDocview) {
                                     docviewOn()

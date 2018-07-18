@@ -60,16 +60,6 @@ T.TextField {
                 target: rectangle
                 radius: 0
             }
-
-            PropertyChanges {
-                target: placeholder
-                font.pixelSize: 14
-            }
-
-            PropertyChanges {
-                target: control
-                font.pixelSize: 14
-            }
         },
         State {
             name: "osx"

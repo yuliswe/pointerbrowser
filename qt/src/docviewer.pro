@@ -64,7 +64,6 @@ win32 {
     win32-msvc {
         QT += webengine
         RESOURCES += os-specific/win.qrc
-        LIBS += -lUser32
     }
 }
 

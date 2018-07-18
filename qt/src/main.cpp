@@ -13,7 +13,6 @@
 #endif
 #ifdef Q_OS_WIN
 #include <QtWebEngine>
-#include <Windows.h>
 #endif
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)

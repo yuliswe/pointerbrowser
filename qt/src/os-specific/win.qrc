@@ -8,5 +8,6 @@
         <file alias="WebEnginePullReady.qml">win/WebEnginePullReady.qml</file>
         <file alias="Window.qml">win/Window.qml</file>
         <file alias="qt/etc/qt.conf">win/qt.conf</file>
+        <file alias="settings/keymaps.json">win/settings/keymaps.json</file>
     </qresource>
 </RCC>
