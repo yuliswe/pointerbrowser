@@ -64,7 +64,7 @@ Item {
             iconSource: "icon/plus-mid.svg"
             onClicked: BrowserController.newTab(BrowserController.TabStateOpen,
                                                 BrowserController.home_url,
-                                                BrowserController.WhenCreatedSwitchToNew,
+                                                BrowserController.WhenCreatedViewNew,
                                                 BrowserController.WhenExistsOpenNew)
         }
     }

@@ -22,8 +22,8 @@ public:
     };
     Q_ENUM(TabState)
     enum WhenCreated {
-        WhenCreatedSwitchToNew,
-        WhenCreatedStayOnCurrent
+        WhenCreatedViewNew,
+        WhenCreatedViewCurrent
     };
     Q_ENUM(WhenCreated)
     enum WhenExists {
@@ -81,6 +81,7 @@ public:
 signals:
 
 public slots:
+    Q_INVOKABLE void newTab(TabState, const QString& url);
     Q_INVOKABLE void newTab(TabState, const QString& url, WhenCreated, WhenExists);
     Q_INVOKABLE void viewTab(TabState, int i);
     Q_INVOKABLE void moveTab(TabState fromState, int fromIndex, TabState toState, int toIndex);

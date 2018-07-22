@@ -12,7 +12,7 @@ Item {
         if (request.userInitiated || request.destination === WebEngineView.NewViewInBackgroundTab) {
             BrowserController.newTab(BrowserController.TabStateOpen,
                                      request.requestedUrl,
-                                     BrowserController.WhenCreatedStayOnCurrent,
+                                     BrowserController.WhenCreatedViewCurrent,
                                      BrowserController.WhenExistsViewExisting);
             open_repeater.itemAt(0).handleNewViewRequest(request)
         } else {

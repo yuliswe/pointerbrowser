@@ -255,7 +255,7 @@ C.SplitView {
         sequence: "Ctrl+N"
         onActivated: BrowserController.newTab(BrowserController.TabStateOpen,
                                               BrowserController.home_url,
-                                              BrowserController.WhenCreatedSwitchToNew,
+                                              BrowserController.WhenCreatedViewNew,
                                               BrowserController.WhenExistsOpenNew)
     }
     Shortcut {
@@ -283,7 +283,7 @@ C.SplitView {
                 if (! r[i]) { continue; }
                 BrowserController.newTab(BrowserController.TabStateOpen,
                                          r[i],
-                                         BrowserController.WhenCreatedSwitchToNew,
+                                         BrowserController.WhenCreatedViewNew,
                                          BrowserController.WhenExistsViewExisting)
             }
         }

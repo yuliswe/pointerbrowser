@@ -11,8 +11,8 @@ Item {
 
     state: Qt.platform.os
 
-//    onUrlChanged: update(url, title)
-//    onTitleChanged: update(url, title)
+    //    onUrlChanged: update(url, title)
+    //    onTitleChanged: update(url, title)
     onProgressChanged: updateProgress(progress)
 
 
@@ -51,15 +51,12 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         anchors.fill: parent
         property var pal: activeFocus ? Palette.selected : Palette.normal
-        onAccepted: {
-            var url = textField.text
+        function makeUri(input) {
             var exp = new RegExp(".+://")
-            if (!exp.test(url)) {
-                url = "http://www.google.com/search?q=" + encodeURIComponent(url)
+            if (!exp.test(input)) {
+                return "http://www.google.com/search?q=" + encodeURIComponent(input)
             }
-            textField.focus = false
-            console.info("userEntersUrl", url)
-            BrowserController.newTab(BrowserController.TabStateOpen, url, BrowserController.WhenCreatedSwitchToNew, BrowserController.WhenExistsOpenNew)
+            return input;
         }
         placeholderText: (!BrowserController.current_tab_webpage) ? "Welcome" : (BrowserController.current_tab_webpage.title || BrowserController.current_tab_webpage.uri)
         onActiveFocusChanged: {
@@ -75,6 +72,18 @@ Item {
         color: pal.addressbar_text
         placeholder {
             color: pal.addressbar_text
+        }
+        Keys.onReturnPressed: {
+            event.accepted = true
+            var uri = makeUri(textField.text)
+            textField.focus = false
+            console.info("userEntersUri", uri)
+            if (event.modifiers & Qt.ControlModifier) {
+                BrowserController.newTab(BrowserController.TabStateOpen, uri, BrowserController.WhenCreatedViewNew, BrowserController.WhenExistsOpenNew)
+            } else {
+                BrowserController.newTab(BrowserController.TabStateOpen, uri)
+            }
+
         }
     }
 

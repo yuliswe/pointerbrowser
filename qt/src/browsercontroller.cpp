@@ -16,6 +16,22 @@ BrowserController::BrowserController()
 }
 
 void BrowserController::newTab(TabState state,
+                               const QString& uri)
+{
+    qInfo() << "BrowserController::newTab" << state << uri;
+    if (state == TabStateOpen) {
+        if (current_tab_state() == TabStateOpen) {
+            // open in current view
+//            _open_tabs->webpage_(current_open_tab_index())->set_uri(url);
+            current_tab_webpage()->set_uri(uri);
+        } else {
+            // open new tab
+            newTab(TabStateOpen, uri, WhenCreatedViewNew, WhenExistsViewExisting);
+        }
+    }
+}
+
+void BrowserController::newTab(TabState state,
                                const QString& uri,
                                WhenCreated newBehavior,
                                WhenExists whenExists)
@@ -27,7 +43,7 @@ void BrowserController::newTab(TabState state,
             << whenExists;
     int idx = 0;
     if (state == TabStateOpen) {
-        if (whenExists == WhenExists::WhenExistsViewExisting) {
+        if (whenExists == WhenExistsViewExisting) {
             idx = _open_tabs->findTab(uri);
             if (idx == -1) {
                 _open_tabs->insertTab(idx = 0, uri);
@@ -35,11 +51,15 @@ void BrowserController::newTab(TabState state,
         } else {
             _open_tabs->insertTab(idx = 0, uri);
         }
-        if (newBehavior == WhenCreated::WhenCreatedSwitchToNew) {
+        if (newBehavior == WhenCreatedViewNew) {
             viewTab(state, idx);
+        } else if (newBehavior == WhenCreatedViewCurrent) {
+            if (current_tab_state() == TabStateOpen) {
+                viewTab(TabStateOpen, current_open_tab_index() + 1);
+            }
         }
     } else if (state == TabStatePreview) {
-        if (whenExists == WhenExists::WhenExistsViewExisting) {
+        if (whenExists == WhenExistsViewExisting) {
             idx = _open_tabs->findTab(uri);
             if (idx > -1) {
                 viewTab(TabStateOpen, idx);
@@ -52,7 +72,7 @@ void BrowserController::newTab(TabState state,
         } else {
             _preview_tabs->insertTab(idx = 0, uri);
         }
-        if (newBehavior == WhenCreated::WhenCreatedSwitchToNew) {
+        if (newBehavior == WhenCreatedViewNew) {
             viewTab(state, idx);
         }
     }
