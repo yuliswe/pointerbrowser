@@ -1,18 +1,18 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
-import QtQuick.Templates 2.2 as T
+import QtQuick.Controls 2.4 as T
+//import QtQuick.Templates 2.4 as T
 import Backend 1.0
 
-T.Button {
+T.AbstractButton {
     id: button
     readonly property var pal: {
         if (! enabled) { return Palette.disabled }
+        if (pressed || checked) { return Palette.selected }
         if (hovered) { return Palette.hovered }
-        if (down || checked || active) { return Palette.selected }
         return Palette.normal
     }
-    property bool active: false
+//    activeFocusOnPress: true
     state: Qt.platform.os
     states: [
         State {

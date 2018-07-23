@@ -6,6 +6,8 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <QSharedPointer>
+#include <QVariantMap>
+
 typedef QSharedPointer<QFile> QFile_;
 
 class FileManager : public QObject
@@ -26,11 +28,16 @@ class FileManager : public QObject
         static QFile_ qrcFile(const QString& file);
         static QString readQrcFileS(const QString& file);
         static QByteArray readQrcFileB(const QString& file);
+        static QVariantMap readQrcJsonFileM(const QString& file);
         static void writeDataFileB(const QString& file, const QByteArray& contents);
         static void writeDataFileS(const QString& file, const QString& contents);
+        static void writeDataJsonFileM(const QString& file, const QVariantMap& contents);
+        static void writeDataJsonFileA(const QString& file, const QVariantList& contents);
         static void appendDataFileB(const QString& file, const QByteArray& contents);
         static void appendDataFileS(const QString& file, const QString& contents);
         static QString readDataFileS(const QString& file);
+        static QVariantMap readDataJsonFileM(const QString& file);
+        static QVariantList readDataJsonFileA(const QString& file);
         static QByteArray readDataFileB(const QString& file);
         static void defaultOpenUrl(const QString& file);
 };

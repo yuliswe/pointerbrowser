@@ -1,16 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="Draggable.qml">win/window/Draggable.qml</file>
-        <file alias="FramelessWindow.qml">win/window/FramelessWindow.qml</file>
-        <file alias="FramelessWindowForm.qml">win/window/FramelessWindowForm.ui.qml</file>
-        <file alias="TitleBar.qml">win/window/TitleBar.qml</file>
-        <file alias="TitleBarForm.qml">win/window/TitleBarForm.ui.qml</file>
         <file alias="WebUI.qml">win/WebUI.qml</file>
         <file alias="icons/cross2.svg">win/window/icons/cross2.svg</file>
         <file alias="icons/minus2.svg">win/window/icons/minus2.svg</file>
         <file alias="icons/plus2.svg">win/window/icons/plus2.svg</file>
-        <file alias="WelcomePageForm.qml">win/WelcomePageForm.ui.qml</file>
         <file alias="Crawler.qml">win/Crawler.qml</file>
         <file alias="WebEnginePullReady.qml">win/WebEnginePullReady.qml</file>
+        <file alias="Window.qml">win/Window.qml</file>
+        <file alias="qt/etc/qt.conf">win/qt.conf</file>
+        <file alias="settings/keymaps.json">win/settings/keymaps.json</file>
     </qresource>
 </RCC>

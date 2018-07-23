@@ -11,7 +11,7 @@ Timer {
     property WebEngineView target: parent
     property string debugName: ""
     onTriggered: {
-        console.log(debugName, "pulling document ready..")
+        console.info(debugName, "pulling document ready..")
         target.runJavaScript("document.readyState", function(ready) {
             if (ready === "complete") {
                 timer.onReady()

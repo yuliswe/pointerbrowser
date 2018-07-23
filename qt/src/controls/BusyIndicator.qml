@@ -6,6 +6,7 @@ import QtQuick.Controls.Styles 1.4
 BusyIndicator {
     id: busyIndicator
     running: true
+    visible: animation.running
     height: 25
     width: 25
     property int recH: 5
@@ -13,14 +14,31 @@ BusyIndicator {
     property string color: ""
     property int t: 0
     readonly property int bound: busyIndicator.height - recH
+    onRunningChanged: {
+        if (running) {
+            phaseIn.restart()
+            animation.restart()
+        } else {
+            animation.stop()
+        }
+    }
     NumberAnimation {
+        id: phaseIn
+        target: busyIndicator
+        property: "opacity"
+        from: 0
+        to: 1
+        duration: 1000
+        easing.type: Easing.InExpo
+    }
+    NumberAnimation {
+        id: animation
         target: busyIndicator
         property: "t"
-        duration: 600
+        duration: 500
         loops: Animation.Infinite
-        running: true
-        from: 0
-        to: 2 * Math.PI
+        from: -Math.PI
+        to: Math.PI
     }
     contentItem: Row {
         anchors.fill: parent
@@ -31,7 +49,7 @@ BusyIndicator {
             height: recH
             color: busyIndicator.color
             Behavior on y { PropertyAnimation {} }
-            y: (Math.sin(t) + 1) * bound / 2
+            y: (Math.cos(t) + 1) * bound / 2
         }
         Rectangle {
             id: rec2
@@ -39,7 +57,7 @@ BusyIndicator {
             height: recH
             color: busyIndicator.color
             Behavior on y { PropertyAnimation {} }
-            y: (Math.sin(t + Math.PI/2) + 1) * bound / 2
+            y: (Math.cos(t + Math.PI/2) + 1) * bound / 2
         }
         Rectangle {
             id: rec3
@@ -47,7 +65,7 @@ BusyIndicator {
             height: recH
             color: busyIndicator.color
             Behavior on y { PropertyAnimation {} }
-            y: (Math.sin(t + Math.PI) + 1) * bound / 2
+            y: (Math.cos(t + Math.PI) + 1) * bound / 2
         }
     }
 }

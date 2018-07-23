@@ -1,19 +1,95 @@
 {
-    "window_background": ["#faf5f5f5"],
-    "window_base_background": ["#f0f0f0"],
-    "window_text": ["#000"],
-    "text": ["#000"],
-    "text_background": ["transparent","#70a7ff","transparent","transparent"],
-    "button_text": ["#555"],
-    "button_icon": ["#555","#555","#555","#aaa"],
-    "button_background": ["transparent","#ddd","#ddd","transparent"],
-    "button_border": ["#ccc","#ccc","#ccc","#ddd"],
-    "input_text": ["#000"],
-    "input_font_size": [13],
-    "input_placeholder_text": ["#aaa","#aaa","#aaa","#ddd"],
-    "input_background": ["transparent","#fafafa","transparent","#fafafa"],
-    "input_border": ["#ccc","#ccc","#ccc","#ddd"],
-    "list_item_text": ["#333"],
-    "list_item_background": ["transparent","#ddd","#ececec","transparent"],
-    "label_text": ["#555"]
+    "window_background": "#55fafafa",
+    "window_background_opaque": "#f0f0f0",
+    "window_text": "#aa000000",
+    "text": "#000",
+    "text_background": {
+        "normal": "transparent",
+        "selected": "#bbddff",
+        "hovered": "transparent",
+        "disabled": "transparent",
+        "pressed": "#bbddff"
+    },
+    "button_text": "#555",
+    "button_icon": {
+        "normal": "#555",
+        "selected": "#555",
+        "hovered": "#555",
+        "disabled": "#aaa",
+        "pressed": "#555"
+    },
+    "button_background": {
+        "normal": "#33ffffff",
+        "selected": "#ddd",
+        "hovered": "#33ffffff",
+        "disabled": "#33ffffff",
+        "pressed": "#ddd"
+    },
+    "button_border": {
+        "normal": "#ccc",
+        "selected": "#ccc",
+        "hovered": "#ccc",
+        "disabled": "#ddd",
+        "pressed": "#ccc"
+    },
+    "input_text": "#000",
+    "input_placeholder_text": {
+        "normal": "#aaa",
+        "selected": "#bbb",
+        "hovered": "#bbb",
+        "disabled": "#bbb",
+        "pressed": "#bbb"
+    },
+    "input_background": {
+        "normal": "#55ffffff",
+        "selected": "#fdfdfd",
+        "hovered": "55ffffff",
+        "disabled": "#fafafa",
+        "pressed": "#fdfdfd"
+    },
+    "input_border": {
+        "normal": "#ccc",
+        "selected": "#ccc",
+        "hovered": "#ccc",
+        "disabled": "#ddd",
+        "pressed": "#ccc"
+    },
+    "search_item_text": "#dd000000",
+    "search_item_background": {
+        "normal": "transparent",
+        "selected": "#ccc",
+        "hovered": "transparent",
+        "disabled": "transparent",
+        "pressed": "#0077ee"
+    },
+    "search_item_line_1_text": {
+        "normal": "#222",
+        "selected": "#000",
+        "hovered": "#000",
+        "disabled": "#222",
+        "pressed": "#fff"
+    },
+    "search_item_line_2_text": {
+        "normal": "#666",
+        "selected": "#666",
+        "hovered": "#666",
+        "disabled": "#666",
+        "pressed": "#f0f0f0"
+    },
+    "search_item_line_3_text": {
+        "normal": "#777",
+        "selected": "#666",
+        "hovered": "#666",
+        "disabled": "#777",
+        "pressed": "#eee"
+    },
+    "label_text": "#666",
+    "addressbar_progress": "green",
+    "addressbar_text": {
+        "normal": "#cc000000",
+        "selected": "#000",
+        "hovered": "#000",
+        "disabled": "#000",
+        "pressed": "#000"
+    }
 }

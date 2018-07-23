@@ -13,25 +13,30 @@ class TabsModel : public QAbstractListModel
 
     public:
         explicit TabsModel(QObject *parent = nullptr);
-        QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
-        int rowCount(const QModelIndex &parent) const;
-        void insertWebpage(int idx, const Webpage_ wp);
-        QHash<int, QByteArray> roleNames() const;
+        QVariant virtual data(const QModelIndex& idx, int role = Qt::DisplayRole) const override;
+        int virtual rowCount(const QModelIndex &parent) const override;
+        QHash<int, QByteArray> virtual roleNames() const override;
+        bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
+//        Qt::ItemFlags virtual flags(const QModelIndex &index) const override;
 
     signals:
         void countChanged();
 
     public slots:
-        void insertTab(int i, const QString& url);
+        void insertWebpage(int idx, const Webpage_ wp);
+        void insertTab(int i, const QString& uri);
         void insertTab(int i, const QVariantMap&);
         void updateTab(int i, QString property, QVariant value);
         bool removeTab(int idx);
-        int findTab(QString url);
-        int count();
-        void saveTabs();
-        void loadTabs();
+        bool removeTab(const QString& uri);
+        void moveTab(int from, int to);
+        int findTab(const QString& uri);
+        int count() const;
+//        void saveTabs();
+//        void loadTabs();
         void clear();
-        QVariant at(int index);
+        QVariant at(int index) const;
+        Webpage_ webpage_(int index) const;
         void replaceModel(const Webpage_List& wp);
 
     private:

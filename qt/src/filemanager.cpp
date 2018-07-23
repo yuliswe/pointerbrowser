@@ -6,6 +6,9 @@
 #include <QDir>
 #include "filemanager.h"
 #include <QDesktopServices>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
@@ -14,17 +17,17 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 void FileManager::mkDataDir()
 {
     QDir dir;
-    qDebug() << "FileManager::mkDataDir"<< FileManager::dataPath();
+    qInfo() << "FileManager::mkDataDir"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
     defaults << "search.db"
              << "auto-bookmark.txt"
              << "version";
     for (QString file : defaults) {
-        QFile_ dest = FileManager::dataFile(file);
         QFile_ src = FileManager::qrcFile("defaults/"+file);
+        QFile_ dest = FileManager::dataFile(file);
         if (! dest->exists()) {
-            qDebug() << "copying" << src->fileName() << "to" << dest->fileName();
+            qInfo() << "copying" << src->fileName() << "to" << dest->fileName();
             src->copy(dest->fileName());
             QFile::setPermissions(dest->fileName(),
                                   QFileDevice::ReadOwner|
@@ -35,14 +38,14 @@ void FileManager::mkDataDir()
 
 void FileManager::rmDataDir()
 {
-    qDebug() << "FileManager::rmDataDir"<< FileManager::dataPath();
+    qInfo() << "FileManager::rmDataDir"<< FileManager::dataPath();
     QDir dir(FileManager::dataPath());
     dir.removeRecursively();
 }
 
 void FileManager::rmDataFile(const QString& filename)
 {
-    qDebug() << "FileManager::rmDataFile"<< filename;
+    qInfo() << "FileManager::rmDataFile"<< filename;
     QDir dir(FileManager::dataPath());
     dir.remove(filename);
 }
@@ -80,6 +83,14 @@ QByteArray FileManager::readQrcFileB(const QString& file)
     return input.readAll();
 }
 
+QVariantMap FileManager::readQrcJsonFileM(const QString &file)
+{
+    QByteArray contents = FileManager::readQrcFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonObject jobj = doc.object();
+    return jobj.toVariantMap();
+}
+
 void FileManager::writeDataFileB(const QString& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
@@ -87,7 +98,7 @@ void FileManager::writeDataFileB(const QString& filename, const QByteArray& cont
     file->open(QIODevice::WriteOnly | QIODevice::Text);
     file->write(contents);
     file->close();
-//    qDebug() << "writeDataFileB: writing file " << filename << endl
+//    qInfo() << "writeDataFileB: writing file " << filename << endl
 //             << contents << endl;
 }
 
@@ -98,7 +109,7 @@ void FileManager::appendDataFileB(const QString& filename, const QByteArray& con
     file->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
     file->write(contents);
     file->close();
-//    qDebug() << "appendDataFileB: writing file " << filename << endl
+//    qInfo() << "appendDataFileB: writing file " << filename << endl
 //             << contents << endl;
 }
 
@@ -114,12 +125,26 @@ void FileManager::appendDataFileS(const QString& filename, const QString& conten
 }
 
 
+void FileManager::writeDataJsonFileM(const QString& file, const QVariantMap& map)
+{
+    QJsonObject jobj = QJsonObject::fromVariantMap(map);
+    QJsonDocument doc{jobj};
+    FileManager::writeDataFileB(file, doc.toJson());
+}
+
+void FileManager::writeDataJsonFileA(const QString& file, const QVariantList& ls)
+{
+    QJsonArray jarr = QJsonArray::fromVariantList(ls);
+    QJsonDocument doc{jarr};
+    FileManager::writeDataFileB(file, doc.toJson());
+}
+
 QString FileManager::readDataFileS(const QString& filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
-    qDebug() << "readDataFileS: reading file " << path;
+    qInfo() << "readDataFileS: reading file " << path;
     return file.readAll();
 }
 
@@ -128,14 +153,30 @@ QByteArray FileManager::readDataFileB(const QString& filename)
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
     file.open(QIODevice::ReadOnly);
-    qDebug() << "readDataFileB: reading file " << path;
+    qInfo() << "readDataFileB: reading file " << path;
     return file.readAll();
+}
+
+QVariantMap FileManager::readDataJsonFileM(const QString &file)
+{
+    QByteArray contents = FileManager::readDataFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonObject jobj = doc.object();
+    return jobj.toVariantMap();
+}
+
+QVariantList FileManager::readDataJsonFileA(const QString &file)
+{
+    QByteArray contents = FileManager::readDataFileB(file);
+    QJsonDocument doc = QJsonDocument::fromJson(contents);
+    QJsonArray jarr = doc.array();
+    return jarr.toVariantList();
 }
 
 void FileManager::defaultOpenUrl(const QString& filename)
 {
     QUrl url(filename);
     url.setScheme("file");
-    qDebug() << "FileManager::defaultOpenUrl" << url;
+    qInfo() << "FileManager::defaultOpenUrl" << url;
     QDesktopServices::openUrl(url);
 }
