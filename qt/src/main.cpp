@@ -17,6 +17,9 @@
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
+#if QT_NO_DEBUG_OUTPUT
+    return;
+#endif
     QString txt;
     switch (type) {
     case QtFatalMsg: txt = QString("Fatal: %1\n").arg(msg); break;
@@ -52,33 +55,22 @@ int main(int argc, char *argv[])
 {
 
 #ifdef Q_OS_MACOS
-    qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
-    qputenv("QSG_RENDER_LOOP", "basic");
-    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4 -c * -o /Users/ylilarry/lab/trace.log");
 
     // init ui
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
-//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
-    QQuickWindow::setDefaultAlphaBuffer(true);
     QGuiApplication::setFont(QFont("SF Pro Text", 12));
 #endif
 
 #ifdef Q_OS_WIN
-//    qputenv("QT_QUICK_CONTROLS_1_STYLE", "Flat");
-    qputenv("QSG_RENDER_LOOP", "basic");
-//    qputenv("QML_DISABLE_DISTANCEFIELD", "1");
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-logging --log-level=4");
-//    SetProcessDPIAware();
     // init ui
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
     QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
     QGuiApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
-//    QQuickWindow::setTextRenderType(QQuickWindow::QtTextRendering);
-    QQuickWindow::setDefaultAlphaBuffer(true);
     QGuiApplication::setFont(QFont("Tahoma",15));
 #endif
 

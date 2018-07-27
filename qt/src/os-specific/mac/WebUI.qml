@@ -164,7 +164,7 @@ Item {
     WebEngineView {
         id: webview
         anchors.fill: parent
-
+        enabled: visible
         onNewViewRequested: {
             info("webview onNewViewRequested", request, JSON.stringify(request));
             userRequestsNewView(request)
@@ -249,6 +249,7 @@ Item {
     WebEngineView {
         id: docview
         visible: false
+        enabled: visible
         height: browserWebViews.height
         width: browserWebViews.width
         url: webview.url

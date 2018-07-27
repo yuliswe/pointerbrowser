@@ -14,6 +14,7 @@ Item {
     readonly property alias loadProgress: webview.loadProgress
     readonly property string uri: webview.url
     readonly property string url: noHash(uri)
+    readonly property string shouldGotoUri: model.uri
 
     id: webUI
 
@@ -132,8 +133,14 @@ Item {
         console.log.apply(null, args)
     }
 
-    Component.onCompleted: {
-        goTo(model.uri)
+//    Component.onCompleted: {
+//        goTo(model.uri)
+//    }
+
+    onShouldGotoUriChanged: {
+        if (webUI.uri != shouldGotoUri) {
+            goTo(shouldGotoUri)
+        }
     }
 
     onTitleChanged: {

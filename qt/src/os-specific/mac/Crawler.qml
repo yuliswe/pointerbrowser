@@ -7,6 +7,7 @@ WebEngineView {
     height: browserWebViews.height
     width: browserWebViews.width
     visible: false
+    enabled: false
     focus: false
     activeFocusOnPress: false
     //        JavaScriptConsoleMessageLevel:

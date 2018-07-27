@@ -19,7 +19,7 @@ C.SplitView {
 
     TabsPanel {
         id: tabsPanel
-        readonly property int defaultW: 300
+        readonly property int defaultW: 275
         width: defaultW
         property int prevW: 0
         onWidthChanged: {

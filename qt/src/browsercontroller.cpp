@@ -43,19 +43,24 @@ void BrowserController::newTab(TabState state,
             << whenExists;
     int idx = 0;
     if (state == TabStateOpen) {
+        bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
             idx = _open_tabs->findTab(uri);
             if (idx == -1) {
                 _open_tabs->insertTab(idx = 0, uri);
+                inserted = true;
             }
         } else {
             _open_tabs->insertTab(idx = 0, uri);
+            inserted = true;
         }
         if (newBehavior == WhenCreatedViewNew) {
             viewTab(state, idx);
         } else if (newBehavior == WhenCreatedViewCurrent) {
             if (current_tab_state() == TabStateOpen) {
-                viewTab(TabStateOpen, current_open_tab_index() + 1);
+                if (inserted) {
+                    viewTab(TabStateOpen, current_open_tab_index() + 1);
+                }
             }
         }
     } else if (state == TabStatePreview) {

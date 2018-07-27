@@ -58,7 +58,6 @@ macx {
     }
 }
 
-
 win32 {
     RC_ICONS += chrome.ico
     win32-msvc {
@@ -67,6 +66,9 @@ win32 {
     }
 }
 
+CONFIG(release, debug|release) {
+    DEFINES += QT_NO_DEBUG_OUTPUT
+}
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
