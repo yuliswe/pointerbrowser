@@ -1,17 +1,10 @@
-#include <QString>
-#include <QObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QDebug>
-#include <QAbstractListModel>
-#include <QQmlEngine>
-#include "qmlregister.h"
-#include "tabsmodel.h"
+#include <QtCore/QtCore>
+#include "global.hpp"
+#include "tabsmodel.hpp"
 
 TabsModel::TabsModel(QObject *parent) : QAbstractListModel(parent)
 {
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+//    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 int TabsModel::count() const
@@ -25,7 +18,7 @@ QVariant TabsModel::at(int i) const
         return QVariant();
     }
     QVariant v;
-    v.setValue(_tabs[i].data());
+    v.setValue(_tabs[i].get());
     return v;
 }
 
@@ -37,54 +30,95 @@ Webpage_ TabsModel::webpage_(int i) const
     return _tabs[i];
 }
 
+Webpage* TabsModel::webpage(int i) const
+{
+    return webpage_(i).get();
+}
+
 void TabsModel::replaceModel(const Webpage_List& pages)
 {
-    emit beginResetModel();
+    clear();
+    if (pages.isEmpty()) { return; }
+    emit beginInsertRows(QModelIndex(), 0, pages.count() - 1);
     _tabs = pages;
-    emit endResetModel();
+    int n = pages.length();
+    for (int i = 0; i < n; i++) {
+        Webpage* p = pages[i].get();
+        QObject::connect(p, &Webpage::dataChanged, [=]() {
+            QModelIndex d;
+            bool found = false;
+            for (int j = 0; j < count(); j++) {
+                if (webpage(j) == p) {
+                    d = TabsModel::index(j,j);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                emit this->dataChanged(d,d);
+            }
+        });
+    }
+//    emit endResetModel();
+    emit endInsertRows();
     emit countChanged();
 }
 
-void TabsModel::insertWebpage(int idx, const Webpage_ page)
+void TabsModel::insertWebpage_(int idx, const Webpage_ page)
 {
     if (idx < 0 || idx > _tabs.count()) { return; }
     emit beginInsertRows(QModelIndex(), idx, idx);
     _tabs.insert(idx, page);
     _tabs[idx] = page;
+    Webpage* p = page.get();
+    QObject::connect(p, &Webpage::dataChanged, [=]() {
+        QModelIndex d;
+        bool found = false;
+        for (int j = 0; j < count(); j++) {
+            if (webpage(j) == p) {
+                d = TabsModel::index(j,j);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            emit this->dataChanged(d,d);
+        }
+    });
     emit endInsertRows();
     emit countChanged();
 }
 
-void TabsModel::insertTab(int idx, const QString& uri)
+void TabsModel::insertTab(int idx, Url const& uri)
 {
     qInfo() << "TabsModel::insertTab" << idx << uri;
-    Webpage_ page = Webpage_::create(uri);
-    insertWebpage(idx, page);
+    Webpage_ page = shared<Webpage>(uri);
+    insertWebpage_(idx, page);
 }
 
-void TabsModel::insertTab(int idx, const QVariantMap& map)
-{
-    qInfo() << "TabsModel::insertTab" << idx << map;
-    Webpage_ page = Webpage_::create(map);
-    insertWebpage(idx, page);
-}
+//void TabsModel::insertTab(int idx, const QVariantMap& map)
+//{
+//    qInfo() << "TabsModel::insertTab" << idx << map;
+//    Webpage_ page = shared<Webpage>(map);
+//    insertWebpage_(idx, page);
+//}
 
-void TabsModel::updateTab(int index, QString property, QVariant value)
-{
-    qInfo() << "TabsModel::updateTab:" << property << value;
-    Webpage_ page = _tabs[index];
-    QByteArray ba = property.toLocal8Bit();
-    const char *str = ba.data();
-    QVariant current = page.data()->property(str);
-    if (value == current) { return; }
-    page.data()->setProperty(str, value);
-    if (property == "title" || property == "uri") {
-        page->set_display(page->title().length() > 0 ? page->title() : page->uri());
-        page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->uri()});
-    }
-    QModelIndex i = TabsModel::index(index);
-    emit dataChanged(i,i);
-}
+//void TabsModel::updateTab(int index, QString property, QVariant value)
+//{
+//    qInfo() << "TabsModel::updateTab:" << property << value;
+//    Webpage_ page = _tabs[index];
+//    QByteArray ba = property.toLocal8Bit();
+//    const char *str = ba.data();
+//    QVariant current = page.get()->property(str);
+//    if (value == current) { return; }
+//    page.get()->setProperty(str, value);
+//    if (property == "title" || property == "uri") {
+//        page->set_display(page->title().length() > 0 ? page->title() : page->uri());
+//        page->set_expanded_display(QStringList{page->title().length() > 0 ? page->title() : page->uri()});
+//    }
+//    QModelIndex i = TabsModel::index(index);
+//    emit dataChanged(i,i);
+//}
 
 
 bool TabsModel::removeTab(int row)
@@ -97,16 +131,16 @@ bool TabsModel::removeTab(int row)
     return true;
 }
 
-bool TabsModel::removeTab(const QString &uri)
+bool TabsModel::removeTab(const Url &uri)
 {
     int i = findTab(uri);
     return removeTab(i);
 }
 
-int TabsModel::findTab(const QString& uri) {
+int TabsModel::findTab(Url const& uri) {
     int i = 0;
     for (Webpage_ tab : _tabs) {
-        if (tab->uri() == uri) {
+        if (tab->url() == uri) {
             return i;
         }
         i++;
@@ -125,7 +159,7 @@ int TabsModel::findTab(const QString& uri) {
 //}
 
 //void TabsModel::loadTabs(void) {
-//    QByteArray contents = QMLRegister::fileManager->readDataFileB("open.json");
+//    QByteArray contents = Global::fileManager->readDataFileB("open.json");
 //    QJsonDocument doc = QJsonDocument::fromJson(contents);
 //    QJsonArray jarr = doc.array();
 //    qInfo() << jarr;
@@ -150,7 +184,7 @@ QVariant TabsModel::data(const QModelIndex& idx, int role) const
     }
     Webpage_ p = _tabs[row];
     QVariant v;
-    v.setValue(p.data());
+    v.setValue(p.get());
     return v;
 }
 
@@ -200,8 +234,11 @@ bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int cou
 //}
 
 void TabsModel::clear() {
-    emit beginResetModel();
+    if (_tabs.isEmpty()) { return; }
+//    emit beginResetModel();
+    emit beginRemoveRows(QModelIndex(), 0, _tabs.count() - 1);
     _tabs.clear();
-    emit endResetModel();
+//    emit endResetModel();
+    emit endRemoveRows();
     emit countChanged();
 }

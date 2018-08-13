@@ -1,7 +1,6 @@
-#include "keymaps.h"
-#include "filemanager.h"
-#include <QVariantMap>
-#include <QDebug>
+#include "keymaps.hpp"
+#include "filemanager.hpp"
+#include <QtCore/QtCore>
 
 KeyMaps::KeyMaps(QObject *parent) : QObject(parent) {}
 SettingsModel::SettingsModel(QObject *parent) : QObject(parent) {}

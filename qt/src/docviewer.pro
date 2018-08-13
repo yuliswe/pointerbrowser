@@ -1,82 +1,70 @@
-TARGET = Pointer
-
-QT += qml quick sql svg concurrent
+QT += sql network
+QT -= gui
 CONFIG += c++14
 
-# The following define makes your compiler emit warnings if you use
-# any feature of Qt which as been marked deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
-    tabsmodel.h \
-    filemanager.h \
-    qmlregister.h \
-    webpage.h \
-    palette.h \
-    eventfilter.h \
-    searchdb.h \
-    keymaps.h \
-    macros.h \
-    browsercontroller.h
+    global.hpp \
+    filemanager.hpp \
+    keymaps.hpp \
+    macros.hpp \
+    searchdb.hpp \
+    tabsmodel.hpp \
+    webpage.hpp \
+    crawler.hpp \
+    docviewer.h \
+    url.hpp \
+    offline_crawler.hpp \
+    controller.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
     resetTables.sqlite3 \
-    db/exit.sqlite3
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+    db/exit.sqlite3 \
+    crawler.hpp
 
 SOURCES += \
-    main.cpp \
     tabsmodel.cpp \
-    filemanager.cpp \
-    qmlregister.cpp \
     webpage.cpp \
-    palette.cpp \
-    eventfilter.cpp \
     searchdb.cpp \
     keymaps.cpp \
-    browsercontroller.cpp
+    global.cpp \
+    crawler.cpp \
+    filemanager.cpp \
+    url.cpp \
+    offline_crawler.cpp \
+    controller.cpp
 
-
-RESOURCES += qml.qrc db.qrc js.qrc controls.qrc defaults.qrc
+RESOURCES += \
+    db.qrc \
+    defaults.qrc \
+    others.qrc
 
 macx {
-    ICON += chrome.icns
     macx-clang {
-        QT += webengine
-        RESOURCES += os-specific/mac.qrc
-        SOURCES += os-specific/mac/macwindow.mm
-        HEADERS += os-specific/mac/macwindow.h
-        QMAKE_LFLAGS += -F/System/Library/Frameworks/
-        LIBS += -framework AppKit -framework Quartz
+        FRAMEWORK_HEADERS.version = Versions
+        FRAMEWORK_HEADERS.files = $${HEADERS}
+        FRAMEWORK_HEADERS.path = Headers
+        QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
+        LIBS += -L/usr/local/lib/ -lgq -framework Foundation
+        INCLUDEPATH += /usr/local/include/
+        HEADERS += mac_crawler.hpp
+        SOURCES += mac_crawler.mm
+        CONFIG(debug, debug|release|profile) {
+            TARGET = main
+            SOURCES += mac_main.cpp
+        }
+        CONFIG(release, debug|release) {
+#            DEFINES += QT_NO_DEBUG_OUTPUT
+            TEMPLATE = lib
+            CONFIG += lib_bundle
+        }
     }
 }
 
 win32 {
-    RC_ICONS += chrome.ico
     win32-msvc {
-        QT += webengine
-        RESOURCES += os-specific/win.qrc
     }
 }
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_NO_DEBUG_OUTPUT
-}
-
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
-
-# Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH =
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target

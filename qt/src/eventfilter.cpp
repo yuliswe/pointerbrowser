@@ -1,8 +1,8 @@
 #include <QObject>
 #include <QEvent>
 #include <QDebug>
-#include <QKeyEvent>
-#include "eventfilter.h"
+#include <QtCore/QtCore>
+#include "eventfilter.hpp"
 
 #define QPROP_FUNC(TYPE, PROP) \
     TYPE EventFilter::PROP() const { return _##PROP; } \

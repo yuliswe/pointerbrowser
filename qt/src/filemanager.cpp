@@ -1,14 +1,5 @@
-#include <QStandardPaths>
-#include <QTextStream>
-#include <QFile>
-#include <QUrl>
-#include <QDebug>
-#include <QDir>
-#include "filemanager.h"
-#include <QDesktopServices>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
+#include <QtCore/QtCore>
+#include "filemanager.hpp"
 
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
@@ -43,21 +34,21 @@ void FileManager::rmDataDir()
     dir.removeRecursively();
 }
 
-void FileManager::rmDataFile(const QString& filename)
+void FileManager::rmDataFile(QString const& filename)
 {
     qInfo() << "FileManager::rmDataFile"<< filename;
     QDir dir(FileManager::dataPath());
     dir.remove(filename);
 }
 
-QFile_ FileManager::dataFile(const QString& filename)
+QFile_ FileManager::dataFile(QString const& filename)
 {
     QString path = FileManager::dataPath() + filename;
     return QFile_::create(path);
 }
 
 
-QFile_ FileManager::qrcFile(const QString& filename)
+QFile_ FileManager::qrcFile(QString const& filename)
 {
     return QFile_::create(":/" + filename);
 }
@@ -68,7 +59,7 @@ QString FileManager::dataPath()
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
 }
 
-QString FileManager::readQrcFileS(const QString& file)
+QString FileManager::readQrcFileS(QString const& file)
 {
     QFile input(":/" + file);
     input.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -76,7 +67,7 @@ QString FileManager::readQrcFileS(const QString& file)
     return ts.readAll();
 }
 
-QByteArray FileManager::readQrcFileB(const QString& file)
+QByteArray FileManager::readQrcFileB(QString const& file)
 {
     QFile input(":/" + file);
     input.open(QIODevice::ReadOnly);
@@ -91,7 +82,7 @@ QVariantMap FileManager::readQrcJsonFileM(const QString &file)
     return jobj.toVariantMap();
 }
 
-void FileManager::writeDataFileB(const QString& filename, const QByteArray& contents)
+void FileManager::writeDataFileB(QString const& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
     QFile_ file = FileManager::dataFile(filename);
@@ -102,7 +93,7 @@ void FileManager::writeDataFileB(const QString& filename, const QByteArray& cont
 //             << contents << endl;
 }
 
-void FileManager::appendDataFileB(const QString& filename, const QByteArray& contents)
+void FileManager::appendDataFileB(QString const& filename, const QByteArray& contents)
 {
 //    QString path = FileManager::dataPath() + filename;
     QFile_ file = FileManager::dataFile(filename);
@@ -114,45 +105,49 @@ void FileManager::appendDataFileB(const QString& filename, const QByteArray& con
 }
 
 
-void FileManager::writeDataFileS(const QString& filename, const QString& contents)
+void FileManager::writeDataFileS(QString const& filename, QString const& contents)
 {
     FileManager::writeDataFileB(filename, contents.toUtf8());
 }
 
-void FileManager::appendDataFileS(const QString& filename, const QString& contents)
+void FileManager::appendDataFileS(QString const& filename, QString const& contents)
 {
     FileManager::appendDataFileB(filename, contents.toUtf8());
 }
 
 
-void FileManager::writeDataJsonFileM(const QString& file, const QVariantMap& map)
+void FileManager::writeDataJsonFileM(QString const& file, const QVariantMap& map)
 {
     QJsonObject jobj = QJsonObject::fromVariantMap(map);
     QJsonDocument doc{jobj};
     FileManager::writeDataFileB(file, doc.toJson());
 }
 
-void FileManager::writeDataJsonFileA(const QString& file, const QVariantList& ls)
+void FileManager::writeDataJsonFileA(QString const& file, const QVariantList& ls)
 {
     QJsonArray jarr = QJsonArray::fromVariantList(ls);
     QJsonDocument doc{jarr};
     FileManager::writeDataFileB(file, doc.toJson());
 }
 
-QString FileManager::readDataFileS(const QString& filename)
+QString FileManager::readDataFileS(QString const& filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (! file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        file.open(QIODevice::ReadWrite | QIODevice::Text);
+    }
     qInfo() << "readDataFileS: reading file " << path;
     return file.readAll();
 }
 
-QByteArray FileManager::readDataFileB(const QString& filename)
+QByteArray FileManager::readDataFileB(QString const& filename)
 {
     QString path = FileManager::dataPath() + filename;
     QFile file(path);
-    file.open(QIODevice::ReadOnly);
+    if (! file.open(QIODevice::ReadOnly)) {
+        file.open(QIODevice::ReadWrite);
+    }
     qInfo() << "readDataFileB: reading file " << path;
     return file.readAll();
 }
@@ -173,10 +168,10 @@ QVariantList FileManager::readDataJsonFileA(const QString &file)
     return jarr.toVariantList();
 }
 
-void FileManager::defaultOpenUrl(const QString& filename)
+void FileManager::defaultOpenUrl(QString const& filename)
 {
     QUrl url(filename);
     url.setScheme("file");
     qInfo() << "FileManager::defaultOpenUrl" << url;
-    QDesktopServices::openUrl(url);
+//    QDesktopServices::openUrl(url);
 }

@@ -81,3 +81,4 @@ qt/src/osx/cursor/Diagonal[[:space:]]Resize[[:space:]]1.cur filter=lfs diff=lfs 
 qt/src/osx/cursor/Diagonal[[:space:]]Resize[[:space:]]2.cur filter=lfs diff=lfs merge=lfs -text
 qt/src/osx/cursor/Horizontal[[:space:]]Resize.cur filter=lfs diff=lfs merge=lfs -text
 qt/src/osx/cursor/Vertical[[:space:]]Resize.cur filter=lfs diff=lfs merge=lfs -text
+cocoa/lib filter=lfs diff=lfs merge=lfs -text
