@@ -19,9 +19,7 @@ Url::Url(const QUrl& url)
 }
 
 QString Url::base() const {
-    QUrl temp(*this);
-    temp.setFragment("");
-    return temp.toString(QUrl::FullyEncoded);
+    return this->adjusted(QUrl::NormalizePathSegments | QUrl::RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
 QString Url::hash() const {
@@ -40,6 +38,9 @@ QString Url::domain() const
 
 QString Url::schemeless() const
 {
+    if (hasQuery()) {
+        return authority(QUrl::FullyEncoded) + path(QUrl::FullyEncoded) + "?" + query(QUrl::FullyEncoded);
+    }
     return authority(QUrl::FullyEncoded) + path(QUrl::FullyEncoded);
 }
 

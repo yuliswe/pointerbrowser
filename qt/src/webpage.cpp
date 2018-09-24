@@ -22,10 +22,10 @@ Webpage::Webpage(Url const& url,
                  QString const& title2,
                  QString const& title3)
 {
-    set_title_3(title3);
-    set_title_2(title2);
-    set_title(title1);
     set_url(url);
+    set_title(title1);
+    set_title_2(title2);
+    set_title_3(title3);
 }
 
 Webpage::Webpage(const QVariantMap& map)

@@ -3,6 +3,10 @@
 #include <gq/Document.h>
 #include <gq/Node.h>
 
+QLoggingCategory CrawlerLogging("Crawler");
+QLoggingCategory CrawlerRuleLogging("CrawlerRule");
+QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable");
+
 uint qHash(const HtmlLink& link)
 {
     return qHash(link.hash) ^ qHash(link.text) ^ qHash(link.url);
@@ -70,7 +74,7 @@ CrawlerDelegate::~CrawlerDelegate()
 
 void Crawler::crawlAsync(const UrlNoHash& url)
 {
-    qInfo() << "Crawler::crawlAsync" << url;
+    qInfo(CrawlerLogging) << "Crawler::crawlAsync" << url;
     qInfo() << this->thread()->isRunning() << Global::qCoreApplicationThread->isRunning();
     QMetaObject::invokeMethod(this, "enqueue", Qt::QueuedConnection,
                               Q_ARG(const UrlNoHash&, url),
@@ -87,7 +91,7 @@ void Crawler::enqueue(const UrlNoHash& uri, int depth)
 
 void Crawler::enqueue(const QSet<UrlNoHash>& urls, int depth)
 {
-    qInfo() << "Crawler::enqueue" << urls.size() << "links level" << depth;
+    qInfo(CrawlerLogging) << "Crawler::enqueue" << urls.size() << "links level" << depth;
     QSet<UrlNoHash> filtered;
     for (const UrlNoHash& u : urls)
     {
@@ -213,13 +217,13 @@ void Crawler::markUrlDone(const QSet<UrlNoHash>& urls)
 
 void Crawler::dequeue(const UrlNoHash& uri)
 {
-    qInfo() << "Crawler::dequeue" << uri;
+    qInfo(CrawlerLogging) << "Crawler::dequeue" << uri;
     m_waiting_url.remove(uri);
 }
 
 int Crawler::updateRulesFromSettings()
 {
-    qInfo() << "Crawler::updateRules";
+    qInfo(CrawlerLogging) << "Crawler::updateRules";
 //    rule_table()->replaceRulesForDomains(other.get());
     set_rule_table(CrawlerRuleTable::readEntireTableFromSettings());
     return 0;
@@ -237,7 +241,7 @@ void Crawler::spawnMore()
     {
         spawnOne();
     }
-    qDebug() << "Crawler status -"
+    qDebug(CrawlerLogging) << "Crawler status -"
              << "done:" << m_done_url.size()
              << "processing:" << m_processing_url.size()
              << "waiting:" << m_waiting_url.size()
@@ -256,9 +260,9 @@ void Crawler::spawnMore()
 
 void Crawler::spawnOne()
 {
-    qInfo() << "Crawler::spawnOne";
+    qInfo(CrawlerLogging) << "Crawler::spawnOne";
     if (m_waiting_url.isEmpty()) {
-        qInfo() << "Crawler queue is empty";
+        qInfo(CrawlerLogging) << "Crawler queue is empty";
         return;
     }
     CrawlerDelegate_ delegate_ = m_delegate_factory->newCrawlerDelegate_();
@@ -325,12 +329,13 @@ bool Crawler::isProbablySymbol(const HtmlLink& link, const UrlNoHash& base)
 
 void Crawler::processParseResult(const UrlNoHash& base, QString const& title, const QSet<UrlNoHash>& sublinks, const QSet<HtmlLink>& links)
 {
-    qInfo() << "Crawler::processParseResult" << base;
+    qInfo(CrawlerLogging) << "Crawler::processParseResult" << base;
     int current_depth = urlDepth(base);
     if (actionForUrl(base) == SaveUrlTitleAndSymbols
             || actionForUrl(base) == SaveUrlTitleAndSymbolsThenCrawlSublinks)
     {
         Global::searchDB->addWebpageAsync(base.base());
+        Global::searchDB->updateWebpageAsync(base.base(), "title", title);
         for (const HtmlLink& link : links)
         {
             if (Crawler::isProbablySymbol(link, base))
@@ -389,7 +394,7 @@ QPair<QString,QSet<HtmlLink>> CrawlerDelegate::parseHtml(QString const& html, co
         }
         if (url.authority() != baseUrl.authority()) { continue; }
         if (! url.errorString().isEmpty()) {
-            qDebug() << url.errorString();
+            qDebug(CrawlerLogging) << url.errorString();
         }
         link.hash = url.fragment();
         link.url = url;
@@ -430,7 +435,7 @@ CrawlerRule CrawlerRule::fromString(QString const& str)
     CrawlerRule rule;
     rule.set_friendly(str);
     if (str.isEmpty()) {
-        qCritical() << "CrawlerRule::fromString - empty string is invalid";
+        qCritical(CrawlerRuleLogging) << "CrawlerRule::fromString - empty string is invalid";
         rule.set_valid(false);
         return rule;
     }
@@ -439,15 +444,19 @@ CrawlerRule CrawlerRule::fromString(QString const& str)
     int first_question = str.indexOf('?');
     // if a klee star exists a slash must exist before it
     if (first_star >= 0) {
-        if (first_slash >= 0 && first_slash >= first_star)
-        {
-            qCritical() << "CrawlerRule::fromString - first * is after the first /";
-            rule.set_valid(false);
-            return rule;
+        int min_star;
+        if (first_slash >= 0 && first_question >= 0) {
+            min_star = first_question < first_slash ? first_question : first_slash;
+        } else if (first_slash >= 0) {
+            min_star = first_slash;
+        } else if (first_question >= 0) {
+            min_star = first_question;
+        } else {
+            min_star = -1;
         }
-        if (first_question >= 0 && first_question >= first_star)
+        if (first_star <= min_star)
         {
-            qCritical() << "CrawlerRule::fromString - first * is after the first ?";
+            qCritical(CrawlerRuleLogging) << "CrawlerRule::fromString - first * is after the first / or ?";
             rule.set_valid(false);
             return rule;
         }
@@ -515,6 +524,7 @@ CrawlerRule::CrawlerRule(CrawlerRule const& other)
 bool CrawlerRule::matchUrl(Url const& url)
 {
     if (! valid()) { return false; }
+    qDebug(CrawlerRuleLogging) << "CrawlerRule::matchUrl" << url.schemeless() << regex();
     QString schemeless = url.schemeless();
     QRegularExpressionMatch matched = regex().match(schemeless);
     return matched.hasMatch();
@@ -566,7 +576,7 @@ void CrawlerRuleTable::replaceRulesForDomains(CrawlerRuleTable* other)
 
 void CrawlerRuleTable::writePartialTableToSettings()
 {
-    qInfo() << "CrawlerRule::writePartialTableToSettings";
+    qInfo(CrawlerRuleLogging) << "CrawlerRule::writePartialTableToSettings";
     // read table from settings, then merge
     CrawlerRuleTable_ entire = CrawlerRuleTable::readEntireTableFromSettings();
     entire->replaceRulesForDomains(this);
@@ -580,14 +590,14 @@ void CrawlerRuleTable::writePartialTableToSettings()
 
 CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 {
-    qInfo() << "CrawlerRule::readPartialTableFromSettings" << url;
+    qInfo(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings" << url;
     QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
     {
         CrawlerRule rule = CrawlerRule::fromString(pattern);
         if (! rule.valid()) {
-            qCritical() << "CrawlerRule::readPartialTableFromSettings invalid pattern in settings" << pattern;
+            qCritical(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings invalid pattern in settings" << pattern;
             continue;
         }
         if (url.domain() == rule.domain()) {
@@ -600,7 +610,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 
 CrawlerRuleTable_ CrawlerRuleTable::readEntireTableFromSettings()
 {
-    qInfo() << "CrawlerRule::readEntireTableFromSettings";
+    qInfo(CrawlerRuleLogging) << "CrawlerRule::readEntireTableFromSettings";
     QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
@@ -625,7 +635,7 @@ int CrawlerRuleTable::rulesCount()
 
 bool CrawlerRuleTable::insertRule(CrawlerRule& rule)
 {
-    qDebug() << "CrawlerRuleTable::insertRule" << rule;
+    qDebug(CrawlerRuleTableLogging) << "CrawlerRuleTable::insertRule" << rule;
     rules()->insert(rule);
     return true;
 }
@@ -633,7 +643,7 @@ bool CrawlerRuleTable::insertRule(CrawlerRule& rule)
 bool CrawlerRuleTable::removeRule(int idx)
 {
     if (idx < 0 || idx >= rules()->count()) {
-        qCritical() << "CrawlerRuleTable::removeRule index out of range" << idx << rules();
+        qCritical(CrawlerRuleTableLogging) << "CrawlerRuleTable::removeRule index out of range" << idx << rules();
         return false;
     }
     rules()->remove(*(rules()->begin() + idx));
@@ -649,7 +659,7 @@ bool CrawlerRuleTable::removeRule(int idx)
 bool CrawlerRuleTable::modifyRule(int old, CrawlerRule& modified)
 {
     if (old < 0 || old >= rules()->count()) {
-        qCritical() << "CrawlerRuleTable::modifyRule index out of range" << old << rules();
+        qCritical(CrawlerRuleTableLogging) << "CrawlerRuleTable::modifyRule index out of range" << old << rules();
         return false;
     }
     rules()->remove(*(rules()->begin() + old));
@@ -683,7 +693,7 @@ void CrawlerRuleTable::updateAssociatedUrl(Url const& url)
 CrawlerRule CrawlerRuleTable::rule(int idx)
 {
     if (idx < 0 || idx >= rules()->count()) {
-        qCritical() << "CrawlerRuleTable::rule index out of range:" << idx;
+        qCritical(CrawlerRuleTableLogging) << "CrawlerRuleTable::rule index out of range:" << idx;
         return CrawlerRule{};
     }
     return *(rules()->begin() + idx);

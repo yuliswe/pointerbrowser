@@ -5,6 +5,10 @@
 #include "url.hpp"
 #include "macros.hpp"
 
+extern QLoggingCategory CrawlerRuleLogging;
+extern QLoggingCategory CrawlerRuleTableLogging;
+extern QLoggingCategory CrawlerLogging;
+
 class Webpage;
 class Crawler;
 class CrawlerRuleTable;

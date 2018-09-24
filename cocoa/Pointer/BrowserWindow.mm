@@ -128,7 +128,7 @@
 
 - (void)menuFocusAddress:(id)sender
 {
-    [self.window makeFirstResponder:self.addressbar];
+    [self.addressbar getFocus];
 }
 
 - (void)menuFocusFindSymbol:(id)sender

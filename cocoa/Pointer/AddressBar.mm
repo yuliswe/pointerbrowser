@@ -236,18 +236,19 @@
     }
 }
 
-- (void)updateUrl:(NSString*)url
-{
-    self.url = url;
-    if (self.focus) {
-        self.stringValue = self.url;
-    }
-}
+//- (void)updateUrl:(NSString*)url
+//{
+//    self.url = url;
+//    if (self.focus) {
+//        self.stringValue = self.url;
+//    }
+//}
 
 - (void)updateTitle:(NSString*)title
 {
     self.title = title;
-    if (! self.focus) {
+    BOOL isEditing = self.currentEditor != nil;
+    if (! isEditing) {
         self.stringValue = self.title;
     }
 }
@@ -262,15 +263,15 @@
 - (void)getFocus
 {
 //    m_surface.hidden = NO;
-    self.stringValue = Global::controller->address_bar_url().full().toNSString();
-    self.focus = true;
     [self.window makeFirstResponder:self];
+    self.stringValue = Global::controller->address_bar_url().full().toNSString();
+//    self.focus = true;
 }
 
 - (void)loseFocus
 {
 //    m_surface.hidden = NO;
-    self.focus = false;
+//    self.focus = false;
     self.url = self.stringValue;
     self.stringValue = Global::controller->address_bar_title().toNSString();
     [self.window makeFirstResponder:self.window];
