@@ -67,17 +67,17 @@ void Webpage::custom_set_url(Url const& url)
         emit title_changed(m_title);
         unlock_title_for_read_write();
     }
-    if (! url.isEmpty()) {
-        CrawlerRuleTable_ table = CrawlerRuleTable::readPartialTableFromSettings(url);
-        if (table->rulesCount() == 0) {
-            table = CrawlerRuleTable::defaultTableForDomain(url);
-        }
-        table->updateAssociatedUrl(url);
-        lock_crawler_rule_table_for_read_write();
-        m_crawler_rule_table = table;
-        emit crawler_rule_table_changed(table);
-        unlock_crawler_rule_table_for_read_write();
-    }
+//    if (! url.isEmpty()) {
+//        CrawlerRuleTable_ table = CrawlerRuleTable::readPartialTableFromSettings(url);
+//        if (table->rulesCount() == 0) {
+//            table = CrawlerRuleTable::defaultTableForDomain(url);
+//        }
+//        table->updateAssociatedUrl(url);
+//        lock_crawler_rule_table_for_read_write();
+//        m_crawler_rule_table = table;
+//        emit crawler_rule_table_changed(table);
+//        unlock_crawler_rule_table_for_read_write();
+//    }
 }
 
 bool Webpage::crawlerRuleTableReloadFromSettings()

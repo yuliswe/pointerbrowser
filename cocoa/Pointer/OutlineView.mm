@@ -46,6 +46,18 @@
 {
 }
 
+//- (void)observeValueForKeyPath:(NSString *)keyPath
+//                      ofObject:(id)object
+//                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+//                       context:(void *)context
+//{
+//    if ([keyPath isEqualToString:@"currently_hovered_opentab_cellview"])
+//    {
+//        OutlineViewDelegateAndDataSource* delegate = (OutlineViewDelegateAndDataSource*)self.outline.delegate;
+//        self.hovered = (delegate.currently_hovered_opentab_cellview == self);
+//    }
+//}
+
 - (void)mouseEntered:(NSEvent *)event
 {
     self.hovered = YES;
@@ -94,6 +106,7 @@
 @implementation OutlineViewDelegateAndDataSource
 
 @synthesize outline = m_outline;
+@synthesize currently_hovered_opentab_cellview = m_currently_hovered_opentab_cellview;
 
 //- (instancetype)initWithCoder:(NSCoder*)coder
 //{
@@ -248,6 +261,8 @@
         result.data_item = item;
         result.outline = outlineView;
         result.line1 = w->title().toNSString();
+        result.hovered = NO;
+//        [self addObserver:result forKeyPath:@"currently_hovered_opentab_cellview" options:NSKeyValueObservingOptionNew context:nil];
         return result;
     }
     if ([(CppSharedData*)[outlineView parentForItem:item] ptr] == Global::searchDB->search_result()) {
@@ -322,7 +337,7 @@ shouldShowOutlineCellForItem:(id)item
 
 - (IBAction)searchTab:(id)sender
 {
-    Global::searchDB->searchAsync(QString::fromNSString(m_searchfield.stringValue));
+    Global::controller->searchTabsAsync(QString::fromNSString(m_searchfield.stringValue));
 }
 //
 //- (IBAction)clicked:(id)sender

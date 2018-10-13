@@ -1,4 +1,4 @@
-QT += sql network
+QT += sql
 QT -= gui
 CONFIG += c++14
 

@@ -40,7 +40,6 @@ bool SearchDB::connect() {
     QObject::connect(_searchWorker.data(), &SearchWorker::searchFinished, this, [=]() {
         this->set_is_searching(false);
     });
-    searchAsync("");
     /* UpdateWorker setup */
     _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
     _updateWorkerThread.start();

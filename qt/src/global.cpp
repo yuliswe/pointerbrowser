@@ -96,7 +96,6 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
 
     QObject::connect(qCoreApplicationThread, &QThread::finished, [=]() {
         searchDB->disconnect();
-        controller->saveLastOpen();
     });
 
     qCoreApplicationThread->start();

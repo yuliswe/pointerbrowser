@@ -3,6 +3,8 @@
 #include "global.hpp"
 #include "tabsmodel.hpp"
 
+QLoggingCategory ControllerLogging("Controller");
+
 Controller::Controller()
 {
     viewTab(TabStateEmpty, -1);
@@ -18,11 +20,11 @@ int Controller::newTab(TabState state,
                        WhenCreated newBehavior,
                        WhenExists whenExists)
 {
-    qInfo() << "BrowserController::newTab"
-            << state
-            << uri
-            << newBehavior
-            << whenExists;
+    qInfo(ControllerLogging) << "BrowserController::newTab"
+                             << state
+                             << uri
+                             << newBehavior
+                             << whenExists;
     int idx = 0;
     if (state == TabStateOpen) {
         bool inserted = false;
@@ -44,6 +46,9 @@ int Controller::newTab(TabState state,
                     viewTab(TabStateOpen, current_open_tab_index() + 1);
                 }
             }
+        }
+        if (inserted) {
+            saveLastOpen();
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
@@ -69,10 +74,9 @@ int Controller::newTab(TabState state,
 // switch view
 int Controller::viewTab(TabState state, int i)
 {
-    qInfo() << "BrowserController::viewTab" << state << i;
+    qInfo(ControllerLogging) << "BrowserController::viewTab" << state << i;
     static Webpage_ old_page = nullptr;
-    emit_tf_hide_crawler_rule_table();
-    emit_tf_hide_crawler_rule_table_row_hint();
+    hideCrawlerRuleTable();
     // disconnect from old
     if (old_page != nullptr) {
         QObject::disconnect(old_page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
@@ -124,6 +128,9 @@ int Controller::viewTab(TabState state, int i)
     set_current_webpage_find_text_state(page->find_text_state());
     set_welcome_page_visible(false);
     set_current_webpage_crawler_rule_table(page->crawler_rule_table());
+    if (current_tab_search_word().isEmpty()) {
+        Global::searchDB->searchAsync(page->url().domain());
+    }
     // set up load progress watcher
     QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
     QObject::connect(page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
@@ -143,7 +150,7 @@ Url Controller::address_bar_url()
 
 int Controller::closeTab(TabState state, int index)
 {
-    qInfo() << "BrowserController::closeTab" << state << index;
+    qInfo(ControllerLogging) << "BrowserController::closeTab" << state << index;
     if (state == TabStateOpen) {
         if (current_tab_state() == TabStateOpen) {
             if (current_open_tab_index() == index) {
@@ -173,6 +180,7 @@ int Controller::closeTab(TabState state, int index)
         } else if (current_tab_state() == TabStatePreview) {
             open_tabs()->removeTab(index);
         }
+        saveLastOpen();
     } else if (state == TabStatePreview) {
         if (open_tabs()->count() > 0) {
             viewTab(TabStateOpen, 0);
@@ -191,7 +199,7 @@ int Controller::closeTab(TabState state, int index)
 
 int Controller::closeTab(TabState state, Url const& uri)
 {
-    qInfo() << "BrowserController::closeTab" << state << uri;
+    qInfo(ControllerLogging) << "BrowserController::closeTab" << state << uri;
     int idx = -1;
     if (state == TabStateOpen) {
         idx = open_tabs()->findTab(uri);
@@ -203,10 +211,10 @@ int Controller::closeTab(TabState state, Url const& uri)
 
 int Controller::closeTab()
 {
-    qInfo() << "Controller::closeTab()";
+    qInfo(ControllerLogging) << "Controller::closeTab()";
     if (current_tab_state() == TabState::TabStateEmpty)
     {
-        qDebug() << "No current tab";
+        qDebug(ControllerLogging) << "No current tab";
         return 0;
     }
     if (current_tab_state() == TabState::TabStateOpen)
@@ -227,7 +235,7 @@ int Controller::closeTab()
 int Controller::loadLastOpen()
 {
     QVariantList contents = FileManager::readDataJsonFileA("open.json");
-    qInfo() << "BrowserController::loadLastOpen";
+    qInfo(ControllerLogging) << "BrowserController::loadLastOpen";
     Webpage_List tabs;
     for (const QVariant& item : contents) {
         tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
@@ -252,7 +260,7 @@ int Controller::saveLastOpen()
 
 int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int toIndex)
 {
-    qInfo() << "BrowserController::moveTab" << fromState << fromIndex << toState << toIndex;
+    qInfo(ControllerLogging) << "BrowserController::moveTab" << fromState << fromIndex << toState << toIndex;
     if (fromIndex < 0 || toIndex < 0
             || fromIndex > open_tabs()->count()
             || toIndex > open_tabs()->count()
@@ -275,85 +283,116 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
 
 int Controller::currentTabWebpageGo(QString const& u)
 {
-    qInfo() << "BrowserController::currentTabWebpageGo" << u;
+    qInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
+    hideCrawlerRuleTable();
     Webpage* p = current_tab_webpage();
     if (p && current_tab_state() == TabStateOpen) {
         p->go(u);
         Global::crawler->crawlAsync(p->url());
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->searchAsync(p->url().domain());
+        }
     } else {
         newTab(TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew);
     }
+    saveLastOpen();
     return 0;
 }
 
 
 int Controller::currentTabWebpageBack()
 {
-    qInfo() << "BrowserController::currentTabWebpageBack";
+    qInfo(ControllerLogging) << "BrowserController::currentTabWebpageBack";
+    hideCrawlerRuleTable();
     Webpage* p = current_tab_webpage();
     if (p) {
         emit p->emit_tf_back();
+        p->findClear();
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->searchAsync(p->url().domain());
+        }
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
+    saveLastOpen();
     return 0;
 }
 
 int Controller::currentTabWebpageForward()
 {
-    qInfo() << "BrowserController::currentTabWebpageForward";
+    qInfo(ControllerLogging) << "BrowserController::currentTabWebpageForward";
+    hideCrawlerRuleTable();
     Webpage* p = current_tab_webpage();
     if (p) {
         emit p->emit_tf_forward();
+        p->findClear();
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->searchAsync(p->url().domain());
+        }
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
+    saveLastOpen();
     return 0;
 }
 
 int Controller::currentTabWebpageStop()
 {
-    qInfo() << "BrowserController::currentTabWebpageStop";
+    qInfo(ControllerLogging) << "BrowserController::currentTabWebpageStop";
+    hideCrawlerRuleTable();
     Webpage* p = current_tab_webpage();
     if (p) {
         emit p->emit_tf_stop();
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
 
 int Controller::currentTabWebpageRefresh()
 {
-    qInfo() << "BrowserController::currentTabWebpageRefresh";
+    qInfo(ControllerLogging) << "BrowserController::currentTabWebpageRefresh";
+    hideCrawlerRuleTable();
     Webpage* p = current_tab_webpage();
     if (p) {
         emit p->emit_tf_refresh();
+        p->findClear();
         Global::crawler->crawlAsync(p->url());
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->searchAsync(p->url().domain());
+        }
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
 
 bool Controller::updateWebpageUrl(Webpage_ wp, Url const& url)
 {
-    qInfo() << "Controller::updateWebpageUrl" << wp << url;
+    qInfo(ControllerLogging) << "Controller::updateWebpageUrl" << wp << url;
     wp->updateUrl(url);
     Global::crawler->crawlAsync(wp->url());
+    if (current_tab_webpage() != nullptr
+            && wp.get() == current_tab_webpage()
+            && current_tab_search_word().isEmpty())
+    {
+        hideCrawlerRuleTable();
+        Global::searchDB->searchAsync(wp->url().domain());
+    }
+    saveLastOpen();
     return true;
 }
 
 bool Controller::updateWebpageTitle(Webpage_ wp, QString const& title)
 {
-    qInfo() << "Controller::updateWebpageTitle" << wp << title;
+    qInfo(ControllerLogging) << "Controller::updateWebpageTitle" << wp << title;
     wp->updateTitle(title);
     return true;
 }
 
 bool Controller::updateWebpageProgress(Webpage_ wp, float progress)
 {
-    qInfo() << "Controller::updateWebpageProgress" << wp << progress;
+    qInfo(ControllerLogging) << "Controller::updateWebpageProgress" << wp << progress;
     wp->updateProgress(progress);
     return true;
 }
@@ -361,7 +400,7 @@ bool Controller::updateWebpageProgress(Webpage_ wp, float progress)
 
 bool Controller::updateWebpageFindTextFound(Webpage_ wp, int found)
 {
-    qInfo() << "Controller::updateFindTextFound" << wp << found;
+    qInfo(ControllerLogging) << "Controller::updateFindTextFound" << wp << found;
     wp->updateFindTextFound(found);
     return true;
 }
@@ -383,7 +422,7 @@ int Controller::currentTabWebpageFindTextNext(QString const& txt)
     if (current_tab_webpage()) {
         current_tab_webpage()->findNext(txt);
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
@@ -393,7 +432,7 @@ int Controller::currentTabWebpageFindTextPrev(QString const& txt)
     if (current_tab_webpage()) {
         current_tab_webpage()->findPrev(txt);
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
@@ -405,7 +444,7 @@ int Controller::currentTabWebpageFindTextShow()
         state.visiable = true;
         current_tab_webpage()->set_find_text_state(state);
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
@@ -417,7 +456,7 @@ int Controller::currentTabWebpageFindTextHide()
         state.visiable = false;
         current_tab_webpage()->set_find_text_state(state);
     } else {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
     }
     return 0;
 }
@@ -425,7 +464,7 @@ int Controller::currentTabWebpageFindTextHide()
 //bool Controller::currentTabWebpageCrawlerRuleTableEnableRule(CrawlerRule rule)
 //{
 //    if (! current_tab_webpage()) {
-//        qInfo() << "no current tab";
+//        qInfo(ControllerLogging) << "no current tab";
 //        return false;
 //    }
 //    if (! current_tab_webpage()->crawlerRuleTableEnableRule(rule))
@@ -443,7 +482,7 @@ int Controller::currentTabWebpageFindTextHide()
 //bool Controller::currentTabWebpageCrawlerRuleTableDisableRule(CrawlerRule rule)
 //{
 //    if (! current_tab_webpage()) {
-//        qInfo() << "no current tab";
+//        qInfo(ControllerLogging) << "no current tab";
 //        return false;
 //    }
 //    if (! current_tab_webpage()->crawlerRuleTableDisableRule(rule))
@@ -460,9 +499,9 @@ int Controller::currentTabWebpageFindTextHide()
 
 bool Controller::currentTabWebpageCrawlerRuleTableInsertRule(CrawlerRule rule)
 {
-    qInfo() << "Controller::currentTabWebpageCrawlerRuleTableInsertRule" << rule;
+    qInfo(ControllerLogging) << "Controller::currentTabWebpageCrawlerRuleTableInsertRule" << rule;
     if (! current_tab_webpage()) {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
         return false;
     }
     if (! current_tab_webpage()->crawlerRuleTableInsertRule(rule)) {
@@ -479,7 +518,7 @@ bool Controller::currentTabWebpageCrawlerRuleTableInsertRule(CrawlerRule rule)
 bool Controller::currentTabWebpageCrawlerRuleTableRemoveRule(int idx)
 {
     if (! current_tab_webpage()) {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
         return false;
     }
     emit_tf_hide_crawler_rule_table_row_hint();
@@ -494,7 +533,7 @@ bool Controller::currentTabWebpageCrawlerRuleTableRemoveRule(int idx)
 bool Controller::currentTabWebpageCrawlerRuleTableModifyRule(int old, CrawlerRule modified)
 {
     if (! current_tab_webpage()) {
-        qInfo() << "no current tab";
+        qInfo(ControllerLogging) << "no current tab";
         return false;
     }
     if (! current_tab_webpage()->crawlerRuleTableModifyRule(old, modified)) {
@@ -516,9 +555,9 @@ int Controller::hideCrawlerRuleTable()
 
 int Controller::showCrawlerRuleTable()
 {
-    qInfo() << "Controller::showCrawlerRuleTable";
+    qInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
     if (! current_tab_webpage()) {
-        qCritical() << "Controller::showCrawlerRuleTable no current tab";
+        qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
         return false;
     }
     current_tab_webpage()->crawlerRuleTableReloadFromSettings();
@@ -526,4 +565,14 @@ int Controller::showCrawlerRuleTable()
     return true;
 }
 
-
+int Controller::searchTabs(QString const& words)
+{
+    if (words == current_tab_search_word()) { return -1; }
+    set_current_tab_search_word(words);
+    if (words.isEmpty() && current_tab_webpage() != nullptr) {
+        Global::searchDB->searchAsync(current_tab_webpage()->url().domain());
+        return 0;
+    }
+    Global::searchDB->searchAsync(words);
+    return 0;
+}

@@ -276,6 +276,14 @@
 @end
 
 @implementation CrawlerRuleTableCellMatchIndicator
+- (void)mouseDown:(NSEvent*)event
+{
+    // do nothing
+}
+- (void)mouseUp:(NSEvent*)event
+{
+    // do nothing
+}
 @end
 
 @implementation CrawlerRuleTableCellView

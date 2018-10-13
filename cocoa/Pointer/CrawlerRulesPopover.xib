@@ -49,7 +49,6 @@
                             </button>
                         </subviews>
                     </view>
-                    <font key="titleFont" metaFont="message" size="11"/>
                 </box>
                 <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a5P-dI-Jj0">
                     <rect key="frame" x="0.0" y="0.0" width="557" height="233"/>
@@ -65,7 +64,7 @@
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
                                     <tableColumn identifier="EnableButtonColumn" width="60" minWidth="60" maxWidth="60" id="jFr-oc-guJ">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="Enabled">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="Enable">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -171,19 +170,23 @@
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-G9-X2y" customClass="CrawlerRuleTableCellMatchIndicator">
                                                         <rect key="frame" x="21" y="0.0" width="19" height="22"/>
                                                         <autoresizingMask key="autoresizingMask"/>
-                                                        <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="dKQ-Ro-Uzg">
-                                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Radio" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dKQ-Ro-Uzg">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="handleRowEdited:" target="FQD-qy-A4n" id="foh-Gs-29o"/>
+                                                            <binding destination="wyf-v3-g1Y" name="hidden" keyPath="objectValue.matched" id="38l-vq-miM">
+                                                                <dictionary key="options">
+                                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                </dictionary>
+                                                            </binding>
                                                             <binding destination="wyf-v3-g1Y" name="value" keyPath="objectValue.matched" id="Eqw-iB-evX">
                                                                 <dictionary key="options">
                                                                     <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
                                                                     <bool key="NSConditionallySetsEnabled" value="NO"/>
                                                                 </dictionary>
                                                             </binding>
-                                                            <binding destination="wyf-v3-g1Y" name="hidden" keyPath="objectValue.placeholder_line" id="cJy-fr-vAz"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

@@ -12,12 +12,16 @@
 
 @implementation WebUI
 
-//@synthesize tab = m_tab;
 @synthesize webpage = m_webpage;
 
 - (void)dealloc
 {
-//    [super dealloc];
+}
+
+- (void)mouseDown:(NSEvent*)event
+{
+    Global::controller->hideCrawlerRuleTableAsync();
+    [super mouseDown:event];
 }
 
 - (instancetype)initWithTabItem:(TabViewItem*)tabItem
@@ -27,7 +31,8 @@
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     self = [super initWithFrame:[tabItem.view bounds] configuration:config];
 //    self.tab = tabItem;
-    self.allowsBackForwardNavigationGestures = true;
+    self.allowsBackForwardNavigationGestures = YES;
+    self.allowsMagnification = YES;
     self.navigationDelegate = self;
 //    self.customUserAgent = @"Pointer";
     self.webpage = tabItem.webpage;

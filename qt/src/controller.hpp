@@ -7,6 +7,8 @@
 #include "macros.hpp"
 #include "crawler.hpp"
 
+extern QLoggingCategory ControllerLogging;
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -44,7 +46,7 @@ public:
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, preview_tabs, shared<TabsModel>())
 
-    PROP_RN_D(QString, home_url, "https://www.google.com")
+    PROP_RN_D(QString, home_url, "about:blank")
     PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
     // current tab
     PROP_RN_D(TabState, current_tab_state, TabStateEmpty)
@@ -52,12 +54,15 @@ public:
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     // tabs highlighting
+    PROP_RWN_D(int, current_open_tab_hovered_index, -1)
     PROP_RN_D(int, current_open_tab_highlight_index, -1)
     PROP_RN_D(int, current_tab_search_highlight_index, -1)
     // welcome page
     PROP_RN_D(bool, welcome_page_visible, true)
     // page search
     PROP_RN_D(FindTextState, current_webpage_find_text_state, FindTextState{})
+    // tab search
+    PROP_RN_D(QString, current_tab_search_word, "")
 
     // address bar
     PROP_RN_D(float, address_bar_load_progress, 0)
@@ -92,6 +97,7 @@ public:
     METH_ASYNC_1(int, currentTabWebpageFindTextPrev, QString const&)
     METH_ASYNC_0(int, showCrawlerRuleTable)
     METH_ASYNC_0(int, hideCrawlerRuleTable)
+    METH_ASYNC_1(int, searchTabs, QString const&)
 
     METH_ASYNC_2(bool, updateWebpageUrl, Webpage_, Url const&)
     METH_ASYNC_2(bool, updateWebpageTitle, Webpage_, QString const&)

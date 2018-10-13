@@ -77,8 +77,10 @@ typedef enum {
 //    TabsModel_ m_searchTabsList;
     IBOutlet NSOutlineView* m_outline;
     IBOutlet NSTextField* m_searchfield;
+    OpenTabCellView* m_currently_hovered_opentab_cellview;
 }
 
+@property OpenTabCellView* currently_hovered_opentab_cellview;
 @property NSOutlineView* outline;
 
 - (IBAction)searchTab:(id)sender;
