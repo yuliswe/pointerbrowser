@@ -70,6 +70,14 @@
     [super mouseExited:event];
 }
 
+- (void)otherMouseDown:(NSEvent*)event
+{
+    NSInteger button = event.buttonNumber;
+    if (button == 2) {
+        [self closeTab:self];
+    }
+}
+
 - (IBAction)closeTab:(id)sender
 {
     NSInteger index = [self.outline childIndexForItem:self.data_item];

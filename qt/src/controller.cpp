@@ -443,6 +443,9 @@ int Controller::currentTabWebpageFindTextShow()
         FindTextState state = current_webpage_find_text_state();
         state.visiable = true;
         current_tab_webpage()->set_find_text_state(state);
+        if (! state.text.isEmpty()) {
+            current_tab_webpage()->emit_tf_find_highlight_all(state.text);
+        }
     } else {
         qInfo(ControllerLogging) << "no current tab";
     }
@@ -455,6 +458,7 @@ int Controller::currentTabWebpageFindTextHide()
         FindTextState state = current_webpage_find_text_state();
         state.visiable = false;
         current_tab_webpage()->set_find_text_state(state);
+        current_tab_webpage()->emit_tf_find_clear();
     } else {
         qInfo(ControllerLogging) << "no current tab";
     }

@@ -2,6 +2,8 @@
 // We're using a global variable to store the number of occurrences
 var pointerSearchResultCount = -1;
 
+var nonDiv = ["META", "SCRIPT", "INPUT", "TEXTAREA", "STYLE", "HEAD", "LINK", "TITLE", "NOSCRIPT", "IFRAME", "BUTTON", "SVG", "SELECT"];
+
 // helper function, recursively searches in elements and their child nodes
 function pointerHighlightAllOccurencesOfStringForElement(element,keyword) {
     if (! keyword) {
@@ -30,12 +32,16 @@ function pointerHighlightAllOccurencesOfStringForElement(element,keyword) {
                 element = text;
                 pointerSearchResultCount++;	// update the counter
             }
-        } else if (element.nodeType === 1) // Element node
+        } 
+        // Element node
+        else if (element.nodeType === 1 && !nonDiv.includes(element.tagName))
         {
             var bound = element.getBoundingClientRect();
+            var css = window.getComputedStyle(element);
             if (element.nodeName.toLowerCase() !== 'select'
-                    && bound.height > 0
-                    && bound.width > 0) {
+                    && (((bound.height >= 10 || css.overflowY != 'hidden') && (bound.width >= 10 || css.overflowX != 'hidden')) 
+                    || (css.overflow != 'hidden'))) 
+            {
                 for (var i=element.childNodes.length-1; i>=0; i--) {
                     pointerHighlightAllOccurencesOfStringForElement(element.childNodes[i],keyword);
                 }
