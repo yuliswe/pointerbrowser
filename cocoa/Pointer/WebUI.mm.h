@@ -27,3 +27,9 @@
 - (void)removeAllHighlights;
 
 @end
+
+@interface WebUIDelegate : NSObject<WKUIDelegate>
+{
+    
+}
+@end

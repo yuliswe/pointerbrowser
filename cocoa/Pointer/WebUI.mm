@@ -31,6 +31,8 @@
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     self = [super initWithFrame:[tabItem.view bounds] configuration:config];
 //    self.tab = tabItem;
+    static WebUIDelegate* uidelegate = [[WebUIDelegate alloc] init];
+    self.UIDelegate = uidelegate;
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
     self.navigationDelegate = self;
@@ -195,4 +197,21 @@ didCommitNavigation:(WKNavigation *)navigation {
     [controller addUserScript:script];
 }
 
+@end
+
+@implementation WebUIDelegate
+- (WKWebView *)webView:(WKWebView *)webView
+createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
+   forNavigationAction:(WKNavigationAction *)navigationAction
+        windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+    Webpage_ w = [(WebUI*)webView webpage];
+    NSURL* url = navigationAction.request.URL;
+    if (Global::controller->open_tabs()->findTab(w.get()) >= 0) {
+        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+    } else {
+        Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+    }
+    return nil;
+}
 @end

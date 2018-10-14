@@ -29,7 +29,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="400" y="250" width="678" height="440"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
             <value key="minSize" type="size" width="600" height="400"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ" customClass="BrowserWindowView">
                 <rect key="frame" x="0.0" y="0.0" width="678" height="440"/>
@@ -435,37 +435,14 @@
                 <outlet property="m_searchfield" destination="3OF-AJ-hTf" id="xVQ-sW-n2c"/>
             </connections>
         </customObject>
-        <toolbar implicitIdentifier="E8F634C5-0F62-412E-B3F4-BD43315F7E9B" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="cDi-iS-eHu">
+        <popover animates="NO" id="GFo-n5-Fdz" customClass="CrawlerRulesPopover">
+            <connections>
+                <outlet property="m_caller_button" destination="wxK-ad-KW5" id="xpS-kf-gGg"/>
+            </connections>
+        </popover>
+        <userDefaultsController representsSharedInstance="YES" id="PTl-fa-DPW"/>
+        <toolbar implicitIdentifier="09710FB8-A40D-432B-9560-4E7B9D035255" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="cDi-iS-eHu">
             <allowedToolbarItems>
-                <toolbarItem implicitItemIdentifier="39BC22BA-F85C-4709-8D55-8936CBF1F1FA" label="Custom View" paletteLabel="Custom View" image="NSAddTemplate" id="7Vr-q0-khC">
-                    <nil key="toolTip"/>
-                    <size key="minSize" width="21" height="20"/>
-                    <size key="maxSize" width="33" height="43"/>
-                    <button key="view" verticalHuggingPriority="750" id="tPk-cU-waD">
-                        <rect key="frame" x="22" y="14" width="33" height="28"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LDY-jG-7bQ">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                    </button>
-                </toolbarItem>
-                <toolbarItem implicitItemIdentifier="F1184871-6C9F-4B55-8180-5F081691C0D0" label="Navigation" paletteLabel="Navigation" id="eoy-B4-hIz">
-                    <nil key="toolTip"/>
-                    <size key="minSize" width="60" height="25"/>
-                    <size key="maxSize" width="61" height="27"/>
-                    <segmentedControl key="view" verticalHuggingPriority="750" id="dk0-Hx-QyU">
-                        <rect key="frame" x="1" y="14" width="61" height="27"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="separated" trackingMode="momentary" id="DHn-gU-p0e">
-                            <font key="font" metaFont="system"/>
-                            <segments>
-                                <segment image="NSGoBackTemplate" width="25"/>
-                                <segment image="NSGoForwardTemplate" width="25" tag="1"/>
-                            </segments>
-                        </segmentedCell>
-                    </segmentedControl>
-                </toolbarItem>
                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="96f-W9-927"/>
                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="Bof-8y-X8F"/>
                 <toolbarItem implicitItemIdentifier="4CF1CC6B-FD16-4DFC-B6ED-E39D00F6CD6A" label="Refresh" paletteLabel="Refresh" image="NSRefreshTemplate" id="CZs-ri-kJf">
@@ -564,21 +541,13 @@
             </allowedToolbarItems>
             <defaultToolbarItems>
                 <toolbarItem reference="YNb-PD-gJ7"/>
-                <toolbarItem reference="7Vr-q0-khC"/>
                 <toolbarItem reference="Bof-8y-X8F"/>
-                <toolbarItem reference="eoy-B4-hIz"/>
                 <toolbarItem reference="CZs-ri-kJf"/>
                 <toolbarItem reference="LfR-rX-52m"/>
                 <toolbarItem reference="8KG-vV-42m"/>
                 <toolbarItem reference="RUc-Mg-OwU"/>
             </defaultToolbarItems>
         </toolbar>
-        <popover animates="NO" id="GFo-n5-Fdz" customClass="CrawlerRulesPopover">
-            <connections>
-                <outlet property="m_caller_button" destination="wxK-ad-KW5" id="xpS-kf-gGg"/>
-            </connections>
-        </popover>
-        <userDefaultsController representsSharedInstance="YES" id="PTl-fa-DPW"/>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

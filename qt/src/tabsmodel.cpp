@@ -148,6 +148,17 @@ int TabsModel::findTab(Url const& uri) {
     return -1;
 }
 
+int TabsModel::findTab(Webpage* w) {
+    int i = 0;
+    for (Webpage_ tab : _tabs) {
+        if (tab.get() == w) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
 //void TabsModel::saveTabs(void) {
 //    qInfo() << "TabsModel::saveTabs";
 //    QJsonArray tabs;
