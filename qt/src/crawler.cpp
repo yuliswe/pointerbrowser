@@ -74,8 +74,7 @@ CrawlerDelegate::~CrawlerDelegate()
 
 void Crawler::crawlAsync(const UrlNoHash& url)
 {
-    qInfo(CrawlerLogging) << "Crawler::crawlAsync" << url;
-    qInfo() << this->thread()->isRunning() << Global::qCoreApplicationThread->isRunning();
+    qCInfo(CrawlerLogging) << "Crawler::crawlAsync" << url;
     QMetaObject::invokeMethod(this, "enqueue", Qt::QueuedConnection,
                               Q_ARG(const UrlNoHash&, url),
                               Q_ARG(int, 0));
@@ -91,7 +90,7 @@ void Crawler::enqueue(const UrlNoHash& uri, int depth)
 
 void Crawler::enqueue(const QSet<UrlNoHash>& urls, int depth)
 {
-    qInfo(CrawlerLogging) << "Crawler::enqueue" << urls.size() << "links level" << depth;
+    qCInfo(CrawlerLogging) << "Crawler::enqueue" << urls.size() << "links level" << depth;
     QSet<UrlNoHash> filtered;
     for (const UrlNoHash& u : urls)
     {
@@ -104,7 +103,7 @@ void Crawler::enqueue(const QSet<UrlNoHash>& urls, int depth)
         }
     }
     m_waiting_url.unite(filtered);
-    qDebug() << "Crawler::enqueue" << urls.size() << "links" << filtered.size() << "added";
+    qCDebug(CrawlerLogging) << "Crawler::enqueue" << urls.size() << "links" << filtered.size() << "added";
 
     // spawn a new thread
     spawnMore();
@@ -153,23 +152,23 @@ bool Crawler::urlIsBeingProcessed(const UrlNoHash& url)
 bool Crawler::shouldEnqueueUrl(const UrlNoHash& url)
 {
     if (urlIsWaiting(url)) {
-        qDebug() << "Crawler::shouldEnqueueUrl skip url because it is in the waiting list" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is in the waiting list" << url;
         return false;
     }
     if (urlIsBeingProcessed(url)) {
-        qDebug() << "Crawler::shouldEnqueueUrl skip url because it is being processed" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is being processed" << url;
         return false;
     }
     if (urlIsDone(url)) {
-        qDebug() << "Crawler::shouldEnqueueUrl skip url because it is done" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is done" << url;
         return false;
     }
     if (urlDepth(url) > m_critical_depth) {
-        qDebug() << "Crawler::shouldEnqueueUrl skip url because it is too deep" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is too deep" << url;
         return false;
     }
     if (! rule_table()->hasEnabledAndMatchedRuleForUrl(url)) {
-        qDebug() << "Crawler::shouldEnqueueUrl skip url because it is not whitelisted" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is not whitelisted" << url;
         return false;
     }
     return true;
@@ -209,7 +208,7 @@ void Crawler::markUrlDone(const QSet<UrlNoHash>& urls)
     {
         int r = m_url_depth_map.remove(u);
         if (r != 1) {
-            qDebug() << u;
+            qCDebug(CrawlerLogging) << u;
         }
         Q_ASSERT(r == 1);
     }
@@ -217,13 +216,13 @@ void Crawler::markUrlDone(const QSet<UrlNoHash>& urls)
 
 void Crawler::dequeue(const UrlNoHash& uri)
 {
-    qInfo(CrawlerLogging) << "Crawler::dequeue" << uri;
+    qCInfo(CrawlerLogging) << "Crawler::dequeue" << uri;
     m_waiting_url.remove(uri);
 }
 
-int Crawler::updateRulesFromSettings()
+int Crawler::updateRulesFromSettings(void const* sender)
 {
-    qInfo(CrawlerLogging) << "Crawler::updateRules";
+    qCInfo(CrawlerLogging) << "Crawler::updateRules";
 //    rule_table()->replaceRulesForDomains(other.get());
     set_rule_table(CrawlerRuleTable::readEntireTableFromSettings());
     return 0;
@@ -241,7 +240,7 @@ void Crawler::spawnMore()
     {
         spawnOne();
     }
-    qDebug(CrawlerLogging) << "Crawler status -"
+    qCDebug(CrawlerLogging) << "Crawler status -"
              << "done:" << m_done_url.size()
              << "processing:" << m_processing_url.size()
              << "waiting:" << m_waiting_url.size()
@@ -252,17 +251,17 @@ void Crawler::spawnMore()
 //            && m_processing_url.isEmpty()
 //            && m_delegate_list.isEmpty())
 //    {
-//        qDebug() << m_url_depth_map;
-//        qDebug() << m_done_url;
+//        qCDebug(CrawlerLogging) << m_url_depth_map;
+//        qCDebug(CrawlerLogging) << m_done_url;
 //        m_done_url.clear();
 //    }
 }
 
 void Crawler::spawnOne()
 {
-    qInfo(CrawlerLogging) << "Crawler::spawnOne";
+    qCInfo(CrawlerLogging) << "Crawler::spawnOne";
     if (m_waiting_url.isEmpty()) {
-        qInfo(CrawlerLogging) << "Crawler queue is empty";
+        qCInfo(CrawlerLogging) << "Crawler queue is empty";
         return;
     }
     CrawlerDelegate_ delegate_ = m_delegate_factory->newCrawlerDelegate_();
@@ -297,7 +296,7 @@ void Crawler::spawnOne()
         for (const HtmlLink& link : links) {
             hrefs.insert(link.url);
         }
-        qDebug() << "Crawler found" << hrefs.count() << "links in" << url << title;
+        qCDebug(CrawlerLogging) << "Crawler found" << hrefs.count() << "links in" << url << title;
         QMetaObject::invokeMethod(this, "processParseResult",
                                   Q_ARG(const UrlNoHash&, url),
                                   Q_ARG(QString const&, title),
@@ -329,7 +328,7 @@ bool Crawler::isProbablySymbol(const HtmlLink& link, const UrlNoHash& base)
 
 void Crawler::processParseResult(const UrlNoHash& base, QString const& title, const QSet<UrlNoHash>& sublinks, const QSet<HtmlLink>& links)
 {
-    qInfo(CrawlerLogging) << "Crawler::processParseResult" << base;
+    qCInfo(CrawlerLogging) << "Crawler::processParseResult" << base;
     int current_depth = urlDepth(base);
     if (actionForUrl(base) == SaveUrlTitleAndSymbols
             || actionForUrl(base) == SaveUrlTitleAndSymbolsThenCrawlSublinks)
@@ -340,7 +339,7 @@ void Crawler::processParseResult(const UrlNoHash& base, QString const& title, co
         {
             if (Crawler::isProbablySymbol(link, base))
             {
-                qDebug() << "symbol found" << link;
+                qCDebug(CrawlerLogging) << "symbol found" << link;
                 Global::searchDB->addWebpageAsync(link.url.base());
                 Global::searchDB->addSymbolAsync(link.url.base(), link.hash, link.text);
                 Global::searchDB->updateWebpageAsync(link.url.base(), "title", title);
@@ -394,7 +393,7 @@ QPair<QString,QSet<HtmlLink>> CrawlerDelegate::parseHtml(QString const& html, co
         }
         if (url.authority() != baseUrl.authority()) { continue; }
         if (! url.errorString().isEmpty()) {
-            qDebug(CrawlerLogging) << url.errorString();
+            qCDebug(CrawlerLogging) << url.errorString();
         }
         link.hash = url.fragment();
         link.url = url;
@@ -524,7 +523,7 @@ CrawlerRule::CrawlerRule(CrawlerRule const& other)
 bool CrawlerRule::matchUrl(Url const& url)
 {
     if (! valid()) { return false; }
-    qDebug(CrawlerRuleLogging) << "CrawlerRule::matchUrl" << url.schemeless() << regex();
+    qCDebug(CrawlerRuleLogging) << "CrawlerRule::matchUrl" << url.schemeless() << regex();
     QString schemeless = url.schemeless();
     QRegularExpressionMatch matched = regex().match(schemeless);
     return matched.hasMatch();
@@ -576,7 +575,7 @@ void CrawlerRuleTable::replaceRulesForDomains(CrawlerRuleTable* other)
 
 void CrawlerRuleTable::writePartialTableToSettings()
 {
-    qInfo(CrawlerRuleLogging) << "CrawlerRule::writePartialTableToSettings";
+    qCInfo(CrawlerRuleLogging) << "CrawlerRule::writePartialTableToSettings";
     // read table from settings, then merge
     CrawlerRuleTable_ entire = CrawlerRuleTable::readEntireTableFromSettings();
     entire->replaceRulesForDomains(this);
@@ -590,7 +589,7 @@ void CrawlerRuleTable::writePartialTableToSettings()
 
 CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 {
-    qInfo(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings" << url;
+    qCInfo(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings" << url;
     QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
@@ -610,7 +609,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 
 CrawlerRuleTable_ CrawlerRuleTable::readEntireTableFromSettings()
 {
-    qInfo(CrawlerRuleLogging) << "CrawlerRule::readEntireTableFromSettings";
+    qCInfo(CrawlerRuleLogging) << "CrawlerRule::readEntireTableFromSettings";
     QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
@@ -635,7 +634,7 @@ int CrawlerRuleTable::rulesCount()
 
 bool CrawlerRuleTable::insertRule(CrawlerRule& rule)
 {
-    qDebug(CrawlerRuleTableLogging) << "CrawlerRuleTable::insertRule" << rule;
+    qCDebug(CrawlerRuleTableLogging) << "CrawlerRuleTable::insertRule" << rule;
     rules()->insert(rule);
     return true;
 }

@@ -71,6 +71,16 @@ typedef enum {
 - (TabsList*) initType:(TabsListType)type label:(NSString*)label;
 @end
 
+@interface MutableArrayWrapper : NSObject
+{
+    NSMutableArray* m_get;
+}
+@property (readonly) NSMutableArray* get;
+- (instancetype)initWithArray:(NSMutableArray*)array;
++ (instancetype)wrap:(NSMutableArray*)array;
+@end
+
+
 @interface OutlineViewDelegateAndDataSource : NSObject<NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 //    TabsModel_ m_openTabsList;
@@ -78,14 +88,19 @@ typedef enum {
     IBOutlet NSOutlineView* m_outline;
     IBOutlet NSTextField* m_searchfield;
     OpenTabCellView* m_currently_hovered_opentab_cellview;
+    MutableArrayWrapper* m_open_tabs;
+    MutableArrayWrapper* m_search_results;
 }
 
 @property OpenTabCellView* currently_hovered_opentab_cellview;
 @property NSOutlineView* outline;
+@property (readonly) MutableArrayWrapper* open_tabs;
+@property (readonly) MutableArrayWrapper* search_results;
 
 - (IBAction)searchTab:(id)sender;
 - (void)reloadAll;
 - (void)reloadIndex:(id)item;
 - (IBAction)doubleClicked:(id)sender;
-
+- (void)updateSelection;
 @end
+

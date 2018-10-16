@@ -13,6 +13,8 @@
 #include "mac_crawler.hpp"
 #endif
 
+QLoggingCategory GlobalLogging("Global");
+
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -42,11 +44,11 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 void dumpLibraryInfo()
 {
-    qInfo() << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
-    qInfo() << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
-    qInfo() << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
-    qInfo() << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
-    qInfo() << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
 }
 
 Global::Global(QObject *parent) : QObject(parent)
@@ -54,6 +56,7 @@ Global::Global(QObject *parent) : QObject(parent)
 }
 
 void Global::startQCoreApplicationThread(int argc, const QStringList& argv) {
+    qRegisterMetaType<void const*>();
     qRegisterMetaType<CrawlerRule>();
     qRegisterMetaType<CrawlerRuleTable>();
     static std::vector<char*> vec(argc);
@@ -81,10 +84,10 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         moveDataToQCoreApplicationThread();
         dumpLibraryInfo();
 
-        qInfo() << "FileManager::dataPath()" << FileManager::dataPath();
+        qCInfo(GlobalLogging) << "FileManager::dataPath()" << FileManager::dataPath();
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
-        qInfo() << "running version" << currV
+        qCInfo(GlobalLogging) << "running version" << currV
                 << "data version" << dataV;
         if (currV != dataV) {
             FileManager::rmDataDir();

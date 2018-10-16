@@ -11,6 +11,7 @@
 #include <docviewer/tabsmodel.hpp>
 #include <docviewer/global.hpp>
 #include <docviewer/searchdb.hpp>
+#include "OutlineView.mm.h"
 #import "KeyCode.h"
 
 @interface BrowserWindowController ()
@@ -48,6 +49,8 @@
     [super windowDidLoad];
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     [self.outlineview expandItem:nil expandChildren:YES];
+    [(OutlineViewDelegateAndDataSource*)self.outlineview.delegate updateSelection];
+    [self.outlineview registerForDraggedTypes:@[NSPasteboardTypeString]];
     self.text_find_toolbar.hidden = YES;
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,

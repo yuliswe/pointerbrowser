@@ -1,6 +1,8 @@
 #include <QtCore/QtCore>
 #include "filemanager.hpp"
 
+QLoggingCategory FileLogging("File");
+
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
 }
@@ -8,7 +10,7 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 void FileManager::mkDataDir()
 {
     QDir dir;
-    qInfo() << "FileManager::mkDataDir"<< FileManager::dataPath();
+    qCInfo(FileLogging) << "FileManager::mkDataDir"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
     defaults << "search.db"
@@ -18,7 +20,7 @@ void FileManager::mkDataDir()
         QFile_ src = FileManager::qrcFile("defaults/"+file);
         QFile_ dest = FileManager::dataFile(file);
         if (! dest->exists()) {
-            qInfo() << "copying" << src->fileName() << "to" << dest->fileName();
+            qCInfo(FileLogging) << "copying" << src->fileName() << "to" << dest->fileName();
             src->copy(dest->fileName());
             QFile::setPermissions(dest->fileName(),
                                   QFileDevice::ReadOwner|
@@ -29,14 +31,14 @@ void FileManager::mkDataDir()
 
 void FileManager::rmDataDir()
 {
-    qInfo() << "FileManager::rmDataDir"<< FileManager::dataPath();
+    qCInfo(FileLogging) << "FileManager::rmDataDir"<< FileManager::dataPath();
     QDir dir(FileManager::dataPath());
     dir.removeRecursively();
 }
 
 void FileManager::rmDataFile(QString const& filename)
 {
-    qInfo() << "FileManager::rmDataFile"<< filename;
+    qCInfo(FileLogging) << "FileManager::rmDataFile"<< filename;
     QDir dir(FileManager::dataPath());
     dir.remove(filename);
 }
@@ -89,7 +91,7 @@ void FileManager::writeDataFileB(QString const& filename, const QByteArray& cont
     file->open(QIODevice::WriteOnly | QIODevice::Text);
     file->write(contents);
     file->close();
-//    qInfo() << "writeDataFileB: writing file " << filename << endl
+//    qCInfo(FileLogging) << "writeDataFileB: writing file " << filename << endl
 //             << contents << endl;
 }
 
@@ -100,7 +102,7 @@ void FileManager::appendDataFileB(QString const& filename, const QByteArray& con
     file->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
     file->write(contents);
     file->close();
-//    qInfo() << "appendDataFileB: writing file " << filename << endl
+//    qCInfo(FileLogging) << "appendDataFileB: writing file " << filename << endl
 //             << contents << endl;
 }
 
@@ -137,7 +139,7 @@ QString FileManager::readDataFileS(QString const& filename)
     if (! file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         file.open(QIODevice::ReadWrite | QIODevice::Text);
     }
-    qInfo() << "readDataFileS: reading file " << path;
+    qCInfo(FileLogging) << "readDataFileS: reading file " << path;
     return file.readAll();
 }
 
@@ -148,7 +150,7 @@ QByteArray FileManager::readDataFileB(QString const& filename)
     if (! file.open(QIODevice::ReadOnly)) {
         file.open(QIODevice::ReadWrite);
     }
-    qInfo() << "readDataFileB: reading file " << path;
+    qCInfo(FileLogging) << "readDataFileB: reading file " << path;
     return file.readAll();
 }
 
@@ -172,6 +174,6 @@ void FileManager::defaultOpenUrl(QString const& filename)
 {
     QUrl url(filename);
     url.setScheme("file");
-    qInfo() << "FileManager::defaultOpenUrl" << url;
+    qCInfo(FileLogging) << "FileManager::defaultOpenUrl" << url;
 //    QDesktopServices::openUrl(url);
 }

@@ -58,83 +58,83 @@ int main(int argc, char *argv[])
             continue;
         }
         else if (c == "tab" || c == "view") {
-            qInfo() << "View open tab ? (waiting for an int)";
+            qCInfo() << "View open tab ? (waiting for an int)";
             int i;
             cin >> i;
             int _i = Global::controller->viewTabAsyncBlocking(Controller::TabStateOpen, i);
-            qInfo() << "Switched to tab" << _i;
+            qCInfo() << "Switched to tab" << _i;
             continue;
         }
         else if (c == "close") {
-            qInfo() << "Close tab #? (waiting for an int)";
+            qCInfo() << "Close tab #? (waiting for an int)";
             int i;
             cin >> i;
             Global::controller->closeTabAsync(Controller::TabStateOpen, i);
             continue;
         }
         else if (c == "go" || c == "goto") {
-            qInfo() << "Make current tab go to ? (waiting for a url)";
+            qCInfo() << "Make current tab go to ? (waiting for a url)";
             Global::controller->currentTabWebpageGoAsync(getLine());
             continue;
         }
         else if (c == "search") {
-            qInfo() << "Search in DB ? (waiting for a string)";
+            qCInfo() << "Search in DB ? (waiting for a string)";
             Global::searchDB->searchAsync(getLine());
             continue;
         }
         else if (c == "rules") {
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "rules-a") {
-            qInfo() << "Add a url pattern? (waiting for a string)";
+            qCInfo() << "Add a url pattern? (waiting for a string)";
             CrawlerRule rule = CrawlerRule::fromString(getLine());
             Global::controller->currentTabWebpageCrawlerRuleTableInsertRuleAsync(rule);
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "rules-r") {
-            qInfo() << "Remove a url pattern? (waiting for an int)";
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << "Remove a url pattern? (waiting for an int)";
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             int i;
             cin >> i;
             Global::controller->currentTabWebpageCrawlerRuleTableRemoveRuleAsync(i);
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "rules-m") {
-            qInfo() << "Modify which pattern? (waiting for index)";
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << "Modify which pattern? (waiting for index)";
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             int idx;
             cin >> idx;
-            qInfo() << "New url pattern? (waiting for a string)";
+            qCInfo() << "New url pattern? (waiting for a string)";
             CrawlerRule modified = CrawlerRule::fromString(getLine());
             Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(idx, modified);
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "rules-e") {
-            qInfo() << "Enable which pattern? (waiting for index)";
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << "Enable which pattern? (waiting for index)";
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             int idx;
             cin >> idx;
-            qInfo() << "New url pattern? (waiting for a string)";
+            qCInfo() << "New url pattern? (waiting for a string)";
             CrawlerRule modified = Global::controller->current_webpage_crawler_rule_table()->rule(idx);
             modified.set_enabled(true);
             Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(idx, modified);
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "rules-d") {
-            qInfo() << "Enable which pattern? (waiting for index)";
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << "Enable which pattern? (waiting for index)";
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             int idx;
             cin >> idx;
-            qInfo() << "New url pattern? (waiting for a string)";
+            qCInfo() << "New url pattern? (waiting for a string)";
             CrawlerRule modified = Global::controller->current_webpage_crawler_rule_table()->rule(idx);
             modified.set_enabled(false);
             Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(idx, modified);
-            qInfo() << *Global::controller->current_webpage_crawler_rule_table();
+            qCInfo() << *Global::controller->current_webpage_crawler_rule_table();
             continue;
         }
         else if (c == "links") {
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
             continue;
         }
         else if (c == "q" || c == "quit" || c == "exit") {
-            qInfo() << "Exiting...";
+            qCInfo() << "Exiting...";
             break;
         }
     }

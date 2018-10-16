@@ -13,16 +13,6 @@
 #include <Carbon/Carbon.h>
 
 @implementation SearchField
-//- (BOOL)performKeyEquivalent:(NSEvent *)event
-//{
-//    if ((event.modifierFlags & NSEventModifierFlagCommand)
-//        && (event.keyCode == kVK_ANSI_D))
-//    {
-//        [self.window makeFirstResponder:self];
-//        return YES;
-//    }
-//    return NO;
-//}
 @end
 
 @implementation OpenTabCellView
@@ -45,18 +35,6 @@
 - (void)dealloc
 {
 }
-
-//- (void)observeValueForKeyPath:(NSString *)keyPath
-//                      ofObject:(id)object
-//                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
-//                       context:(void *)context
-//{
-//    if ([keyPath isEqualToString:@"currently_hovered_opentab_cellview"])
-//    {
-//        OutlineViewDelegateAndDataSource* delegate = (OutlineViewDelegateAndDataSource*)self.outline.delegate;
-//        self.hovered = (delegate.currently_hovered_opentab_cellview == self);
-//    }
-//}
 
 - (void)mouseEntered:(NSEvent *)event
 {
@@ -115,76 +93,76 @@
 
 @synthesize outline = m_outline;
 @synthesize currently_hovered_opentab_cellview = m_currently_hovered_opentab_cellview;
-
-//- (instancetype)initWithCoder:(NSCoder*)coder
-//{
-//    self = [super initWithCoder:coder];
-//    return self;
-//}
-//
-//- (void)setOutline:(NSOutlineView *)outline
-//{
-//    self.outline = outline;
-//}
+@synthesize open_tabs = m_open_tabs;
+@synthesize search_results = m_search_results;
 
 - (OutlineViewDelegateAndDataSource*)init
 {
     self = [super init];
+    self->m_open_tabs = [MutableArrayWrapper wrap:[[NSMutableArray alloc] init]];
+    self->m_search_results = [MutableArrayWrapper wrap:[[NSMutableArray alloc] init]];
     [self connect];
     return self;
 }
 
 - (void)connect
 {
-    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsInserted,
-                     [=]()
-    {
-        [self performSelectorOnMainThread:@selector(reloadAll) withObject:nil waitUntilDone:YES];
-    });
-
-    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsRemoved,
-                     [=]()
-    {
-        [self performSelectorOnMainThread:@selector(reloadAll) withObject:nil waitUntilDone:YES];
-    });
+//    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsInserted,
+//                     [=](const QModelIndex &parent, int first, int last)
+//    {
+//        [self performSelectorOnMainThread:@selector(handleSearchResultsInserted:)
+//                               withObject:@{@"first": [NSNumber numberWithInt:first],
+//                                            @"last": [NSNumber numberWithInt:last]}
+//                            waitUntilDone:YES];
+//    });
+//
+//    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsRemoved,
+//                     [=](const QModelIndex &parent, int first, int last)
+//    {
+//        [self performSelectorOnMainThread:@selector(handleSearchResultsRemoved:)
+//                               withObject:@{@"first": [NSNumber numberWithInt:first],
+//                                            @"last": [NSNumber numberWithInt:last]}
+//                            waitUntilDone:YES];
+//    });
  
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsInserted,
                      [=] (const QModelIndex &parent, int first, int last)
     {
-        [self performSelectorOnMainThread:@selector(reloadAll) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleOpenTabsInserted:)
+                               withObject:@{@"first": [NSNumber numberWithInt:first],
+                                            @"last": [NSNumber numberWithInt:last]}
+                            waitUntilDone:YES];
     });
     
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsRemoved,
                      [=](const QModelIndex &parent, int first, int last)
     {
-        [self performSelectorOnMainThread:@selector(reloadAll) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleOpenTabsRemoved:)
+                               withObject:@{@"first": [NSNumber numberWithInt:first],
+                                            @"last": [NSNumber numberWithInt:last]}
+                            waitUntilDone:YES];
     });
-    
-    QObject::connect(Global::controller->open_tabs().get(), &TabsModel::dataChanged,
-                     [=](const QModelIndex &topLeft, const QModelIndex &bottomRight)
+
+    QObject::connect(Global::controller->open_tabs().get(), &TabsModel::modelReset,
+                     [=]()
     {
-        if (topLeft == bottomRight) {
-            int idx = topLeft.row() + 1; // +1 for label
-            [self performSelectorOnMainThread:@selector(reloadIndex:) withObject:[NSNumber numberWithInt:idx] waitUntilDone:YES];
-        }
+        [self performSelectorOnMainThread:@selector(handleOpenTabsReset) withObject:nil waitUntilDone:YES];
     });
-    
-    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::dataChanged,
-                     [=](const QModelIndex &topLeft, const QModelIndex &bottomRight)
+
+    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::modelReset,
+                     [=]()
      {
-         if (topLeft == bottomRight) {
-             int idx = topLeft.row() + Global::controller->open_tabs()->count() + 2; // +2 for labels
-             [self performSelectorOnMainThread:@selector(reloadIndex:) withObject:[NSNumber numberWithInt:idx] waitUntilDone:YES];
-         }
+         [self performSelectorOnMainThread:@selector(handleSearchResultsReset) withObject:nil waitUntilDone:YES];
      });
     
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
-                     [=]() {
+                     [=](Webpage* w, void const* sender) {
+                         if (sender == (__bridge void*)self) { return; }
                          [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
                      });
-    
-//    [self reloadAll];
+//    [self updateSelection];
+    [self reloadAll];
 }
 
 - (void)updateSelection
@@ -210,9 +188,119 @@
 // called when the search result changed
 - (void)reloadAll
 {
-    [self.outline reloadItem:nil reloadChildren:YES];
-    [self.outline expandItem:nil expandChildren:YES];
-    [self updateSelection];
+    [self handleOpenTabsReset];
+    [self handleSearchResultsReset];
+}
+
+- (void)handleOpenTabsReset
+{
+    NSMutableIndexSet* old_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.open_tabs.get.count)];
+    
+    [self.open_tabs.get removeAllObjects];
+    int count_open_tabs = Global::controller->open_tabs()->count();
+    for (int i = 0; i < count_open_tabs; i++) {
+        Webpage_ w = Global::controller->open_tabs()->webpage_(i);
+        id item = [CppSharedData wrap:w];
+        [self.open_tabs.get insertObject:item atIndex:i];
+        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+        });
+    }
+    NSMutableIndexSet* new_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.open_tabs.get.count)];
+    
+    [self.outline beginUpdates];
+    [self.outline removeItemsAtIndexes:old_range inParent:self.open_tabs withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline insertItemsAtIndexes:new_range inParent:self.open_tabs withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline endUpdates];
+}
+
+- (void)handleSearchResultsReset
+{
+    NSMutableIndexSet* old_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.search_results.get.count)];
+    
+    [self.search_results.get removeAllObjects];
+    int count = Global::searchDB->search_result()->count();
+    for (int i = 0; i < count; i++) {
+        Webpage_ w = Global::searchDB->search_result()->webpage_(i);
+        id item = [CppSharedData wrap:w];
+        [self.search_results.get insertObject:item atIndex:i];
+    }
+    NSMutableIndexSet* new_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.search_results.get.count)];
+    
+    [self.outline beginUpdates];
+    [self.outline removeItemsAtIndexes:old_range inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline insertItemsAtIndexes:new_range inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline endUpdates];
+}
+
+- (void)handleOpenTabsInserted:(NSDictionary*)indices
+{
+    int first = [indices[@"first"] intValue];
+    int last = [indices[@"last"] intValue];
+    
+    for (int i = first; i <= last; i++) {
+        Webpage_ w = Global::controller->open_tabs()->webpage_(i);
+        CppSharedData* item = [CppSharedData wrap:w];
+        [self.open_tabs.get insertObject:item atIndex:i];
+        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+        });
+    }
+    
+    NSMutableIndexSet* range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(first, last-first+1)];
+    [self.outline beginUpdates];
+    [self.outline insertItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationSlideDown];
+    [self.outline endUpdates];
+}
+
+- (void)handleOpenTabsRemoved:(NSDictionary*)indices
+{
+    int first = [indices[@"first"] intValue];
+    int last = [indices[@"last"] intValue];
+    
+    NSMutableIndexSet* range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(first, last-first+1)];
+    [self.open_tabs.get removeObjectsAtIndexes:range];
+    
+    [self.outline beginUpdates];
+    NSIndexSet* selected = self.outline.selectedRowIndexes;
+    [self.outline deselectAll:self];
+    [self.outline removeItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationSlideUp];
+    [self.outline selectRowIndexes:selected byExtendingSelection:NO];
+    [self.outline endUpdates];
+}
+
+- (void)handleSearchResultsInserted:(NSDictionary*)indices
+{
+    int first = [indices[@"first"] intValue];
+    int last = [indices[@"last"] intValue];
+    NSMutableIndexSet* inserted = [[NSMutableIndexSet alloc] init];
+    for (int i = first; i <= last; i++) {
+        Webpage_ w = Global::searchDB->search_result()->webpage_(i);
+        id item = [CppSharedData wrap:w];
+        [self.search_results.get insertObject:item atIndex:i];
+        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+        });
+        [inserted addIndex:i];
+    }
+    [self.outline insertItemsAtIndexes:inserted inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+}
+
+- (void)handleSearchResultsRemoved:(NSDictionary*)indices
+{
+    int first = [indices[@"first"] intValue];
+    int last = [indices[@"last"] intValue];
+    NSMutableIndexSet* removed = [[NSMutableIndexSet alloc] init];
+    for (int i = first; i <= last; i++) {
+        [self.search_results.get removeObjectAtIndex:i];
+        [removed addIndex:i];
+    }
+    [self.outline removeItemsAtIndexes:removed inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+}
+
+- (void)handleDataChanged:(id)item
+{
+    [self.outline reloadItem:item reloadChildren:NO];
 }
 
 // called when a tab's title is updated
@@ -220,29 +308,28 @@
 {
     int idx = index.intValue;
     id item = [self.outline itemAtRow:idx];
+    NSIndexSet* selected = self.outline.selectedRowIndexes;
     [self.outline reloadItem:item reloadChildren:YES];
-    [self updateSelection];
+    [self.outline selectRowIndexes:selected byExtendingSelection:NO];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView
             child:(NSInteger)index
            ofItem:(id)item
 {
-    int idx = static_cast<int>(index);
     if (item == nil) {
         if (index == 0) {
-            return [CppSharedData wrap:(Global::controller->open_tabs())];
+            return self.open_tabs;
         }
         if (index == 1) {
-            return [CppSharedData wrap:(Global::searchDB->search_result())];
+            return self.search_results;
         }
-    }
-    TabsModel_ ptr = std::static_pointer_cast<TabsModel>([(CppSharedData*)item ptr]);
-    if (ptr == Global::controller->open_tabs()) {
-        return [CppSharedData wrap:Global::controller->open_tabs()->webpage_(idx)];
-    }
-    if (ptr == Global::searchDB->search_result()) {
-        return [CppSharedData wrap:Global::searchDB->search_result()->webpage_(idx)];
+    } else if (item == self.open_tabs) {
+//        if (index >= self.open_tabs.get.count) { return nil; }
+        return self.open_tabs.get[index];
+    } else if (item == self.search_results) {
+//        if (index >= self.search_results.get.count) { return nil; }
+        return self.search_results.get[index];
     }
     return nil;
 }
@@ -252,17 +339,18 @@
                    item:(id)item
 {
     // For the groups, we just return a regular text view.
-    if ([(CppSharedData*)item ptr] == Global::controller->open_tabs()) {
+    if (item == self.open_tabs) {
         NSTableCellView *result = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
         result.objectValue = @"Open Tabs";
         return result;
     }
-    if ([(CppSharedData*)item ptr] == Global::searchDB->search_result()) {
+    if (item == self.search_results) {
         NSTextField *result = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
         result.objectValue = @"Discoveries";
         return result;
     }
-    if ([(CppSharedData*)[outlineView parentForItem:item] ptr] == Global::controller->open_tabs()) {
+    if ([outlineView parentForItem:item] == self.open_tabs)
+    {
         OpenTabCellView* result = [outlineView makeViewWithIdentifier:@"OpenTabRowView" owner:self];
         Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
         result.webpage = w;
@@ -270,10 +358,10 @@
         result.outline = outlineView;
         result.line1 = w->title().toNSString();
         result.hovered = NO;
-//        [self addObserver:result forKeyPath:@"currently_hovered_opentab_cellview" options:NSKeyValueObservingOptionNew context:nil];
         return result;
     }
-    if ([(CppSharedData*)[outlineView parentForItem:item] ptr] == Global::searchDB->search_result()) {
+    if ([outlineView parentForItem:item] == self.search_results)
+    {
         SearchResultCellView* result = [outlineView makeViewWithIdentifier:@"SearchResultsRowView" owner:self];
         Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
         result.line1 = w->title().toNSString();
@@ -288,14 +376,16 @@
 - (CGFloat)outlineView:(NSOutlineView *)outlineView
      heightOfRowByItem:(id)item
 {
-    if ([(CppSharedData*)item ptr] == Global::controller->open_tabs()
-        || [(CppSharedData*)item ptr] == Global::searchDB->search_result()) {
+    if (item == self.open_tabs || item == self.search_results)
+    {
         return 20;
     }
-    if ([(CppSharedData*)[outlineView parentForItem:item] ptr] == Global::controller->open_tabs()) {
+    if ([outlineView parentForItem:item] == self.open_tabs)
+    {
         return 30;
     }
-    if ([(CppSharedData*)[outlineView parentForItem:item] ptr] == Global::searchDB->search_result()) {
+    if ([outlineView parentForItem:item] == self.search_results)
+    {
         return 60;
     }
     return 0;
@@ -307,35 +397,47 @@
     if (item == nil) {
         return 2;
     }
-    if ([(CppSharedData*)item ptr] == Global::controller->open_tabs()) {
-        return Global::controller->open_tabs()->count();
+    if (item == self.open_tabs) {
+        return self.open_tabs.get.count;
     }
-    if ([(CppSharedData*)item ptr] == Global::searchDB->search_result()) {
-        return Global::searchDB->search_result()->count();
+    if (item == self.search_results) {
+        return self.search_results.get.count;
     }
     return 0;
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView
-   isItemExpandable:(id)item
+
+- (BOOL) isHeader:(id)item
 {
     if (item == nil) {
         return YES;
     }
-    if ([(CppSharedData*)item ptr] == Global::controller->open_tabs()) {
+    if (item == self.open_tabs) {
         return YES;
     }
-    if ([(CppSharedData*)item ptr] == Global::searchDB->search_result()) {
+    if (item == self.search_results) {
         return YES;
     }
     return NO;
 }
-//
-//- (BOOL)outlineView:(NSOutlineView *)outlineView
-//   shouldExpandItem:(id)item
-//{
-//    return [self outlineView:outlineView isItemExpandable:item];
-//}
+
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView
+   isItemExpandable:(id)item
+{
+    return [self isHeader:item];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
+{
+    return [self isHeader:item];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView
+   shouldSelectItem:(id)item
+{
+    return ! [self isHeader:item];
+}
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
 shouldShowOutlineCellForItem:(id)item
@@ -347,29 +449,6 @@ shouldShowOutlineCellForItem:(id)item
 {
     Global::controller->searchTabsAsync(QString::fromNSString(m_searchfield.stringValue));
 }
-//
-//- (IBAction)clicked:(id)sender
-//{
-//
-//    NSInteger index = [self.outline clickedRow] - Global::controller->open_tabs()->count() - 2; // -2 for labels
-//    if (index >= 0 && index < Global::searchDB->search_result()->count()) {
-//        // clicked on search result
-//        Webpage* p = Global::searchDB->search_result()->webpage(static_cast<int>(index));
-//        Global::controller->newTabAsync(Controller::TabStatePreview,
-//                                                  p->url(),
-//                                                  Controller::WhenCreatedViewNew,
-//                                                  Controller::WhenExistsViewExisting);
-//        return;
-//    }
-//
-//    index = [self.outline clickedRow] - 1; // -1 for label
-//    if (index >= 0 && index < Global::controller->open_tabs()->count()) {
-//        // clicked on open tab
-//        Global::controller->viewTabAsync(Controller::TabStateOpen, static_cast<int>(index));
-//        return;
-//    }
-//
-//}
 
 - (IBAction)doubleClicked:(id)sender
 {
@@ -383,16 +462,11 @@ shouldShowOutlineCellForItem:(id)item
                                                   Controller::WhenExistsViewExisting);
     }
 }
-//
-//- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
-//{
-//    return [self.outline parentForItem:item] != nil;
-//}
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView
-   shouldSelectItem:(id)item
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification
 {
-    NSInteger row_to_select = [outlineView rowForItem:item];
+    NSInteger row_to_select = [notification.object selectedRow];
+    if (row_to_select == -1) { return; }
     NSInteger index = row_to_select - Global::controller->open_tabs()->count() - 2; // -2 for labels
     if (index >= 0 && index < Global::searchDB->search_result()->count()) {
         // clicked on search result
@@ -401,14 +475,91 @@ shouldShowOutlineCellForItem:(id)item
                                         p->url(),
                                         Controller::WhenCreatedViewNew,
                                         Controller::WhenExistsViewExisting);
-        return YES;
+        return;
     }
     index = row_to_select - 1; // -1 for label
     if (index >= 0 && index < Global::controller->open_tabs()->count()) {
         // clicked on open tab
-        Global::controller->viewTabAsync(Controller::TabStateOpen, static_cast<int>(index));
-        return YES;
+        Global::controller->viewTabAsync(Controller::TabStateOpen, static_cast<int>(index), (__bridge void*)self);
+        return;
     }
-    return [outlineView parentForItem:item] != nil;
+}
+
+- (BOOL)selectionShouldChangeInOutlineView:(NSOutlineView *)outlineView
+{
+    if (Global::controller->current_tab_state() == Controller::TabStateOpen)
+    {
+        return (outlineView.selectedRow == Global::controller->current_open_tab_index() + 1);
+    }
+    return YES;
+}
+
+
+- (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView
+               pasteboardWriterForItem:(id)item
+{
+    NSString* url;
+    if ([item isKindOfClass:CppSharedData.class]) {
+        Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
+        url = w->url().full().toNSString();
+    } else {
+        return nil;
+    }
+    NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
+    [boarditem setString:url forType:NSPasteboardTypeString];
+    return boarditem;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView
+         acceptDrop:(id<NSDraggingInfo>)info
+               item:(id)item
+         childIndex:(NSInteger)index
+{
+    NSLog(@"dropped %ld\n", index);
+    return YES;
+}
+
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView
+                  validateDrop:(id<NSDraggingInfo>)info
+                  proposedItem:(id)item
+            proposedChildIndex:(NSInteger)index
+{
+    if (index >= 0 && item != nil) {
+        NSLog(@"propose %ld %@\n", index, item);
+        return NSDragOperationMove;
+    } else {
+        return NSDragOperationNone;
+    }
+}
+
+//- (void)outlineView:(NSOutlineView *)outlineView
+//updateDraggingItemsForDrag:(id<NSDraggingInfo>)draggingInfo
+//{
+////    outlineView.focusRingType = NSFocusRingTypeNone;
+//}
+
+- (void)outlineView:(NSOutlineView *)outlineView
+    draggingSession:(NSDraggingSession *)session
+   willBeginAtPoint:(NSPoint)screenPoint
+           forItems:(NSArray *)draggedItems
+{
+    outlineView.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleGap;
+}
+
+@end
+
+@implementation MutableArrayWrapper : NSObject
+@synthesize get = m_get;
+- (instancetype)initWithArray:(NSMutableArray*)array
+{
+    self = [super init];
+    self->m_get = array;
+    return self;
+}
+
++ (instancetype)wrap:(NSMutableArray*)array
+{
+    return [[MutableArrayWrapper alloc] initWithArray:array];
 }
 @end
+

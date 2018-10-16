@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>SearchWebView.js</file>
+        <file>OpenLinkInNewWindow.js</file>
     </qresource>
 </RCC>

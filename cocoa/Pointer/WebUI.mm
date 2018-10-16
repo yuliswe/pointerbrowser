@@ -21,7 +21,17 @@
 - (void)mouseDown:(NSEvent*)event
 {
     Global::controller->hideCrawlerRuleTableAsync();
-    [super mouseDown:event];
+    if (event.modifierFlags & NSEventModifierFlagCommand) {
+        NSString *js = [NSString stringWithFormat:@"pointerEnableOpenLinkInNewWindow()"];
+        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
+            [super mouseDown:event];
+        })];
+    } else {
+        NSString *js = [NSString stringWithFormat:@"pointerDisableOpenLinkInNewWindow()"];
+        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
+            [super mouseDown:event];
+        })];
+    }
 }
 
 - (instancetype)initWithTabItem:(TabViewItem*)tabItem
@@ -29,6 +39,7 @@
     WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
     config.applicationNameForUserAgent = @"Version/11.1.2 Safari/605.1.15";
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
+    [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
     self = [super initWithFrame:[tabItem.view bounds] configuration:config];
 //    self.tab = tabItem;
     static WebUIDelegate* uidelegate = [[WebUIDelegate alloc] init];

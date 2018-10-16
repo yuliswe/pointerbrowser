@@ -3,6 +3,8 @@
 
 #include <QtCore/QtCore>
 
+extern QLoggingCategory FileLogging;
+
 typedef QSharedPointer<QFile> QFile_;
 
 class FileManager : public QObject

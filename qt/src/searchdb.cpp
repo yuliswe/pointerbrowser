@@ -77,7 +77,7 @@ bool UpdateWorker::execMany(const QStringList& lines)
         qCInfo(SearchDBLogging) << "UpdateWorker::execMany" << l;
         QSqlQuery query = _db.exec(l);
         if (query.lastError().isValid()) {
-            qCritical() << "UpdateWorker::execMany error when executing"
+            qCCritical(SearchDBLogging) << "UpdateWorker::execMany error when executing"
                         << query.executedQuery()
                         << query.lastError();
             return false;
@@ -94,7 +94,7 @@ bool UpdateWorker::updateWebpage(QString const& url, QString const& property, co
     query.prepare("UPDATE webpage SET " + property + " = ? WHERE url = '" + url + "'");
     query.addBindValue(value);
     if (! query.exec() || query.numRowsAffected() < 1) {
-        qCritical() << "UpdateWorker::updateWebpage failed" << url << property << value
+        qCCritical(SearchDBLogging) << "UpdateWorker::updateWebpage failed" << url << property << value
                     << query.numRowsAffected()
                     << query.executedQuery()
                     << query.lastError();
@@ -113,7 +113,7 @@ bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, co
     query.prepare("UPDATE symbol SET " + property + " = :value WHERE hash = '" + hash +"'");
     query.bindValue(":value", value);
     if (! query.exec() || query.numRowsAffected() < 1) {
-        qCritical() << "UpdateWorker::updateSymbol failed" << hash << property << value
+        qCCritical(SearchDBLogging) << "UpdateWorker::updateSymbol failed" << hash << property << value
                     << query.numRowsAffected()
                     << query.executedQuery()
                     << query.lastError();
@@ -140,7 +140,7 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
     query.prepare("SELECT id FROM webpage WHERE url = :url");
     query.bindValue(":url", url);
     if (! query.exec() || ! query.first() || !query.isValid()) {
-        qCritical() << "UpdateWorker::addSymbols didn't find the webpage" << url
+        qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols didn't find the webpage" << url
                     << query.executedQuery()
                     << query.lastError();
         return false;
@@ -170,11 +170,11 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
                              << query.lastError();
                 }
             } else {
-                qCritical() << "UpdateWorker::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
+                qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
                 return false;
             }
         } else {
-            qCritical() << "UpdateWorker::addSymbols failed to insert to symbol" << hash << text
+            qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols failed to insert to symbol" << hash << text
                         << query.lastError();
         }
     }
@@ -190,7 +190,7 @@ bool UpdateWorker::addWebpage(QString const& url)
     query.prepare("REPLACE INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
     query.bindValue(":url", url);
     if (! query.exec()) {
-        qCritical() << "ERROR: UpdateWorker::addWebpage failed!" << query.lastError();
+        qCCritical(SearchDBLogging) << "ERROR: UpdateWorker::addWebpage failed!" << query.lastError();
         return false;
     };
     return true;
@@ -211,7 +211,7 @@ Webpage_ SearchDB::findWebpage_(QString const& url) const
     query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
     query.addBindValue(url);
     if (! query.first()) {
-        qCritical() << "SearchDB::findWebpage_ not found!" << url;
+        qCCritical(SearchDBLogging) << "SearchDB::findWebpage_ not found!" << url;
         return Webpage_(nullptr);
     }
     QSqlRecord r = query.record();
@@ -228,7 +228,7 @@ QVariantMap SearchDB::findWebpage(QString const& url) const
     Q_ASSUME(url.indexOf("#") == -1);
     Webpage_ p = SearchDB::findWebpage_(url);
     if (p.get() == nullptr) {
-        qCritical() << "SearchDB::findWebpage not found!" << url;
+        qCCritical(SearchDBLogging) << "SearchDB::findWebpage not found!" << url;
         return QVariantMap();
     }
     return p->toQVariantMap();
@@ -338,7 +338,7 @@ void SearchWorker::search(QString const& word)
     qCInfo(SearchDBLogging) << "SearchWorker::search" << q;
     QSqlQuery r = _db.exec(q);
     if (r.lastError().isValid()) {
-        qCritical() << "SearchWorker::search failed"
+        qCCritical(SearchDBLogging) << "SearchWorker::search failed"
                     << q
                     << r.lastError();
         return;

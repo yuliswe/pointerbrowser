@@ -6,6 +6,8 @@
 #include "url.hpp"
 #include "crawler.hpp"
 
+extern QLoggingCategory WebpageLogging;
+
 class Webpage;
 typedef std::shared_ptr<Webpage> Webpage_;
 typedef QList<Webpage_> Webpage_List;

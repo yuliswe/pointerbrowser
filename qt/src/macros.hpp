@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-//#define qDebug QT_NO_QDEBUG_MACRO
+#define qDebug QT_NO_QDEBUG_MACRO
 #include <QtCore/QtCore>
 
 #define STRING(x) #x
@@ -17,9 +17,9 @@
     protected: void lock_##prop##_for_read_write() { m_##prop##_semaphore.acquire(100); } \
     protected: void unlock_##prop##_for_read_write() { m_##prop##_semaphore.release(100); } \
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
-    public: void set_##prop(type const& val) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val); emit dataChanged(); } \
+    public: void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val, sender); emit dataChanged(); } \
     protected: type m_##prop = defv; \
-    public: Q_SIGNAL void prop##_changed(type);
+    public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
 #define PROP_RN_D(type, prop, defv) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
@@ -27,9 +27,9 @@
     protected: void lock_##prop##_for_read_write() { m_##prop##_semaphore.acquire(100); } \
     protected: void unlock_##prop##_for_read_write() { m_##prop##_semaphore.release(100); } \
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
-    protected: void set_##prop(type const& val) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val); emit dataChanged(); } \
+    protected: void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val, sender); emit dataChanged(); } \
     protected: type m_##prop = defv; \
-    public: Q_SIGNAL void prop##_changed(type);
+    public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
 #define PROP_N_D(type, prop, defv) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
@@ -37,9 +37,9 @@
     protected: void lock_##prop##_for_read_write() { m_##prop##_semaphore.acquire(100); } \
     protected: void unlock_##prop##_for_read_write() { m_##prop##_semaphore.release(100); } \
     protected: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
-    protected: void set_##prop(type const& val) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val); emit dataChanged(); } \
+    protected: void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << val; emit prop##_changed(val, sender); emit dataChanged(); } \
     protected: type m_##prop = defv; \
-    public: Q_SIGNAL void prop##_changed(type);
+    public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
 // define write yourself
 #define PROP_RwN_D(type, prop, defv) \
@@ -50,8 +50,8 @@
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
     protected: void custom_set_##prop(type const& val); \
     protected: type m_##prop = defv; \
-    public: void set_##prop(type const& val) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << copy; emit prop##_changed(copy); emit dataChanged(); } \
-    public: Q_SIGNAL void prop##_changed(type);
+    public: void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
+    public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
 #define PROP_R_N_D(type, prop, defv) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
@@ -61,8 +61,8 @@
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
     protected: void custom_set_##prop(type const& val); \
     protected: type m_##prop = defv; \
-    protected: void set_##prop(type const& val) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << copy; emit prop##_changed(copy); emit dataChanged(); } \
-    public: Q_SIGNAL void prop##_changed(type);
+    protected: void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qDebug() << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
+    public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
 #define SIG_TF_0(name) \
     public: Q_SIGNAL void signal_tf_##name(void); \
@@ -77,29 +77,29 @@
     public: void emit_tf_##name(T1 v1,T2 v2) { qInfo() << STRING(name) << v1 << v2; emit signal_tf_##name(v1,v2); }
 
 #define METH_ASYNC_0(RetT, Name) \
-    protected: Q_INVOKABLE RetT Name(); \
-    public: void Name##Async() { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection); } \
-    public: RetT Name##AsyncBlocking() { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r)); return r; }
+    protected: Q_INVOKABLE RetT Name(void const* sender = nullptr); \
+    public: void Name##Async(void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(void const*,sender)); } \
+    public: RetT Name##AsyncBlocking(void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(void const*,sender)); return r; }
 
 #define METH_ASYNC_1(RetT,Name,T1) \
-    protected: Q_INVOKABLE RetT Name(T1); \
-    public: void Name##Async(T1 v1) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1)); } \
-    public: RetT Name##AsyncBlocking(T1 v1) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1)); return r; }
+    protected: Q_INVOKABLE RetT Name(T1, void const* sender = nullptr); \
+    public: void Name##Async(T1 v1, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(void const*,sender)); } \
+    public: RetT Name##AsyncBlocking(T1 v1, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1)); return r; }
 
 #define METH_ASYNC_2(RetT,Name,T1,T2) \
-    protected: Q_INVOKABLE RetT Name(T1,T2); \
-    public: void Name##Async(T1 v1, T2 v2) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2)); } \
-    public: RetT Name##AsyncBlocking(T1 v1, T2 v2) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2)); return r; }
+    protected: Q_INVOKABLE RetT Name(T1, T2, void const* sender = nullptr); \
+    public: void Name##Async(T1 v1, T2 v2, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(void const*,sender)); } \
+    public: RetT Name##AsyncBlocking(T1 v1, T2 v2, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(void const*,sender)); return r; }
 
 #define METH_ASYNC_3(RetT,Name,T1,T2,T3) \
-    protected: Q_INVOKABLE RetT Name(T1,T2,T3); \
-    public: void Name##Async(T1 v1, T2 v2, T3 v3) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3)); } \
-    public: RetT Name##AsyncBlocking(T1 v1, T2 v2, T3 v3) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3)); return r; }
+    protected: Q_INVOKABLE RetT Name(T1,T2,T3,void const* sender = nullptr); \
+    public: void Name##Async(T1 v1, T2 v2, T3 v3, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(void const*,sender)); } \
+    public: RetT Name##AsyncBlocking(T1 v1, T2 v2, T3 v3, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(void const*,sender)); return r; }
 
 #define METH_ASYNC_4(RetT,Name,T1,T2,T3,T4) \
-    protected: Q_INVOKABLE RetT Name(T1,T2,T3,T4); \
-    public: void Name##Async(T1 v1, T2 v2, T3 v3, T4 v4) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4)); } \
-    public: RetT Name##AsyncBlocking(T1 v1, T2 v2, T3 v3, T4 v4) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4)); return r; }
+    protected: Q_INVOKABLE RetT Name(T1,T2,T3,T4, void const* sender = nullptr); \
+    public: void Name##Async(T1 v1, T2 v2, T3 v3, T4 v4, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4), Q_ARG(void const*,sender)); } \
+    public: RetT Name##AsyncBlocking(T1 v1, T2 v2, T3 v3, T4 v4, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4), Q_ARG(void const*,sender)); return r; }
 
 template<class T>
 QDebug& operator<<(QDebug& debug, const std::shared_ptr<T>& ptr)

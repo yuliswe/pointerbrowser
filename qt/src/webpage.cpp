@@ -2,6 +2,8 @@
 #include <QtCore/QtCore>
 #include "global.hpp"
 
+QLoggingCategory WebpageLogging("Webpage");
+
 QDebug& operator<<(QDebug& debug, const FindTextState& state)
 {
     return debug << "FindTextState("<< state.visiable << "," << state.current << "/" << state.found << state.text << ")";
@@ -93,7 +95,7 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
 }
 //void Webpage::custom_set_hash(QString const& val)
 //{
-//    qDebug() << "set_hash" << val;
+//    qCDebug(WebpageLogging) << "set_hash" << val;
 //    m_hash = val;
 //    while (m_hash.length() > 0 && m_hash[0] == "#") {
 //        m_hash.remove(0,1);
@@ -110,7 +112,7 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
 
 //void Webpage::custom_set_uri(QString const& uri)
 //{
-//    qDebug() << "set_uri" << uri;
+//    qCDebug(WebpageLogging) << "set_uri" << uri;
 //    m_uri = uri;
 //    emit uri_changed(m_uri);
 //    QStringList ls = uri.split("#", QString::SkipEmptyParts);
@@ -130,7 +132,7 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
 //void Webpage::set_uri_no_signal(QString const& uri)
 //{
 
-//    qDebug() << "set_uri_no_signal" << uri;
+//    qCDebug(WebpageLogging) << "set_uri_no_signal" << uri;
 //    m_uri = uri;
 //    QStringList ls = uri.split("#", QString::SkipEmptyParts);
 //    if (ls.length() > 0) {
@@ -156,7 +158,7 @@ void Webpage::custom_set_title(QString const& title)
 
 int Webpage::go(QString const& input)
 {
-    qInfo() << "Webpage::go" << input;
+    qCInfo(WebpageLogging) << "Webpage::go" << input;
     set_url(Url::fromAmbiguousText(input));
     findClear();
     return 0;
@@ -282,17 +284,17 @@ int Webpage::updateFindTextFound(int nfound)
 
 bool Webpage::crawlerRuleTableInsertRule(CrawlerRule& rule)
 {
-    qInfo() << "Webpage::crawlerRuleTableInsertRule" << rule;
+    qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule" << rule;
     if (! rule.valid())
     {
-        qCritical() << "Webpage::crawlerRuleTableInsertRule rule is invalid" << rule;
+        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule rule is invalid" << rule;
         return false;
     }
     if (rule.domain() != url().domain())
     {
-        qCritical() << "Webpage::crawlerRuleTableInsertRule rule"
+        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule rule"
                     << rule;
-        qCritical() << "does not match the domain"
+        qCCritical(WebpageLogging) << "does not match the domain"
                     << url();
         return false;
     }
@@ -306,7 +308,7 @@ bool Webpage::crawlerRuleTableInsertRule(CrawlerRule& rule)
 
 bool Webpage::crawlerRuleTableRemoveRule(int idx)
 {
-    qInfo() << "Webpage::crawlerRuleTableInsertRule" << idx;
+    qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule" << idx;
     CrawlerRuleTable_ table = crawler_rule_table();
     if (! table->removeRule(idx))
     {
@@ -320,12 +322,12 @@ bool Webpage::crawlerRuleTableRemoveRule(int idx)
 //{
 //    if (! modified.valid())
 //    {
-//        qCritical() << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
+//        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
 //        return false;
 //    }
 //    if (modified.domain() != url().domain())
 //    {
-//        qCritical() << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
+//        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
 //        return false;
 //    }
 //    CrawlerRuleTable_ table = crawler_rule_table();
@@ -337,15 +339,15 @@ bool Webpage::crawlerRuleTableRemoveRule(int idx)
 
 bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
 {
-    qInfo() << "Webpage::crawlerRuleTableModifyRule" << old << modified;
+    qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule" << old << modified;
     if (! modified.valid())
     {
-        qCritical() << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
+        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
         return false;
     }
     if (modified.domain() != url().domain())
     {
-        qCritical() << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
+        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
         return false;
     }
     CrawlerRuleTable_ table = crawler_rule_table();

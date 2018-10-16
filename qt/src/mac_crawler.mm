@@ -16,7 +16,7 @@
 {
     if ([dataTask countOfBytesExpectedToReceive] > 1024
             || [dataTask countOfBytesReceived] > 1024) {
-        qCritical() << "Aborted because the content is oversized.";
+        qCCritical(CrawlerLogging) << "Aborted because the content is oversized.";
         completionHandler(NSURLSessionResponseCancel);
     } else {
         completionHandler(NSURLSessionResponseAllow);
@@ -29,7 +29,7 @@
   macCrawlerDelegate:(MacCrawlerDelegate*) macCrawlerDelegate
 {
     if (error) {
-        qCritical() << "Aborted with error" << error;
+        qCCritical(CrawlerLogging) << "Aborted with error" << error;
         emit macCrawlerDelegate->urlFailed();
         return;
     }
@@ -41,7 +41,7 @@
         html = [[NSString alloc] initWithData:data encoding:NSWindowsCP1252StringEncoding];
     }
     if (! html) {
-        qCritical() << "Aborted: unknown charset";
+        qCCritical(CrawlerLogging) << "Aborted: unknown charset";
         emit macCrawlerDelegate->urlFailed();
         [html release];
         return;
@@ -82,7 +82,7 @@ MacCrawlerDelegate::MacCrawlerDelegate(MacCrawlerDelegateFactory* factory)
 
 bool MacCrawlerDelegate::loadUrl(const UrlNoHash& uri)
 {
-    qDebug() << "MacCrawlerDelegate::loadUrl" << uri;
+    qCDebug(CrawlerLogging) << "MacCrawlerDelegate::loadUrl" << uri;
     NSURLSession* session = static_cast<NSURLSession*>(factory()->url_session());
     NSURL* url = [NSURL URLWithString:uri.base().toNSString()];
     NSURLSessionDataTask* task =

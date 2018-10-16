@@ -9,6 +9,8 @@
 #include "controller.hpp"
 #include "crawler.hpp"
 
+extern QLoggingCategory GlobalLogging;
+
 class Global : public QObject
 {
     Q_OBJECT
@@ -38,6 +40,8 @@ public slots:
 //    static void registerQMetaTypes();
 
 };
+
+Q_DECLARE_METATYPE(void const*)
 
 #endif // Global_H
 

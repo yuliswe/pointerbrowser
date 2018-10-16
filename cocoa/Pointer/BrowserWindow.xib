@@ -29,7 +29,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="400" y="250" width="678" height="440"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="600" height="400"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ" customClass="BrowserWindowView">
                 <rect key="frame" x="0.0" y="0.0" width="678" height="440"/>
@@ -42,14 +42,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="242" height="440"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
-                                    <scrollView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="60" horizontalPageScroll="10" verticalLineScroll="60" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BHo-7m-Ucn">
+                                    <scrollView focusRingType="none" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="60" horizontalPageScroll="10" verticalLineScroll="60" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BHo-7m-Ucn">
                                         <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="1iJ-u2-c04">
                                             <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <outlineView autoresizesSubviews="NO" verticalHuggingPriority="750" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="60" rowSizeStyle="automatic" viewBased="YES" indentationMarkerFollowsCell="NO" autoresizesOutlineColumn="YES" outlineTableColumn="5vy-NT-zXR" id="7XU-ob-ZGc">
+                                                <outlineView focusRingType="none" verticalHuggingPriority="750" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="60" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationMarkerFollowsCell="NO" autoresizesOutlineColumn="YES" outlineTableColumn="5vy-NT-zXR" id="7XU-ob-ZGc">
                                                     <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -69,18 +69,18 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView identifier="HeaderRowView" id="92r-M5-dOs" userLabel="HeaderRowView">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="19"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="20"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField identifier="HeaderTextField" autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Udy-Vb-FxX">
-                                                                            <rect key="frame" x="8" y="0.0" width="236" height="14"/>
+                                                                            <rect key="frame" x="8" y="6" width="236" height="14"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" usesSingleLineMode="YES" id="Hhb-TG-HC7">
                                                                                 <font key="font" metaFont="systemMedium" size="11"/>
                                                                                 <color key="textColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                             <connections>
-                                                                                <binding destination="92r-M5-dOs" name="value" keyPath="objectValue" id="Yx6-wV-0c0">
+                                                                                <binding destination="92r-M5-dOs" name="value" keyPath="objectValue" id="7fd-j5-rtU">
                                                                                     <dictionary key="options">
                                                                                         <bool key="NSValidatesImmediately" value="YES"/>
                                                                                     </dictionary>
@@ -89,13 +89,13 @@
                                                                         </textField>
                                                                     </subviews>
                                                                     <constraints>
-                                                                        <constraint firstItem="Udy-Vb-FxX" firstAttribute="top" secondItem="92r-M5-dOs" secondAttribute="top" constant="5" id="32q-5r-3V2"/>
+                                                                        <constraint firstItem="Udy-Vb-FxX" firstAttribute="top" secondItem="92r-M5-dOs" secondAttribute="top" id="32q-5r-3V2"/>
                                                                         <constraint firstItem="Udy-Vb-FxX" firstAttribute="leading" secondItem="92r-M5-dOs" secondAttribute="leading" constant="10" id="Fpy-zW-yzf"/>
                                                                         <constraint firstAttribute="trailing" secondItem="Udy-Vb-FxX" secondAttribute="trailing" id="oEB-n0-dQD"/>
                                                                     </constraints>
                                                                 </tableCellView>
                                                                 <tableCellView identifier="OpenTabRowView" id="Qrg-qa-dAH" userLabel="OpenTabRowView" customClass="OpenTabCellView">
-                                                                    <rect key="frame" x="0.0" y="19" width="242" height="30"/>
+                                                                    <rect key="frame" x="0.0" y="20" width="242" height="30"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="agB-Dc-zVv">
@@ -141,12 +141,9 @@
                                                                         <constraint firstItem="oT7-QV-yII" firstAttribute="leading" secondItem="agB-Dc-zVv" secondAttribute="trailing" constant="4" id="rJx-GV-dE0"/>
                                                                         <constraint firstAttribute="trailing" secondItem="oT7-QV-yII" secondAttribute="trailing" id="xBN-Db-BVW"/>
                                                                     </constraints>
-                                                                    <connections>
-                                                                        <outlet property="m_outline" destination="eSe-jn-caN" id="6Ki-Ud-K8J"/>
-                                                                    </connections>
                                                                 </tableCellView>
                                                                 <tableCellView identifier="SearchResultsRowView" id="0FU-Tm-QdB" userLabel="SearchResultsRowView" customClass="SearchResultCellView">
-                                                                    <rect key="frame" x="0.0" y="49" width="242" height="60"/>
+                                                                    <rect key="frame" x="0.0" y="50" width="242" height="60"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="1jP-8f-Nt0" userLabel="line1">
@@ -214,9 +211,8 @@
                                                         </tableColumn>
                                                     </tableColumns>
                                                     <connections>
-                                                        <action selector="clicked:" target="eSe-jn-caN" id="EYl-7I-fxa"/>
                                                         <action trigger="doubleAction" selector="doubleClicked:" target="eSe-jn-caN" id="zla-5z-i3L"/>
-                                                        <outlet property="dataSource" destination="eSe-jn-caN" id="19F-nC-JXz"/>
+                                                        <outlet property="dataSource" destination="eSe-jn-caN" id="Z2T-aF-bW0"/>
                                                         <outlet property="delegate" destination="eSe-jn-caN" id="znx-bZ-6Lq"/>
                                                     </connections>
                                                 </outlineView>
@@ -242,7 +238,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <searchField wantsLayer="YES" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-AJ-hTf" userLabel="Search Tabs" customClass="SearchField">
-                                                    <rect key="frame" x="5" y="7" width="195" height="22"/>
+                                                    <rect key="frame" x="8" y="7" width="189" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search Tabs" usesSingleLineMode="YES" bezelStyle="round" id="73L-3w-x96">
                                                         <font key="font" metaFont="system"/>
@@ -254,7 +250,7 @@
                                                     </connections>
                                                 </searchField>
                                                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0YT-Gb-veT" userLabel="Plus" colorLabel="IBBuiltInLabel-Red">
-                                                    <rect key="frame" x="205" y="4" width="28" height="27"/>
+                                                    <rect key="frame" x="204" y="4" width="28" height="27"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LlS-8c-Qq4">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -440,7 +436,6 @@
                 <outlet property="m_caller_button" destination="wxK-ad-KW5" id="xpS-kf-gGg"/>
             </connections>
         </popover>
-        <userDefaultsController representsSharedInstance="YES" id="PTl-fa-DPW"/>
         <toolbar implicitIdentifier="09710FB8-A40D-432B-9560-4E7B9D035255" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="cDi-iS-eHu">
             <allowedToolbarItems>
                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="96f-W9-927"/>
