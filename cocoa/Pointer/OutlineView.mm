@@ -258,7 +258,7 @@
     
     NSMutableIndexSet* range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(first, last-first+1)];
     [self.outline beginUpdates];
-    [self.outline insertItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationSlideDown];
+    [self.outline insertItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationEffectGap];
     [self.outline endUpdates];
 }
 

@@ -12,7 +12,10 @@ Controller::Controller()
 
 int Controller::newTab(void const* sender)
 {
-    return Controller::newTab(TabStateOpen, home_url(), WhenCreatedViewNew, WhenExistsOpenNew);
+    return Controller::newTab(TabStateOpen,
+                              home_url(),
+                              WhenCreatedViewNew,
+                              WhenExistsOpenNew);
 }
 
 int Controller::newTab(TabState state,

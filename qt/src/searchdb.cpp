@@ -287,7 +287,10 @@ void SearchWorker::search(QString const& word)
     QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QString q;
     if (word == "") {
-        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
+        emit resultChanged(pages);
+        emit searchFinished();
+        return;
+//        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
     } else {
         if (ws.length() == 0) { return; }
         /* WITH LEFT JOIN */

@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#define qDebug QT_NO_QDEBUG_MACRO
+//#define qDebug QT_NO_QDEBUG_MACRO
 #include <QtCore/QtCore>
 
 #define STRING(x) #x
