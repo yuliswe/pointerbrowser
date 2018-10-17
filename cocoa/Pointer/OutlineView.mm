@@ -175,20 +175,22 @@
 
 - (void)updateSelection
 {
-    [self.outline deselectAll:self];
     if (Global::controller->current_tab_state() == Controller::TabStateEmpty) {
+        [self.outline deselectAll:self];
         return;
     }
     int i = Global::controller->current_open_tab_highlight_index();
     if (i >= 0) {
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(i + 1)]; // +1 for label
         [self.outline selectRowIndexes:indexSet byExtendingSelection:NO];
+        return;
     }
     int j = Global::controller->current_tab_search_highlight_index();
     int offset = Global::controller->open_tabs()->count();
     if (j >= 0) {
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(j + offset + 2)]; // +2 for label
         [self.outline selectRowIndexes:indexSet byExtendingSelection:NO];
+        return;
     }
 }
 
@@ -455,7 +457,7 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView
 shouldShowOutlineCellForItem:(id)item
 {
-    return YES;
+    return NO;
 }
 
 - (IBAction)searchTab:(id)sender
@@ -511,22 +513,21 @@ shouldShowOutlineCellForItem:(id)item
 - (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView
                pasteboardWriterForItem:(id)item
 {
+    NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
     if ([self.outline parentForItem:item] == self.open_tabs) {
         NSNumber* index = [NSNumber numberWithInteger:[self.open_tabs.get indexOfObject:item]];
         NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@0, index]];
-        NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
         [boarditem setData:payload forType:NSPasteboardTypeURL];
         return boarditem;
     }
     if ([self.outline parentForItem:item] == self.search_results) {
         NSNumber* index = [NSNumber numberWithInteger:[self.search_results.get indexOfObject:item]];
         NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@1, index]];
-        NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
         [boarditem setData:payload forType:NSPasteboardTypeURL];
 //        [boarditem setString:@"search" forType:NSPasteboardTypeURL];
         return boarditem;
     }
-    return nil;
+    return boarditem;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
@@ -550,7 +551,7 @@ shouldShowOutlineCellForItem:(id)item
         Global::controller->moveTabAsync(Controller::TabStateSearchResult, old_index, Controller::TabStateOpen, index, (__bridge void*)self);
         return YES;
     }
-    return NO;
+    return YES;
 }
 
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView
@@ -558,11 +559,11 @@ shouldShowOutlineCellForItem:(id)item
                   proposedItem:(id)parent
             proposedChildIndex:(NSInteger)index
 {
-    if (parent == self->m_open_tabs) {
+    NSLog(@"propose %@ %d", parent, index);
+    if (parent == self.open_tabs) {
         return NSDragOperationMove;
-    } else {
-        return NSDragOperationNone;
     }
+    return NSDragOperationNone;
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView
