@@ -21,17 +21,18 @@
 - (void)mouseDown:(NSEvent*)event
 {
     Global::controller->hideCrawlerRuleTableAsync();
-    if (event.modifierFlags & NSEventModifierFlagCommand) {
-        NSString *js = [NSString stringWithFormat:@"pointerEnableOpenLinkInNewWindow()"];
-        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
-            [super mouseDown:event];
-        })];
-    } else {
-        NSString *js = [NSString stringWithFormat:@"pointerDisableOpenLinkInNewWindow()"];
-        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
-            [super mouseDown:event];
-        })];
-    }
+    [super mouseDown:event];
+//    if (event.modifierFlags & NSEventModifierFlagCommand) {
+//        NSString *js = [NSString stringWithFormat:@"pointerEnableOpenLinkInNewWindow()"];
+//        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
+//            [super mouseDown:event];
+//        })];
+//    } else {
+//        NSString *js = [NSString stringWithFormat:@"pointerDisableOpenLinkInNewWindow()"];
+//        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
+//            [super mouseDown:event];
+//        })];
+//    }
 }
 
 - (instancetype)initWithTabItem:(TabViewItem*)tabItem
@@ -174,6 +175,26 @@ didCommitNavigation:(WKNavigation *)navigation {
 //    self.webpage->updateTitleAsync(QString::fromNSString(self.title));
 //    NSURL * _Nullable url = self.URL;
 //    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
+}
+
+- (void)webView:(WKWebView *)webView
+decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    if (navigationAction.modifierFlags & NSEventModifierFlagCommand
+        && navigationAction.buttonNumber == 1)
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        Webpage_ w = [(WebUI*)webView webpage];
+        NSURL* url = navigationAction.request.URL;
+        if (Global::controller->open_tabs()->findTab(w.get()) >= 0) {
+            Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        } else {
+            Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        }
+    } else {
+        decisionHandler(WKNavigationActionPolicyAllow);
+    }
 }
 
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str

@@ -134,6 +134,15 @@
                             waitUntilDone:YES];
     });
     
+    QObject::connect(Global::controller->open_tabs().get(), &TabsModel::signal_tf_tab_moved,
+                     [=] (int from, int to)
+                     {
+                         [self performSelectorOnMainThread:@selector(handleOpenTabsMoved:)
+                                                withObject:@{@"from": [NSNumber numberWithInt:from],
+                                                             @"to": [NSNumber numberWithInt:to]}
+                                             waitUntilDone:YES];
+                     });
+    
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsRemoved,
                      [=](const QModelIndex &parent, int first, int last)
     {
@@ -161,15 +170,13 @@
                          if (sender == (__bridge void*)self) { return; }
                          [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
                      });
-//    [self updateSelection];
     [self reloadAll];
 }
 
 - (void)updateSelection
 {
+    [self.outline deselectAll:self];
     if (Global::controller->current_tab_state() == Controller::TabStateEmpty) {
-        NSIndexSet *indexSet = [NSIndexSet indexSet];
-        [self.outline selectRowIndexes:indexSet byExtendingSelection:NO];
         return;
     }
     int i = Global::controller->current_open_tab_highlight_index();
@@ -261,11 +268,18 @@
     NSMutableIndexSet* range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(first, last-first+1)];
     [self.open_tabs.get removeObjectsAtIndexes:range];
     
-    [self.outline beginUpdates];
     NSIndexSet* selected = self.outline.selectedRowIndexes;
+    
+    [self.outline beginUpdates];
     [self.outline deselectAll:self];
     [self.outline removeItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationSlideUp];
-    [self.outline selectRowIndexes:selected byExtendingSelection:NO];
+    NSIndexSet* new_selected;
+    if (Global::controller->current_tab_state() == Controller::TabStatePreview) {
+        new_selected = [NSIndexSet indexSetWithIndex:[selected firstIndex] - 1];
+    } else {
+        new_selected = selected;
+    }
+    [self.outline selectRowIndexes:new_selected byExtendingSelection:NO];
     [self.outline endUpdates];
 }
 
@@ -286,6 +300,17 @@
     [self.outline insertItemsAtIndexes:inserted inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
 }
 
+- (void)handleOpenTabsMoved:(NSDictionary*)indices
+{
+    int from = [indices[@"from"] intValue];
+    int to = [indices[@"to"] intValue];
+    id item = self.open_tabs.get[from];
+    [self.open_tabs.get removeObjectAtIndex:from];
+    [self.open_tabs.get insertObject:item atIndex:(from < to ? to - 1 : to)];
+//    [self handleOpenTabsReset];
+    [self.outline reloadItem:nil reloadChildren:YES];
+}
+
 - (void)handleSearchResultsRemoved:(NSDictionary*)indices
 {
     int first = [indices[@"first"] intValue];
@@ -303,16 +328,6 @@
     [self.outline reloadItem:item reloadChildren:NO];
 }
 
-// called when a tab's title is updated
-- (void)reloadIndex:(NSNumber*)index
-{
-    int idx = index.intValue;
-    id item = [self.outline itemAtRow:idx];
-    NSIndexSet* selected = self.outline.selectedRowIndexes;
-    [self.outline reloadItem:item reloadChildren:YES];
-    [self.outline selectRowIndexes:selected byExtendingSelection:NO];
-}
-
 - (id)outlineView:(NSOutlineView *)outlineView
             child:(NSInteger)index
            ofItem:(id)item
@@ -325,10 +340,8 @@
             return self.search_results;
         }
     } else if (item == self.open_tabs) {
-//        if (index >= self.open_tabs.get.count) { return nil; }
         return self.open_tabs.get[index];
     } else if (item == self.search_results) {
-//        if (index >= self.search_results.get.count) { return nil; }
         return self.search_results.get[index];
     }
     return nil;
@@ -442,7 +455,7 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView
 shouldShowOutlineCellForItem:(id)item
 {
-    return NO;
+    return YES;
 }
 
 - (IBAction)searchTab:(id)sender
@@ -498,45 +511,59 @@ shouldShowOutlineCellForItem:(id)item
 - (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView
                pasteboardWriterForItem:(id)item
 {
-    NSString* url;
-    if ([item isKindOfClass:CppSharedData.class]) {
-        Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
-        url = w->url().full().toNSString();
-    } else {
-        return nil;
+    if ([self.outline parentForItem:item] == self.open_tabs) {
+        NSNumber* index = [NSNumber numberWithInteger:[self.open_tabs.get indexOfObject:item]];
+        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@0, index]];
+        NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
+        [boarditem setData:payload forType:NSPasteboardTypeURL];
+        return boarditem;
     }
-    NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
-    [boarditem setString:url forType:NSPasteboardTypeString];
-    return boarditem;
+    if ([self.outline parentForItem:item] == self.search_results) {
+        NSNumber* index = [NSNumber numberWithInteger:[self.search_results.get indexOfObject:item]];
+        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@1, index]];
+        NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
+        [boarditem setData:payload forType:NSPasteboardTypeURL];
+//        [boarditem setString:@"search" forType:NSPasteboardTypeURL];
+        return boarditem;
+    }
+    return nil;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
          acceptDrop:(id<NSDraggingInfo>)info
-               item:(id)item
+               item:(id)parent
          childIndex:(NSInteger)index
 {
-    NSLog(@"dropped %ld\n", index);
-    return YES;
+    NSPasteboard* pasteboard = info.draggingPasteboard;
+    NSPasteboardItem* boarditem = pasteboard.pasteboardItems[0];
+    NSData* payload = [boarditem dataForType:NSPasteboardTypeURL];
+    NSArray* decoded = [NSKeyedUnarchiver unarchiveObjectWithData:payload];
+    int origin = [decoded[0] intValue];
+    int old_index = [decoded[1] intValue];
+    if (origin == 0)
+    {
+        Global::controller->moveTabAsync(Controller::TabStateOpen, old_index, Controller::TabStateOpen, index, (__bridge void*)self);
+        return YES;
+    }
+    if (origin == 1)
+    {
+        Global::controller->moveTabAsync(Controller::TabStateSearchResult, old_index, Controller::TabStateOpen, index, (__bridge void*)self);
+        return YES;
+    }
+    return NO;
 }
 
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView
                   validateDrop:(id<NSDraggingInfo>)info
-                  proposedItem:(id)item
+                  proposedItem:(id)parent
             proposedChildIndex:(NSInteger)index
 {
-    if (index >= 0 && item != nil) {
-        NSLog(@"propose %ld %@\n", index, item);
+    if (parent == self->m_open_tabs) {
         return NSDragOperationMove;
     } else {
         return NSDragOperationNone;
     }
 }
-
-//- (void)outlineView:(NSOutlineView *)outlineView
-//updateDraggingItemsForDrag:(id<NSDraggingInfo>)draggingInfo
-//{
-////    outlineView.focusRingType = NSFocusRingTypeNone;
-//}
 
 - (void)outlineView:(NSOutlineView *)outlineView
     draggingSession:(NSDraggingSession *)session

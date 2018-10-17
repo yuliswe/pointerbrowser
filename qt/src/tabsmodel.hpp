@@ -20,6 +20,7 @@ class TabsModel : public QAbstractListModel
 
     signals:
         void countChanged();
+    SIG_TF_2(tab_moved, int, int)
 
     public slots:
         void insertWebpage_(int idx, const Webpage_ wp);

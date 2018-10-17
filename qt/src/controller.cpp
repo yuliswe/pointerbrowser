@@ -298,8 +298,10 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
         } else {
             viewTab(toState, toIndex);
         }
-    } else if (fromState == TabStateOpen && toState == TabStateOpen) {
-        Global::searchDB->search_result()->moveTab(fromIndex, toIndex);
+        return 0;
+    } else if (fromState == TabStateSearchResult && toState == TabStateOpen) {
+//        Global::searchDB->search_result()->moveTab(fromIndex, toIndex);
+        return 0;
     }
     return 0;
 }

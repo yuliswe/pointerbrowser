@@ -64,6 +64,13 @@
                          [self performSelectorOnMainThread:@selector(onOpenTabRowsRemoved:) withObject:args waitUntilDone:YES];
                      });
     
+    QObject::connect(Global::controller->open_tabs().get(),
+                     &TabsModel::signal_tf_tab_moved,
+                     [=](int from, int to) {
+                         NSDictionary* args = @{@"from" : [NSNumber numberWithInt:from], @"to": [NSNumber numberWithInt:to]};
+                         [self performSelectorOnMainThread:@selector(handleOpenTabsMoved:) withObject:args waitUntilDone:YES];
+                     });
+    
     QObject::connect(Global::controller->preview_tabs().get(),
                      &TabsModel::rowsInserted,
                      [=](const QModelIndex &parent, int first, int last) {
@@ -85,6 +92,17 @@
                      });
     
     return self;
+}
+
+- (void)handleOpenTabsMoved:(NSDictionary*)indices
+{
+    int from = [indices[@"from"] intValue];
+    int to = [indices[@"to"] intValue];
+    NSTabViewItem* item = [self tabViewItemAtIndex:from];
+    [self removeTabViewItem:item];
+    [self insertTabViewItem:item atIndex:(from < to ? to - 1 : to)];
+    //    [self handleOpenTabsReset]
+//    [self.outline reloadItem:nil reloadChildren:YES];
 }
 
 - (void)onPreviewTabRowsRemoved:(NSDictionary*)args

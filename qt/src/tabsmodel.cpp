@@ -189,6 +189,7 @@ void TabsModel::moveTab(int target, int moveBefore)
 {
     QModelIndex parent;
     moveRows(parent, target, target, parent, moveBefore);
+    emit_tf_tab_moved(target, moveBefore);
 }
 
 bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
