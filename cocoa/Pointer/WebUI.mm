@@ -238,11 +238,12 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
         windowFeatures:(WKWindowFeatures *)windowFeatures
 {
     Webpage_ w = [(WebUI*)webView webpage];
+
     NSURL* url = navigationAction.request.URL;
     if (Global::controller->open_tabs()->findTab(w.get()) >= 0) {
-        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     } else {
-        Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     }
     return nil;
 }
