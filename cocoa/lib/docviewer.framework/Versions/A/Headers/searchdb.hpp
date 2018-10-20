@@ -5,8 +5,7 @@
 #include <QtCore/QtCore>
 #include "webpage.hpp"
 #include "tabsmodel.hpp"
-
-extern QLoggingCategory SearchDBLogging;
+#include "logging.hpp"
 
 typedef QSharedPointer<QSqlRelationalTableModel> QRelTable_;
 

@@ -6,7 +6,6 @@
 #include "global.hpp"
 #include "tabsmodel.hpp"
 
-QLoggingCategory SearchDBLogging("SearchDB");
 
 SearchDB::SearchDB()
 {

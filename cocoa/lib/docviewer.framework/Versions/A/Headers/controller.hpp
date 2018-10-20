@@ -6,8 +6,7 @@
 #include "webpage.hpp"
 #include "macros.hpp"
 #include "crawler.hpp"
-
-extern QLoggingCategory ControllerLogging;
+#include "logging.hpp"
 
 class Controller : public QObject
 {
@@ -45,6 +44,7 @@ public:
     PROP_DEF_BEGINS
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, preview_tabs, shared<TabsModel>())
+    PROP_RN_D(TabsModel_, bookmarks, shared<TabsModel>())
 
     PROP_RN_D(QString, home_url, "about:blank")
     PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
@@ -106,6 +106,9 @@ public:
 
     PROP_DEF_ENDS
 
+    int loadBookmarks();
+    int saveBookmarks();
+
 public:
     Controller();
 
@@ -119,6 +122,10 @@ public:
     int loadLastOpen();
     int saveLastOpen();
     void clearPreviews();
+
+    METH_ASYNC_1(int, removeBookmark, int)
+    METH_ASYNC_2(int, insertBookmark, Webpage_, int)
+    METH_ASYNC_2(int, moveBookmark, int, int)
 
 };
 

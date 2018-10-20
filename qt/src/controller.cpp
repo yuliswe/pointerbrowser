@@ -3,8 +3,6 @@
 #include "global.hpp"
 #include "tabsmodel.hpp"
 
-QLoggingCategory ControllerLogging("Controller");
-
 Controller::Controller()
 {
     viewTab(TabStateEmpty, -1);
@@ -609,4 +607,50 @@ int Controller::searchTabs(QString const& words, void const* sender)
     }
     Global::searchDB->searchAsync(words);
     return 0;
+}
+
+int Controller::saveBookmarks()
+{
+    QVariantList contents;
+    int count = bookmarks()->count();
+    for (int i = 0; i < count; i++) {
+        contents << bookmarks()->webpage_(i)->toQVariantMap();
+    }
+    FileManager::writeDataJsonFileA("bookmarks.json", contents);
+    return count;
+}
+
+int Controller::loadBookmarks()
+{
+    QVariantList contents = FileManager::readDataJsonFileA("bookmarks.json");
+    qCInfo(ControllerLogging) << "BrowserController::loadBookmarks";
+    Webpage_List tabs;
+    for (const QVariant& item : contents) {
+        tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
+    }
+    bookmarks()->replaceModel(tabs);
+    return tabs.count();
+}
+
+int Controller::insertBookmark(Webpage_ w, int idx = 0, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::insertBookmark" << w << idx;
+    bookmarks()->insertWebpage_(idx, w);
+    saveBookmarks();
+    return idx;
+}
+
+int Controller::removeBookmark(int idx, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::removeBookmark" << idx;
+    bookmarks()->removeTab(idx);
+    saveBookmarks();
+    return idx;
+}
+
+int Controller::moveBookmark(int from, int to, void const* sender)
+{
+    bookmarks()->moveTab(from, to);
+    saveBookmarks();
+    return to;
 }

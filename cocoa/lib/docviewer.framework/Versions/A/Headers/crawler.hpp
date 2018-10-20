@@ -4,10 +4,7 @@
 #include <QtCore/QtCore>
 #include "url.hpp"
 #include "macros.hpp"
-
-extern QLoggingCategory CrawlerRuleLogging;
-extern QLoggingCategory CrawlerRuleTableLogging;
-extern QLoggingCategory CrawlerLogging;
+#include "logging.hpp"
 
 class Webpage;
 class Crawler;

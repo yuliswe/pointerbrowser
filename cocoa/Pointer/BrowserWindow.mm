@@ -31,6 +31,7 @@
 @synthesize addressbar = m_addressbar;
 @synthesize newtab_button = m_newtab_button;
 @synthesize crawler_rules_popover = m_crawler_rules_popover;
+@synthesize bookmarks_viewcontroller = m_bookmarks_viewcontroller;
 //@synthesize tabview = m_tabview;
 
 - (NSNibName) windowNibName {
@@ -52,6 +53,7 @@
     [(OutlineViewDelegateAndDataSource*)self.outlineview.delegate updateSelection];
     [self.outlineview registerForDraggedTypes:@[NSPasteboardTypeURL]];
     self.text_find_toolbar.hidden = YES;
+    
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()

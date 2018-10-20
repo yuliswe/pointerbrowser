@@ -5,8 +5,8 @@
 #include "macros.hpp"
 #include "url.hpp"
 #include "crawler.hpp"
+#include "logging.hpp"
 
-extern QLoggingCategory WebpageLogging;
 
 class Webpage;
 typedef std::shared_ptr<Webpage> Webpage_;
@@ -80,6 +80,8 @@ public:
     SIG_TF_1(find_scroll_to_prev_highlight, int)
     SIG_TF_0(find_clear)
     SIG_TF_1(find_highlight_all, QString const&)
+
+    bool isBlank();
 };
 
 Q_DECLARE_METATYPE(Webpage*)

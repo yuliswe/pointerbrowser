@@ -2,8 +2,6 @@
 #include <QtCore/QtCore>
 #include "global.hpp"
 
-QLoggingCategory WebpageLogging("Webpage");
-
 QDebug& operator<<(QDebug& debug, const FindTextState& state)
 {
     return debug << "FindTextState("<< state.visiable << "," << state.current << "/" << state.found << state.text << ")";
@@ -33,6 +31,7 @@ Webpage::Webpage(Url const& url,
 Webpage::Webpage(const QVariantMap& map)
 {
     set_url(Url(map["url"].value<QString>()));
+    set_title(QString(map["title"].value<QString>()));
 }
 
 Webpage::~Webpage() {}
@@ -361,4 +360,9 @@ void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb)
 {
     tb->updateAssociatedUrl(url());
     m_crawler_rule_table = tb;
+}
+
+bool Webpage::isBlank()
+{
+    return url().full() == "about:blank";
 }

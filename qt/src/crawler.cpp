@@ -3,10 +3,6 @@
 #include <gq/Document.h>
 #include <gq/Node.h>
 
-QLoggingCategory CrawlerLogging("Crawler");
-QLoggingCategory CrawlerRuleLogging("CrawlerRule");
-QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable");
-
 uint qHash(const HtmlLink& link)
 {
     return qHash(link.hash) ^ qHash(link.text) ^ qHash(link.url);

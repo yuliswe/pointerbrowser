@@ -336,6 +336,10 @@
                                             <outlet property="m_address_bar" destination="dSB-oO-gPA" id="17y-hc-Zcs"/>
                                         </connections>
                                     </tabView>
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
+                                        <rect key="frame" x="0.0" y="0.0" width="435" height="389"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    </customView>
                                     <box fixedFrame="YES" boxType="custom" borderType="none" title="FindText" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IbV-je-7ev">
                                         <rect key="frame" x="0.0" y="359" width="435" height="30"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -543,6 +547,11 @@
                 <toolbarItem reference="RUc-Mg-OwU"/>
             </defaultToolbarItems>
         </toolbar>
+        <viewController title="Bookmarks View Controller" nibName="Bookmarks" id="vN1-3M-RCZ" userLabel="Bookmarks View Controller" customClass="BookmarksViewController">
+            <connections>
+                <outlet property="m_parent" destination="5Xn-2Q-FkF" id="DlR-Bq-chs"/>
+            </connections>
+        </viewController>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

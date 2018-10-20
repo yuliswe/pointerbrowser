@@ -185,6 +185,8 @@
         int i = Global::controller->open_tabs()->count() + Global::controller->current_preview_tab_index();
         [self selectTabViewItemAtIndex:i];
     }
+    TabViewItem* item = (TabViewItem*)self.selectedTabViewItem;
+    self.hidden = item.webview.webpage->isBlank();
 }
 
 - (void)reload

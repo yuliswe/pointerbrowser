@@ -1,8 +1,6 @@
 #include <QtCore/QtCore>
 #include "filemanager.hpp"
 
-QLoggingCategory FileLogging("File");
-
 FileManager::FileManager(QObject *parent) : QObject(parent)
 {
 }

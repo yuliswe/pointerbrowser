@@ -2,8 +2,7 @@
 #define FILEMANAGER_H
 
 #include <QtCore/QtCore>
-
-extern QLoggingCategory FileLogging;
+#include "logging.hpp"
 
 typedef QSharedPointer<QFile> QFile_;
 

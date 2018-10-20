@@ -16,7 +16,8 @@ HEADERS += \
     docviewer.h \
     url.hpp \
     offline_crawler.hpp \
-    controller.hpp
+    controller.hpp \
+    logging.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -34,7 +35,8 @@ SOURCES += \
     filemanager.cpp \
     url.cpp \
     offline_crawler.cpp \
-    controller.cpp
+    controller.cpp \
+    logging.cpp
 
 RESOURCES += \
     db.qrc \

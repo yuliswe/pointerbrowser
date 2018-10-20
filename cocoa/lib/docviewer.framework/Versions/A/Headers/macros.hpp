@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-//#define qDebug QT_NO_QDEBUG_MACRO
+#define qDebug QT_NO_QDEBUG_MACRO
 #include <QtCore/QtCore>
 
 #define STRING(x) #x
@@ -66,15 +66,15 @@
 
 #define SIG_TF_0(name) \
     public: Q_SIGNAL void signal_tf_##name(void); \
-    public: void emit_tf_##name(void) { qInfo() << STRING(name); emit signal_tf_##name(); }
+    public: void emit_tf_##name(void) { qDebug() << STRING(name); emit signal_tf_##name(); }
 
 #define SIG_TF_1(name, type) \
     public: Q_SIGNAL void signal_tf_##name(type); \
-    public: void emit_tf_##name(type value) { qInfo() << STRING(name) << value; emit signal_tf_##name(value); }
+    public: void emit_tf_##name(type value) { qDebug() << STRING(name) << value; emit signal_tf_##name(value); }
 
 #define SIG_TF_2(name,T1,T2) \
     public: Q_SIGNAL void signal_tf_##name(T1,T2); \
-    public: void emit_tf_##name(T1 v1,T2 v2) { qInfo() << STRING(name) << v1 << v2; emit signal_tf_##name(v1,v2); }
+    public: void emit_tf_##name(T1 v1,T2 v2) { qDebug() << STRING(name) << v1 << v2; emit signal_tf_##name(v1,v2); }
 
 #define METH_ASYNC_0(RetT, Name) \
     protected: Q_INVOKABLE RetT Name(void const* sender = nullptr); \

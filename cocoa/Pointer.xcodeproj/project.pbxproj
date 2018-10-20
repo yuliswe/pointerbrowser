@@ -13,6 +13,8 @@
 		7A0CDD3C2110F15800FE35C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A0CDD3B2110F15800FE35C5 /* main.m */; };
 		7A0CDD442110F22900FE35C5 /* BrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A0CDD432110F22900FE35C5 /* BrowserWindow.xib */; };
 		7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A0CDD462110F3D400FE35C5 /* BrowserWindow.mm */; };
+		7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A11A572217AFD2A003E456E /* Bookmarks.mm */; };
+		7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A11A573217AFD2A003E456E /* Bookmarks.xib */; };
 		7A19D94621180D0300A75028 /* CppData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A19D94521180D0300A75028 /* CppData.mm */; };
 		7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */; };
 		7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A59D52821408F0A001C082B /* CrawlerRulesPopover.xib */; };
@@ -67,6 +69,9 @@
 		7A0CDD432110F22900FE35C5 /* BrowserWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BrowserWindow.xib; sourceTree = "<group>"; };
 		7A0CDD452110F3D400FE35C5 /* BrowserWindow.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrowserWindow.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7A0CDD462110F3D400FE35C5 /* BrowserWindow.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BrowserWindow.mm; sourceTree = "<group>"; };
+		7A11A571217AFD29003E456E /* Bookmarks.mm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bookmarks.mm.h; sourceTree = "<group>"; };
+		7A11A572217AFD2A003E456E /* Bookmarks.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Bookmarks.mm; sourceTree = "<group>"; };
+		7A11A573217AFD2A003E456E /* Bookmarks.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Bookmarks.xib; sourceTree = "<group>"; };
 		7A19D94421180D0300A75028 /* CppData.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CppData.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7A19D94521180D0300A75028 /* CppData.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CppData.mm; sourceTree = "<group>"; };
 		7A25418C2133B8A300BD9A9F /* KeyCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyCode.h; sourceTree = "<group>"; };
@@ -84,7 +89,7 @@
 		7A78880A211C965300675101 /* QtSql.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtSql.framework; path = lib/QtSql.framework; sourceTree = "<group>"; };
 		7A78880B211C965300675101 /* docviewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = docviewer.framework; path = lib/docviewer.framework; sourceTree = "<group>"; };
 		7A78880C211C965400675101 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = lib/QtCore.framework; sourceTree = "<group>"; };
-		7A78880E211C965400675101 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pointer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A78880E211C965400675101 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Pointer.app; path = /Users/ylilarry/lab/docviewer/cocoa/build/Debug/Pointer.app; sourceTree = "<absolute>"; };
 		7A788817211CBB3800675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A788819211CBB5300675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A8D32DE2111A43B0066691C /* WebUI.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebUI.mm.h; sourceTree = "<group>"; };
@@ -114,7 +119,6 @@
 				7A78880C211C965400675101 /* QtCore.framework */,
 				7A78880A211C965300675101 /* QtSql.framework */,
 				7A0CDD312110F15600FE35C5 /* Pointer */,
-				7A78880E211C965400675101 /* Pointer.app */,
 				7A788812211C969100675101 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -130,6 +134,9 @@
 				7A0CDD462110F3D400FE35C5 /* BrowserWindow.mm */,
 				7A0CDD452110F3D400FE35C5 /* BrowserWindow.mm.h */,
 				7A0CDD432110F22900FE35C5 /* BrowserWindow.xib */,
+				7A11A572217AFD2A003E456E /* Bookmarks.mm */,
+				7A11A571217AFD29003E456E /* Bookmarks.mm.h */,
+				7A11A573217AFD2A003E456E /* Bookmarks.xib */,
 				7A19D94521180D0300A75028 /* CppData.mm */,
 				7A19D94421180D0300A75028 /* CppData.mm.h */,
 				7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */,
@@ -228,6 +235,7 @@
 				7A0CDD362110F15800FE35C5 /* Assets.xcassets in Resources */,
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
 				7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */,
+				7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +251,7 @@
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,
+				7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */,
 				7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */,
 				7A651482211EAC2100977B87 /* TabView.mm in Sources */,
 				7A8D32E02111A43B0066691C /* WebUI.mm in Sources */,
@@ -412,8 +421,8 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CODE_SIGN_FLAGS = "--deep";
-				PRODUCT_BUNDLE_IDENTIFIER = docviewer.Pointer;
+				OTHER_CODE_SIGN_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -458,8 +467,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
-				PRODUCT_BUNDLE_IDENTIFIER = docviewer.Pointer;
+				OTHER_CODE_SIGN_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

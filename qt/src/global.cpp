@@ -13,7 +13,6 @@
 #include "mac_crawler.hpp"
 #endif
 
-QLoggingCategory GlobalLogging("Global");
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
@@ -46,9 +45,8 @@ void dumpLibraryInfo()
 {
     qCInfo(GlobalLogging) << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
     qCInfo(GlobalLogging) << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
     qCInfo(GlobalLogging) << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::Qml2ImportsPath" << QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::DataPath" << QLibraryInfo::location(QLibraryInfo::DataPath);
 }
 
 Global::Global(QObject *parent) : QObject(parent)
@@ -77,14 +75,12 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     //    QCoreApplication::setLibraryPaths(QStringList("@executable_path"));
 
     qCoreApplication = new QCoreApplication(argc, argv);
-
+    qCoreApplication->moveToThread(qCoreApplicationThread);
 
     QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
-        //    qInstallMessageHandler(myMessageHandler);
-        moveDataToQCoreApplicationThread();
+        initGlobalObjects();
         dumpLibraryInfo();
-
-        qCInfo(GlobalLogging) << "FileManager::dataPath()" << FileManager::dataPath();
+        QLoggingCategory::setFilterRules(QStringLiteral("*=false"));
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
         qCInfo(GlobalLogging) << "running version" << currV
@@ -120,7 +116,7 @@ Crawler* Global::crawler = nullptr;
 //KeyMaps* Global::keyMaps = new KeyMaps();
 //SettingsModel* Global::settingsModel = new SettingsModel();
 
-void Global::moveDataToQCoreApplicationThread()
+void Global::initGlobalObjects()
 {
     Q_ASSERT(QThread::currentThread() == qCoreApplicationThread);
     searchDB = new SearchDB();
@@ -130,7 +126,5 @@ void Global::moveDataToQCoreApplicationThread()
     crawler = new Crawler(MacCrawlerDelegateFactory_::create(), 100, 1);
 #endif
 
-    controller->moveToThread(qCoreApplicationThread);
-    qCoreApplication->moveToThread(qCoreApplicationThread);
 }
 

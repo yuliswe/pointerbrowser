@@ -80,18 +80,22 @@ MacCrawlerDelegate::MacCrawlerDelegate(MacCrawlerDelegateFactory* factory)
 {
 }
 
-bool MacCrawlerDelegate::loadUrl(const UrlNoHash& uri)
+bool MacCrawlerDelegate::loadUrl(const UrlNoHash& u)
 {
-    qCDebug(CrawlerLogging) << "MacCrawlerDelegate::loadUrl" << uri;
+    UrlNoHash url = u;
+    qCDebug(CrawlerLogging) << "MacCrawlerDelegate::loadUrl" << u;
+    if (url.scheme() == "http") {
+        url.setScheme("https");
+    }
     NSURLSession* session = static_cast<NSURLSession*>(factory()->url_session());
-    NSURL* url = [NSURL URLWithString:uri.base().toNSString()];
+    NSURL* nsurl = [NSURL URLWithString:url.base().toNSString()];
     NSURLSessionDataTask* task =
-            [session dataTaskWithURL:url
+            [session dataTaskWithURL:nsurl
             completionHandler:^void(NSData *data, NSURLResponse *response, NSError *error)
     {
             [session.delegate completionHandler:data response:response error:error macCrawlerDelegate:this];
     }];
-[url release];
+[nsurl release];
 [task resume];
 [task autorelease];
     return true;

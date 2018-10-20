@@ -70,7 +70,9 @@
 #include "qfiledevice.h"
 #include "qfileinfo.h"
 #include "qfileselector.h"
+#if QT_CONFIG(filesystemwatcher)
 #include "qfilesystemwatcher.h"
+#endif
 #if QT_CONFIG(statemachine)
 #include "qfinalstate.h"
 #endif

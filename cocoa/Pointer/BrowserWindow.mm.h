@@ -10,6 +10,7 @@
 #import <WebKit/WebKit.h>
 #import "WebUI.mm.h"
 #import "CrawlerRulesPopover.mm.h"
+#import "Bookmarks.mm.h"
 
 @interface BrowserWindowController : NSWindowController
 {
@@ -26,6 +27,8 @@
     IBOutlet NSButton* m_newtab_button;
     IBOutlet CrawlerRulesPopover* m_crawler_rules_popover;
     IBOutlet NSButton* m_crawler_rule_table_button;
+    IBOutlet NSView* m_bookmarks;
+    IBOutlet BookmarksViewController* m_bookmarks_viewcontroller;
 }
 
 @property NSOutlineView* outlineview;
@@ -39,6 +42,8 @@
 @property NSButton* text_find_prev_button;
 @property NSTextField* text_find_label;
 @property CrawlerRulesPopover* crawler_rules_popover;
+@property BookmarksViewController* bookmarks_viewcontroller;
+@property NSView* bookmarks;
 @end
 
 @interface BrowserWindow : NSWindow

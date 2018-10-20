@@ -8,15 +8,14 @@
 #include "keymaps.hpp"
 #include "controller.hpp"
 #include "crawler.hpp"
-
-extern QLoggingCategory GlobalLogging;
+#include "logging.hpp"
 
 class Global : public QObject
 {
     Q_OBJECT
 
     static QCoreApplication* qCoreApplication;
-    static void moveDataToQCoreApplicationThread();
+    static void initGlobalObjects();
 
 public:
     explicit Global(QObject *parent = nullptr);
