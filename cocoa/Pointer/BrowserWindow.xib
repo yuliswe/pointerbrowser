@@ -418,7 +418,7 @@
                             </visualEffectView>
                         </subviews>
                         <holdingPriorities>
-                            <real value="250"/>
+                            <real value="251"/>
                             <real value="250"/>
                         </holdingPriorities>
                     </splitView>

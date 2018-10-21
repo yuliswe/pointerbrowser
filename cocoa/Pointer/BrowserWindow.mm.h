@@ -20,6 +20,7 @@
 - (IBAction)menuFocusFindSymbol:(id)sender;
 - (IBAction)menuFocusAddress:(id)sender;
 - (IBAction)menuAddBookmark:(id)sender;
+- (IBAction)menuShowNextTab:(id)sender;
 @end
 
 @interface BrowserWindowController : NSWindowController

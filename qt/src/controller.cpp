@@ -722,3 +722,15 @@ int Controller::renameBookmark(Webpage_ wp, QString const& title, void const* se
     saveBookmarks();
     return 0;
 }
+
+int Controller::showNextOpenTab(void const* sender)
+{
+    qCInfo(ControllerLogging) << "Controller::showNextTab";
+    if (open_tabs()->count() == 0) {
+        return -1;
+    }
+    if (current_open_tab_index() + 1 < open_tabs()->count()) {
+        return viewTab(TabStateOpen, current_open_tab_index() + 1, sender);
+    }
+    return viewTab(TabStateOpen, 0, sender);
+}

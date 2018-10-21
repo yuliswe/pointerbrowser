@@ -189,6 +189,11 @@
     Global::controller->currentTabWebpageBookmarkAsync();
 }
 
+- (void)menuShowNextTab:(id)sender
+{
+    Global::controller->showNextOpenTabAsync();
+}
+
 @end
 
 @implementation BrowserWindow
