@@ -156,24 +156,28 @@
     [self.window makeFirstResponder:self.tab_searchfield];
 }
 
-- (void)menuFocusFindText:(id)sender
-{
-    Global::controller->currentTabWebpageFindTextShowAsync();
-}
-
 - (void)menuRefreshTab:(id)sender
 {
     [self.addressbar.surface.refresh_button handleClicked];
 }
 
-- (void)menuCloseTab:(id)sender
-{
-    Global::controller->closeTabAsync();
-}
-
 - (void)menuNewTab:(id)sender
 {
     [self.newtab_button performClick:self];
+}
+@end
+
+@implementation NSResponder(Pointer)
+
+
+- (void)menuFocusFindText:(id)sender
+{
+    Global::controller->currentTabWebpageFindTextShowAsync();
+}
+
+- (void)menuCloseTab:(id)sender
+{
+    Global::controller->closeTabAsync();
 }
 
 - (void)menuAddBookmark:(id)sender
@@ -201,6 +205,13 @@
         }
         [self makeFirstResponder:self.windowController];
         return YES;
+    }
+    if (event.keyCode == kVK_Tab &&
+        (event.modifierFlags & NSEventModifierFlagControl))
+    {
+        [self makeFirstResponder:[(BrowserWindowController*)self.windowController outlineview]];
+//        Global::controller->showNextOpenTabAsync();
+//        return YES;
     }
     return [super performKeyEquivalent:event];
 }
