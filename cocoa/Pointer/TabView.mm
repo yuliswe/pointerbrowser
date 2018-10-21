@@ -83,6 +83,11 @@
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
                          [self performSelectorOnMainThread:@selector(onPreviewTabRowsRemoved:) withObject:args waitUntilDone:YES];
                      });
+    QObject::connect(Global::controller->preview_tabs().get(),
+                     &TabsModel::modelReset,
+                     [=]() {
+                         [self performSelectorOnMainThread:@selector(handle_preview_tab_model_reset) withObject:nil waitUntilDone:YES];
+                     });
     [self reload];
     // selection changed signal should only be connected after view is for sure loaded
     QObject::connect(Global::controller,
@@ -116,7 +121,18 @@
     for (int i = 0; i < count; i++) {
         NSTabViewItem* item = current[i+first+offset];
         [self removeTabViewItem:item];
-        // [item release];
+//        [[(TabViewItem*)item webview] loadUri:@"about:blank"];
+    }
+}
+
+- (void)handle_preview_tab_model_reset
+{
+    int offset = Global::controller->open_tabs()->count();
+    auto current = self.tabViewItems;
+    int count = self.tabViewItems.count;
+    for (int i = offset; i < count; i++) {
+        NSTabViewItem* item = current[i];
+        [self removeTabViewItem:item];
     }
 }
 

@@ -65,20 +65,22 @@ int Controller::newTab(int index,
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
-            idx = open_tabs()->findTab(uri);
-            if (idx > -1) {
-                viewTab(TabStateOpen, idx);
+            if ((idx = open_tabs()->findTab(uri)) > -1) {
+                if (newBehavior == WhenCreatedViewNew) {
+                    viewTab(TabStateOpen, idx);
+                }
                 return idx;
-            }
-            idx = preview_tabs()->findTab(uri);
-            if (idx == -1) {
-                preview_tabs()->insertTab(idx = index, uri);
+            } else if ((idx = preview_tabs()->findTab(uri)) > -1) {
+                if (newBehavior == WhenCreatedViewNew) {
+                    viewTab(TabStatePreview, idx);
+                }
+                return idx;
             }
         } else {
             preview_tabs()->insertTab(idx = index, uri);
-        }
-        if (newBehavior == WhenCreatedViewNew) {
-            viewTab(state, idx);
+            if (newBehavior == WhenCreatedViewNew) {
+                viewTab(state, idx);
+            }
         }
     }
     return idx;
@@ -441,7 +443,7 @@ bool Controller::updateWebpageTitle(Webpage_ wp, QString const& title, void cons
 
 bool Controller::updateWebpageProgress(Webpage_ wp, float progress, void const* sender)
 {
-    qCInfo(ControllerLogging) << "Controller::updateWebpageProgress" << wp << progress;
+    qCDebug(ControllerLogging) << "Controller::updateWebpageProgress" << wp << progress;
     wp->updateProgress(progress);
     return true;
 }

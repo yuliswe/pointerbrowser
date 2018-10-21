@@ -89,6 +89,11 @@ uint qHash(const UrlNoHash& url)
     return qHash(url.base());
 }
 
+bool operator==(const Url& a, const Url& b)
+{
+    return a.full() == b.full();
+}
+
 bool operator==(const UrlNoHash& a, const UrlNoHash& b)
 {
     return a.base() == b.base();

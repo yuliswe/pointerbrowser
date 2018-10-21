@@ -14,10 +14,6 @@
 
 @synthesize webpage = m_webpage;
 
-- (void)dealloc
-{
-}
-
 - (void)mouseDown:(NSEvent*)event
 {
     Global::controller->hideCrawlerRuleTableAsync();
@@ -55,6 +51,11 @@
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self connect];
     return self;
+}
+
+- (void)dealloc
+{
+    [self loadUri:@"about:blank"];
 }
 
 - (void)connect
@@ -187,11 +188,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ w = [(WebUI*)webView webpage];
         NSURL* url = navigationAction.request.URL;
-        if (Global::controller->open_tabs()->findTab(w.get()) >= 0) {
-            Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
-        } else {
-            Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
-        }
+        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }

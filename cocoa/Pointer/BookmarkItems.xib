@@ -42,7 +42,7 @@
                     <constraints>
                         <constraint firstAttribute="width" secondItem="RrS-vq-bwl" secondAttribute="height" multiplier="1:0.97" id="wwS-Nm-Ezw"/>
                     </constraints>
-                    <color key="fillColor" name="secondarySelectedControlColor" catalog="System" colorSpace="catalog"/>
+                    <color key="fillColor" red="0.87825858160621761" green="0.87825858160621761" blue="0.87825858160621761" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </box>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lbb-is-1Kf">
                     <rect key="frame" x="-2" y="46" width="71" height="35"/>
