@@ -15,6 +15,7 @@ public:
     QString full() const;
     QString domain() const;
     QString schemeless() const;
+    bool isBlank();
     virtual ~Url() = default;
     static Url fromAmbiguousText(QString const&);
 };

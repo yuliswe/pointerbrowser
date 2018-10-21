@@ -72,6 +72,29 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_tf_disable_crawler_rule_table) withObject:nil waitUntilDone:YES];
                      });
+
+    QObject::connect(Global::controller,
+                     &Controller::bookmark_page_visible_changed,
+                     [=](bool visible)
+                     {
+                         if (visible) {
+                             [self performSelectorOnMainThread:@selector(handle_show_bookmarkpage) withObject:nil waitUntilDone:YES];
+                         } else {
+                             [self performSelectorOnMainThread:@selector(handle_hide_bookmarkpage) withObject:nil waitUntilDone:YES];
+                         }
+                     });
+}
+
+- (void)handle_show_bookmarkpage
+{
+    self->m_bookmarks.hidden = NO;
+    self->m_tabview.hidden = YES;
+}
+
+- (void)handle_hide_bookmarkpage
+{
+    self->m_bookmarks.hidden = YES;
+    self->m_tabview.hidden = NO;
 }
 
 - (void)handle_tf_enable_crawler_rule_table
@@ -159,6 +182,11 @@
 - (void)menuNewTab:(id)sender
 {
     [self.newtab_button performClick:self];
+}
+
+- (void)menuAddBookmark:(id)sender
+{
+    Global::controller->currentTabWebpageBookmarkAsync();
 }
 
 @end

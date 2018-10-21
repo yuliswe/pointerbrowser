@@ -2,6 +2,8 @@
 #define LOGGING_HPP
 #include <QtCore/QtCore>
 
+extern QLoggingCategory MacroLogging;
+
 extern QLoggingCategory WebpageLogging;
 extern QLoggingCategory GlobalLogging;
 extern QLoggingCategory SearchDBLogging;

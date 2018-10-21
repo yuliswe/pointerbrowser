@@ -16,7 +16,7 @@ public:
     virtual ~Controller() = default;
 
     enum TabState {
-        TabStateEmpty,
+        TabStateNull,
         TabStateOpen,
         TabStatePreview,
         TabStateSearchResult
@@ -49,8 +49,8 @@ public:
     PROP_RN_D(QString, home_url, "about:blank")
     PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
     // current tab
-    PROP_RN_D(TabState, current_tab_state, TabStateEmpty)
-    PROP_N_D(Webpage*, current_tab_webpage, nullptr)
+    PROP_RN_D(TabState, current_tab_state, TabStateNull)
+    PROP_N_D(Webpage_, current_tab_webpage, nullptr)
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     // tabs highlighting
@@ -59,6 +59,8 @@ public:
     PROP_RN_D(int, current_tab_search_highlight_index, -1)
     // welcome page
     PROP_RN_D(bool, welcome_page_visible, true)
+    // bookmark page
+    PROP_RN_D(bool, bookmark_page_visible, false)
     // page search
     PROP_RN_D(FindTextState, current_webpage_find_text_state, FindTextState{})
     // tab search
@@ -95,9 +97,12 @@ public:
     METH_ASYNC_0(int, currentTabWebpageFindTextShow)
     METH_ASYNC_1(int, currentTabWebpageFindTextNext, QString const&)
     METH_ASYNC_1(int, currentTabWebpageFindTextPrev, QString const&)
+    METH_ASYNC_0(int, currentTabWebpageBookmark)
     METH_ASYNC_0(int, showCrawlerRuleTable)
     METH_ASYNC_0(int, hideCrawlerRuleTable)
     METH_ASYNC_1(int, searchTabs, QString const&)
+    METH_ASYNC_0(int, showBookmarkPage)
+    METH_ASYNC_0(int, hideBookmarkPage)
 
     METH_ASYNC_2(bool, updateWebpageUrl, Webpage_, Url const&)
     METH_ASYNC_2(bool, updateWebpageTitle, Webpage_, QString const&)
@@ -108,12 +113,14 @@ public:
 
     int loadBookmarks();
     int saveBookmarks();
+    int insertBookmark(Webpage_, int);
 
 public:
     Controller();
 
     METH_ASYNC_0(int, newTab)
     METH_ASYNC_4(int, newTab, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTab, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_2(int, viewTab, Controller::TabState, int)
     METH_ASYNC_4(int, moveTab, Controller::TabState, int, Controller::TabState, int)
     METH_ASYNC_0(int, closeTab)
@@ -124,7 +131,7 @@ public:
     void clearPreviews();
 
     METH_ASYNC_1(int, removeBookmark, int)
-    METH_ASYNC_2(int, insertBookmark, Webpage_, int)
+    METH_ASYNC_2(int, renameBookmark, Webpage_, QString const&)
     METH_ASYNC_2(int, moveBookmark, int, int)
 
 };

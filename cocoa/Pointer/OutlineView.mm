@@ -166,7 +166,7 @@
     
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
-                     [=](Webpage* w, void const* sender) {
+                     [=](Webpage_ w, void const* sender) {
                          if (sender == (__bridge void*)self) { return; }
                          [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
                      });
@@ -175,7 +175,7 @@
 
 - (void)updateSelection
 {
-    if (Global::controller->current_tab_state() == Controller::TabStateEmpty) {
+    if (Global::controller->current_tab_state() == Controller::TabStateNull) {
         [self.outline deselectAll:self];
         return;
     }
@@ -514,42 +514,27 @@ shouldShowOutlineCellForItem:(id)item
                pasteboardWriterForItem:(id)item
 {
     NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
-    if ([self.outline parentForItem:item] == self.open_tabs) {
-        NSNumber* index = [NSNumber numberWithInteger:[self.open_tabs.get indexOfObject:item]];
-        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@0, index]];
-        [boarditem setData:payload forType:NSPasteboardTypeURL];
-        return boarditem;
-    }
-    if ([self.outline parentForItem:item] == self.search_results) {
-        NSNumber* index = [NSNumber numberWithInteger:[self.search_results.get indexOfObject:item]];
-        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@[@1, index]];
-        [boarditem setData:payload forType:NSPasteboardTypeURL];
-//        [boarditem setString:@"search" forType:NSPasteboardTypeURL];
-        return boarditem;
-    }
+    Webpage_ webpage = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
+    NSString* urlstr = webpage->url().full().toNSString();
+    [boarditem setString:urlstr forType:NSPasteboardTypeURL];
     return boarditem;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
          acceptDrop:(id<NSDraggingInfo>)info
                item:(id)parent
-         childIndex:(NSInteger)index
+         childIndex:(NSInteger)new_index
 {
     NSPasteboard* pasteboard = info.draggingPasteboard;
     NSPasteboardItem* boarditem = pasteboard.pasteboardItems[0];
-    NSData* payload = [boarditem dataForType:NSPasteboardTypeURL];
-    NSArray* decoded = [NSKeyedUnarchiver unarchiveObjectWithData:payload];
-    int origin = [decoded[0] intValue];
-    int old_index = [decoded[1] intValue];
-    if (origin == 0)
+    NSString* urlstr = [boarditem stringForType:NSPasteboardTypeURL];
+    
+    int old_index = Global::controller->open_tabs()->findTab(QString::fromNSString(urlstr));
+    if (old_index >= 0)
     {
-        Global::controller->moveTabAsync(Controller::TabStateOpen, old_index, Controller::TabStateOpen, index, (__bridge void*)self);
-        return YES;
-    }
-    if (origin == 1)
-    {
-        Global::controller->moveTabAsync(Controller::TabStateSearchResult, old_index, Controller::TabStateOpen, index, (__bridge void*)self);
-        return YES;
+        Global::controller->moveTabAsync(Controller::TabStateOpen, old_index, Controller::TabStateOpen, new_index, (__bridge void*)self);
+    } else {
+        Global::controller->newTabAsync(new_index, Controller::TabStateOpen, QString::fromNSString(urlstr), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
     }
     return YES;
 }
@@ -559,9 +544,14 @@ shouldShowOutlineCellForItem:(id)item
                   proposedItem:(id)parent
             proposedChildIndex:(NSInteger)index
 {
-    NSLog(@"propose %@ %d", parent, index);
     if (parent == self.open_tabs) {
-        return NSDragOperationMove;
+        if (index < 0) {
+            [outlineView setDropItem:parent dropChildIndex:0];
+        }
+        if (info.draggingSource == outlineView) {
+            return NSDragOperationMove;
+        }
+        return NSDragOperationCopy;
     }
     return NSDragOperationNone;
 }

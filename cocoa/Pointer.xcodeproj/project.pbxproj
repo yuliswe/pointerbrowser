@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A027689217B89BB004A09F6 /* BookmarkItems.mm */; };
+		7A02768C217B89BB004A09F6 /* BookmarkItems.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A02768A217B89BB004A09F6 /* BookmarkItems.xib */; };
 		7A0CDD342110F15600FE35C5 /* Application.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A0CDD332110F15600FE35C5 /* Application.mm */; };
 		7A0CDD362110F15800FE35C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A0CDD352110F15800FE35C5 /* Assets.xcassets */; };
 		7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A0CDD372110F15800FE35C5 /* MainMenu.xib */; };
@@ -59,6 +61,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7A027687217AFED3004A09F6 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pointer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A027688217B89BB004A09F6 /* BookmarkItems.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BookmarkItems.mm.h; sourceTree = "<group>"; };
+		7A027689217B89BB004A09F6 /* BookmarkItems.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BookmarkItems.mm; sourceTree = "<group>"; };
+		7A02768A217B89BB004A09F6 /* BookmarkItems.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BookmarkItems.xib; sourceTree = "<group>"; };
 		7A0CDD322110F15600FE35C5 /* Application.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Application.mm.h; sourceTree = "<group>"; };
 		7A0CDD332110F15600FE35C5 /* Application.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Application.mm; sourceTree = "<group>"; };
 		7A0CDD352110F15800FE35C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -89,7 +95,6 @@
 		7A78880A211C965300675101 /* QtSql.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtSql.framework; path = lib/QtSql.framework; sourceTree = "<group>"; };
 		7A78880B211C965300675101 /* docviewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = docviewer.framework; path = lib/docviewer.framework; sourceTree = "<group>"; };
 		7A78880C211C965400675101 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = lib/QtCore.framework; sourceTree = "<group>"; };
-		7A78880E211C965400675101 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Pointer.app; path = /Users/ylilarry/lab/docviewer/cocoa/build/Debug/Pointer.app; sourceTree = "<absolute>"; };
 		7A788817211CBB3800675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A788819211CBB5300675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A8D32DE2111A43B0066691C /* WebUI.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebUI.mm.h; sourceTree = "<group>"; };
@@ -120,6 +125,7 @@
 				7A78880A211C965300675101 /* QtSql.framework */,
 				7A0CDD312110F15600FE35C5 /* Pointer */,
 				7A788812211C969100675101 /* Frameworks */,
+				7A027687217AFED3004A09F6 /* Pointer.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -137,6 +143,9 @@
 				7A11A572217AFD2A003E456E /* Bookmarks.mm */,
 				7A11A571217AFD29003E456E /* Bookmarks.mm.h */,
 				7A11A573217AFD2A003E456E /* Bookmarks.xib */,
+				7A027688217B89BB004A09F6 /* BookmarkItems.mm.h */,
+				7A027689217B89BB004A09F6 /* BookmarkItems.mm */,
+				7A02768A217B89BB004A09F6 /* BookmarkItems.xib */,
 				7A19D94521180D0300A75028 /* CppData.mm */,
 				7A19D94421180D0300A75028 /* CppData.mm.h */,
 				7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */,
@@ -186,7 +195,7 @@
 			);
 			name = Pointer;
 			productName = Pointer;
-			productReference = 7A78880E211C965400675101 /* Pointer.app */;
+			productReference = 7A027687217AFED3004A09F6 /* Pointer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -233,6 +242,7 @@
 			files = (
 				7A0CDD442110F22900FE35C5 /* BrowserWindow.xib in Resources */,
 				7A0CDD362110F15800FE35C5 /* Assets.xcassets in Resources */,
+				7A02768C217B89BB004A09F6 /* BookmarkItems.xib in Resources */,
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
 				7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */,
 				7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */,
@@ -248,6 +258,7 @@
 			files = (
 				7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */,
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
+				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,

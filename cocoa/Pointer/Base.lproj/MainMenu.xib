@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -74,11 +75,6 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
-                            <menuItem title="Close Pointer" keyEquivalent="q" id="DVo-aG-piG">
-                                <connections>
-                                    <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Close Tab" keyEquivalent="w" id="2bW-d6-XCB">
                                 <connections>
                                     <action selector="menuCloseTab:" target="-1" id="02K-VD-SNf"/>
@@ -354,14 +350,34 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Bookmarks" id="KbU-c8-hAL">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Bookmarks" id="tNu-Ls-m4x">
+                        <items>
+                            <menuItem title="Add Bookmark" keyEquivalent="b" id="e3c-IV-cbi">
+                                <connections>
+                                    <action selector="menuAddBookmark:" target="-1" id="Zre-C7-4Tt"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Edit Bookmarks" id="6am-FZ-k80">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="N2C-PC-Hgh"/>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Help" id="wpr-3q-Mcd">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                         <items>
-                            <menuItem title="Pointer Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                            <menuItem title="Acknowledgments" id="FKE-Sm-Kum">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>
                                 </connections>
+                            </menuItem>
+                            <menuItem title="User Privacy" id="WAZ-v0-jFU">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                             </menuItem>
                         </items>
                     </menu>

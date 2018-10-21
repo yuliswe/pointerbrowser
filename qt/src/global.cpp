@@ -80,7 +80,6 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
         initGlobalObjects();
         dumpLibraryInfo();
-        QLoggingCategory::setFilterRules(QStringLiteral("*=false"));
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
         qCInfo(GlobalLogging) << "running version" << currV
@@ -91,6 +90,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         FileManager::mkDataDir();
         searchDB->connect();
         controller->loadLastOpen();
+        controller->loadBookmarks();
     });
 
     QObject::connect(qCoreApplicationThread, &QThread::finished, [=]() {

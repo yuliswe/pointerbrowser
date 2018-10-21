@@ -62,6 +62,7 @@ public:
     PROP_R_N_D(QString, title, "")
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(QString, title_3, "")
+    PROP_RN_D(bool, is_blank, true)
     PROP_RN_D(float, load_progress, 0)
 //    PROP_RN_D(QString, find_text, "")
 //    PROP_RN_D(bool, find_text_visiable, false)
@@ -80,8 +81,6 @@ public:
     SIG_TF_1(find_scroll_to_prev_highlight, int)
     SIG_TF_0(find_clear)
     SIG_TF_1(find_highlight_all, QString const&)
-
-    bool isBlank();
 };
 
 Q_DECLARE_METATYPE(Webpage*)

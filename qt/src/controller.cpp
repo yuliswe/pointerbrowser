@@ -5,18 +5,29 @@
 
 Controller::Controller()
 {
-    viewTab(TabStateEmpty, -1);
+    viewTab(TabStateNull, -1);
 }
 
 int Controller::newTab(void const* sender)
 {
-    return Controller::newTab(TabStateOpen,
+    return Controller::newTab(0, TabStateOpen,
                               home_url(),
                               WhenCreatedViewNew,
-                              WhenExistsOpenNew);
+                              WhenExistsOpenNew,
+                              sender);
 }
 
 int Controller::newTab(TabState state,
+                       Url const& uri,
+                       WhenCreated newBehavior,
+                       WhenExists whenExists,
+                       void const* sender)
+{
+    return newTab(0, state, uri, newBehavior, whenExists, sender);
+}
+
+int Controller::newTab(int index,
+                       TabState state,
                        Url const& uri,
                        WhenCreated newBehavior,
                        WhenExists whenExists,
@@ -33,11 +44,11 @@ int Controller::newTab(TabState state,
         if (whenExists == WhenExistsViewExisting) {
             idx = open_tabs()->findTab(uri);
             if (idx == -1) {
-                open_tabs()->insertTab(idx = 0, uri);
+                open_tabs()->insertTab(idx = index, uri);
                 inserted = true;
             }
         } else {
-            open_tabs()->insertTab(idx = 0, uri);
+            open_tabs()->insertTab(idx = index, uri);
             inserted = true;
         }
         if (newBehavior == WhenCreatedViewNew) {
@@ -61,10 +72,10 @@ int Controller::newTab(TabState state,
             }
             idx = preview_tabs()->findTab(uri);
             if (idx == -1) {
-                preview_tabs()->insertTab(idx = 0, uri);
+                preview_tabs()->insertTab(idx = index, uri);
             }
         } else {
-            preview_tabs()->insertTab(idx = 0, uri);
+            preview_tabs()->insertTab(idx = index, uri);
         }
         if (newBehavior == WhenCreatedViewNew) {
             viewTab(state, idx);
@@ -80,7 +91,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     if (current_tab_state() == state
             && state == TabStateOpen
             && 0 <= i && i < open_tabs()->count()
-            && current_tab_webpage() == open_tabs()->webpage(i)
+            && current_tab_webpage().get() == open_tabs()->webpage(i)
             && current_open_tab_index() == i)
     {
         return 0;
@@ -88,7 +99,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     if (current_tab_state() == state
             && state == TabStatePreview
             && 0 <= i && i < preview_tabs()->count()
-            && current_tab_webpage() == preview_tabs()->webpage(i)
+            && current_tab_webpage().get() == preview_tabs()->webpage(i)
             && current_preview_tab_index() == i)
     {
         return 0;
@@ -101,18 +112,20 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         QObject::disconnect(old_page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
         QObject::disconnect(old_page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
         QObject::disconnect(old_page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
+        QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
         old_page = nullptr;
     }
-    if (state == TabStateEmpty) {
+    if (state == TabStateNull) {
         old_page = nullptr;
         emit_tf_disable_crawler_rule_table();
         set_current_open_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         set_current_tab_search_highlight_index(-1,sender);
-        set_current_tab_state(TabStateEmpty);
+        set_current_tab_state(TabStateNull);
         set_current_tab_webpage(nullptr,sender);
         set_welcome_page_visible(true);
+        showBookmarkPage();
         FindTextState state = current_webpage_find_text_state();
         state.visiable = false;
         set_current_webpage_find_text_state(state);
@@ -149,17 +162,23 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     }
     Q_ASSERT(page != nullptr);
     set_current_tab_state(state);
-    set_current_tab_webpage(page.get(),sender);
+    set_current_tab_webpage(page,sender);
     set_address_bar_load_progress(page->load_progress());
     set_address_bar_title(page->title()); // title must be set after uri
     set_current_webpage_find_text_state(page->find_text_state());
     set_welcome_page_visible(false);
+    if (page->is_blank()) {
+        showBookmarkPage();
+    } else {
+        hideBookmarkPage();
+    }
     set_current_webpage_crawler_rule_table(page->crawler_rule_table());
     // set up load progress watcher
     QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
     QObject::connect(page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
     QObject::connect(page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
     QObject::connect(page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
+    QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
     old_page = page;
     return i;
 }
@@ -190,7 +209,7 @@ int Controller::closeTab(TabState state, int index, void const* sender)
                 } // if this is the only one
                 else {
                     open_tabs()->removeTab(index);
-                    viewTab(TabStateEmpty, -1);
+                    viewTab(TabStateNull, -1);
                 }
             } else if (current_open_tab_index() > index) {
                 open_tabs()->removeTab(index);
@@ -209,7 +228,7 @@ int Controller::closeTab(TabState state, int index, void const* sender)
         if (open_tabs()->count() > 0) {
             viewTab(TabStateOpen, 0);
         } else {
-            viewTab(TabStateEmpty, -1);
+            viewTab(TabStateNull, -1);
         }
         // at the moment there is only one way to close a preview tab:
         // use ctrl+w when current view is a preview. in this case we
@@ -236,7 +255,7 @@ int Controller::closeTab(TabState state, Url const& uri, void const* sender)
 int Controller::closeTab(void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::closeTab()";
-    if (current_tab_state() == TabState::TabStateEmpty)
+    if (current_tab_state() == TabState::TabStateNull)
     {
         qCDebug(ControllerLogging) << "No current tab";
         return 0;
@@ -311,8 +330,8 @@ int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
     hideCrawlerRuleTable();
-    Webpage* p = current_tab_webpage();
-    if (p && current_tab_state() == TabStateOpen) {
+    Webpage_ p = current_tab_webpage();
+    if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
         Global::crawler->crawlAsync(p->url());
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
@@ -330,8 +349,8 @@ int Controller::currentTabWebpageBack(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageBack";
     hideCrawlerRuleTable();
-    Webpage* p = current_tab_webpage();
-    if (p) {
+    Webpage_ p = current_tab_webpage();
+    if (p.get()) {
         emit p->emit_tf_back();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
@@ -348,8 +367,8 @@ int Controller::currentTabWebpageForward(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageForward";
     hideCrawlerRuleTable();
-    Webpage* p = current_tab_webpage();
-    if (p) {
+    Webpage_ p = current_tab_webpage();
+    if (p.get()) {
         emit p->emit_tf_forward();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
@@ -366,8 +385,8 @@ int Controller::currentTabWebpageStop(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageStop";
     hideCrawlerRuleTable();
-    Webpage* p = current_tab_webpage();
-    if (p) {
+    Webpage_ p = current_tab_webpage();
+    if (p.get()) {
         emit p->emit_tf_stop();
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -379,8 +398,8 @@ int Controller::currentTabWebpageRefresh(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageRefresh";
     hideCrawlerRuleTable();
-    Webpage* p = current_tab_webpage();
-    if (p) {
+    Webpage_ p = current_tab_webpage();
+    if (p.get()) {
         emit p->emit_tf_refresh();
         p->findClear();
         Global::crawler->crawlAsync(p->url());
@@ -393,18 +412,18 @@ int Controller::currentTabWebpageRefresh(void const* sender)
     return 0;
 }
 
-bool Controller::updateWebpageUrl(Webpage_ wp, Url const& url, void const* sender)
+bool Controller::updateWebpageUrl(Webpage_ p, Url const& url, void const* sender)
 {
-    qCInfo(ControllerLogging) << "Controller::updateWebpageUrl" << wp << url;
-    wp->updateUrl(url);
-    Global::crawler->crawlAsync(wp->url());
+    qCInfo(ControllerLogging) << "Controller::updateWebpageUrl" << p << url;
+    p->updateUrl(url);
+    Global::crawler->crawlAsync(p->url());
     if (current_tab_webpage() != nullptr
-            && wp.get() == current_tab_webpage()
+            && p.get() == current_tab_webpage().get()
             && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
         hideCrawlerRuleTable();
-        Global::searchDB->searchAsync(wp->url().domain());
+        Global::searchDB->searchAsync(p->url().domain());
     }
     saveLastOpen();
     return true;
@@ -438,7 +457,7 @@ void Controller::clearPreviews()
         if (open_tabs()->count() > 0) {
             viewTab(TabStateOpen, 0);
         } else {
-            viewTab(TabStateEmpty, -1);
+            viewTab(TabStateNull, -1);
         }
     }
     preview_tabs()->replaceModel(Webpage_List());
@@ -467,6 +486,10 @@ int Controller::currentTabWebpageFindTextPrev(QString const& txt, void const* se
 int Controller::currentTabWebpageFindTextShow(void const* sender)
 {
     if (current_tab_webpage()) {
+        if (current_tab_webpage()->is_blank()) {
+            qCInfo(ControllerLogging) << "tab page is blank";
+            return -1;
+        }
         FindTextState state = current_webpage_find_text_state();
         state.visiable = true;
         current_tab_webpage()->set_find_text_state(state);
@@ -589,11 +612,15 @@ int Controller::showCrawlerRuleTable(void const* sender)
     qCInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
     if (! current_tab_webpage()) {
         qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
-        return false;
+        return -1;
+    }
+    if (current_tab_webpage()->is_blank()) {
+        qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
+        return -1;
     }
     current_tab_webpage()->crawlerRuleTableReloadFromSettings();
     emit_tf_show_crawler_rule_table();
-    return true;
+    return 0;
 }
 
 int Controller::searchTabs(QString const& words, void const* sender)
@@ -611,11 +638,13 @@ int Controller::searchTabs(QString const& words, void const* sender)
 
 int Controller::saveBookmarks()
 {
+    qCInfo(ControllerLogging) << "BrowserController::saveBookmarks";
     QVariantList contents;
     int count = bookmarks()->count();
     for (int i = 0; i < count; i++) {
         contents << bookmarks()->webpage_(i)->toQVariantMap();
     }
+    qCDebug(ControllerLogging) << "BrowserController::saveBookmarks" << contents;
     FileManager::writeDataJsonFileA("bookmarks.json", contents);
     return count;
 }
@@ -632,9 +661,23 @@ int Controller::loadBookmarks()
     return tabs.count();
 }
 
-int Controller::insertBookmark(Webpage_ w, int idx = 0, void const* sender)
+int Controller::currentTabWebpageBookmark(void const* sender)
+{
+    if (current_tab_webpage()) {
+        insertBookmark(current_tab_webpage(), 0);
+    } else {
+        qCInfo(ControllerLogging) << "no current tab";
+    }
+    return 0;
+}
+
+int Controller::insertBookmark(Webpage_ w, int idx = 0)
 {
     qCInfo(ControllerLogging) << "BrowserController::insertBookmark" << w << idx;
+    if (bookmarks()->findTab(w->url()) >= 0) {
+        qCCritical(ControllerLogging) << "BrowserController::insertBookmark: bookmark already exists";
+        return -1;
+    }
     bookmarks()->insertWebpage_(idx, w);
     saveBookmarks();
     return idx;
@@ -650,7 +693,32 @@ int Controller::removeBookmark(int idx, void const* sender)
 
 int Controller::moveBookmark(int from, int to, void const* sender)
 {
+    qCInfo(ControllerLogging) << "BrowserController::moveBookmark" << from << to;
     bookmarks()->moveTab(from, to);
     saveBookmarks();
     return to;
+}
+
+int Controller::showBookmarkPage(void const*sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::showBookmarkPage";
+    loadBookmarks();
+    set_bookmark_page_visible(true);
+    return 0;
+}
+
+int Controller::hideBookmarkPage(void const*sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::hideBookmarkPage";
+    set_bookmark_page_visible(false);
+    return 0;
+}
+
+
+int Controller::renameBookmark(Webpage_ wp, QString const& title, void const* sender)
+{
+    qCInfo(ControllerLogging) << "Controller::renameBookmark" << wp << title;
+    wp->set_title(title);
+    saveBookmarks();
+    return 0;
 }

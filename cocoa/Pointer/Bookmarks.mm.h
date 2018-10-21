@@ -8,12 +8,14 @@
 
 #import <Cocoa/Cocoa.h>
 #include <docviewer/docviewer.h>
+#import "BookmarkItems.mm.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BookmarksViewController : NSViewController
 {
     IBOutlet NSView* m_parent;
+    IBOutlet NSCollectionView* m_bookmarks_collectionview;
 }
 @end
 
@@ -23,13 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BookmarksCollectionViewDelegate : NSObject<NSCollectionViewDelegate>
 
-@end
-
-@interface BookmarksCollectionViewItem : NSCollectionViewItem
-{
-    Webpage_ m_webpage;
-}
-@property Webpage_ webpage;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -105,3 +105,7 @@ Url UrlNoHash::toUrl() const
     return Url(copy);
 }
 
+bool Url::isBlank()
+{
+    return full() == "about:blank";
+}

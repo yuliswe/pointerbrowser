@@ -49,7 +49,7 @@
 - (TabView*)initWithCoder:(NSCoder*)coder
 {
     self = [super initWithCoder:coder];
-    
+    self.hidden = YES;
     QObject::connect(Global::controller->open_tabs().get(),
                      &TabsModel::rowsInserted,
                      [=](const QModelIndex &parent, int first, int last) {
@@ -169,14 +169,19 @@
     }
 }
 
-
+- (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    TabViewItem* item = (TabViewItem*)tabViewItem;
+    self.hidden = item && item.webpage->is_blank();
+    [super selectTabViewItem:tabViewItem];
+}
 
 // called when the tabs are reloaded
 // typically once at the start of the application
 // or when the page array is changed
 - (void)updateSelection
 {
-    if (Global::controller->current_tab_state() == Controller::TabStateEmpty) {
+    if (Global::controller->current_tab_state() == Controller::TabStateNull) {
         [self selectTabViewItem:nil];
     } else if (Global::controller->current_tab_state() == Controller::TabStateOpen) {
         int i = Global::controller->current_open_tab_index();
@@ -185,8 +190,6 @@
         int i = Global::controller->open_tabs()->count() + Global::controller->current_preview_tab_index();
         [self selectTabViewItemAtIndex:i];
     }
-    TabViewItem* item = (TabViewItem*)self.selectedTabViewItem;
-    self.hidden = item.webview.webpage->isBlank();
 }
 
 - (void)reload

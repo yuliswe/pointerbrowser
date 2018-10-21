@@ -74,14 +74,14 @@
     self->m_refresh_button = refresh;
     
     QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
-        if (Global::controller->current_tab_state() != Controller::TabStateEmpty) {
+        if (Global::controller->current_tab_state() != Controller::TabStateNull) {
             [self performSelectorOnMainThread:@selector(showButtons) withObject:nil waitUntilDone:YES];
         } else {
             [self performSelectorOnMainThread:@selector(hideButtons) withObject:nil waitUntilDone:YES];
         }
     });
     
-    if (Global::controller->current_tab_state() == Controller::TabStateEmpty)
+    if (Global::controller->current_tab_state() == Controller::TabStateNull)
     {
         [self hideButtons];
     }

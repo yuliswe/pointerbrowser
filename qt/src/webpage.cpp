@@ -68,6 +68,8 @@ void Webpage::custom_set_url(Url const& url)
         emit title_changed(m_title);
         unlock_title_for_read_write();
     }
+
+    set_is_blank(m_url.isBlank());
 //    if (! url.isEmpty()) {
 //        CrawlerRuleTable_ table = CrawlerRuleTable::readPartialTableFromSettings(url);
 //        if (table->rulesCount() == 0) {
@@ -362,7 +364,3 @@ void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb)
     m_crawler_rule_table = tb;
 }
 
-bool Webpage::isBlank()
-{
-    return url().full() == "about:blank";
-}

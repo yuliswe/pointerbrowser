@@ -12,5 +12,7 @@ QLoggingCategory CrawlerLogging("Crawler", level);
 QLoggingCategory CrawlerRuleLogging("CrawlerRule", level);
 QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable", level);
 
+QLoggingCategory MacroLogging("Macro", level);
+
 QLoggingCategory ControllerLogging("Controller", level);
 

@@ -12,9 +12,20 @@
 #import "CrawlerRulesPopover.mm.h"
 #import "Bookmarks.mm.h"
 
+@interface NSResponder(Pointer)
+- (IBAction)menuNewTab:(id)sender;
+- (IBAction)menuCloseTab:(id)sender;
+- (IBAction)menuRefreshTab:(id)sender;
+- (IBAction)menuFocusFindText:(id)sender;
+- (IBAction)menuFocusFindSymbol:(id)sender;
+- (IBAction)menuFocusAddress:(id)sender;
+- (IBAction)menuAddBookmark:(id)sender;
+@end
+
 @interface BrowserWindowController : NSWindowController
 {
     IBOutlet NSOutlineView* m_outlineview;
+    IBOutlet NSTabView* m_tabview;
     IBOutlet NSSearchField* m_tab_searchfield;
     IBOutlet AddressBar* m_addressbar;
     IBOutlet NSButton* m_crawler_rules_popover_button;

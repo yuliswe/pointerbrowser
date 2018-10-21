@@ -56,12 +56,3 @@
 }
 
 @end
-
-@interface NSResponder(Pointer)
-- (IBAction)menuNewTab:(id)sender;
-- (IBAction)menuCloseTab:(id)sender;
-- (IBAction)menuRefreshTab:(id)sender;
-- (IBAction)menuFocusFindText:(id)sender;
-- (IBAction)menuFocusFindSymbol:(id)sender;
-- (IBAction)menuFocusAddress:(id)sender;
-@end
