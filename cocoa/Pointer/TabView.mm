@@ -165,16 +165,15 @@
     for (int i = 0; i < count; i++) {
         NSTabViewItem* item = current[i+first];
         [self removeTabViewItem:item];
-        // [item release];
     }
 }
-
-- (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
-{
-    TabViewItem* item = (TabViewItem*)tabViewItem;
-    self.hidden = item && item.webpage->is_blank();
-    [super selectTabViewItem:tabViewItem];
-}
+//
+//- (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
+//{
+//    TabViewItem* item = (TabViewItem*)tabViewItem;
+//    self.hidden = item && item.webpage->is_blank();
+//    [super selectTabViewItem:tabViewItem];
+//}
 
 // called when the tabs are reloaded
 // typically once at the start of the application

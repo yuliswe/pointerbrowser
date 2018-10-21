@@ -143,6 +143,25 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         }
         if (i >= open_tabs()->count()) { i = open_tabs()->count() - 1; }
         page = open_tabs()->webpage_(i);
+    } else if (state == TabStatePreview) {
+        if (preview_tabs()->count() == 0) {
+            return -1;
+        }
+        if (i >= preview_tabs()->count()) { i = preview_tabs()->count() - 1; }
+        page = preview_tabs()->webpage_(i);
+    }
+    Q_ASSERT(page != nullptr);
+    if (page->is_blank()) {
+        showBookmarkPage();
+    } else {
+        hideBookmarkPage();
+    }
+    set_current_tab_state(state);
+    set_address_bar_load_progress(page->load_progress());
+    set_address_bar_title(page->title()); // title must be set after uri
+    set_current_webpage_find_text_state(page->find_text_state());
+    set_welcome_page_visible(false);
+    if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
         set_current_open_tab_highlight_index(i,sender);
         set_current_tab_search_highlight_index(-1,sender);
@@ -151,27 +170,11 @@ int Controller::viewTab(TabState state, int i, void const* sender)
             Global::searchDB->searchAsync(page->url().domain());
         }
     } else if (state == TabStatePreview) {
-        if (preview_tabs()->count() == 0) {
-            return -1;
-        }
-        if (i >= preview_tabs()->count()) { i = preview_tabs()->count() - 1; }
-        page = preview_tabs()->webpage_(i);
         set_current_preview_tab_index(i,sender);
         set_current_open_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
     }
-    Q_ASSERT(page != nullptr);
-    set_current_tab_state(state);
     set_current_tab_webpage(page,sender);
-    set_address_bar_load_progress(page->load_progress());
-    set_address_bar_title(page->title()); // title must be set after uri
-    set_current_webpage_find_text_state(page->find_text_state());
-    set_welcome_page_visible(false);
-    if (page->is_blank()) {
-        showBookmarkPage();
-    } else {
-        hideBookmarkPage();
-    }
     set_current_webpage_crawler_rule_table(page->crawler_rule_table());
     // set up load progress watcher
     QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);

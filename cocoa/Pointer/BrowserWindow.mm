@@ -75,26 +75,18 @@
 
     QObject::connect(Global::controller,
                      &Controller::bookmark_page_visible_changed,
-                     [=](bool visible)
+                     [=]()
                      {
-                         if (visible) {
-                             [self performSelectorOnMainThread:@selector(handle_show_bookmarkpage) withObject:nil waitUntilDone:YES];
-                         } else {
-                             [self performSelectorOnMainThread:@selector(handle_hide_bookmarkpage) withObject:nil waitUntilDone:YES];
-                         }
+                         [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:YES];
                      });
+    [self handle_bookmarkpage_visible_changed];
 }
 
-- (void)handle_show_bookmarkpage
+- (void)handle_bookmarkpage_visible_changed
 {
-    self->m_bookmarks.hidden = NO;
-    self->m_tabview.hidden = YES;
-}
-
-- (void)handle_hide_bookmarkpage
-{
-    self->m_bookmarks.hidden = YES;
-    self->m_tabview.hidden = NO;
+    bool visible = Global::controller->bookmark_page_visible();
+    self->m_bookmarks.hidden = ! visible;
+    self->m_tabview.hidden = visible;
 }
 
 - (void)handle_tf_enable_crawler_rule_table

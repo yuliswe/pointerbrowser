@@ -67,12 +67,7 @@
 {
     if (indexPath.section == 0) {
         Webpage_ w = Global::controller->bookmarks()->webpage_(indexPath.item);
-        //        CppSharedData* item = [CppSharedData wrap:(std::static_pointer_cast<Webpage>(w))];
         BookmarksCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"BookmarksCollectionViewItem" forIndexPath:indexPath];
-//        NSRect frame = item.view.frame;
-//        frame.size.height = 30;
-//        frame.size.width = 30;
-//        item.view.frame = frame;
         item.webpage = w;
         [item connect];
         return item;
@@ -123,12 +118,5 @@
     }
     return NSDragOperationMove;
 }
-//
-//- (void)outlineView:(NSOutlineView *)outlineView
-//    draggingSession:(NSDraggingSession *)session
-//   willBeginAtPoint:(NSPoint)screenPoint
-//           forItems:(NSArray *)draggedItems
-//{
-//    outlineView.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleGap;
-//}
+
 @end
