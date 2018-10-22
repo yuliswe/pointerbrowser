@@ -122,6 +122,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         QObject::disconnect(old_page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
         QObject::disconnect(old_page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
         QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
+        QObject::disconnect(old_page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
+        QObject::disconnect(old_page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
         old_page = nullptr;
     }
     if (state == TabStateNull) {
@@ -141,6 +143,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_address_bar_title("");
         set_address_bar_load_progress(0);
         set_current_webpage_crawler_rule_table(CrawlerRuleTable_::create());
+        set_current_tab_webpage_can_go_back(false);
+        set_current_tab_webpage_can_go_forward(false);
         return -1;
     }
     emit_tf_enable_crawler_rule_table();
@@ -148,13 +152,13 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     Webpage_ page = nullptr;
     if (state == TabStateOpen) {
         if (open_tabs()->count() == 0) {
-            return -1;
+            return viewTab(TabStateNull, -1);
         }
         if (i >= open_tabs()->count()) { i = open_tabs()->count() - 1; }
         page = open_tabs()->webpage_(i);
     } else if (state == TabStatePreview) {
         if (preview_tabs()->count() == 0) {
-            return -1;
+            return viewTab(TabStateNull, -1);
         }
         if (i >= preview_tabs()->count()) { i = preview_tabs()->count() - 1; }
         page = preview_tabs()->webpage_(i);
@@ -170,6 +174,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     set_address_bar_title(page->title()); // title must be set after uri
     set_current_webpage_find_text_state(page->find_text_state());
     set_welcome_page_visible(false);
+    set_current_tab_webpage_can_go_back(page->can_go_back());
+    set_current_tab_webpage_can_go_forward(page->can_go_forward());
     if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
         set_current_open_tab_highlight_index(i,sender);
@@ -191,6 +197,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     QObject::connect(page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
     QObject::connect(page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
     QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
+    QObject::connect(page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
+    QObject::connect(page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
     old_page = page;
     return i;
 }

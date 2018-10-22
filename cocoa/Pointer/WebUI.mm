@@ -50,6 +50,8 @@
     [self addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"URL" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self connect];
     return self;
 }
@@ -127,6 +129,10 @@
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString * _Nullable title = self.title;
         Global::controller->updateWebpageTitleAsync(self.webpage, QString::fromNSString(title));
+    } else if ([keyPath isEqualToString:@"canGoBack"]) {
+        self.webpage->set_can_go_back_async(self.canGoBack);
+    } else if ([keyPath isEqualToString:@"canGoForward"]) {
+        self.webpage->set_can_go_forward_async(self.canGoForward);
     }
 }
 

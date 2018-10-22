@@ -43,6 +43,8 @@
     IBOutlet NSButton* m_crawler_rule_table_button;
     IBOutlet NSView* m_bookmarks;
     IBOutlet BookmarksViewController* m_bookmarks_viewcontroller;
+    IBOutlet NSButton* m_go_back_button;
+    IBOutlet NSButton* m_go_forward_button;
 }
 
 @property NSOutlineView* outlineview;

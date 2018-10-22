@@ -12,6 +12,8 @@
                 <outlet property="m_bookmarks" destination="5Xn-2Q-FkF" id="FiY-mK-0dl"/>
                 <outlet property="m_crawler_rule_table_button" destination="wxK-ad-KW5" id="PQn-mR-1lR"/>
                 <outlet property="m_crawler_rules_popover_button" destination="wxK-ad-KW5" id="MeQ-oh-iQb"/>
+                <outlet property="m_go_back_button" destination="p5J-Ck-mGN" id="eUL-yv-Zbj"/>
+                <outlet property="m_go_forward_button" destination="e7A-VY-NTg" id="3qV-hl-FFR"/>
                 <outlet property="m_newtab_button" destination="0YT-Gb-veT" id="Dsx-L3-9ld"/>
                 <outlet property="m_outlineview" destination="7XU-ob-ZGc" id="FN7-ZS-kty"/>
                 <outlet property="m_tab_searchfield" destination="3OF-AJ-hTf" id="u3q-Ge-6f6"/>

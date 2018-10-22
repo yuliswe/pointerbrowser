@@ -63,6 +63,8 @@ public:
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(bool, is_blank, true)
+    PROP_RWN_D(bool, can_go_forward, false)
+    PROP_RWN_D(bool, can_go_back, false)
     PROP_RN_D(float, load_progress, 0)
 //    PROP_RN_D(QString, find_text, "")
 //    PROP_RN_D(bool, find_text_visiable, false)

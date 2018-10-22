@@ -81,7 +81,20 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:YES];
                      });
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_webpage_can_go_back_changed,
+                     [=]()
+                     {
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
+                     });
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_webpage_can_go_forward_changed,
+                     [=]()
+                     {
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
+                     });
     [self handle_bookmarkpage_visible_changed];
+    [self handle_can_go_buttons_enable_changed];
 }
 
 - (void)handle_bookmarkpage_visible_changed
@@ -89,6 +102,12 @@
     bool visible = Global::controller->bookmark_page_visible();
     self->m_bookmarks.hidden = ! visible;
     self->m_tabview.hidden = visible;
+}
+
+- (void)handle_can_go_buttons_enable_changed
+{
+    self->m_go_back_button.enabled = Global::controller->current_tab_webpage_can_go_back();
+    self->m_go_forward_button.enabled = Global::controller->current_tab_webpage_can_go_forward();
 }
 
 - (void)handle_tf_enable_crawler_rule_table
