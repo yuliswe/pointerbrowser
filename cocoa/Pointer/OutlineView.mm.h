@@ -10,9 +10,6 @@
 #include <docviewer/tabsmodel.hpp>
 #include "CppData.mm.h"
 
-@interface SearchField : NSSearchField
-@end
-
 @class OutlineViewDelegateAndDataSource;
 
 @interface OpenTabCellView : NSTableCellView

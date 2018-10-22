@@ -21,7 +21,6 @@
 
 - (instancetype)initWithTabItem:(TabViewItem*)tabItem;
 - (void)loadUri:(NSString*)url;
-- (void)dealloc;
 
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;

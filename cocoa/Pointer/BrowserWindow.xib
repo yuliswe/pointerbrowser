@@ -239,7 +239,7 @@
                                             <rect key="frame" x="6" y="1" width="236" height="34"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <searchField wantsLayer="YES" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-AJ-hTf" userLabel="Search Tabs" customClass="SearchField">
+                                                <searchField wantsLayer="YES" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-AJ-hTf" userLabel="Search Tabs">
                                                     <rect key="frame" x="8" y="7" width="189" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search Tabs" usesSingleLineMode="YES" bezelStyle="round" id="73L-3w-x96">
@@ -430,6 +430,9 @@
                     <constraint firstAttribute="bottom" secondItem="xwr-Fb-Rdj" secondAttribute="bottom" id="myx-AI-vxD"/>
                 </constraints>
             </view>
+            <connections>
+                <outlet property="delegate" destination="Ipf-0b-SLm" id="TGk-Mu-ce7"/>
+            </connections>
             <point key="canvasLocation" x="-232" y="214"/>
         </window>
         <customObject id="eSe-jn-caN" customClass="OutlineViewDelegateAndDataSource">
@@ -555,6 +558,7 @@
                 <outlet property="m_parent" destination="5Xn-2Q-FkF" id="DlR-Bq-chs"/>
             </connections>
         </viewController>
+        <customObject id="Ipf-0b-SLm" customClass="BrowserWindowDelegate"/>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

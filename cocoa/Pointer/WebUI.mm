@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 #import "WebUI.mm.h"
 #import "TabView.mm.h"
+#import "Extension/PMenu.h"
 #include <docviewer/global.hpp>
 
 @implementation WebUI
@@ -52,11 +53,11 @@
     [self connect];
     return self;
 }
-
-- (void)dealloc
-{
-    [self loadUri:@"about:blank"];
-}
+//
+//- (void)dealloc
+//{
+//    [self loadUri:@"about:blank"];
+//}
 
 - (void)connect
 {
@@ -224,6 +225,18 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
     WKUserScript* script = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:NO];
     [controller addUserScript:script];
+}
+
+- (id)validRequestorForSendType:(NSPasteboardType)sendType
+                     returnType:(NSPasteboardType)returnType
+{
+    return nil;
+}
+
+- (void)willOpenMenu:(NSMenu *)menu
+           withEvent:(NSEvent *)event
+{
+    [menu filterMenuItems];
 }
 
 @end

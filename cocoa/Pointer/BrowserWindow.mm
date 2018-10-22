@@ -7,6 +7,8 @@
 //
 
 #import "BrowserWindow.mm.h"
+#import "Extension/PTextView.h"
+#import "Extension/PMenu.h"
 #include <QtCore/QObject>
 #include <docviewer/tabsmodel.hpp>
 #include <docviewer/global.hpp>
@@ -210,12 +212,35 @@
         (event.modifierFlags & NSEventModifierFlagControl))
     {
         [self makeFirstResponder:[(BrowserWindowController*)self.windowController outlineview]];
-//        Global::controller->showNextOpenTabAsync();
-//        return YES;
     }
     return [super performKeyEquivalent:event];
 }
+@end
 
+
+@implementation BrowserWindowDelegate
+
+- (instancetype)init
+{
+    self = [super init];
+    self->m_general_ptextview = [[PTextView alloc] init];
+    return self;
+}
+- (id)windowWillReturnFieldEditor:(NSWindow *)sender toObject:(id)client
+{
+    return self->m_general_ptextview;
+}
+@end
+
+@implementation GeneralTextViewDelegate
+- (NSMenu *)textView:(NSTextView *)view
+                menu:(NSMenu *)menu
+            forEvent:(NSEvent *)event
+             atIndex:(NSUInteger)charIndex
+{
+    [menu filterMenuItems];
+    return menu;
+}
 @end
 
 @implementation BrowserWindowView

@@ -11,6 +11,7 @@
 #import "WebUI.mm.h"
 #import "CrawlerRulesPopover.mm.h"
 #import "Bookmarks.mm.h"
+#import "Extension/PTextView.h"
 
 @interface NSResponder(Pointer)
 - (IBAction)menuNewTab:(id)sender;
@@ -22,6 +23,7 @@
 - (IBAction)menuAddBookmark:(id)sender;
 - (IBAction)menuShowNextTab:(id)sender;
 @end
+
 
 @interface BrowserWindowController : NSWindowController
 {
@@ -58,11 +60,21 @@
 @property NSView* bookmarks;
 @end
 
-@interface BrowserWindow : NSWindow
-
+@interface GeneralTextViewDelegate : NSObject<NSTextViewDelegate>
 @end
 
+@interface BrowserWindow : NSWindow
+@end
+
+@interface BrowserWindowDelegate : NSObject<NSWindowDelegate>
+{
+    PTextView* m_general_ptextview;
+}
+@end
 
 @interface BrowserWindowView : NSView
-
+{
+    
+}
 @end
+

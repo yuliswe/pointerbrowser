@@ -69,7 +69,7 @@
                                     <action selector="menuRefreshTab:" target="-1" id="gK3-gG-iFc"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Next Tab" id="5g0-VG-l4k">
+                            <menuItem title="Next Tab" id="5g0-VG-l4k">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 CQ
 </string>
@@ -294,7 +294,7 @@ CQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Find" id="GEO-Iw-cKr">
                         <items>
-                            <menuItem title="Text Find..." tag="1" keyEquivalent="f" id="Xz5-n4-O0W">
+                            <menuItem title="Find Text..." tag="1" keyEquivalent="f" id="Xz5-n4-O0W">
                                 <connections>
                                     <action selector="menuFocusFindText:" target="-1" id="xbR-lp-KUe"/>
                                 </connections>
@@ -316,26 +316,7 @@ CQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="View" id="HyV-fh-RgO">
                         <items>
-                            <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleToolbarShown:" target="-1" id="BXY-wc-z0C"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Customize Toolbar…" id="1UK-8n-QPP">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="runToolbarCustomizationPalette:" target="-1" id="pQI-g3-MTW"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="hB3-LF-h0Y"/>
-                            <menuItem title="Show Sidebar" keyEquivalent="s" id="kIP-vf-haE">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleSourceList:" target="-1" id="iwa-gc-5KM"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Enter Full Screen" keyEquivalent="f" id="4J7-dP-txa">
+                            <menuItem title="Full Screen" keyEquivalent="f" id="4J7-dP-txa">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="toggleFullScreen:" target="-1" id="dU3-MA-1Rq"/>

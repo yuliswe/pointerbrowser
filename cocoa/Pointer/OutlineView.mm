@@ -12,9 +12,6 @@
 #include <docviewer/global.hpp>
 #include <Carbon/Carbon.h>
 
-@implementation SearchField
-@end
-
 @implementation OpenTabCellView
 @synthesize line1 = m_line1;
 @synthesize hovered = m_hovered;

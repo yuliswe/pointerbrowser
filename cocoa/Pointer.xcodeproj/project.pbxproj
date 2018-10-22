@@ -18,6 +18,10 @@
 		7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A11A572217AFD2A003E456E /* Bookmarks.mm */; };
 		7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A11A573217AFD2A003E456E /* Bookmarks.xib */; };
 		7A19D94621180D0300A75028 /* CppData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A19D94521180D0300A75028 /* CppData.mm */; };
+		7A4D3F5A217DA65100C5E8A6 /* PSearchField.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F59217DA65100C5E8A6 /* PSearchField.m */; };
+		7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */; };
+		7A4D3F62217DC1FD00C5E8A6 /* PTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */; };
+		7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F64217DC4A100C5E8A6 /* PMenu.m */; };
 		7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */; };
 		7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A59D52821408F0A001C082B /* CrawlerRulesPopover.xib */; };
 		7A65147C211EAB1E00977B87 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A65147B211EAB1D00977B87 /* WebKit.framework */; };
@@ -81,6 +85,14 @@
 		7A19D94421180D0300A75028 /* CppData.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CppData.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7A19D94521180D0300A75028 /* CppData.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CppData.mm; sourceTree = "<group>"; };
 		7A25418C2133B8A300BD9A9F /* KeyCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyCode.h; sourceTree = "<group>"; };
+		7A4D3F58217DA65100C5E8A6 /* PSearchField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSearchField.h; sourceTree = "<group>"; };
+		7A4D3F59217DA65100C5E8A6 /* PSearchField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSearchField.m; sourceTree = "<group>"; };
+		7A4D3F5B217DA6AB00C5E8A6 /* PTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTextField.h; sourceTree = "<group>"; };
+		7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTextField.m; sourceTree = "<group>"; };
+		7A4D3F60217DC1FD00C5E8A6 /* PTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTextView.h; sourceTree = "<group>"; };
+		7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTextView.m; sourceTree = "<group>"; };
+		7A4D3F63217DC4A100C5E8A6 /* PMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMenu.h; sourceTree = "<group>"; };
+		7A4D3F64217DC4A100C5E8A6 /* PMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMenu.m; sourceTree = "<group>"; };
 		7A59D52521408DAA001C082B /* CrawlerRulesPopover.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrawlerRulesPopover.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CrawlerRulesPopover.mm; sourceTree = "<group>"; };
 		7A59D52821408F0A001C082B /* CrawlerRulesPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrawlerRulesPopover.xib; sourceTree = "<group>"; };
@@ -132,6 +144,7 @@
 		7A0CDD312110F15600FE35C5 /* Pointer */ = {
 			isa = PBXGroup;
 			children = (
+				7A4D3F5F217DA6F600C5E8A6 /* Extension */,
 				7A651484211FD47B00977B87 /* AddressBar.mm */,
 				7A651483211FD47B00977B87 /* AddressBar.mm.h */,
 				7A0CDD332110F15600FE35C5 /* Application.mm */,
@@ -164,6 +177,21 @@
 				7A8D32DE2111A43B0066691C /* WebUI.mm.h */,
 			);
 			path = Pointer;
+			sourceTree = "<group>";
+		};
+		7A4D3F5F217DA6F600C5E8A6 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				7A4D3F5B217DA6AB00C5E8A6 /* PTextField.h */,
+				7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */,
+				7A4D3F58217DA65100C5E8A6 /* PSearchField.h */,
+				7A4D3F59217DA65100C5E8A6 /* PSearchField.m */,
+				7A4D3F60217DC1FD00C5E8A6 /* PTextView.h */,
+				7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */,
+				7A4D3F63217DC4A100C5E8A6 /* PMenu.h */,
+				7A4D3F64217DC4A100C5E8A6 /* PMenu.m */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		7A788812211C969100675101 /* Frameworks */ = {
@@ -266,10 +294,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */,
+				7A4D3F5A217DA65100C5E8A6 /* PSearchField.m in Sources */,
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
 				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
+				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,
+				7A4D3F62217DC1FD00C5E8A6 /* PTextView.m in Sources */,
+				7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,
 				7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */,
 				7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */,

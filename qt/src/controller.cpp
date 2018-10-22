@@ -75,12 +75,19 @@ int Controller::newTab(int index,
                     viewTab(TabStatePreview, idx);
                 }
                 return idx;
+            } else {
+                preview_tabs()->insertTab(idx = index, uri);
+                if (newBehavior == WhenCreatedViewNew) {
+                    viewTab(state, idx);
+                }
+                return idx;
             }
-        } else {
+        } else if (whenExists == WhenExistsOpenNew) {
             preview_tabs()->insertTab(idx = index, uri);
             if (newBehavior == WhenCreatedViewNew) {
                 viewTab(state, idx);
             }
+            return idx;
         }
     }
     return idx;
