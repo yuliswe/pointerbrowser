@@ -10,9 +10,7 @@
 #import "Extension/PTextView.h"
 #import "Extension/PMenu.h"
 #include <QtCore/QObject>
-#include <docviewer/tabsmodel.hpp>
-#include <docviewer/global.hpp>
-#include <docviewer/searchdb.hpp>
+#include <docviewer/docviewer.h>
 #include "OutlineView.mm.h"
 #import "KeyCode.h"
 
@@ -211,6 +209,15 @@
     Global::controller->showNextOpenTabAsync();
 }
 
+- (void)menuEditBookmarks:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openFile:FileManager::bookmarksPath().toNSString()];
+}
+
+- (void)menuEditCrawlerRules:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openFile:FileManager::crawlerRulesPath().toNSString()];
+}
 @end
 
 @implementation BrowserWindow

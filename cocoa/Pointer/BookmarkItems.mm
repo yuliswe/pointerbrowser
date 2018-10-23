@@ -70,7 +70,6 @@
 @implementation BookmarkItemMenuDelegate
 - (void)menuWillOpen:(NSMenu *)menu
 {
-    
     [self->m_bookmark_collectionviewitem.view.window makeFirstResponder:nil];
 }
 @end

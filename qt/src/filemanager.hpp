@@ -20,6 +20,7 @@ class FileManager : public QObject
 
     public slots:
         static QString dataPath();
+        static QString dataPath(QString const& file);
         static QFile_ dataFile(QString const& file);
         static QFile_ qrcFile(QString const& file);
         static QString readQrcFileS(QString const& file);
@@ -36,6 +37,9 @@ class FileManager : public QObject
         static QVariantList readDataJsonFileA(QString const& file);
         static QByteArray readDataFileB(QString const& file);
         static void defaultOpenUrl(QString const& file);
+
+        static QString bookmarksPath();
+        static QString crawlerRulesPath();
 };
 
 #endif // FILEMANAGER_H

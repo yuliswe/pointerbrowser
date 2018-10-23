@@ -14,6 +14,7 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <customObject id="moP-pP-G6P" customClass="BookmarkMenuDelegate"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
                 <menuItem title="Pointer" id="1Xt-HY-uBw">
@@ -336,8 +337,27 @@ CQ
                             </menuItem>
                             <menuItem title="Edit Bookmarks..." id="6am-FZ-k80">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuEditBookmarks:" target="-2" id="RJi-po-YdT"/>
+                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="N2C-PC-Hgh"/>
+                        </items>
+                        <connections>
+                            <outlet property="delegate" destination="moP-pP-G6P" id="SVQ-Uf-QKy"/>
+                        </connections>
+                    </menu>
+                </menuItem>
+                <menuItem title="Discoveries" id="lrN-pE-9Ui">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Discoveries" id="2nT-Jv-go1">
+                        <items>
+                            <menuItem title="Edit Rules..." id="cRf-l2-ID1">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuEditCrawlerRules:" target="-2" id="eOH-pB-nKY"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

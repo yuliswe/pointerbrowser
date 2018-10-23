@@ -54,9 +54,26 @@ QFile_ FileManager::qrcFile(QString const& filename)
 }
 
 
+QString FileManager::bookmarksPath()
+{
+    return FileManager::dataPath("bookmarks.json");
+}
+
+QString FileManager::crawlerRulesPath()
+{
+    return FileManager::dataPath("crawler.json");
+}
+
+
 QString FileManager::dataPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
+    return FileManager::dataPath("");
+}
+
+
+QString FileManager::dataPath(QString const& file)
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + file;
 }
 
 QString FileManager::readQrcFileS(QString const& file)
