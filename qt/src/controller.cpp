@@ -749,3 +749,15 @@ int Controller::showNextOpenTab(void const* sender)
     }
     return viewTab(TabStateOpen, 0, sender);
 }
+
+int Controller::showPrevOpenTab(void const* sender)
+{
+    qCInfo(ControllerLogging) << "Controller::showPrevTab";
+    if (open_tabs()->count() == 0) {
+        return -1;
+    }
+    if (current_open_tab_index() - 1 >= 0) {
+        return viewTab(TabStateOpen, current_open_tab_index() - 1, sender);
+    }
+    return viewTab(TabStateOpen, open_tabs()->count() - 1, sender);
+}

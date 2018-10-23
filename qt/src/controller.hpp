@@ -101,6 +101,7 @@ public:
     METH_ASYNC_1(int, currentTabWebpageFindTextPrev, QString const&)
     METH_ASYNC_0(int, currentTabWebpageBookmark)
     METH_ASYNC_0(int, showNextOpenTab)
+    METH_ASYNC_0(int, showPrevOpenTab)
     METH_ASYNC_0(int, showCrawlerRuleTable)
     METH_ASYNC_0(int, hideCrawlerRuleTable)
     METH_ASYNC_1(int, searchTabs, QString const&)

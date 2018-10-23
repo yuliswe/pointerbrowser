@@ -70,6 +70,15 @@
                                     <action selector="menuRefreshTab:" target="-1" id="gK3-gG-iFc"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Previous Tab" id="gim-yv-jbC">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+CQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                <connections>
+                                    <action selector="menuShowPrevTab:" target="-1" id="use-NS-XaU"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Next Tab" id="5g0-VG-l4k">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 CQ

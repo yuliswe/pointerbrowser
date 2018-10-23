@@ -22,6 +22,7 @@
 - (IBAction)menuFocusAddress:(id)sender;
 - (IBAction)menuAddBookmark:(id)sender;
 - (IBAction)menuShowNextTab:(id)sender;
+- (IBAction)menuShowPrevTab:(id)sender;
 - (IBAction)menuEditBookmarks:(id)sender;
 - (IBAction)menuEditCrawlerRules:(id)sender;
 @end

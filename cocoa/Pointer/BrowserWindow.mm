@@ -209,6 +209,11 @@
     Global::controller->showNextOpenTabAsync();
 }
 
+- (void)menuShowPrevTab:(id)sender
+{
+    Global::controller->showPrevOpenTabAsync();
+}
+
 - (void)menuEditBookmarks:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openFile:FileManager::bookmarksPath().toNSString()];
