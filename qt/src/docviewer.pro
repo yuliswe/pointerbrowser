@@ -23,7 +23,8 @@ DISTFILES += \
     defaults/dbgen.txt \
     resetTables.sqlite3 \
     db/exit.sqlite3 \
-    crawler.hpp
+    crawler.hpp \
+    defaults/bookmarks.json
 
 SOURCES += \
     tabsmodel.cpp \

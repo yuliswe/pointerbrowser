@@ -12,7 +12,7 @@ void FileManager::mkDataDir()
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
     defaults << "search.db"
-             << "auto-bookmark.txt"
+             << "bookmarks.json"
              << "version";
     for (QString file : defaults) {
         QFile_ src = FileManager::qrcFile("defaults/"+file);
