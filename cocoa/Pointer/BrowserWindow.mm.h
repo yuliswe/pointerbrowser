@@ -71,6 +71,7 @@
 @interface BrowserWindowDelegate : NSObject<NSWindowDelegate>
 {
     PTextView* m_general_ptextview;
+    GeneralTextViewDelegate* m_general_textviewdelegate;
 }
 @end
 

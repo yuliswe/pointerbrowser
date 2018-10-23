@@ -215,6 +215,12 @@
 
 @implementation BrowserWindow
 
+- (id)validRequestorForSendType:(NSPasteboardType)sendType
+                     returnType:(NSPasteboardType)returnType
+{
+    return nil;
+}
+
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {
     if (event.keyCode == kVK_Escape)
@@ -234,6 +240,22 @@
     }
     return [super performKeyEquivalent:event];
 }
+//
+//- (PTextView *)fieldEditor:(BOOL)createFlag
+//              forObject:(id)object
+//{
+//    NSText* text = [super fieldEditor:createFlag forObject:object];
+//    if (text) {
+//        static PTextView* ptextview = [[PTextView alloc] initWithNSText:text];
+//    //    ptextview.delegate = text.delegate;
+//    //    static PMenuDelegate* delegate = [[PMenuDelegate alloc] init];
+//    //    text.menu = [[PMenu alloc] init];
+//    //    text.menu.delegate = delegate;
+//
+//        return ptextview;
+//    }
+//    return nil;
+//}
 @end
 
 
@@ -243,23 +265,21 @@
 {
     self = [super init];
     self->m_general_ptextview = [[PTextView alloc] init];
+    self->m_general_textviewdelegate = [[GeneralTextViewDelegate alloc] init];
+    self->m_general_ptextview.delegate = self->m_general_textviewdelegate;
     return self;
 }
-- (id)windowWillReturnFieldEditor:(NSWindow *)sender toObject:(id)client
+//
+- (id)windowWillReturnFieldEditor:(NSWindow *)sender
+                         toObject:(id)client
 {
-    return self->m_general_ptextview;
+    static PTextView* ptextview = [[PTextView alloc] init];
+    return ptextview;
 }
+
 @end
 
 @implementation GeneralTextViewDelegate
-- (NSMenu *)textView:(NSTextView *)view
-                menu:(NSMenu *)menu
-            forEvent:(NSEvent *)event
-             atIndex:(NSUInteger)charIndex
-{
-    [menu filterMenuItems];
-    return menu;
-}
 @end
 
 @implementation BrowserWindowView

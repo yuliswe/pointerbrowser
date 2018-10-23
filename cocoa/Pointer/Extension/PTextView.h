@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PTextView : NSTextView
-
+- (instancetype)initWithNSText:(NSText*)text;
 @end
 
 NS_ASSUME_NONNULL_END

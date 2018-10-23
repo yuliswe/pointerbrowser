@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)filterMenuItems;
 @end
 
+@interface PMenuDelegate : NSObject<NSMenuDelegate>
+
+@end
+
 @interface PMenu : NSMenu
 
 @end

@@ -8,8 +8,23 @@
 
 #import "PTextView.h"
 #import "PMenu.h"
+#import "../KeyCode.h"
 
 @implementation PTextView
+
+- (instancetype)init
+{
+    self = [super init];
+    self.fieldEditor = YES;
+    return self;
+}
+
+- (instancetype)initWithNSText:(NSText*)text
+{
+    self = (PTextView*)text;
+    self.fieldEditor = YES;
+    return self;
+}
 
 - (void)willOpenMenu:(NSMenu *)menu
            withEvent:(NSEvent *)event
@@ -22,6 +37,15 @@
 {
     return nil;
 }
+//
+//- (void)keyUp:(NSEvent *)event
+//{
+//    if (event.keyCode == kVK_Return) {
+//        [self complete:self];
+//    } else {
+//        [super keyUp:event];
+//    }
+//}
 //
 //- (NSMenu *)menuForEvent:(NSEvent *)event
 //{

@@ -65,12 +65,7 @@ int Controller::newTab(int index,
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
-            if ((idx = open_tabs()->findTab(uri)) > -1) {
-                if (newBehavior == WhenCreatedViewNew) {
-                    viewTab(TabStateOpen, idx);
-                }
-                return idx;
-            } else if ((idx = preview_tabs()->findTab(uri)) > -1) {
+            if ((idx = preview_tabs()->findTab(uri)) > -1) {
                 if (newBehavior == WhenCreatedViewNew) {
                     viewTab(TabStatePreview, idx);
                 }

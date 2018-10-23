@@ -10,6 +10,29 @@
 
 @implementation PMenu
 
+- (instancetype)init
+{
+    self = [super init];
+    self.delegate = self;
+    return self;
+}
+
+- (void)menuWillOpen:(NSMenu *)menu
+{
+    
+}
+
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
+    [menu filterMenuItems];
+}
+@end
+
+@implementation PMenuDelegate
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
+    [menu filterMenuItems];
+}
 @end
 
 @implementation NSMenu(Pointer)
