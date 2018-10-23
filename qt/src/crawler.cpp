@@ -580,13 +580,13 @@ void CrawlerRuleTable::writePartialTableToSettings()
     {
         out[rule.toString()] = rule.enabled();
     }
-    FileManager::writeDataJsonFileM("crawler.json", out);
+    FileManager::writeDataJsonFileM("discovery-rules.json", out);
 }
 
 CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 {
     qCInfo(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings" << url;
-    QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
+    QVariantMap in = FileManager::readDataJsonFileM("discovery-rules.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
     {
@@ -606,7 +606,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
 CrawlerRuleTable_ CrawlerRuleTable::readEntireTableFromSettings()
 {
     qCInfo(CrawlerRuleLogging) << "CrawlerRule::readEntireTableFromSettings";
-    QVariantMap in = FileManager::readDataJsonFileM("crawler.json");
+    QVariantMap in = FileManager::readDataJsonFileM("discovery-rules.json");
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     for (QString const& pattern : in.keys())
     {

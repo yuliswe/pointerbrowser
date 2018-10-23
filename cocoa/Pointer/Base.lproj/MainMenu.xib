@@ -357,9 +357,9 @@ CQ
                         </connections>
                     </menu>
                 </menuItem>
-                <menuItem title="Discoveries" id="lrN-pE-9Ui">
+                <menuItem title="Discovery" id="lrN-pE-9Ui">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Discoveries" id="2nT-Jv-go1">
+                    <menu key="submenu" title="Discovery" id="2nT-Jv-go1">
                         <items>
                             <menuItem title="Edit Rules..." id="cRf-l2-ID1">
                                 <modifierMask key="keyEquivalentModifierMask"/>

@@ -61,7 +61,7 @@ QString FileManager::bookmarksPath()
 
 QString FileManager::crawlerRulesPath()
 {
-    return FileManager::dataPath("crawler.json");
+    return FileManager::dataPath("discovery-rules.json");
 }
 
 
