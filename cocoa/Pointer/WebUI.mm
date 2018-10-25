@@ -18,6 +18,7 @@
 - (void)mouseDown:(NSEvent*)event
 {
     Global::controller->hideCrawlerRuleTableAsync();
+    Global::controller->set_downloads_visible_async(false);
     [super mouseDown:event];
 //    if (event.modifierFlags & NSEventModifierFlagCommand) {
 //        NSString *js = [NSString stringWithFormat:@"pointerEnableOpenLinkInNewWindow()"];

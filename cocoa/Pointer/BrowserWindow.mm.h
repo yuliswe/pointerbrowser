@@ -12,6 +12,7 @@
 #import "CrawlerRulesPopover.mm.h"
 #import "Bookmarks.mm.h"
 #import "Extension/PTextView.h"
+#import "Downloads.h"
 
 @interface NSResponder(Pointer)
 - (IBAction)menuNewTab:(id)sender;
@@ -43,7 +44,10 @@
     IBOutlet NSTextField* m_text_find_label;
     IBOutlet NSButton* m_newtab_button;
     IBOutlet CrawlerRulesPopover* m_crawler_rules_popover;
+    IBOutlet NSPopover* m_downloads_popover;
+    IBOutlet DownloadsViewController* m_download_viewcontroller;
     IBOutlet NSButton* m_crawler_rule_table_button;
+    IBOutlet NSButton* m_downloads_button;
     IBOutlet NSView* m_bookmarks;
     IBOutlet BookmarksViewController* m_bookmarks_viewcontroller;
     IBOutlet NSButton* m_go_back_button;
@@ -84,3 +88,10 @@
 }
 @end
 
+
+@interface DownloadPopoverDelegate : NSObject<NSPopoverDelegate>
+{
+    IBOutlet DownloadsViewController* m_download_popover_viewcontroller;
+    IBOutlet NSPopover* m_download_popover;
+}
+@end

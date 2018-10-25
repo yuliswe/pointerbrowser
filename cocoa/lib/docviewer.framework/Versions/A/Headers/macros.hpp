@@ -53,9 +53,9 @@
     protected: void lock_##prop##_for_read_write() { m_##prop##_semaphore.acquire(100); } \
     protected: void unlock_##prop##_for_read_write() { m_##prop##_semaphore.release(100); } \
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
-    protected: void custom_set_##prop(type const& val); \
+    protected: void custom_set_##prop(type const& val, void const* sender = nullptr); \
     protected: type m_##prop = defv; \
-    public: Q_INVOKABLE void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qCDebug(MacroLogging) << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
+    protected: Q_INVOKABLE void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val,sender); type copy = m_##prop; unlock_##prop##_for_read_write(); qCDebug(MacroLogging) << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
     public: void set_##prop##_async(type const& val, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(set_##prop), Qt::QueuedConnection, Q_ARG(type const&,val), Q_ARG(void const*,sender)); } \
     public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 
@@ -65,9 +65,9 @@
     protected: void lock_##prop##_for_read_write() { m_##prop##_semaphore.acquire(100); } \
     protected: void unlock_##prop##_for_read_write() { m_##prop##_semaphore.release(100); } \
     public: type prop() { m_##prop##_semaphore.acquire(1); type tmp = m_##prop; m_##prop##_semaphore.release(1); return tmp; } \
-    protected: void custom_set_##prop(type const& val); \
+    protected: void custom_set_##prop(type const& val, void const* sender = nullptr); \
     protected: type m_##prop = defv; \
-    protected: Q_INVOKABLE void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val); type copy = m_##prop; unlock_##prop##_for_read_write(); qCDebug(MacroLogging) << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
+    protected: Q_INVOKABLE void set_##prop(type const& val, void const* sender = nullptr) { Q_ASSERT(thread() == QThread::currentThread()); lock_##prop##_for_read_write(); custom_set_##prop(val,sender); type copy = m_##prop; unlock_##prop##_for_read_write(); qCDebug(MacroLogging) << STRING(set_##prop) << copy; emit prop##_changed(copy, sender); emit dataChanged(); } \
     protected: void set_##prop##_async(type const& val, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(set_##prop), Qt::QueuedConnection, Q_ARG(type const&,val), Q_ARG(void const*,sender)); } \
     public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr);
 

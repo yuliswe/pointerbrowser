@@ -633,6 +633,7 @@ int Controller::showCrawlerRuleTable(void const* sender)
         qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
         return -1;
     }
+    set_downloads_visible(false);
     current_tab_webpage()->crawlerRuleTableReloadFromSettings();
     emit_tf_show_crawler_rule_table();
     return 0;
@@ -760,4 +761,10 @@ int Controller::showPrevOpenTab(void const* sender)
         return viewTab(TabStateOpen, current_open_tab_index() - 1, sender);
     }
     return viewTab(TabStateOpen, open_tabs()->count() - 1, sender);
+}
+
+void Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
+{
+    hideCrawlerRuleTable(sender);
+    m_downloads_visible = visible;
 }

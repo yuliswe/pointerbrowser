@@ -67,7 +67,8 @@ public:
     PROP_RN_D(FindTextState, current_webpage_find_text_state, FindTextState{})
     // tab search
     PROP_RN_D(QString, current_tab_search_word, "")
-
+    // download
+    PROP_RwN_D(bool, downloads_visible, false)
     // address bar
     PROP_RN_D(float, address_bar_load_progress, 0)
     PROP_RN_D(QString, address_bar_title, "")

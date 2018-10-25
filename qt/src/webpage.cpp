@@ -59,13 +59,13 @@ Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
 //    return Webpage::fromQVariantMap(map.toVariantMap());
 //}
 
-void Webpage::custom_set_url(Url const& url)
+void Webpage::custom_set_url(Url const& url, const void* sender)
 {
     m_url = url;
     if (! url.isEmpty()) {
         lock_title_for_read_write();
         m_title = url.full();
-        emit title_changed(m_title);
+        emit title_changed(m_title, sender);
         unlock_title_for_read_write();
     }
 
@@ -148,7 +148,7 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
 //    set_title(uri);
 //}
 
-void Webpage::custom_set_title(QString const& title)
+void Webpage::custom_set_title(QString const& title, void const* sender)
 {
     if (title.isEmpty()) {
         m_title = url().full();
@@ -358,7 +358,7 @@ bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
     return true;
 }
 
-void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb)
+void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, const void* sender)
 {
     tb->updateAssociatedUrl(url());
     m_crawler_rule_table = tb;

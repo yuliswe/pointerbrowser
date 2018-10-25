@@ -72,12 +72,17 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_tf_disable_crawler_rule_table) withObject:nil waitUntilDone:YES];
                      });
-
     QObject::connect(Global::controller,
                      &Controller::bookmark_page_visible_changed,
                      [=]()
                      {
                          [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:YES];
+                     });
+    QObject::connect(Global::controller,
+                     &Controller::downloads_visible_changed,
+                     [=]()
+                     {
+                         [self performSelectorOnMainThread:@selector(handle_downloads_visible_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_can_go_back_changed,
@@ -93,6 +98,7 @@
                      });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
+    [self handle_downloads_visible_changed];
 }
 
 - (void)handle_bookmarkpage_visible_changed
@@ -153,11 +159,29 @@
     Global::controller->showCrawlerRuleTableAsync();
 }
 
+- (IBAction)handleDownloadsButtonClicked:(id)sender
+{
+    Global::controller->set_downloads_visible_async(true);
+}
+
 - (IBAction)handleFindTextPrevButtonClicked:(id)sender
 {
     QString t = QString::fromNSString(self.text_find_searchfield.stringValue);
     Global::controller->currentTabWebpageFindTextPrevAsync(t);
 }
+
+
+- (void)handle_downloads_visible_changed
+{
+    if (Global::controller->downloads_visible()) {
+        [self->m_downloads_popover showRelativeToRect:[self->m_downloads_button bounds]
+                                               ofView:self->m_downloads_button
+                                        preferredEdge:NSRectEdgeMaxY];
+    } else {
+        [self->m_downloads_popover close];
+    }
+}
+
 
 - (IBAction)handleNewTabButtonClicked:(id)sender
 {
@@ -311,3 +335,13 @@
 
 @end
 
+
+@implementation DownloadPopoverDelegate
+- (void)popoverWillShow:(NSNotification *)notification
+{
+    NSUInteger nrows = [self->m_download_popover_viewcontroller.tableview.dataSource numberOfRowsInTableView:m_download_popover_viewcontroller.tableview];
+    NSSize size = self->m_download_popover.contentSize;
+    size.height = MIN(53 * nrows + 60, 500);
+    self->m_download_popover.contentSize = size;
+}
+@end
