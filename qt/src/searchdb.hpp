@@ -80,8 +80,8 @@ signals:
     void execScriptAsync(QString const& filename);
 
 protected slots:
-    Webpage_ findWebpage_(QString const& url) const;
-    QVariantMap findWebpage(QString const& url) const;
+//    Webpage_ findWebpage_(QString const& url) const;
+//    QVariantMap findWebpage(QString const& url) const;
     bool hasWebpage(QString const& url) const;
     bool removeWebpage(QString const& url);
 };

@@ -135,6 +135,7 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
 {
     qCInfo(SearchDBLogging) << "UpdateWorker::addSymbols" << url << symbols;
     Q_ASSUME(url.indexOf("#") == -1);
+    // find id for webpage
     QSqlQuery query(_db);
     query.prepare("SELECT id FROM webpage WHERE url = :url");
     query.bindValue(":url", url);
@@ -145,39 +146,63 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
         return false;
     }
     const QVariant wid = query.record().value("id");
+    qCDebug(SearchDBLogging) << "Find webpage url" << url << "id" << wid.value<uint_least64_t>();
+    // insertion begins
     for (auto i = symbols.keyBegin();
          i != symbols.keyEnd();
          i++) {
         QString hash = (*i);
         QString text = symbols[hash];
-        query.clear();
-        query.prepare("INSERT INTO symbol (hash,text,visited) VALUES (:hash,:text,:visited)");
+        // check if symbol already exists
+        query.prepare("SELECT id FROM symbol WHERE hash = :hash AND text = :text");
         query.bindValue(":hash", hash);
         query.bindValue(":text", text);
-        query.bindValue(":visited", 0);
-        if (query.exec() && query.numRowsAffected() > 0) {
-            QVariant sid = query.lastInsertId();
-            if (sid.isValid()) {
-                query.clear();
-                query.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
-                query.bindValue(":symbol", sid);
-                query.bindValue(":webpage", wid);
-                if (query.exec() && query.numRowsAffected() > 0) {
-                    qCInfo(SearchDBLogging) << "UpdateWorker::addSymbols inserted" << hash << text;
+        QVariant sid;
+        if (query.exec() && query.first()) {
+            qCDebug(SearchDBLogging) << "symbol already exists";
+            sid = query.record().value("id");
+        } else {
+            // symbol insertion begins
+            query.prepare("INSERT INTO symbol (hash,text,visited) VALUES (:hash,:text,:visited)");
+            query.bindValue(":hash", hash);
+            query.bindValue(":text", text);
+            query.bindValue(":visited", 0);
+            if (query.exec() && query.numRowsAffected() > 0) {
+                sid = query.lastInsertId();
+                if (sid.isValid()) {
+                    qCDebug(SearchDBLogging) << "UpdateWorker inserted into symbol table (" << hash << text << ") with id" << sid.value<uint_least64_t>();
                 } else {
-                    qCInfo(SearchDBLogging) << "UpdateWorker::addSymbols failed to insert into webpage_symbol" << hash << text
-                             << query.lastError();
+                    qCCritical(SearchDBLogging) << "UpdateWorker datatbase does not support QSqlQuery::lastInsertId()";
+                    return false;
                 }
             } else {
-                qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols datatbase does not support QSqlQuery::lastInsertId()";
+                qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into symbol table" << hash << text
+                            << query.lastError();
                 return false;
             }
+        }
+        // check if webpage_symbol already exists
+        query.prepare("SELECT id FROM webpage_symbol WHERE webpage = :wid AND symbol = :sid");
+        query.bindValue(":wid", wid);
+        query.bindValue(":sid", sid);
+        if (query.exec() && query.first()) {
+            qCDebug(SearchDBLogging) << "webpage_symbol already exists";
+            return false;
         } else {
-            qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols failed to insert to symbol" << hash << text
-                        << query.lastError();
+            // webpage_symbol insertion begins
+            query.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
+            query.bindValue(":symbol", sid);
+            query.bindValue(":webpage", wid);
+            if (query.exec() && query.numRowsAffected() > 0) {
+                QVariant wsid = query.lastInsertId();
+                qCInfo(SearchDBLogging) << "UpdateWorker inserted into webpage_symbol (" << sid << wid << ") with id" << wsid.value<int>();
+            } else {
+                qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into webpage_symbol" << hash << text
+                                        << query.lastError();
+                return false;
+            }
         }
     }
-    query.clear();
     return true;
 }
 
@@ -186,12 +211,21 @@ bool UpdateWorker::addWebpage(QString const& url)
     qCInfo(SearchDBLogging) << "UpdateWorker::addWebpage" << url;
     Q_ASSUME(url.indexOf("#") == -1);
     QSqlQuery query(_db);
-    query.prepare("REPLACE INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
+    // check if already exists
+    query.prepare("SELECT id FROM webpage WHERE url = :url");
+    query.bindValue(":url", url);
+    if (query.exec() && query.first()) {
+        qCDebug(SearchDBLogging) << "webpage already exists";
+        return false;
+    }
+    // begin insertion
+    query.prepare("INSERT INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
     query.bindValue(":url", url);
     if (! query.exec()) {
         qCCritical(SearchDBLogging) << "ERROR: UpdateWorker::addWebpage failed!" << query.lastError();
         return false;
-    };
+    }
+    qCDebug(SearchDBLogging) << "inserted new webpage" << url << "id" << query.lastInsertId().value<unsigned long long>();
     return true;
 }
 
@@ -202,36 +236,36 @@ bool SearchDB::removeWebpage(QString const& url)
     return false;
 }
 
-Webpage_ SearchDB::findWebpage_(QString const& url) const
-{
-    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_" << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    QSqlQuery query(_db);
-    query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
-    query.addBindValue(url);
-    if (! query.first()) {
-        qCCritical(SearchDBLogging) << "SearchDB::findWebpage_ not found!" << url;
-        return Webpage_(nullptr);
-    }
-    QSqlRecord r = query.record();
-    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_ found " << r;
-    Webpage_ wp = shared<Webpage>(url);
-//    wp->set_title(r.value("title").value<QString>());
-//    wp->set_visited(r.value("visited").value<int>());
-    return wp;
-}
+//Webpage_ SearchDB::findWebpage_(QString const& url) const
+//{
+//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_" << url;
+//    Q_ASSUME(url.indexOf("#") == -1);
+//    QSqlQuery query(_db);
+//    query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
+//    query.addBindValue(url);
+//    if (! query.first()) {
+//        qCCritical(SearchDBLogging) << "SearchDB::findWebpage_ not found!" << url;
+//        return Webpage_(nullptr);
+//    }
+//    QSqlRecord r = query.record();
+//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_ found " << r;
+//    Webpage_ wp = shared<Webpage>(url);
+////    wp->set_title(r.value("title").value<QString>());
+////    wp->set_visited(r.value("visited").value<int>());
+//    return wp;
+//}
 
-QVariantMap SearchDB::findWebpage(QString const& url) const
-{
-    qCInfo(SearchDBLogging) << "SearchDB::findWebpage" << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    Webpage_ p = SearchDB::findWebpage_(url);
-    if (p.get() == nullptr) {
-        qCCritical(SearchDBLogging) << "SearchDB::findWebpage not found!" << url;
-        return QVariantMap();
-    }
-    return p->toQVariantMap();
-}
+//QVariantMap SearchDB::findWebpage(QString const& url) const
+//{
+//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage" << url;
+//    Q_ASSUME(url.indexOf("#") == -1);
+//    Webpage_ p = SearchDB::findWebpage_(url);
+//    if (p.get() == nullptr) {
+//        qCCritical(SearchDBLogging) << "SearchDB::findWebpage not found!" << url;
+//        return QVariantMap();
+//    }
+//    return p->toQVariantMap();
+//}
 
 bool SearchDB::hasWebpage(QString const& url) const
 {

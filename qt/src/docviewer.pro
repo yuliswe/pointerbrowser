@@ -17,7 +17,10 @@ HEADERS += \
     url.hpp \
     offline_crawler.hpp \
     controller.hpp \
-    logging.hpp
+    logging.hpp \
+    file.hpp \
+    matrixmodel.hpp \
+    filelistmodel.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -37,7 +40,10 @@ SOURCES += \
     url.cpp \
     offline_crawler.cpp \
     controller.cpp \
-    logging.cpp
+    logging.cpp \
+    file.cpp \
+    filelistmodel.cpp \
+    matrixmodel.cpp
 
 RESOURCES += \
     db.qrc \

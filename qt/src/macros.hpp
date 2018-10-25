@@ -91,7 +91,7 @@
 #define METH_ASYNC_1(RetT,Name,T1) \
     protected: Q_INVOKABLE RetT Name(T1, void const* sender = nullptr); \
     public: void Name##Async(T1 v1, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(void const*,sender)); } \
-    public: RetT Name##AsyncBlocking(T1 v1, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1)); return r; }
+    public: RetT Name##AsyncBlocking(T1 v1, void const* sender = nullptr) { RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(void const*,sender)); return r; }
 
 #define METH_ASYNC_2(RetT,Name,T1,T2) \
     protected: Q_INVOKABLE RetT Name(T1, T2, void const* sender = nullptr); \

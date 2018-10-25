@@ -164,7 +164,7 @@ bool Crawler::shouldEnqueueUrl(const UrlNoHash& url)
         return false;
     }
     if (! rule_table()->hasEnabledAndMatchedRuleForUrl(url)) {
-        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is not whitelisted" << url;
+        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is not whitelisted or not enabled" << url;
         return false;
     }
     return true;

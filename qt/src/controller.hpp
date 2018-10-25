@@ -3,6 +3,7 @@
 
 #include <QtCore/QtCore>
 #include "tabsmodel.hpp"
+#include "filelistmodel.hpp"
 #include "webpage.hpp"
 #include "macros.hpp"
 #include "crawler.hpp"
@@ -50,7 +51,7 @@ public:
     PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
     // current tab
     PROP_RN_D(TabState, current_tab_state, TabStateNull)
-    PROP_N_D(Webpage_, current_tab_webpage, nullptr)
+    PROP_RN_D(Webpage_, current_tab_webpage, nullptr)
     PROP_RWN_D(bool, current_tab_webpage_can_go_back, false)
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
     PROP_RN_D(int, current_open_tab_index, -1)
@@ -69,6 +70,7 @@ public:
     PROP_RN_D(QString, current_tab_search_word, "")
     // download
     PROP_RwN_D(bool, downloads_visible, false)
+    PROP_RN_D(FileListModel_, download_files, FileListModel_::create())
     // address bar
     PROP_RN_D(float, address_bar_load_progress, 0)
     PROP_RN_D(QString, address_bar_title, "")
