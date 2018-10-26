@@ -110,6 +110,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     }
     static Webpage_ old_page = nullptr;
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     // disconnect from old
     if (old_page != nullptr) {
         QObject::disconnect(old_page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
@@ -345,6 +346,7 @@ int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     Webpage_ p = current_tab_webpage();
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
@@ -364,6 +366,7 @@ int Controller::currentTabWebpageBack(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageBack";
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_back();
@@ -382,6 +385,7 @@ int Controller::currentTabWebpageForward(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageForward";
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_forward();
@@ -400,6 +404,7 @@ int Controller::currentTabWebpageStop(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageStop";
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_stop();
@@ -413,6 +418,7 @@ int Controller::currentTabWebpageRefresh(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageRefresh";
     hideCrawlerRuleTable();
+    set_downloads_visible(false);
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_refresh();
@@ -437,7 +443,8 @@ bool Controller::updateWebpageUrl(Webpage_ p, Url const& url, void const* sender
             && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
-        hideCrawlerRuleTable();
+//        hideCrawlerRuleTable();
+//        set_downloads_visible(false);
         Global::searchDB->searchAsync(p->url().domain());
     }
     saveLastOpen();
@@ -766,5 +773,67 @@ int Controller::showPrevOpenTab(void const* sender)
 void Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
 {
     hideCrawlerRuleTable(sender);
+    if (visible && ! downloads_dirpath().isEmpty()) {
+        download_files()->loadDirectoryContents(downloads_dirpath());
+    }
     m_downloads_visible = visible;
+}
+
+File_ Controller::downloadFileFromUrlAndRename(Url const& url, QString const& filename, void const* sender)
+{
+    qCInfo(ControllerLogging) << "Controller::downloadFileFromUrlAndRename" << url << filename;
+    // check if already downloaded
+    for (int i = 0; i < download_files()->count(); i++)
+    {
+        File_ file = download_files()->get(i);
+        if (file->download_url() == url)
+        {
+            qCCritical(ControllerLogging) << "Already downloaded" << filename;
+            set_downloads_visible(true);
+            return file;
+        }
+    }
+    // check if there's one we can resume
+    for (int i = 0; i < downloading_files()->count(); i++)
+    {
+        File_ file = downloading_files()->get(i);
+        if (file->download_url() == url)
+        {
+            if (file->downloading()) {
+                set_downloads_visible(true);
+                qCDebug(ControllerLogging) << "Already downloading" << filename;
+                return file;
+            }
+            file->set_downloading(true);
+            set_downloads_visible(true);
+            file->emit_tf_download_resume();
+            qCDebug(ControllerLogging) << "Resuming file download" << filename;
+            return file;
+        }
+    }
+    qCDebug(ControllerLogging) << "Downloading new file" << filename;
+    File_ file = File_::create();
+    file->set_download_url(url);
+    file->set_save_as_filename(filename);
+    file->set_downloading(true);
+    file->set_percentage(0);
+    downloading_files()->insert(file);
+    set_downloads_visible(true);
+    file->emit_tf_download_resume();
+    qCDebug(ControllerLogging) << "Download started." << filename;
+    return file;
+}
+
+int Controller::handleFileDownloadFinished(File_ tmpfile, void const* sender)
+{
+    QString save_as_filename = tmpfile->save_as_filename();
+    while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
+    {
+        save_as_filename.prepend("New ");
+    }
+
+    downloading_files()->remove(tmpfile);
+    download_files()->loadDirectoryContents(downloads_dirpath());
+    set_downloads_visible(true);
+    return true;
 }

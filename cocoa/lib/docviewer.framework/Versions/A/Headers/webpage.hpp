@@ -66,10 +66,6 @@ public:
     PROP_RWN_D(bool, can_go_forward, false)
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RN_D(float, load_progress, 0)
-//    PROP_RN_D(QString, find_text, "")
-//    PROP_RN_D(bool, find_text_visiable, false)
-//    PROP_RN_D(int, find_text_found, 0)
-//    PROP_RN_D(int, find_text_current, -1)
     PROP_RN_D(FindTextState, find_text_state, FindTextState{})
     PROP_R_N_D(CrawlerRuleTable_, crawler_rule_table, CrawlerRuleTable_::create())
     PROP_DEF_ENDS

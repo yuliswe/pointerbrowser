@@ -29,3 +29,14 @@
 @property (readonly) std::shared_ptr<void> ptr;
 
 @end
+
+@interface QSharedPointerWrapper : NSObject
+{
+    QSharedPointer<QObject> m_ptr;
+}
+
++ (nonnull instancetype)wrap:(QSharedPointer<QObject>)ptr;
+- (nonnull instancetype)initWithPtr:(QSharedPointer<QObject>)ptr;
+@property (readonly) QSharedPointer<QObject> ptr;
+
+@end

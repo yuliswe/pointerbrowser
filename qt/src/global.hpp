@@ -10,6 +10,13 @@
 #include "crawler.hpp"
 #include "logging.hpp"
 
+class GlobalSignals : public QObject
+{
+    Q_OBJECT
+    SIG_TF_0(global_objects_initialized)
+    SIG_TF_0(everything_loaded)
+};
+
 class Global : public QObject
 {
     Q_OBJECT
@@ -18,13 +25,8 @@ class Global : public QObject
     static void initGlobalObjects();
 
 public:
+    static GlobalSignals sig;
     explicit Global(QObject *parent = nullptr);
-//    static FileManager* fileManager;
-//    static SettingsModel* settingsModel;
-//    static KeyMaps* keyMaps;
-//    static TabsModel* tabsModel;
-//    static TabsModel* previewTabsModel;
-//    static EventFilter* eventFilter;
     static SearchDB* searchDB;
     static Crawler* crawler;
     static Controller* controller;
@@ -41,6 +43,6 @@ public slots:
 };
 
 Q_DECLARE_METATYPE(void const*)
-
+Q_DECLARE_METATYPE(uint_least64_t)
 #endif // Global_H
 

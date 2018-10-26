@@ -148,9 +148,8 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
     const QVariant wid = query.record().value("id");
     qCDebug(SearchDBLogging) << "Find webpage url" << url << "id" << wid.value<uint_least64_t>();
     // insertion begins
-    for (auto i = symbols.keyBegin();
-         i != symbols.keyEnd();
-         i++) {
+    for (auto i = symbols.keyBegin(); i != symbols.keyEnd(); i++)
+    {
         QString hash = (*i);
         QString text = symbols[hash];
         // check if symbol already exists

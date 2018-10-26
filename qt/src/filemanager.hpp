@@ -37,6 +37,9 @@ class FileManager : public QObject
         static QVariantList readDataJsonFileA(QString const& file);
         static QByteArray readDataFileB(QString const& file);
         static void defaultOpenUrl(QString const& file);
+        static QList<QFileInfo> readDirContents(QString const& dir);
+//        static void moveDirContents(QString const& from, QString const& to);
+        static int moveFileToDir(QString const& filepath, QString const& dirpath, QString const& newfilename = "");
 
         static QString bookmarksPath();
         static QString crawlerRulesPath();

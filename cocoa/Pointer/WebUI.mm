@@ -9,6 +9,8 @@
 #import "WebUI.mm.h"
 #import "TabView.mm.h"
 #import "Extension/PMenu.h"
+#import <objc/runtime.h>
+#import "CppData.mm.h"
 #include <docviewer/global.hpp>
 
 @implementation WebUI
@@ -20,17 +22,6 @@
     Global::controller->hideCrawlerRuleTableAsync();
     Global::controller->set_downloads_visible_async(false);
     [super mouseDown:event];
-//    if (event.modifierFlags & NSEventModifierFlagCommand) {
-//        NSString *js = [NSString stringWithFormat:@"pointerEnableOpenLinkInNewWindow()"];
-//        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
-//            [super mouseDown:event];
-//        })];
-//    } else {
-//        NSString *js = [NSString stringWithFormat:@"pointerDisableOpenLinkInNewWindow()"];
-//        [self evaluateJavaScript:js completionHandler:(^(id, NSError *error){
-//            [super mouseDown:event];
-//        })];
-//    }
 }
 
 - (instancetype)initWithTabItem:(TabViewItem*)tabItem
@@ -40,7 +31,6 @@
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
     self = [super initWithFrame:[tabItem.view bounds] configuration:config];
-//    self.tab = tabItem;
     static WebUIDelegate* uidelegate = [[WebUIDelegate alloc] init];
     self.UIDelegate = uidelegate;
     self.allowsBackForwardNavigationGestures = YES;
@@ -56,11 +46,6 @@
     [self connect];
     return self;
 }
-//
-//- (void)dealloc
-//{
-//    [self loadUri:@"about:blank"];
-//}
 
 - (void)connect
 {
@@ -68,50 +53,50 @@
                      [=](const Url& url)
     {
         NSString* u = url.full().toNSString();
-        [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:NO];
     });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_refresh,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(reload) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(reload) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_back,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(goBack) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(goBack) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_forward,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(goForward) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(goForward) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_stop,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(stop) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(stop) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_highlight_all,
                      [=](const QString& keyword) {
                         NSString* txt = keyword.toNSString();
-                         [self performSelectorOnMainThread:@selector(highlightAllOccurencesOfString:) withObject:txt waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(highlightAllOccurencesOfString:) withObject:txt waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_clear,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(removeAllHighlights) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(removeAllHighlights) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_next_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
-                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:NO];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_prev_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
-                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:NO];
                      });
 }
 
@@ -127,6 +112,10 @@
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
         Global::controller->updateWebpageUrlAsync(self.webpage, QUrl::fromNSURL(url));
+        NSString * _Nullable title = self.title;
+        if (title && title.length > 0) {
+            Global::controller->updateWebpageTitleAsync(self.webpage, QString::fromNSString(title));
+        }
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString * _Nullable title = self.title;
         Global::controller->updateWebpageTitleAsync(self.webpage, QString::fromNSString(title));
@@ -152,38 +141,22 @@ didFailNavigation:(WKNavigation *)navigation
 - (void)webView:(WKWebView *)webView
 didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
 {
-//    self.webpage->updateTitleAsync(QString::fromNSString(self.title));
-//    NSURL * _Nullable url = self.URL;
-//    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
 }
 
 - (void)webView:(WKWebView *)webView
 didStartProvisionalNavigation:(WKNavigation *)navigation {
-//    self.webpage->updateTitleAsync(QString::fromNSString(self.title));
-//    NSURL * _Nullable url = self.URL;
-//    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
 {
-//    self.webpage->updateTitleAsync(QString::fromNSString(self.title));
-//    NSURL * _Nullable url = self.URL;
-//    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
 }
 
 - (void)webView:(WKWebView *)webView
 didFinishNavigation:(WKNavigation *)navigation {
-//    NSString * _Nullable title = self.title;
-//    self.webpage->updateTitleAsync(QString::fromNSString(title));
-//    NSURL * _Nullable url = self.URL;
-//    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
 }
 
 - (void)webView:(WKWebView *)webView
 didCommitNavigation:(WKNavigation *)navigation {
-//    self.webpage->updateTitleAsync(QString::fromNSString(self.title));
-//    NSURL * _Nullable url = self.URL;
-//    self.webpage->updateUrlAsync(QUrl::fromNSURL(url));
 }
 
 - (void)webView:(WKWebView *)webView
@@ -246,6 +219,35 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     [menu filterMenuItems];
 }
 
+- (void)webView:(WKWebView *)webView
+decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
+decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
+{
+    if (navigationResponse.canShowMIMEType) {
+        decisionHandler(WKNavigationResponsePolicyAllow);
+    } else {
+        decisionHandler(WKNavigationResponsePolicyCancel);
+        NSURL* url = navigationResponse.response.URL;
+        NSString* filename = navigationResponse.response.suggestedFilename;
+        NSURLSessionConfiguration* sessionconfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        static WebUIURLSessionDownloadTaskDelegate* sessiondelegate = [[WebUIURLSessionDownloadTaskDelegate alloc] init];
+        NSURLSession* session = [NSURLSession sessionWithConfiguration:sessionconfig delegate:sessiondelegate delegateQueue:nil];
+        NSURLSessionDownloadTask* task = [session downloadTaskWithURL:url];
+        File_ f = Global::controller->downloadFileFromUrlAndRenameBlocking(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
+        [task setFile:f];
+        QObject::connect(f.get(), &File::signal_tf_download_resume,[=]() {
+            [task performSelectorOnMainThread:@selector(resume) withObject:nil waitUntilDone:NO];
+        });
+        QObject::connect(f.get(), &File::signal_tf_download_stop,[=]() {
+            [task performSelectorOnMainThread:@selector(cancelByProducingResumeData:) withObject:(^(NSData * _Nullable resumeData) {
+                // not implemented
+            }) waitUntilDone:NO];
+        });
+        if (f->downloading()) {
+            [task resume];
+        }
+    }
+}
 @end
 
 @implementation WebUIDelegate
@@ -265,3 +267,49 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     return nil;
 }
 @end
+
+@implementation WebUIURLSessionDownloadTaskDelegate
+// called when download restarts
+- (void)URLSession:(NSURLSession *)session
+      downloadTask:(NSURLSessionDownloadTask *)downloadTask
+ didResumeAtOffset:(int64_t)fileOffset
+expectedTotalBytes:(int64_t)expectedTotalBytes
+{
+//    File_ f = Global::controller->downloadFileFromBlocking(QString::fromNSString(downloadTask.response.URL.absoluteString));
+    
+}
+// called when receiving new data during download
+- (void)URLSession:(NSURLSession *)session
+      downloadTask:(NSURLSessionDownloadTask *)downloadTask
+      didWriteData:(int64_t)bytesWritten
+ totalBytesWritten:(int64_t)totalBytesWritten
+totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
+    File_ f = downloadTask.file;
+    f->set_size_bytes_addition_async(bytesWritten);
+    f->set_size_bytes_downloaded_async(totalBytesWritten);
+    f->set_size_bytes_expected_async(totalBytesExpectedToWrite);
+    f->set_percentage_async((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
+}
+// called when download finishes
+- (void)URLSession:(NSURLSession *)session
+      downloadTask:(NSURLSessionDownloadTask *)downloadTask
+didFinishDownloadingToURL:(NSURL *)location
+{
+    File_ f = downloadTask.file;
+    f->setFile(QString::fromNSString(location.path));
+    Global::controller->handleFileDownloadFinishedBlocking(f);
+}
+@end
+
+@implementation NSURLSessionTask(Pointer)
+- (void)setFile:(File_)file {
+    id item = [QSharedPointerWrapper wrap:file.staticCast<QObject>()];
+    objc_setAssociatedObject(self, @selector(file), item, OBJC_ASSOCIATION_RETAIN);
+}
+- (File_)file {
+    QSharedPointerWrapper* item = objc_getAssociatedObject(self, @selector(file));
+    return item.ptr.staticCast<File>();
+}
+@end
+

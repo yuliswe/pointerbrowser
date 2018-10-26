@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
             cout << "Google search: waiting for text to search" << endl;
             string c;
             cin >> c;
-            int i = Global::controller->newTabAsyncBlocking(Controller::TabStateOpen,
+            int i = Global::controller->newTabBlocking(Controller::TabStateOpen,
                                                             Global::controller->home_url(),
                                                             Controller::WhenCreatedViewNew,
                                                             Controller::WhenExistsViewExisting);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
             qInfo() << "View open tab ? (waiting for an int)";
             int i;
             cin >> i;
-            int _i = Global::controller->viewTabAsyncBlocking(Controller::TabStateOpen, i);
+            int _i = Global::controller->viewTabBlocking(Controller::TabStateOpen, i);
             qInfo() << "Switched to tab" << _i;
             continue;
         }
@@ -144,11 +144,11 @@ int main(int argc, char *argv[])
         }
         else if (c == "lsd") {
             cout << "Downloads:" << endl;
-            Global::controller->download_files()->loadDirectoryContentsAsyncBlocking("/Users/ylilarry/Downloads");
-            for (int i = 0; i < Global::controller->download_files()->rowCount(); i++)
+            Global::controller->download_files()->loadDirectoryContentsBlocking("/Users/ylilarry/Downloads");
+            for (int i = 0; i < Global::controller->download_files()->count(); i++)
             {
                 File_ f = Global::controller->download_files()->get(i);
-                qInfo() << f;
+                qInfo() << i << " " << *f;
             }
             continue;
         }

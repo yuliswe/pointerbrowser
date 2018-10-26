@@ -110,7 +110,7 @@
 //        [self performSelectorOnMainThread:@selector(handleSearchResultsInserted:)
 //                               withObject:@{@"first": [NSNumber numberWithInt:first],
 //                                            @"last": [NSNumber numberWithInt:last]}
-//                            waitUntilDone:YES];
+//                            waitUntilDone:NO];
 //    });
 //
 //    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsRemoved,
@@ -119,7 +119,7 @@
 //        [self performSelectorOnMainThread:@selector(handleSearchResultsRemoved:)
 //                               withObject:@{@"first": [NSNumber numberWithInt:first],
 //                                            @"last": [NSNumber numberWithInt:last]}
-//                            waitUntilDone:YES];
+//                            waitUntilDone:NO];
 //    });
  
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsInserted,
@@ -128,7 +128,7 @@
         [self performSelectorOnMainThread:@selector(handleOpenTabsInserted:)
                                withObject:@{@"first": [NSNumber numberWithInt:first],
                                             @"last": [NSNumber numberWithInt:last]}
-                            waitUntilDone:YES];
+                            waitUntilDone:NO];
     });
     
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::signal_tf_tab_moved,
@@ -137,7 +137,7 @@
                          [self performSelectorOnMainThread:@selector(handleOpenTabsMoved:)
                                                 withObject:@{@"from": [NSNumber numberWithInt:from],
                                                              @"to": [NSNumber numberWithInt:to]}
-                                             waitUntilDone:YES];
+                                             waitUntilDone:NO];
                      });
     
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsRemoved,
@@ -146,26 +146,26 @@
         [self performSelectorOnMainThread:@selector(handleOpenTabsRemoved:)
                                withObject:@{@"first": [NSNumber numberWithInt:first],
                                             @"last": [NSNumber numberWithInt:last]}
-                            waitUntilDone:YES];
+                            waitUntilDone:NO];
     });
 
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::modelReset,
                      [=]()
     {
-        [self performSelectorOnMainThread:@selector(handleOpenTabsReset) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleOpenTabsReset) withObject:nil waitUntilDone:NO];
     });
 
     QObject::connect(Global::searchDB->search_result().get(), &TabsModel::modelReset,
                      [=]()
      {
-         [self performSelectorOnMainThread:@selector(handleSearchResultsReset) withObject:nil waitUntilDone:YES];
+         [self performSelectorOnMainThread:@selector(handleSearchResultsReset) withObject:nil waitUntilDone:NO];
      });
     
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
                      [=](Webpage_ w, void const* sender) {
                          if (sender == (__bridge void*)self) { return; }
-                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:NO];
                      });
     [self reloadAll];
 }
@@ -209,7 +209,7 @@
         id item = [CppSharedData wrap:w];
         [self.open_tabs.get insertObject:item atIndex:i];
         QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
-            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:NO];
         });
     }
     NSMutableIndexSet* new_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.open_tabs.get.count)];
@@ -249,7 +249,7 @@
         CppSharedData* item = [CppSharedData wrap:w];
         [self.open_tabs.get insertObject:item atIndex:i];
         QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
-            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:NO];
         });
     }
     
@@ -292,7 +292,7 @@
         id item = [CppSharedData wrap:w];
         [self.search_results.get insertObject:item atIndex:i];
         QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
-            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:NO];
         });
         [inserted addIndex:i];
     }

@@ -54,9 +54,6 @@ Global::Global(QObject *parent) : QObject(parent)
 }
 
 void Global::startQCoreApplicationThread(int argc, const QStringList& argv) {
-    qRegisterMetaType<void const*>();
-    qRegisterMetaType<CrawlerRule>();
-    qRegisterMetaType<CrawlerRuleTable>();
     static std::vector<char*> vec(argc);
     static QList<QByteArray> bytes;
     bytes.reserve(argc);
@@ -65,20 +62,23 @@ void Global::startQCoreApplicationThread(int argc, const QStringList& argv) {
         vec[i] = bytes[i].data();
     }
 
-//    qRegisterMetaType<Controller::TabState>("TabState");
     Global::startQCoreApplicationThread(argc, vec.data());
 }
 
 void Global::startQCoreApplicationThread(int argc, char** argv) {
     if (qCoreApplication) { return; } // already running
 
-    //    QCoreApplication::setLibraryPaths(QStringList("@executable_path"));
+    qRegisterMetaType<void const*>();
+    qRegisterMetaType<CrawlerRule>();
+    qRegisterMetaType<CrawlerRuleTable>();
+    qRegisterMetaType<uint_least64_t>();
 
     qCoreApplication = new QCoreApplication(argc, argv);
     qCoreApplication->moveToThread(qCoreApplicationThread);
 
     QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
         initGlobalObjects();
+        Global::sig.emit_tf_global_objects_initialized();
         dumpLibraryInfo();
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
@@ -91,6 +91,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         searchDB->connect();
         controller->loadLastOpen();
         controller->loadBookmarks();
+        Global::sig.emit_tf_everything_loaded();
     });
 
     QObject::connect(qCoreApplicationThread, &QThread::finished, [=]() {
@@ -103,12 +104,12 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
 void Global::stopQCoreApplicationThread()
 {
     qCoreApplicationThread->quit();
-    qCoreApplicationThread->wait();
 }
 
 QCoreApplication* Global::qCoreApplication = nullptr;
 QThread* const Global::qCoreApplicationThread = new QThread();
 
+GlobalSignals Global::sig;
 //FileManager* Global::fileManager = new FileManager();
 SearchDB* Global::searchDB = nullptr;
 Controller* Global::controller = nullptr;
@@ -127,4 +128,3 @@ void Global::initGlobalObjects()
 #endif
 
 }
-

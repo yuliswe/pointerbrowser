@@ -2,17 +2,17 @@
 
 QtMsgType level = QtCriticalMsg;
 QLoggingCategory WebpageLogging("Webpage", level);
-QLoggingCategory SearchDBLogging("SearchDB", QtDebugMsg);
+QLoggingCategory SearchDBLogging("SearchDB", level);
 
 QLoggingCategory GlobalLogging("Global", level);
 
-QLoggingCategory FileLogging("File", level);
+QLoggingCategory FileLogging("File", QtInfoMsg);
 
-QLoggingCategory CrawlerLogging("Crawler", QtDebugMsg);
+QLoggingCategory CrawlerLogging("Crawler", level);
 QLoggingCategory CrawlerRuleLogging("CrawlerRule", level);
 QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable", level);
 
-QLoggingCategory MacroLogging("Macro", level);
+QLoggingCategory MacroLogging("Macro", QtInfoMsg);
 
-QLoggingCategory ControllerLogging("Controller", QtInfoMsg);
+QLoggingCategory ControllerLogging("Controller", QtDebugMsg);
 

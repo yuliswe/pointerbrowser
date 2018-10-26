@@ -13,6 +13,8 @@ class Controller;
 
 class CrawlerRule : public QObject
 {
+    friend class Crawler;
+    friend class CrawlerRuleTable;
     Q_OBJECT
 
     PROP_DEF_BEGINS

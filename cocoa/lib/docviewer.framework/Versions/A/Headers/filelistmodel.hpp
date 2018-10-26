@@ -2,14 +2,15 @@
 #define FILESMODEL_H
 
 #include <QtCore/QtCore>
-#include "matrixmodel.hpp"
+#include "baselistmodel.hpp"
 #include "file.hpp"
 #include "macros.hpp"
 
-class FileListModel : public MatrixModel<File_>
+class Controller;
+class FileListModel : public QObject, public BaseListModel<File_>
 {
+    friend class Controller;
     Q_OBJECT
-
 public:
     METH_ASYNC_1(int, loadDirectoryContents, QString const&)
 };
@@ -17,6 +18,5 @@ public:
 typedef QSharedPointer<FileListModel> FileListModel_;
 
 Q_DECLARE_METATYPE(FileListModel_)
-//Q_DECLARE_METATYPE(MatrixModel<QSharedPointer<File>>)
 
 #endif // FILESMODEL_H

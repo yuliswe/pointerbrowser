@@ -43,6 +43,7 @@ public:
     Q_ENUM(CurrentPageSearchState)
 
     PROP_DEF_BEGINS
+    // tabs
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, preview_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, bookmarks, shared<TabsModel>())
@@ -70,6 +71,7 @@ public:
     PROP_RN_D(QString, current_tab_search_word, "")
     // download
     PROP_RwN_D(bool, downloads_visible, false)
+    PROP_RN_D(FileListModel_, downloading_files, FileListModel_::create())
     PROP_RN_D(FileListModel_, download_files, FileListModel_::create())
     // address bar
     PROP_RN_D(float, address_bar_load_progress, 0)
@@ -115,7 +117,10 @@ public:
     METH_ASYNC_2(bool, updateWebpageTitle, Webpage_, QString const&)
     METH_ASYNC_2(bool, updateWebpageProgress, Webpage_, float)
     METH_ASYNC_2(bool, updateWebpageFindTextFound, Webpage_, int)
-
+    // downloads
+    PROP_RWN_D(QString, downloads_dirpath, "")
+    METH_ASYNC_1(int, handleFileDownloadFinished, File_)
+    METH_ASYNC_2(File_, downloadFileFromUrlAndRename, Url const&, QString const&)
     PROP_DEF_ENDS
 
     int loadBookmarks();

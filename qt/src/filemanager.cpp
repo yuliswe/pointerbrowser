@@ -192,3 +192,41 @@ void FileManager::defaultOpenUrl(QString const& filename)
     qCInfo(FileLogging) << "FileManager::defaultOpenUrl" << url;
 //    QDesktopServices::openUrl(url);
 }
+
+QList<QFileInfo> FileManager::readDirContents(QString const& dirpath)
+{
+    QDir dir(dirpath);
+    QList<QFileInfo> infols = dir.entryInfoList(QDir::AllDirs|QDir::Files|QDir::NoDotAndDotDot|QDir::Readable|QDir::Writable,
+                                                QDir::Time);
+    return infols;
+}
+
+int FileManager::moveFileToDir(QString const& filepath,
+                               QString const& dirpath,
+                               QString const& newfilename)
+{
+    qCInfo(FileLogging) << "FileManager::moveFileToDir" << filepath << dirpath << newfilename;
+    QFileInfo originalfile(filepath);
+    QDir destdir(dirpath);
+    QFileInfo destfile;
+    if (newfilename.isEmpty()) {
+        destfile = destdir.filePath(originalfile.fileName());
+    } else {
+        destfile = destdir.filePath(newfilename);
+    }
+    if (! originalfile.exists())
+    {
+        qCCritical(FileLogging) << "original file" << originalfile.absoluteFilePath() << "does not exist";
+        return 1;
+    }
+    if (destfile.exists()) {
+        qCCritical(FileLogging) << "destination file" << destfile.absoluteFilePath() << "already exists";
+        return 2;
+    }
+    return QFile(originalfile.absoluteFilePath()).rename(destfile.absoluteFilePath());
+}
+
+//void FileManager::moveDirContents(QString const& from, QString const& to)
+//{
+
+//}

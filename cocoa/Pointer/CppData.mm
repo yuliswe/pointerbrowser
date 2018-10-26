@@ -42,3 +42,20 @@
 }
 
 @end
+
+@implementation QSharedPointerWrapper
+
+@synthesize ptr = m_ptr;
+
++ (instancetype)wrap:(QSharedPointer<QObject>)ptr
+{
+    return [[QSharedPointerWrapper alloc] initWithPtr:ptr];
+}
+
+- (instancetype)initWithPtr:(QSharedPointer<QObject>)ptr {
+    self = [self init];
+    self->m_ptr = ptr;
+    return self;
+}
+
+@end

@@ -23,7 +23,13 @@
     for (int i = 0; i < argc; i++) {
         argv << QString::fromNSString(args[i]);
     }
+    QObject::connect(&Global::sig, &GlobalSignals::signal_tf_everything_loaded, [=]() {
+        NSArray* urls = [[NSFileManager defaultManager] URLsForDirectory:NSDownloadsDirectory inDomains:NSUserDomainMask];
+        NSURL* downloads_url = urls[0];
+        Global::controller->set_downloads_dirpath(QString::fromNSString(downloads_url.path));
+    });
     Global::startQCoreApplicationThread(argc, argv);
+    
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {

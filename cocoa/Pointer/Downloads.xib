@@ -63,7 +63,7 @@
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7VH-Pe-yyI">
                                                         <rect key="frame" x="49" y="28" width="293" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" title="Label" id="28V-f4-2a3">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" title="Title" id="28V-f4-2a3">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -79,7 +79,7 @@
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AC6-CG-8B1">
                                                         <rect key="frame" x="49" y="4" width="293" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="Tqd-ZJ-PNP">
+                                                        <textFieldCell key="cell" lineBreakMode="clipping" title="ByteSize" id="Tqd-ZJ-PNP">
                                                             <font key="font" metaFont="smallSystem"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

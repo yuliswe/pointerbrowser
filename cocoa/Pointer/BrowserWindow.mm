@@ -58,43 +58,43 @@
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()
     {
-        [self performSelectorOnMainThread:@selector(handleNewTextFindState) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleNewTextFindState) withObject:nil waitUntilDone:NO];
     });
     QObject::connect(Global::controller,
                      &Controller::signal_tf_enable_crawler_rule_table,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_tf_enable_crawler_rule_table) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_tf_enable_crawler_rule_table) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::signal_tf_disable_crawler_rule_table,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_tf_disable_crawler_rule_table) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_tf_disable_crawler_rule_table) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::bookmark_page_visible_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::downloads_visible_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_downloads_visible_changed) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_downloads_visible_changed) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_can_go_back_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_can_go_forward_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:NO];
                      });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
@@ -187,6 +187,7 @@
 {
     Global::controller->newTabAsync();
     [self.window makeFirstResponder:self.addressbar];
+    self.addressbar.stringValue = @"";
 }
 
 - (void)menuFocusAddress:(id)sender
@@ -339,7 +340,7 @@
 @implementation DownloadPopoverDelegate
 - (void)popoverWillShow:(NSNotification *)notification
 {
-    NSUInteger nrows = [self->m_download_popover_viewcontroller.tableview.dataSource numberOfRowsInTableView:m_download_popover_viewcontroller.tableview];
+    int nrows = Global::controller->download_files()->count();
     NSSize size = self->m_download_popover.contentSize;
     size.height = MIN(53 * nrows + 60, 500);
     self->m_download_popover.contentSize = size;

@@ -19,8 +19,8 @@ HEADERS += \
     controller.hpp \
     logging.hpp \
     file.hpp \
-    matrixmodel.hpp \
-    filelistmodel.hpp
+    filelistmodel.hpp \
+    baselistmodel.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -43,7 +43,7 @@ SOURCES += \
     logging.cpp \
     file.cpp \
     filelistmodel.cpp \
-    matrixmodel.cpp
+    baselistmodel.cpp
 
 RESOURCES += \
     db.qrc \

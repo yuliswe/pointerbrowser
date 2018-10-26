@@ -49,17 +49,7 @@ Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
     return shared<Webpage>(map); // use constructor
 }
 
-//QJsonObject Webpage::toQJsonObject()
-//{
-//    return QJsonObject::fromVariantMap(toQVariantMap());
-//}
-
-//Webpage_ Webpage::fromQJsonObject(const QJsonObject& map)
-//{
-//    return Webpage::fromQVariantMap(map.toVariantMap());
-//}
-
-void Webpage::custom_set_url(Url const& url, const void* sender)
+void Webpage::custom_set_url(Url const& url, void const* sender)
 {
     m_url = url;
     if (! url.isEmpty()) {
@@ -68,19 +58,7 @@ void Webpage::custom_set_url(Url const& url, const void* sender)
         emit title_changed(m_title, sender);
         unlock_title_for_read_write();
     }
-
     set_is_blank(m_url.isBlank());
-//    if (! url.isEmpty()) {
-//        CrawlerRuleTable_ table = CrawlerRuleTable::readPartialTableFromSettings(url);
-//        if (table->rulesCount() == 0) {
-//            table = CrawlerRuleTable::defaultTableForDomain(url);
-//        }
-//        table->updateAssociatedUrl(url);
-//        lock_crawler_rule_table_for_read_write();
-//        m_crawler_rule_table = table;
-//        emit crawler_rule_table_changed(table);
-//        unlock_crawler_rule_table_for_read_write();
-//    }
 }
 
 bool Webpage::crawlerRuleTableReloadFromSettings()
@@ -358,7 +336,7 @@ bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
     return true;
 }
 
-void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, const void* sender)
+void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)
 {
     tb->updateAssociatedUrl(url());
     m_crawler_rule_table = tb;

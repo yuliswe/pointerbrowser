@@ -54,46 +54,46 @@
                      &TabsModel::rowsInserted,
                      [=](const QModelIndex &parent, int first, int last) {
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
-                         [self performSelectorOnMainThread:@selector(onOpenTabRowsInserted:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(onOpenTabRowsInserted:) withObject:args waitUntilDone:NO];
                      });
     
     QObject::connect(Global::controller->open_tabs().get(),
                      &TabsModel::rowsRemoved,
                      [=](const QModelIndex &parent, int first, int last) {
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
-                         [self performSelectorOnMainThread:@selector(onOpenTabRowsRemoved:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(onOpenTabRowsRemoved:) withObject:args waitUntilDone:NO];
                      });
     
     QObject::connect(Global::controller->open_tabs().get(),
                      &TabsModel::signal_tf_tab_moved,
                      [=](int from, int to) {
                          NSDictionary* args = @{@"from" : [NSNumber numberWithInt:from], @"to": [NSNumber numberWithInt:to]};
-                         [self performSelectorOnMainThread:@selector(handleOpenTabsMoved:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handleOpenTabsMoved:) withObject:args waitUntilDone:NO];
                      });
     
     QObject::connect(Global::controller->preview_tabs().get(),
                      &TabsModel::rowsInserted,
                      [=](const QModelIndex &parent, int first, int last) {
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
-                         [self performSelectorOnMainThread:@selector(onPreviewTabRowsInserted:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(onPreviewTabRowsInserted:) withObject:args waitUntilDone:NO];
                      });
     QObject::connect(Global::controller->preview_tabs().get(),
                      &TabsModel::rowsRemoved,
                      [=](const QModelIndex &parent, int first, int last) {
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
-                         [self performSelectorOnMainThread:@selector(onPreviewTabRowsRemoved:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(onPreviewTabRowsRemoved:) withObject:args waitUntilDone:NO];
                      });
     QObject::connect(Global::controller->preview_tabs().get(),
                      &TabsModel::modelReset,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_preview_tab_model_reset) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handle_preview_tab_model_reset) withObject:nil waitUntilDone:NO];
                      });
     [self reload];
     // selection changed signal should only be connected after view is for sure loaded
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:NO];
                      });
     
     return self;
