@@ -109,8 +109,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         return 0;
     }
     static Webpage_ old_page = nullptr;
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     // disconnect from old
     if (old_page != nullptr) {
         QObject::disconnect(old_page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
@@ -124,7 +123,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     }
     if (state == TabStateNull) {
         old_page = nullptr;
-        emit_tf_disable_crawler_rule_table();
+        set_crawler_rule_table_enabled(false);
         set_current_open_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
@@ -141,9 +140,9 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_webpage_crawler_rule_table(CrawlerRuleTable_::create());
         set_current_tab_webpage_can_go_back(false);
         set_current_tab_webpage_can_go_forward(false);
+        Global::searchDB->search_result()->clear();
         return -1;
     }
-    emit_tf_enable_crawler_rule_table();
     if (i < 0) { i = 0; }
     Webpage_ page = nullptr;
     if (state == TabStateOpen) {
@@ -162,8 +161,10 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     Q_ASSERT(page != nullptr);
     if (page->is_blank()) {
         showBookmarkPage();
+        set_crawler_rule_table_enabled(false);
     } else {
         hideBookmarkPage();
+        set_crawler_rule_table_enabled(true);
     }
     set_current_tab_state(state);
     set_address_bar_load_progress(page->load_progress());
@@ -345,8 +346,7 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
 int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
@@ -365,8 +365,7 @@ int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 int Controller::currentTabWebpageBack(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageBack";
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_back();
@@ -384,8 +383,7 @@ int Controller::currentTabWebpageBack(void const* sender)
 int Controller::currentTabWebpageForward(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageForward";
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_forward();
@@ -403,8 +401,7 @@ int Controller::currentTabWebpageForward(void const* sender)
 int Controller::currentTabWebpageStop(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageStop";
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_stop();
@@ -417,8 +414,7 @@ int Controller::currentTabWebpageStop(void const* sender)
 int Controller::currentTabWebpageRefresh(void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageRefresh";
-    hideCrawlerRuleTable();
-    set_downloads_visible(false);
+    closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
         emit p->emit_tf_refresh();
@@ -433,38 +429,21 @@ int Controller::currentTabWebpageRefresh(void const* sender)
     return 0;
 }
 
-bool Controller::updateWebpageUrl(Webpage_ p, Url const& url, void const* sender)
+bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const* sender)
 {
-    qCInfo(ControllerLogging) << "Controller::updateWebpageUrl" << p << url;
-    p->updateUrl(url);
+    qCInfo(ControllerLogging) << "Controller::handleWebpageUrlChanged" << p << url;
+    p->set_url(url, sender);
     Global::crawler->crawlAsync(p->url());
     if (current_tab_webpage() != nullptr
             && p.get() == current_tab_webpage().get()
             && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
-//        hideCrawlerRuleTable();
-//        set_downloads_visible(false);
         Global::searchDB->searchAsync(p->url().domain());
     }
     saveLastOpen();
     return true;
 }
-
-bool Controller::updateWebpageTitle(Webpage_ wp, QString const& title, void const* sender)
-{
-    qCInfo(ControllerLogging) << "Controller::updateWebpageTitle" << wp << title;
-    wp->updateTitle(title);
-    return true;
-}
-
-bool Controller::updateWebpageProgress(Webpage_ wp, float progress, void const* sender)
-{
-    qCDebug(ControllerLogging) << "Controller::updateWebpageProgress" << wp << progress;
-    wp->updateProgress(progress);
-    return true;
-}
-
 
 bool Controller::updateWebpageFindTextFound(Webpage_ wp, int found, void const* sender)
 {
@@ -622,28 +601,24 @@ bool Controller::currentTabWebpageCrawlerRuleTableModifyRule(int old, CrawlerRul
     return true;
 }
 
-int Controller::hideCrawlerRuleTable(void const* sender)
+bool const& Controller::custom_set_crawler_rule_table_visible(bool const& visible, void const* sender)
 {
-    emit_tf_hide_crawler_rule_table_row_hint();
-    emit_tf_hide_crawler_rule_table();
-    return 0;
-}
-
-int Controller::showCrawlerRuleTable(void const* sender)
-{
-    qCInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
-    if (! current_tab_webpage()) {
-        qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
-        return -1;
+    if (visible) {
+        qCInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
+        if (! current_tab_webpage()) {
+            qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
+            return m_crawler_rule_table_visible = false;
+        }
+        if (current_tab_webpage()->is_blank()) {
+            qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
+            return m_crawler_rule_table_visible = false;
+        }
+        set_downloads_visible(false);
+        current_tab_webpage()->crawlerRuleTableReloadFromSettings();
+    } else {
+        emit_tf_hide_crawler_rule_table_row_hint();
     }
-    if (current_tab_webpage()->is_blank()) {
-        qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
-        return -1;
-    }
-    set_downloads_visible(false);
-    current_tab_webpage()->crawlerRuleTableReloadFromSettings();
-    emit_tf_show_crawler_rule_table();
-    return 0;
+    return m_crawler_rule_table_visible = visible;
 }
 
 int Controller::searchTabs(QString const& words, void const* sender)
@@ -770,13 +745,13 @@ int Controller::showPrevOpenTab(void const* sender)
     return viewTab(TabStateOpen, open_tabs()->count() - 1, sender);
 }
 
-void Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
+bool const& Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
 {
-    hideCrawlerRuleTable(sender);
     if (visible && ! downloads_dirpath().isEmpty()) {
+        set_crawler_rule_table_visible(false, sender);
         download_files()->loadDirectoryContents(downloads_dirpath());
     }
-    m_downloads_visible = visible;
+    return m_downloads_visible = visible;
 }
 
 File_ Controller::downloadFileFromUrlAndRename(Url const& url, QString const& filename, void const* sender)
@@ -835,5 +810,12 @@ int Controller::handleFileDownloadFinished(File_ tmpfile, void const* sender)
     downloading_files()->remove(tmpfile);
     download_files()->loadDirectoryContents(downloads_dirpath());
     set_downloads_visible(true);
+    return true;
+}
+
+int Controller::closeAllPopovers(void const* sender)
+{
+    set_downloads_visible(false, sender);
+    set_crawler_rule_table_visible(false, sender);
     return true;
 }

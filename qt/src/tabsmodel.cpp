@@ -221,10 +221,10 @@ bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int cou
 
 void TabsModel::clear() {
     if (_tabs.isEmpty()) { return; }
-//    emit beginResetModel();
-    emit beginRemoveRows(QModelIndex(), 0, _tabs.count() - 1);
+    emit beginResetModel();
+//    emit beginRemoveRows(QModelIndex(), 0, _tabs.count() - 1);
     _tabs.clear();
-//    emit endResetModel();
-    emit endRemoveRows();
+    emit endResetModel();
+//    emit endRemoveRows();
     emit countChanged();
 }

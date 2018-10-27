@@ -40,11 +40,12 @@
     });
     [super viewDidLoad];
 }
-
-- (void)mouseDown:(id)sender
-{
-    [self.view.window makeFirstResponder:self.view.window];
-}
+//
+//- (void)mouseDown:(NSEvent*)event
+//{
+//    Global::controller->closeAllPopoversAsync();
+//    [self.view.window makeFirstResponder:self.view.window];
+//}
 
 @end
 

@@ -1,13 +1,14 @@
 //
-//  PTextField.m
+//  PSearchField.m
 //  Pointer
 //
 //  Created by Yu Li on 2018-10-22.
 //  Copyright © 2018 Yu Li. All rights reserved.
 //
 
-#import "PTextField.h"
+#import "PSearchField.h"
+#include <docviewer/docviewer.h>
 
-@implementation PTextField
+@implementation PSearchField
 
 @end

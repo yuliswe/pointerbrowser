@@ -35,9 +35,6 @@ class Webpage : public QObject
     void findPrev(QString const&);
     void findClear();
 
-    int updateUrl(Url const&);
-    float updateProgress(float);
-    int updateTitle(QString const&);
     int updateFindTextFound(int);
 
     int go(QString const&);
@@ -59,13 +56,13 @@ public:
 
     PROP_DEF_BEGINS
     PROP_R_N_D(Url, url, QString(""))
-    PROP_R_N_D(QString, title, "")
+    PROP_RwN_D(QString, title, "")
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(bool, is_blank, true)
     PROP_RWN_D(bool, can_go_forward, false)
     PROP_RWN_D(bool, can_go_back, false)
-    PROP_RN_D(float, load_progress, 0)
+    PROP_RWN_D(float, load_progress, 0)
     PROP_RN_D(FindTextState, find_text_state, FindTextState{})
     PROP_R_N_D(CrawlerRuleTable_, crawler_rule_table, CrawlerRuleTable_::create())
     PROP_DEF_ENDS

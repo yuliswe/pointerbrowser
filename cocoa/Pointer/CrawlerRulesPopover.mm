@@ -24,27 +24,21 @@
 - (void)connect
 {
     QObject::connect(Global::controller,
-                     &Controller::signal_tf_show_crawler_rule_table,
+                     &Controller::crawler_rule_table_visible_changed,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_tf_show_crawler_rule_table) withObject:nil waitUntilDone:NO];
-                     });
-    QObject::connect(Global::controller,
-                     &Controller::signal_tf_hide_crawler_rule_table,
-                     [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_tf_hide_crawler_rule_table) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_visible_changed) withObject:nil waitUntilDone:NO];
                      });
 }
 
-- (void)handle_tf_show_crawler_rule_table
+- (void)handle_crawler_rule_table_visible_changed
 {
-    [self showRelativeToRect:[self->m_caller_button bounds]
-                      ofView:self->m_caller_button
-               preferredEdge:NSRectEdgeMaxY];
-}
-
-- (void)handle_tf_hide_crawler_rule_table
-{
-    [self close];
+    if (Global::controller->crawler_rule_table_visible()) {
+        [self showRelativeToRect:[self->m_caller_button bounds]
+                          ofView:self->m_caller_button
+                   preferredEdge:NSRectEdgeMaxY];
+    } else {
+        [self close];
+    }
 }
 
 @end
@@ -70,11 +64,11 @@
                      [=]() {
                          [self performSelectorOnMainThread:@selector(handle_current_webpage_crawler_rule_table_changed) withObject:nil waitUntilDone:NO];
                      });
-    QObject::connect(Global::controller,
-                     &Controller::signal_tf_show_crawler_rule_table,
-                     [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_current_webpage_crawler_rule_table_changed) withObject:nil waitUntilDone:NO];
-                     });
+}
+
+- (void)viewDidAppear
+{
+    [self handle_current_webpage_crawler_rule_table_changed];
 }
 
 - (NSNibName)nibName
@@ -84,7 +78,7 @@
 
 - (IBAction)handle_done_button_clicked:(id)sender
 {
-    Global::controller->hideCrawlerRuleTableAsync();
+    Global::controller->set_crawler_rule_table_visible_async(false);
 }
 
 - (void)handle_current_webpage_crawler_rule_table_changed
@@ -95,11 +89,6 @@
     NSString* title = [NSString stringWithFormat:@"Discovery rules on domain \"%@\"", domain];
     self.table_title_textfield.stringValue = title;
     [self.table reloadData];
-}
-
-- (void)viewDidLoad
-{
-    [self handle_current_webpage_crawler_rule_table_changed];
 }
 
 @end

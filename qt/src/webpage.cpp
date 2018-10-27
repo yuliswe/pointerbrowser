@@ -49,7 +49,7 @@ Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
     return shared<Webpage>(map); // use constructor
 }
 
-void Webpage::custom_set_url(Url const& url, void const* sender)
+Url const& Webpage::custom_set_url(Url const& url, void const* sender)
 {
     m_url = url;
     if (! url.isEmpty()) {
@@ -59,6 +59,7 @@ void Webpage::custom_set_url(Url const& url, void const* sender)
         unlock_title_for_read_write();
     }
     set_is_blank(m_url.isBlank());
+    return m_url;
 }
 
 bool Webpage::crawlerRuleTableReloadFromSettings()
@@ -72,67 +73,16 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
     set_crawler_rule_table(table);
     return true;
 }
-//void Webpage::custom_set_hash(QString const& val)
-//{
-//    qCDebug(WebpageLogging) << "set_hash" << val;
-//    m_hash = val;
-//    while (m_hash.length() > 0 && m_hash[0] == "#") {
-//        m_hash.remove(0,1);
-//    }
-//    emit hash_changed(m_hash);
-//    if (m_hash.length() > 0) {
-//        m_uri = m_url + "#" + m_hash;
-//    } else {
-//        m_uri = m_url;
-//    }
-//    emit uri_changed(m_uri);
-//    emit dataChanged();
-//}
 
-//void Webpage::custom_set_uri(QString const& uri)
-//{
-//    qCDebug(WebpageLogging) << "set_uri" << uri;
-//    m_uri = uri;
-//    emit uri_changed(m_uri);
-//    QStringList ls = uri.split("#", QString::SkipEmptyParts);
-//    if (ls.length() > 0) {
-//        m_url = ls[0];
-//        ls.removeFirst();
-//    }
-//    if (ls.length() > 0) {
-//        m_hash = ls.join("#");
-//    }
-//    emit url_changed(m_url);
-//    emit hash_changed(m_hash);
-//    set_title(uri);
-//    emit dataChanged();
-//}
-
-//void Webpage::set_uri_no_signal(QString const& uri)
-//{
-
-//    qCDebug(WebpageLogging) << "set_uri_no_signal" << uri;
-//    m_uri = uri;
-//    QStringList ls = uri.split("#", QString::SkipEmptyParts);
-//    if (ls.length() > 0) {
-//        _url = ls[0];
-//        ls.removeFirst();
-//    }
-//    if (ls.length() > 0) {
-//        m_hash = ls.join("#");
-//    }
-//    emit url_changed(_url);
-//    emit hash_changed(m_hash);
-//    set_title(uri);
-//}
-
-void Webpage::custom_set_title(QString const& title, void const* sender)
+QString const& Webpage::custom_set_title(QString const& title, void const* sender)
 {
     if (title.isEmpty()) {
         m_title = url().full();
+        qCDebug(WebpageLogging) << "title is empty, use url" << m_title << "instead";
     } else {
         m_title = title;
     }
+    return m_title;
 }
 
 int Webpage::go(QString const& input)
@@ -140,26 +90,6 @@ int Webpage::go(QString const& input)
     qCInfo(WebpageLogging) << "Webpage::go" << input;
     set_url(Url::fromAmbiguousText(input));
     findClear();
-    return 0;
-}
-
-float Webpage::updateProgress(float progress)
-{
-    set_load_progress(progress);
-    return progress;
-}
-
-int Webpage::updateTitle(QString const& title)
-{
-    set_title(title);
-    return 0;
-}
-
-int Webpage::updateUrl(Url const& url)
-{
-    lock_url_for_read_write();
-    custom_set_url(url);
-    unlock_url_for_read_write();
     return 0;
 }
 
@@ -236,31 +166,6 @@ int Webpage::updateFindTextFound(int nfound)
     return 0;
 }
 
-
-//bool Webpage::crawlerRuleTableEnableRule(CrawlerRule& rule)
-//{
-//    CrawlerRuleTable_ table = crawler_rule_table();
-//    CrawlerRule newRule{rule};
-//    newRule.set_enabled(true);
-//    table->modifyRule(rule, newRule);
-//    table->updateAssociatedUrl(url());
-//    set_crawler_rule_table(table);
-//    return true;
-//}
-
-
-//bool Webpage::crawlerRuleTableDisableRule(CrawlerRule& rule)
-//{
-//    CrawlerRuleTable_ table = crawler_rule_table();
-//    CrawlerRule newRule{rule};
-//    newRule.set_enabled(false);
-//    table->modifyRule(rule, newRule);
-//    table->updateAssociatedUrl(url());
-//    set_crawler_rule_table(table);
-//    return true;
-//}
-
-
 bool Webpage::crawlerRuleTableInsertRule(CrawlerRule& rule)
 {
     qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule" << rule;
@@ -297,25 +202,6 @@ bool Webpage::crawlerRuleTableRemoveRule(int idx)
     return true;
 }
 
-//bool Webpage::crawlerRuleTableModifyRule(CrawlerRule const& old, CrawlerRule& modified)
-//{
-//    if (! modified.valid())
-//    {
-//        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
-//        return false;
-//    }
-//    if (modified.domain() != url().domain())
-//    {
-//        qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
-//        return false;
-//    }
-//    CrawlerRuleTable_ table = crawler_rule_table();
-//    table->modifyRule(old, modified);
-//    table->updateAssociatedUrl(url());
-//    set_crawler_rule_table(table);
-//    return true;
-//}
-
 bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
 {
     qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule" << old << modified;
@@ -336,9 +222,10 @@ bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
     return true;
 }
 
-void Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)
+CrawlerRuleTable_ const& Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)
 {
     tb->updateAssociatedUrl(url());
     m_crawler_rule_table = tb;
+    return m_crawler_rule_table;
 }
 

@@ -80,10 +80,8 @@ public:
 
     // crawler
     PROP_RN_D(CrawlerRuleTable_, current_webpage_crawler_rule_table, CrawlerRuleTable_::create())
-    SIG_TF_0(show_crawler_rule_table)
-    SIG_TF_0(hide_crawler_rule_table)
-    SIG_TF_0(enable_crawler_rule_table)
-    SIG_TF_0(disable_crawler_rule_table)
+    PROP_RN_D(bool, crawler_rule_table_enabled, false)
+    PROP_RwN_D(bool, crawler_rule_table_visible, false)
     SIG_TF_1(show_crawler_rule_table_row_hint, int)
     SIG_TF_0(hide_crawler_rule_table_row_hint)
 
@@ -107,15 +105,11 @@ public:
     METH_ASYNC_0(int, currentTabWebpageBookmark)
     METH_ASYNC_0(int, showNextOpenTab)
     METH_ASYNC_0(int, showPrevOpenTab)
-    METH_ASYNC_0(int, showCrawlerRuleTable)
-    METH_ASYNC_0(int, hideCrawlerRuleTable)
     METH_ASYNC_1(int, searchTabs, QString const&)
     METH_ASYNC_0(int, showBookmarkPage)
     METH_ASYNC_0(int, hideBookmarkPage)
 
-    METH_ASYNC_2(bool, updateWebpageUrl, Webpage_, Url const&)
-    METH_ASYNC_2(bool, updateWebpageTitle, Webpage_, QString const&)
-    METH_ASYNC_2(bool, updateWebpageProgress, Webpage_, float)
+    METH_ASYNC_2(bool, handleWebpageUrlChanged, Webpage_, Url const&)
     METH_ASYNC_2(bool, updateWebpageFindTextFound, Webpage_, int)
     // downloads
     PROP_RWN_D(QString, downloads_dirpath, "")
@@ -145,6 +139,8 @@ public:
     METH_ASYNC_1(int, removeBookmark, int)
     METH_ASYNC_2(int, renameBookmark, Webpage_, QString const&)
     METH_ASYNC_2(int, moveBookmark, int, int)
+
+    METH_ASYNC_0(int, closeAllPopovers)
 
 };
 

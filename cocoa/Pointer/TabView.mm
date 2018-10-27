@@ -196,6 +196,9 @@
 // or when the page array is changed
 - (void)updateSelection
 {
+    if (self.numberOfTabViewItems == 0) {
+        [self reload];
+    }
     if (Global::controller->current_tab_state() == Controller::TabStateNull) {
         [self selectTabViewItem:nil];
     } else if (Global::controller->current_tab_state() == Controller::TabStateOpen) {

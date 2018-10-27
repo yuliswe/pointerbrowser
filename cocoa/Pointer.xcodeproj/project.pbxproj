@@ -20,9 +20,9 @@
 		7A19D94621180D0300A75028 /* CppData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A19D94521180D0300A75028 /* CppData.mm */; };
 		7A43E2802180F36B00E834E5 /* Downloads.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A43E27F2180F36B00E834E5 /* Downloads.mm */; };
 		7A43E2822180F7C200E834E5 /* Downloads.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A43E2812180F7C200E834E5 /* Downloads.xib */; };
-		7A4D3F5A217DA65100C5E8A6 /* PSearchField.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F59217DA65100C5E8A6 /* PSearchField.m */; };
+		7A4D3F5A217DA65100C5E8A6 /* PSearchField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F59217DA65100C5E8A6 /* PSearchField.mm */; };
 		7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */; };
-		7A4D3F62217DC1FD00C5E8A6 /* PTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */; };
+		7A4D3F62217DC1FD00C5E8A6 /* PTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F61217DC1FD00C5E8A6 /* PTextView.mm */; };
 		7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A4D3F64217DC4A100C5E8A6 /* PMenu.m */; };
 		7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */; };
 		7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A59D52821408F0A001C082B /* CrawlerRulesPopover.xib */; };
@@ -94,11 +94,11 @@
 		7A43E27F2180F36B00E834E5 /* Downloads.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Downloads.mm; sourceTree = "<group>"; };
 		7A43E2812180F7C200E834E5 /* Downloads.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Downloads.xib; sourceTree = "<group>"; };
 		7A4D3F58217DA65100C5E8A6 /* PSearchField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSearchField.h; sourceTree = "<group>"; };
-		7A4D3F59217DA65100C5E8A6 /* PSearchField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSearchField.m; sourceTree = "<group>"; };
+		7A4D3F59217DA65100C5E8A6 /* PSearchField.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PSearchField.mm; sourceTree = "<group>"; };
 		7A4D3F5B217DA6AB00C5E8A6 /* PTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTextField.h; sourceTree = "<group>"; };
 		7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTextField.m; sourceTree = "<group>"; };
 		7A4D3F60217DC1FD00C5E8A6 /* PTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTextView.h; sourceTree = "<group>"; };
-		7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTextView.m; sourceTree = "<group>"; };
+		7A4D3F61217DC1FD00C5E8A6 /* PTextView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PTextView.mm; sourceTree = "<group>"; };
 		7A4D3F63217DC4A100C5E8A6 /* PMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMenu.h; sourceTree = "<group>"; };
 		7A4D3F64217DC4A100C5E8A6 /* PMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMenu.m; sourceTree = "<group>"; };
 		7A59D52521408DAA001C082B /* CrawlerRulesPopover.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrawlerRulesPopover.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -204,9 +204,9 @@
 				7A4D3F5B217DA6AB00C5E8A6 /* PTextField.h */,
 				7A4D3F5C217DA6AC00C5E8A6 /* PTextField.m */,
 				7A4D3F58217DA65100C5E8A6 /* PSearchField.h */,
-				7A4D3F59217DA65100C5E8A6 /* PSearchField.m */,
+				7A4D3F59217DA65100C5E8A6 /* PSearchField.mm */,
 				7A4D3F60217DC1FD00C5E8A6 /* PTextView.h */,
-				7A4D3F61217DC1FD00C5E8A6 /* PTextView.m */,
+				7A4D3F61217DC1FD00C5E8A6 /* PTextView.mm */,
 				7A4D3F63217DC4A100C5E8A6 /* PMenu.h */,
 				7A4D3F64217DC4A100C5E8A6 /* PMenu.m */,
 				7A7DBEF1217EC6A500C6E778 /* PView.h */,
@@ -327,13 +327,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */,
-				7A4D3F5A217DA65100C5E8A6 /* PSearchField.m in Sources */,
+				7A4D3F5A217DA65100C5E8A6 /* PSearchField.mm in Sources */,
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
 				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,
-				7A4D3F62217DC1FD00C5E8A6 /* PTextView.m in Sources */,
+				7A4D3F62217DC1FD00C5E8A6 /* PTextView.mm in Sources */,
 				7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,
 				7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */,
@@ -496,8 +496,9 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -543,8 +544,9 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;

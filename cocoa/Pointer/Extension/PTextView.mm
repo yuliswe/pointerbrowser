@@ -9,6 +9,7 @@
 #import "PTextView.h"
 #import "PMenu.h"
 #import "../KeyCode.h"
+#include <docviewer/docviewer.h>
 
 @implementation PTextView
 
@@ -30,6 +31,12 @@
            withEvent:(NSEvent *)event
 {
     [menu filterMenuItems];
+}
+
+- (BOOL)becomeFirstResponder
+{
+    Global::controller->closeAllPopoversAsync();
+    return [super becomeFirstResponder];
 }
 
 - (id)validRequestorForSendType:(NSPasteboardType)sendType

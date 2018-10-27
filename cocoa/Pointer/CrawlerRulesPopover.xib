@@ -81,7 +81,7 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULt-zj-2d5" customClass="CrawlerRuleTableCellEnableButton">
-                                                        <rect key="frame" x="21" y="-1" width="19" height="22"/>
+                                                        <rect key="frame" x="21" y="-1" width="22" height="22"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" inset="2" id="um9-gW-VNB">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -168,9 +168,9 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-G9-X2y" customClass="CrawlerRuleTableCellMatchIndicator">
-                                                        <rect key="frame" x="21" y="0.0" width="19" height="22"/>
+                                                        <rect key="frame" x="20" y="1" width="22" height="20"/>
                                                         <autoresizingMask key="autoresizingMask"/>
-                                                        <buttonCell key="cell" type="check" title="Radio" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dKQ-Ro-Uzg">
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dKQ-Ro-Uzg">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -233,7 +233,7 @@
                 <outlet property="contentViewController" destination="OVp-GE-mQi" id="q4p-mH-Hjt"/>
             </connections>
         </popover>
-        <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" id="iwg-lo-nmk">
+        <visualEffectView blendingMode="behindWindow" material="popover" state="followsWindowActiveState" id="iwg-lo-nmk">
             <rect key="frame" x="0.0" y="0.0" width="153" height="36"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>

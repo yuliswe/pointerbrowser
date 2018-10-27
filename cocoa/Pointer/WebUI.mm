@@ -19,8 +19,7 @@
 
 - (void)mouseDown:(NSEvent*)event
 {
-    Global::controller->hideCrawlerRuleTableAsync();
-    Global::controller->set_downloads_visible_async(false);
+    Global::controller->closeAllPopoversAsync();
     [super mouseDown:event];
 }
 
@@ -50,10 +49,12 @@
 - (void)connect
 {
     QObject::connect(self.webpage.get(), &Webpage::url_changed,
-                     [=](const Url& url)
+                     [=](const Url& url, void const* sender)
     {
-        NSString* u = url.full().toNSString();
-        [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:NO];
+        if ((__bridge void*)self != sender) {
+            NSString* u = url.full().toNSString();
+            [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:NO];
+        }
     });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_refresh,
@@ -107,18 +108,18 @@
 {
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
         float p = (float)[self estimatedProgress];
-        Global::controller->updateWebpageProgressAsync(self.webpage, p);
+        self.webpage->set_load_progress_async(p);
     } else if ([keyPath isEqualToString:@"URL"]) {
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
-        Global::controller->updateWebpageUrlAsync(self.webpage, QUrl::fromNSURL(url));
+        Global::controller->handleWebpageUrlChangedAsync(self.webpage, QUrl::fromNSURL(url), (__bridge void*)self);
         NSString * _Nullable title = self.title;
         if (title && title.length > 0) {
-            Global::controller->updateWebpageTitleAsync(self.webpage, QString::fromNSString(title));
+            self.webpage->set_title_async(QString::fromNSString(title));
         }
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString * _Nullable title = self.title;
-        Global::controller->updateWebpageTitleAsync(self.webpage, QString::fromNSString(title));
+        self.webpage->set_title_async(QString::fromNSString(title));
     } else if ([keyPath isEqualToString:@"canGoBack"]) {
         self.webpage->set_can_go_back_async(self.canGoBack);
     } else if ([keyPath isEqualToString:@"canGoForward"]) {

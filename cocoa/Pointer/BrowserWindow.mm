@@ -61,16 +61,10 @@
         [self performSelectorOnMainThread:@selector(handleNewTextFindState) withObject:nil waitUntilDone:NO];
     });
     QObject::connect(Global::controller,
-                     &Controller::signal_tf_enable_crawler_rule_table,
+                     &Controller::crawler_rule_table_enabled_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_tf_enable_crawler_rule_table) withObject:nil waitUntilDone:NO];
-                     });
-    QObject::connect(Global::controller,
-                     &Controller::signal_tf_disable_crawler_rule_table,
-                     [=]()
-                     {
-                         [self performSelectorOnMainThread:@selector(handle_tf_disable_crawler_rule_table) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_enabled_changed) withObject:nil waitUntilDone:NO];
                      });
     QObject::connect(Global::controller,
                      &Controller::bookmark_page_visible_changed,
@@ -99,6 +93,7 @@
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
+    [self handle_crawler_rule_table_enabled_changed];
 }
 
 - (void)handle_bookmarkpage_visible_changed
@@ -114,16 +109,14 @@
     self->m_go_forward_button.enabled = Global::controller->current_tab_webpage_can_go_forward();
 }
 
-- (void)handle_tf_enable_crawler_rule_table
+- (void)handle_crawler_rule_table_enabled_changed
 {
-    self->m_crawler_rule_table_button.enabled = YES;
+    if (Global::controller->crawler_rule_table_enabled()) {
+        self->m_crawler_rule_table_button.enabled = YES;
+    } else {
+        self->m_crawler_rule_table_button.enabled = NO;
+    }
 }
-
-- (void)handle_tf_disable_crawler_rule_table
-{
-    self->m_crawler_rule_table_button.enabled = NO;
-}
-
 
 - (void)handleNewTextFindState
 {
@@ -156,11 +149,13 @@
 
 - (IBAction)handleCrawlerRuleButtonClicked:(id)sender
 {
-    Global::controller->showCrawlerRuleTableAsync();
+    [self.window makeFirstResponder:nil];
+    Global::controller->set_crawler_rule_table_visible_async(true);
 }
 
 - (IBAction)handleDownloadsButtonClicked:(id)sender
 {
+    [self.window makeFirstResponder:nil];
     Global::controller->set_downloads_visible_async(true);
 }
 
@@ -212,8 +207,6 @@
 @end
 
 @implementation NSResponder(Pointer)
-
-
 - (void)menuFocusFindText:(id)sender
 {
     Global::controller->currentTabWebpageFindTextShowAsync();
