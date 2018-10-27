@@ -62,6 +62,7 @@
 @property NSString* title;
 @property bool focus;
 - (IBAction)getFocus;
+- (void)loseFocus;
 @end
 
 @interface AddressBarCell : NSTextFieldCell

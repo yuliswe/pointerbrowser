@@ -90,12 +90,25 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:NO];
                      });
+    QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
+        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:NO];
+    });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
     [self handle_crawler_rule_table_enabled_changed];
 }
 
+- (void)handle_current_tab_webpage_changed
+{
+    if (Global::controller->current_tab_webpage_is_blank())
+    {
+        [self.addressbar getFocus];
+        self.addressbar.stringValue = @"";
+    } else {
+        [self.addressbar loseFocus];
+    }
+}
 - (void)handle_bookmarkpage_visible_changed
 {
     bool visible = Global::controller->bookmark_page_visible();
@@ -181,8 +194,6 @@
 - (IBAction)handleNewTabButtonClicked:(id)sender
 {
     Global::controller->newTabAsync();
-    [self.window makeFirstResponder:self.addressbar];
-    self.addressbar.stringValue = @"";
 }
 
 - (void)menuFocusAddress:(id)sender

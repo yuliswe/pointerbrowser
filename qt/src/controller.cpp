@@ -119,6 +119,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
         QObject::disconnect(old_page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
         QObject::disconnect(old_page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
+        QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
         old_page = nullptr;
     }
     if (state == TabStateNull) {
@@ -140,6 +141,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_webpage_crawler_rule_table(CrawlerRuleTable_::create());
         set_current_tab_webpage_can_go_back(false);
         set_current_tab_webpage_can_go_forward(false);
+        set_current_tab_webpage_is_blank(true);
         Global::searchDB->search_result()->clear();
         return -1;
     }
@@ -188,6 +190,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     }
     set_current_tab_webpage(page,sender);
     set_current_webpage_crawler_rule_table(page->crawler_rule_table());
+    set_current_tab_webpage_is_blank(page->is_blank());
     // set up load progress watcher
     QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
     QObject::connect(page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
@@ -196,6 +199,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
     QObject::connect(page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
     QObject::connect(page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
+    QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
     old_page = page;
     return i;
 }

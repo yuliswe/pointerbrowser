@@ -55,6 +55,7 @@ public:
     PROP_RN_D(Webpage_, current_tab_webpage, nullptr)
     PROP_RWN_D(bool, current_tab_webpage_can_go_back, false)
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
+    PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     // tabs highlighting
