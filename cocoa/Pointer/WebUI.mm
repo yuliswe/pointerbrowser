@@ -9,6 +9,7 @@
 #import "WebUI.mm.h"
 #import "TabView.mm.h"
 #import "Extension/PMenu.h"
+#import "Extension/PView.h"
 #import "CppData.h"
 #include <docviewer/global.hpp>
 
@@ -29,6 +30,8 @@
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
     self = [super initWithFrame:[tabItem.view bounds] configuration:config];
+    self->m_erroring_url = nil;
+    self->m_redirected_from_error = false;
     static WebUIDelegate* uidelegate = [[WebUIDelegate alloc] init];
     self.UIDelegate = uidelegate;
     self.allowsBackForwardNavigationGestures = YES;
@@ -41,6 +44,9 @@
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    self->m_error_page_view_controller = [[ErrorPageViewController alloc] init];
+    [self addSubviewAndFill:self->m_error_page_view_controller.view];
+    self->m_error_page_view_controller.view.hidden = YES;
     [self connect];
     return self;
 }
@@ -98,6 +104,11 @@
                          NSNumber* n = [NSNumber numberWithInt:idx];
                          [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
+    QObject::connect(self.webpage.get(),
+                     &Webpage::is_error_changed,
+                     [=](int idx) {
+                         [self performSelectorOnMainThread:@selector(handle_is_error_changed) withObject:nil waitUntilDone:YES];
+                     });
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -111,7 +122,13 @@
     } else if ([keyPath isEqualToString:@"URL"]) {
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
-        Global::controller->handleWebpageUrlChangedAsync(self.webpage, QUrl::fromNSURL(url), (__bridge void*)self);
+        QString dest;
+        if ([url.absoluteString hasPrefix:@"about:error:"]) {
+            dest = QString::fromNSString([url.absoluteString substringFromIndex:12]);
+        } else {
+            dest = QString::fromNSString(url.absoluteString);
+        }
+        Global::controller->handleWebpageUrlChangedAsync(self.webpage, dest, (__bridge void*)self);
         NSString * _Nullable title = self.title;
         if (title && title.length > 0) {
             self.webpage->set_title_async(QString::fromNSString(title));
@@ -126,6 +143,18 @@
     }
 }
 
+- (void)handle_is_error_changed
+{
+    bool is_error = self.webpage->is_error();
+    NSString* msg = self.webpage->error().toNSString();
+    if (is_error) {
+        self->m_error_page_view_controller.error_msg = msg;
+        self->m_error_page_view_controller.view.hidden = NO;
+    } else {
+        self->m_error_page_view_controller.view.hidden = YES;
+    }
+}
+
 - (void)loadUri:(NSString*)url
 {
     NSURL* u = [[NSURL alloc] initWithString:url];
@@ -133,9 +162,30 @@
     [self loadRequest:r];
 }
 
-- (void)webView:(WKWebView *)webView
-didFailNavigation:(WKNavigation *)navigation
-      withError:(NSError *)error {
+- (void)webView:(WebUI *)webView
+didFailProvisionalNavigation:(WKNavigation *)navigation
+      withError:(NSError *)error
+{
+    Url u = self.webpage->url();
+    NSURL* url = u.toNSURL();
+    self->m_erroring_url = url;
+    self->m_redirected_from_error = true;
+    QString desc = QString::fromNSString(error.localizedDescription);
+    QString reason = QString::fromNSString(error.localizedFailureReason);
+    QString suggest = QString::fromNSString(error.localizedRecoverySuggestion);
+    QString message;
+    if (! desc.isEmpty()) {
+        message += desc + " ";
+    }
+    if (! reason.isEmpty()) {
+        message += reason + " ";
+    }
+//    if (! suggest.isEmpty()) {
+//        message += suggest + " ";
+//    }
+    self.webpage->handleErrorAsync(message);
+    NSURL* redirect = [NSURL URLWithString:("about:error:" + u.full()).toNSString()];
+    [webView loadRequest:[NSURLRequest requestWithURL:redirect]];
 }
 
 - (void)webView:(WKWebView *)webView
@@ -159,10 +209,21 @@ didFinishNavigation:(WKNavigation *)navigation {
 didCommitNavigation:(WKNavigation *)navigation {
 }
 
-- (void)webView:(WKWebView *)webView
+- (void)webView:(WebUI *)webView
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+    if ([navigationAction.request.URL.absoluteString hasPrefix:@"about:error:"]) {
+        if (self->m_redirected_from_error) {
+            self->m_redirected_from_error = false;
+            decisionHandler(WKNavigationActionPolicyAllow);
+        } else {
+            decisionHandler(WKNavigationActionPolicyCancel);
+            [webView loadUri:[navigationAction.request.URL.absoluteString substringFromIndex:12]];
+        }
+        return;
+    }
+    self.webpage->handleSuccessAsync();
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand
         && navigationAction.buttonNumber == 1)
     {
@@ -232,6 +293,7 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
     }
 }
+
 @end
 
 @implementation WebUIDelegate

@@ -211,11 +211,19 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
  totalBytesWritten:(int64_t)totalBytesWritten
 totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
-    File_ f = downloadTask.file;
-    f->set_size_bytes_addition_async(bytesWritten);
-    f->set_size_bytes_downloaded_async(totalBytesWritten);
-    f->set_size_bytes_expected_async(totalBytesExpectedToWrite);
-    f->set_percentage_async((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
+    static qint64 last_time_reported = 0;
+    static qint64 accumulated_bytes_since_last_time = 0;
+    if (QDateTime::currentSecsSinceEpoch() - last_time_reported >= 1) {
+        File_ f = downloadTask.file;
+        f->set_size_bytes_addition_async(accumulated_bytes_since_last_time);
+        f->set_size_bytes_downloaded_async(totalBytesWritten);
+        f->set_size_bytes_expected_async(totalBytesExpectedToWrite);
+        f->set_percentage_async((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
+        last_time_reported = QDateTime::currentSecsSinceEpoch();
+        accumulated_bytes_since_last_time = 0;
+    } else {
+        accumulated_bytes_since_last_time += bytesWritten;
+    }
 }
 // called when download finishes
 - (void)URLSession:(NSURLSession *)session

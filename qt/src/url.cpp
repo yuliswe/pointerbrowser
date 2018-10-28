@@ -110,7 +110,12 @@ Url UrlNoHash::toUrl() const
     return Url(copy);
 }
 
-bool Url::isBlank()
+bool Url::isBlank() const
 {
     return full() == "about:blank";
 }
+
+//bool Url::isError()
+//{
+//    return full().indexOf("about:error") == 0;
+//}

@@ -35,7 +35,7 @@ QString File::downloadProgress()
                << qSetFieldWidth(0) << percent
                << "+"
                << locale.formattedDataSize(size_bytes_addition(),0,QLocale::DataSizeTraditionalFormat)
-               << qSetFieldWidth(0) << ")";
+               << qSetFieldWidth(0) << "/s)";
     return rtv;
 }
 

@@ -53,7 +53,6 @@
     [(OutlineViewDelegateAndDataSource*)self.outlineview.delegate updateSelection];
     [self.outlineview registerForDraggedTypes:@[NSPasteboardTypeURL]];
     self.text_find_toolbar.hidden = YES;
-    
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()
@@ -90,6 +89,12 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_webpage_is_error_changed,
+                     [=]()
+                     {
+                         [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_is_error_changed) withObject:nil waitUntilDone:YES];
+                     });
     QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
         [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:YES];
     });
@@ -97,8 +102,16 @@
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
     [self handle_crawler_rule_table_enabled_changed];
+    [self handle_current_tab_webpage_is_error_changed];
 }
 
+- (void)handle_current_tab_webpage_is_error_changed
+{
+    if (Global::controller->current_tab_webpage_is_error())
+    {
+    } else {
+    }
+}
 - (void)handle_current_tab_webpage_changed
 {
     if (Global::controller->current_tab_webpage_is_blank())

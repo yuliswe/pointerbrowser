@@ -49,17 +49,13 @@ Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
     return shared<Webpage>(map); // use constructor
 }
 
-Url const& Webpage::custom_set_url(Url const& url, void const* sender)
+Url Webpage::custom_set_url(Url const& url, void const* sender)
 {
-    m_url = url;
     if (! url.isEmpty()) {
-        lock_title_for_read_write();
-        m_title = url.full();
-        emit title_changed(m_title, sender);
-        unlock_title_for_read_write();
+        set_title(url.full());
     }
-    set_is_blank(m_url.isBlank());
-    return m_url;
+    set_is_blank(url.isBlank());
+    return url;
 }
 
 bool Webpage::crawlerRuleTableReloadFromSettings()
@@ -74,22 +70,30 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
     return true;
 }
 
-QString const& Webpage::custom_set_title(QString const& title, void const* sender)
+QString Webpage::custom_set_title(QString const& title, void const* sender)
 {
     if (title.isEmpty()) {
-        m_title = url().full();
-        qCDebug(WebpageLogging) << "title is empty, use url" << m_title << "instead";
+        qCDebug(WebpageLogging) << "title is empty, use url" << url().full() << "instead";
+        return url().full();
     } else {
-        m_title = title;
+        return title;
     }
-    return m_title;
 }
 
 int Webpage::go(QString const& input)
 {
     qCInfo(WebpageLogging) << "Webpage::go" << input;
-    set_url(Url::fromAmbiguousText(input));
-    findClear();
+    handleUrlChanged(Url::fromAmbiguousText(input));
+    return 0;
+}
+
+int Webpage::handleUrlChanged(Url const& url, void const* sender)
+{
+    qCInfo(WebpageLogging) << "handleUrlChanged" << url;
+    set_url(url, sender);
+    if (is_blank() || is_error()) {
+        findClear();
+    }
     return 0;
 }
 
@@ -222,10 +226,29 @@ bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
     return true;
 }
 
-CrawlerRuleTable_ const& Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)
+CrawlerRuleTable_ Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)
 {
     tb->updateAssociatedUrl(url());
-    m_crawler_rule_table = tb;
-    return m_crawler_rule_table;
+    return tb;
 }
 
+int Webpage::handleError(QString const& error, void const* sender)
+{
+    qCInfo(WebpageLogging) << "handleError" << error;
+    set_error(error);
+    set_is_error(true);
+    return true;
+}
+
+int Webpage::handleSuccess(void const* sender)
+{
+    qCInfo(WebpageLogging) << "handleSuccess";
+    set_error("Unknown");
+    set_is_error(false);
+    return true;
+}
+
+QString Webpage::errorPageHtml(QString const& message)
+{
+    return "<html><body>" + message + "</body></html>";
+}

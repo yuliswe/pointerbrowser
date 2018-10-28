@@ -8,6 +8,12 @@
 
 #import "PView.h"
 @implementation NSView(Pointer)
+- (void)addSubviewAndFill:(NSView*)subview
+{
+    subview.frame = self.bounds;
+    subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self addSubview:subview];
+}
 @end
 
 @implementation PView

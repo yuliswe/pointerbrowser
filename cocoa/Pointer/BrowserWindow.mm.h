@@ -13,6 +13,7 @@
 #import "Bookmarks.mm.h"
 #import "Extension/PTextView.h"
 #import "Downloads.h"
+#import "ErrorPage.h"
 
 @interface NSResponder(Pointer)
 - (IBAction)menuNewTab:(id)sender;

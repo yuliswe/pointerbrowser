@@ -270,6 +270,7 @@
                                             </subviews>
                                         </view>
                                         <size key="contentViewMargins" width="5" height="0.0"/>
+                                        <font key="titleFont" metaFont="message" size="11"/>
                                     </box>
                                 </subviews>
                             </visualEffectView>
@@ -337,6 +338,7 @@
                                             </subviews>
                                         </view>
                                         <size key="contentViewMargins" width="7" height="0.0"/>
+                                        <font key="titleFont" metaFont="message" size="11"/>
                                     </box>
                                     <tabView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="uWz-yS-VPn" customClass="TabView">
                                         <rect key="frame" x="0.0" y="0.0" width="435" height="389"/>
@@ -421,6 +423,7 @@
                                         </view>
                                         <color key="borderColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                         <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <font key="titleFont" metaFont="message" size="11"/>
                                     </box>
                                 </subviews>
                             </visualEffectView>

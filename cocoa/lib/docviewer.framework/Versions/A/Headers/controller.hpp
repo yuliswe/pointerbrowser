@@ -62,6 +62,8 @@ public:
     PROP_RWN_D(int, current_open_tab_hovered_index, -1)
     PROP_RN_D(int, current_open_tab_highlight_index, -1)
     PROP_RN_D(int, current_tab_search_highlight_index, -1)
+    // error page
+    PROP_RN_D(bool, current_tab_webpage_is_error, false)
     // welcome page
     PROP_RN_D(bool, welcome_page_visible, true)
     // bookmark page

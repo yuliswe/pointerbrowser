@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NSView(Pointer)
-
+- (void)addSubviewAndFill:(NSView*)subview;
 @end
 
 @interface PView : NSView

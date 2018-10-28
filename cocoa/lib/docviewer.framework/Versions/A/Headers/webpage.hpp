@@ -38,6 +38,7 @@ class Webpage : public QObject
     int updateFindTextFound(int);
 
     int go(QString const&);
+    int handleUrlChanged(Url const&, void const* = nullptr);
     bool crawlerRuleTableModifyRule(int, CrawlerRule&);
     bool crawlerRuleTableInsertRule(CrawlerRule&);
     bool crawlerRuleTableRemoveRule(int);
@@ -54,6 +55,7 @@ public:
 
     QVariantMap toQVariantMap();
     static Webpage_ fromQVariantMap(const QVariantMap&);
+    static QString errorPageHtml(QString const& message);
 
     PROP_DEF_BEGINS
     PROP_R_N_D(Url, url, QString(""))
@@ -61,12 +63,18 @@ public:
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(bool, is_blank, true)
+    PROP_RN_D(bool, is_error, false)
+    PROP_RN_D(QString, error, "")
     PROP_RWN_D(bool, can_go_forward, false)
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RWN_D(float, load_progress, 0)
+    PROP_RWN_D(QString, html, "")
     PROP_RN_D(FindTextState, find_text_state, FindTextState{})
     PROP_R_N_D(CrawlerRuleTable_, crawler_rule_table, CrawlerRuleTable_::create())
     PROP_DEF_ENDS
+
+    METH_ASYNC_1(int, handleError, QString const&)
+    METH_ASYNC_0(int, handleSuccess)
 
     // tells frontend (tf) to...
     SIG_TF_0(back)

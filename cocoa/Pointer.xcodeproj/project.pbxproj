@@ -41,6 +41,9 @@
 		7A7DBEF6217EC7DE00C6E778 /* PCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */; };
 		7A7DBEFC217ECA2600C6E778 /* MainMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */; };
 		7A8D32E02111A43B0066691C /* WebUI.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A8D32DF2111A43B0066691C /* WebUI.mm */; };
+		7AB2318E21856634005B436F /* ErrorPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB2318D21856634005B436F /* ErrorPage.xib */; };
+		7AB2319121856649005B436F /* ErrorPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319021856649005B436F /* ErrorPage.mm */; };
+		7AB2319421856A28005B436F /* PViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319321856A28005B436F /* PViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -125,6 +128,11 @@
 		7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MainMenu.mm; sourceTree = "<group>"; };
 		7A8D32DE2111A43B0066691C /* WebUI.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebUI.mm.h; sourceTree = "<group>"; };
 		7A8D32DF2111A43B0066691C /* WebUI.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WebUI.mm; sourceTree = "<group>"; };
+		7AB2318D21856634005B436F /* ErrorPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ErrorPage.xib; sourceTree = "<group>"; };
+		7AB2318F21856649005B436F /* ErrorPage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ErrorPage.h; sourceTree = "<group>"; };
+		7AB2319021856649005B436F /* ErrorPage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ErrorPage.mm; sourceTree = "<group>"; };
+		7AB2319221856A28005B436F /* PViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PViewController.h; sourceTree = "<group>"; };
+		7AB2319321856A28005B436F /* PViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +202,9 @@
 				7A43E27E2180F35600E834E5 /* Downloads.h */,
 				7A43E27F2180F36B00E834E5 /* Downloads.mm */,
 				7A43E2812180F7C200E834E5 /* Downloads.xib */,
+				7AB2318D21856634005B436F /* ErrorPage.xib */,
+				7AB2318F21856649005B436F /* ErrorPage.h */,
+				7AB2319021856649005B436F /* ErrorPage.mm */,
 			);
 			path = Pointer;
 			sourceTree = "<group>";
@@ -213,6 +224,8 @@
 				7A7DBEF2217EC6A500C6E778 /* PView.m */,
 				7A7DBEF4217EC7DE00C6E778 /* PCollectionView.h */,
 				7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */,
+				7AB2319221856A28005B436F /* PViewController.h */,
+				7AB2319321856A28005B436F /* PViewController.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -314,6 +327,7 @@
 				7A02768C217B89BB004A09F6 /* BookmarkItems.xib in Resources */,
 				7A43E2822180F7C200E834E5 /* Downloads.xib in Resources */,
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
+				7AB2318E21856634005B436F /* ErrorPage.xib in Resources */,
 				7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */,
 				7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */,
 			);
@@ -327,6 +341,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */,
+				7AB2319121856649005B436F /* ErrorPage.mm in Sources */,
 				7A4D3F5A217DA65100C5E8A6 /* PSearchField.mm in Sources */,
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
 				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
@@ -335,6 +350,7 @@
 				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,
 				7A4D3F62217DC1FD00C5E8A6 /* PTextView.mm in Sources */,
 				7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */,
+				7AB2319421856A28005B436F /* PViewController.m in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,
 				7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */,
 				7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */,

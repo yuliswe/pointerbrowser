@@ -41,8 +41,8 @@ bool SearchDB::connect() {
     });
     /* UpdateWorker setup */
     _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
-    _updateWorkerThread.setPriority(QThread::LowestPriority);
     _updateWorkerThread.start();
+    _updateWorkerThread.setPriority(QThread::LowestPriority);
     QObject::connect(this, &SearchDB::addSymbolsAsync, _updateWorker.data(), &UpdateWorker::addSymbols);
     QObject::connect(this, &SearchDB::addSymbolAsync, _updateWorker.data(), &UpdateWorker::addSymbol);
     QObject::connect(this, &SearchDB::addWebpageAsync, _updateWorker.data(), &UpdateWorker::addWebpage);

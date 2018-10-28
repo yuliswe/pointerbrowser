@@ -120,6 +120,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         QObject::disconnect(old_page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
         QObject::disconnect(old_page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
         QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
+        QObject::disconnect(old_page.get(), &Webpage::is_error_changed, this, &Controller::set_current_tab_webpage_is_error);
         old_page = nullptr;
     }
     if (state == TabStateNull) {
@@ -142,6 +143,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_tab_webpage_can_go_back(false);
         set_current_tab_webpage_can_go_forward(false);
         set_current_tab_webpage_is_blank(true);
+        set_current_tab_webpage_is_error(false);
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->search_result()->clear();
         }
@@ -179,6 +181,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     set_current_tab_webpage_can_go_forward(page->can_go_forward());
     set_current_webpage_crawler_rule_table(page->crawler_rule_table());
     set_current_tab_webpage_is_blank(page->is_blank());
+    set_current_tab_webpage_is_error(page->is_error());
     if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
         set_current_open_tab_highlight_index(i,sender);
@@ -202,6 +205,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     QObject::connect(page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
     QObject::connect(page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
     QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
+    QObject::connect(page.get(), &Webpage::is_error_changed, this, &Controller::set_current_tab_webpage_is_error);
     old_page = page;
     return i;
 }
@@ -240,7 +244,6 @@ int Controller::closeTab(TabState state, int index, void const* sender)
             } else {
                 open_tabs()->removeTab(index);
             }
-            preview_tabs()->clear();
             set_current_tab_search_highlight_index(-1);
             set_current_preview_tab_index(-1);
         } else if (current_tab_state() == TabStatePreview) {
@@ -438,7 +441,7 @@ int Controller::currentTabWebpageRefresh(void const* sender)
 bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::handleWebpageUrlChanged" << p << url;
-    p->set_url(url, sender);
+    p->handleUrlChanged(url, sender);
     Global::crawler->crawlAsync(p->url());
     if (current_tab_webpage() != nullptr
             && p.get() == current_tab_webpage().get()
@@ -607,24 +610,24 @@ bool Controller::currentTabWebpageCrawlerRuleTableModifyRule(int old, CrawlerRul
     return true;
 }
 
-bool const& Controller::custom_set_crawler_rule_table_visible(bool const& visible, void const* sender)
+bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void const* sender)
 {
     if (visible) {
         qCInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
         if (! current_tab_webpage()) {
             qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
-            return m_crawler_rule_table_visible = false;
+            return false;
         }
         if (current_tab_webpage()->is_blank()) {
             qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
-            return m_crawler_rule_table_visible = false;
+            return false;
         }
         set_downloads_visible(false);
         current_tab_webpage()->crawlerRuleTableReloadFromSettings();
     } else {
         emit_tf_hide_crawler_rule_table_row_hint();
     }
-    return m_crawler_rule_table_visible = visible;
+    return visible;
 }
 
 int Controller::searchTabs(QString const& words, void const* sender)
@@ -751,13 +754,13 @@ int Controller::showPrevOpenTab(void const* sender)
     return viewTab(TabStateOpen, open_tabs()->count() - 1, sender);
 }
 
-bool const& Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
+bool Controller::custom_set_downloads_visible(const bool& visible, void const* sender)
 {
     if (visible && ! downloads_dirpath().isEmpty()) {
         set_crawler_rule_table_visible(false, sender);
         download_files()->loadDirectoryContents(downloads_dirpath());
     }
-    return m_downloads_visible = visible;
+    return visible;
 }
 
 File_ Controller::downloadFileFromUrlAndRename(Url const& url, QString const& filename, void const* sender)
@@ -834,3 +837,4 @@ int Controller::closeAllPopovers(void const* sender)
     set_crawler_rule_table_visible(false, sender);
     return true;
 }
+
