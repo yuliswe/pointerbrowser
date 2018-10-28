@@ -29,11 +29,13 @@ class BaseListModel
     friend class Controller;
 protected:
     QList<T> m_list;
+    T m_null;
     QSemaphore m_semaphore{100};
     void lock_for_read() { m_semaphore.acquire(1); }
     void unlock_for_read() { m_semaphore.release(1); }
     void lock_for_read_write() { m_semaphore.acquire(100); }
     void unlock_for_read_write() { m_semaphore.release(100); }
+    virtual T& null() { return m_null; }
 
 public:
     BaseListModelSignals sig;
@@ -50,6 +52,10 @@ public:
 
     T& get(int row)
     {
+        if (row < 0 || row >= count()) {
+            qCritical() << "Error: array index out of range" << row << "/" << count();
+            return null();
+        }
         lock_for_read();
         T& rt = m_list[row];
         unlock_for_read();
@@ -58,6 +64,10 @@ public:
 
     T const& get(int row) const
     {
+        if (row < 0 || row >= count()) {
+            qCritical() << "Error: array index out of range" << row << "/" << count();
+            return null();
+        }
         lock_for_read();
         T const& rt = m_list[row];
         unlock_for_read();
@@ -69,11 +79,11 @@ protected:
     {
         if (row >= 0 && row <= count())
         {
-            lock_for_read_write();
             for (int i = row; i < n; i++) {
+                lock_for_read_write();
                 m_list.insert(i, T());
+                unlock_for_read_write();
             }
-            unlock_for_read_write();
             sig.emit_tf_rows_inserted(row, n);
             return true;
         }
@@ -85,11 +95,11 @@ protected:
         if (row >= 0 && row < count()
                 && row + n - 1 >= 0 && row + n - 1 <= count())
         {
-            lock_for_read_write();
             for (int i = row; i < count(); i++) {
+                lock_for_read_write();
                 m_list.removeAt(row);
+                unlock_for_read_write();
             }
-            unlock_for_read_write();
             sig.emit_tf_rows_removed(row, n);
             return true;
         }
@@ -140,12 +150,12 @@ protected:
     void remove(T const& t)
     {
         int i;
-        lock_for_read_write();
         while ((i = m_list.indexOf(t)) > -1) {
+            lock_for_read_write();
             m_list.removeAt(i);
+            unlock_for_read_write();
             sig.emit_tf_rows_removed(i, 1);
         }
-        unlock_for_read_write();
     }
 };
 

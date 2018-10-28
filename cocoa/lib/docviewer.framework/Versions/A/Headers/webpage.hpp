@@ -46,6 +46,7 @@ class Webpage : public QObject
 public:
 
     virtual ~Webpage();
+    Webpage() = default;
     Webpage(QString const& url);
     Webpage(Url const& url);
     Webpage(Url const& uri, QString const& title, QString const& title_2, QString const& title_3);

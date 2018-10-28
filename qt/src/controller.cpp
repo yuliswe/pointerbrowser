@@ -95,7 +95,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     if (current_tab_state() == state
             && state == TabStateOpen
             && 0 <= i && i < open_tabs()->count()
-            && current_tab_webpage().get() == open_tabs()->webpage(i)
+            && current_tab_webpage().get() == open_tabs()->webpage_(i).get()
             && current_open_tab_index() == i)
     {
         return 0;
@@ -103,7 +103,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     if (current_tab_state() == state
             && state == TabStatePreview
             && 0 <= i && i < preview_tabs()->count()
-            && current_tab_webpage().get() == preview_tabs()->webpage(i)
+            && current_tab_webpage().get() == preview_tabs()->webpage_(i).get()
             && current_preview_tab_index() == i)
     {
         return 0;
@@ -142,7 +142,9 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_tab_webpage_can_go_back(false);
         set_current_tab_webpage_can_go_forward(false);
         set_current_tab_webpage_is_blank(true);
-        Global::searchDB->search_result()->clear();
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->search_result()->clear();
+        }
         return -1;
     }
     if (i < 0) { i = 0; }
@@ -175,6 +177,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     set_welcome_page_visible(false);
     set_current_tab_webpage_can_go_back(page->can_go_back());
     set_current_tab_webpage_can_go_forward(page->can_go_forward());
+    set_current_webpage_crawler_rule_table(page->crawler_rule_table());
+    set_current_tab_webpage_is_blank(page->is_blank());
     if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
         set_current_open_tab_highlight_index(i,sender);
@@ -189,8 +193,6 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_open_tab_highlight_index(-1,sender);
     }
     set_current_tab_webpage(page,sender);
-    set_current_webpage_crawler_rule_table(page->crawler_rule_table());
-    set_current_tab_webpage_is_blank(page->is_blank());
     // set up load progress watcher
     QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
     QObject::connect(page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
@@ -805,14 +807,23 @@ File_ Controller::downloadFileFromUrlAndRename(Url const& url, QString const& fi
 
 int Controller::handleFileDownloadFinished(File_ tmpfile, void const* sender)
 {
+    qCInfo(ControllerLogging) << "handleFileDownloadFinished" << tmpfile;
     QString save_as_filename = tmpfile->save_as_filename();
     while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
     {
         save_as_filename.prepend("New ");
     }
-
     downloading_files()->remove(tmpfile);
-    download_files()->loadDirectoryContents(downloads_dirpath());
+    set_downloads_visible(true);
+    return true;
+}
+
+int Controller::handleFileDownloadStopped(File_ file, void const* sender)
+{
+    qCInfo(ControllerLogging) << "handleFileDownloadStopped" << file;
+    file->set_downloading(false);
+    file->emit_tf_download_stop();
+    downloading_files()->remove(file);
     set_downloads_visible(true);
     return true;
 }

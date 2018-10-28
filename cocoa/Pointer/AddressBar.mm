@@ -75,9 +75,9 @@
     
     QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
         if (Global::controller->current_tab_state() != Controller::TabStateNull) {
-            [self performSelectorOnMainThread:@selector(showButtons) withObject:nil waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(showButtons) withObject:nil waitUntilDone:YES];
         } else {
-            [self performSelectorOnMainThread:@selector(hideButtons) withObject:nil waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(hideButtons) withObject:nil waitUntilDone:YES];
         }
     });
     
@@ -215,11 +215,11 @@
 - (void)connect
 {
     QObject::connect(Global::controller, &Controller::address_bar_load_progress_changed, [=](float value) {
-        [self performSelectorOnMainThread:@selector(updateProgress:) withObject:[NSNumber numberWithFloat:value] waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(updateProgress:) withObject:[NSNumber numberWithFloat:value] waitUntilDone:YES];
     });
 
     QObject::connect(Global::controller, &Controller::address_bar_title_changed, [=](const QString& title) {
-        [self performSelectorOnMainThread:@selector(updateTitle:) withObject:title.toNSString() waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(updateTitle:) withObject:title.toNSString() waitUntilDone:YES];
     });
     
 }

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Yu Li. All rights reserved.
 //
 
-#import "CppData.mm.h"
+#import "CppData.h"
 
 @implementation CppData
 

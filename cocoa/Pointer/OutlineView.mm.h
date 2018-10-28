@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <docviewer/tabsmodel.hpp>
-#include "CppData.mm.h"
+#include "CppData.h"
 
 @class OutlineViewDelegateAndDataSource;
 

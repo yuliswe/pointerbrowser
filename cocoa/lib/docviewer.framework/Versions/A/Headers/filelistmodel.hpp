@@ -9,6 +9,8 @@
 class Controller;
 class FileListModel : public QObject, public BaseListModel<File_>
 {
+    File_ m_null = File_::create();
+    virtual File_& null() override;
     friend class Controller;
     Q_OBJECT
 public:

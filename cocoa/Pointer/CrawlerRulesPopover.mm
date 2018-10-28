@@ -26,7 +26,7 @@
     QObject::connect(Global::controller,
                      &Controller::crawler_rule_table_visible_changed,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_visible_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_visible_changed) withObject:nil waitUntilDone:YES];
                      });
 }
 
@@ -62,7 +62,7 @@
     QObject::connect(Global::controller,
                      &Controller::current_webpage_crawler_rule_table_changed,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_current_webpage_crawler_rule_table_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_current_webpage_crawler_rule_table_changed) withObject:nil waitUntilDone:YES];
                      });
 }
 
@@ -155,14 +155,14 @@
     QObject::connect(Global::controller,
                      &Controller::signal_tf_hide_crawler_rule_table_row_hint,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_tf_hide_crawler_rule_table_row_hint) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_tf_hide_crawler_rule_table_row_hint) withObject:nil waitUntilDone:YES];
                      });
     
     QObject::connect(Global::controller,
                      &Controller::signal_tf_show_crawler_rule_table_row_hint,
                      [=](int row) {
                          NSNumber* n = [NSNumber numberWithInt:row];
-                         [self performSelectorOnMainThread:@selector(handle_tf_show_crawler_rule_table_row_hint:) withObject:n waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_tf_show_crawler_rule_table_row_hint:) withObject:n waitUntilDone:YES];
                      });
 }
 

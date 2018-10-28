@@ -2,16 +2,12 @@
 #define MACROS_H
 
 #include "logging.hpp"
+#include <memory>
 
 //#define qDebug QT_NO_QDEBUG_MACRO
 #include <QtCore/QtCore>
 
 #define STRING(x) #x
-
-#define PROP_DEF_BEGINS \
-    public: Q_SIGNAL void dataChanged();
-
-#define PROP_DEF_ENDS
 
 #define PROP_RWN_D(type, prop, defv) \
     Q_PROPERTY(type prop READ prop WRITE set_##prop NOTIFY prop##_changed) \
@@ -116,6 +112,16 @@
     protected: Q_INVOKABLE RetT Name(T1,T2,T3,T4,T5, void const* sender = nullptr); \
     public: void Name##Async(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, void const* sender = nullptr) { QMetaObject::invokeMethod(this, STRING(Name), Qt::QueuedConnection, Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4), Q_ARG(T5,v5), Q_ARG(void const*,sender)); } \
     public: RetT Name##Blocking(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, void const* sender = nullptr) { Q_ASSERT(thread() != QThread::currentThread()); RetT r; QMetaObject::invokeMethod(this, STRING(Name), Qt::BlockingQueuedConnection, Q_RETURN_ARG(RetT,r), Q_ARG(T1,v1), Q_ARG(T2,v2), Q_ARG(T3,v3), Q_ARG(T4,v4), Q_ARG(T5,v5), Q_ARG(void const*,sender)); return r; }
+
+
+#define PROP_DEF_BEGINS \
+    public: Q_SIGNAL void dataChanged(); \
+    protected: std::unique_ptr<QMetaObject::Connection> m_connections[10]; \
+    public: void replaceConnection(int i, QMetaObject::Connection const& conn) { if (m_connections[i] != nullptr) { QObject::disconnect(*m_connections[i]); }; m_connections[i] = std::make_unique<QMetaObject::Connection>(conn); }
+
+#define PROP_DEF_ENDS
+
+
 template<class T>
 QDebug& operator<<(QDebug& debug, const std::shared_ptr<T>& ptr)
 {

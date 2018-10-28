@@ -9,8 +9,7 @@
 #import "WebUI.mm.h"
 #import "TabView.mm.h"
 #import "Extension/PMenu.h"
-#import <objc/runtime.h>
-#import "CppData.mm.h"
+#import "CppData.h"
 #include <docviewer/global.hpp>
 
 @implementation WebUI
@@ -53,51 +52,51 @@
     {
         if ((__bridge void*)self != sender) {
             NSString* u = url.full().toNSString();
-            [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:YES];
         }
     });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_refresh,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(reload) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(reload) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_back,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(goBack) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(goBack) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_forward,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(goForward) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(goForward) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_stop,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(stop) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(stop) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_highlight_all,
                      [=](const QString& keyword) {
                         NSString* txt = keyword.toNSString();
-                         [self performSelectorOnMainThread:@selector(highlightAllOccurencesOfString:) withObject:txt waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(highlightAllOccurencesOfString:) withObject:txt waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_clear,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(removeAllHighlights) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(removeAllHighlights) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_next_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
-                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_prev_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
-                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
 }
 
@@ -230,23 +229,7 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
-        NSURLSessionConfiguration* sessionconfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        static WebUIURLSessionDownloadTaskDelegate* sessiondelegate = [[WebUIURLSessionDownloadTaskDelegate alloc] init];
-        NSURLSession* session = [NSURLSession sessionWithConfiguration:sessionconfig delegate:sessiondelegate delegateQueue:nil];
-        NSURLSessionDownloadTask* task = [session downloadTaskWithURL:url];
-        File_ f = Global::controller->downloadFileFromUrlAndRenameBlocking(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
-        [task setFile:f];
-        QObject::connect(f.get(), &File::signal_tf_download_resume,[=]() {
-            [task performSelectorOnMainThread:@selector(resume) withObject:nil waitUntilDone:NO];
-        });
-        QObject::connect(f.get(), &File::signal_tf_download_stop,[=]() {
-            [task performSelectorOnMainThread:@selector(cancelByProducingResumeData:) withObject:(^(NSData * _Nullable resumeData) {
-                // not implemented
-            }) waitUntilDone:NO];
-        });
-        if (f->downloading()) {
-            [task resume];
-        }
+        Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
     }
 }
 @end
@@ -268,49 +251,3 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     return nil;
 }
 @end
-
-@implementation WebUIURLSessionDownloadTaskDelegate
-// called when download restarts
-- (void)URLSession:(NSURLSession *)session
-      downloadTask:(NSURLSessionDownloadTask *)downloadTask
- didResumeAtOffset:(int64_t)fileOffset
-expectedTotalBytes:(int64_t)expectedTotalBytes
-{
-//    File_ f = Global::controller->downloadFileFromBlocking(QString::fromNSString(downloadTask.response.URL.absoluteString));
-    
-}
-// called when receiving new data during download
-- (void)URLSession:(NSURLSession *)session
-      downloadTask:(NSURLSessionDownloadTask *)downloadTask
-      didWriteData:(int64_t)bytesWritten
- totalBytesWritten:(int64_t)totalBytesWritten
-totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-    File_ f = downloadTask.file;
-    f->set_size_bytes_addition_async(bytesWritten);
-    f->set_size_bytes_downloaded_async(totalBytesWritten);
-    f->set_size_bytes_expected_async(totalBytesExpectedToWrite);
-    f->set_percentage_async((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
-}
-// called when download finishes
-- (void)URLSession:(NSURLSession *)session
-      downloadTask:(NSURLSessionDownloadTask *)downloadTask
-didFinishDownloadingToURL:(NSURL *)location
-{
-    File_ f = downloadTask.file;
-    f->setFile(QString::fromNSString(location.path));
-    Global::controller->handleFileDownloadFinishedBlocking(f);
-}
-@end
-
-@implementation NSURLSessionTask(Pointer)
-- (void)setFile:(File_)file {
-    id item = [QSharedPointerWrapper wrap:file.staticCast<QObject>()];
-    objc_setAssociatedObject(self, @selector(file), item, OBJC_ASSOCIATION_RETAIN);
-}
-- (File_)file {
-    QSharedPointerWrapper* item = objc_getAssociatedObject(self, @selector(file));
-    return item.ptr.staticCast<File>();
-}
-@end
-

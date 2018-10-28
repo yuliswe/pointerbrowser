@@ -38,7 +38,6 @@ class TabsModel : public QAbstractListModel
         void clear();
         QVariant at(int index) const;
         Webpage_ webpage_(int index) const;
-        Webpage* webpage(int index) const;
         void replaceModel(const Webpage_List& wp);
 
     private:

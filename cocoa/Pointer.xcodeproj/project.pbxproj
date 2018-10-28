@@ -87,7 +87,7 @@
 		7A11A571217AFD29003E456E /* Bookmarks.mm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bookmarks.mm.h; sourceTree = "<group>"; };
 		7A11A572217AFD2A003E456E /* Bookmarks.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Bookmarks.mm; sourceTree = "<group>"; };
 		7A11A573217AFD2A003E456E /* Bookmarks.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Bookmarks.xib; sourceTree = "<group>"; };
-		7A19D94421180D0300A75028 /* CppData.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CppData.mm.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		7A19D94421180D0300A75028 /* CppData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CppData.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7A19D94521180D0300A75028 /* CppData.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CppData.mm; sourceTree = "<group>"; };
 		7A25418C2133B8A300BD9A9F /* KeyCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyCode.h; sourceTree = "<group>"; };
 		7A43E27E2180F35600E834E5 /* Downloads.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Downloads.h; sourceTree = "<group>"; };
@@ -173,8 +173,8 @@
 				7A027688217B89BB004A09F6 /* BookmarkItems.mm.h */,
 				7A027689217B89BB004A09F6 /* BookmarkItems.mm */,
 				7A02768A217B89BB004A09F6 /* BookmarkItems.xib */,
+				7A19D94421180D0300A75028 /* CppData.h */,
 				7A19D94521180D0300A75028 /* CppData.mm */,
-				7A19D94421180D0300A75028 /* CppData.mm.h */,
 				7A59D52621408DAA001C082B /* CrawlerRulesPopover.mm */,
 				7A59D52521408DAA001C082B /* CrawlerRulesPopover.mm.h */,
 				7A59D52821408F0A001C082B /* CrawlerRulesPopover.xib */,
@@ -189,8 +189,8 @@
 				7A0CDD3D2110F15900FE35C5 /* Pointer.entitlements */,
 				7A651481211EAC2100977B87 /* TabView.mm */,
 				7A651480211EAC2100977B87 /* TabView.mm.h */,
-				7A8D32DF2111A43B0066691C /* WebUI.mm */,
 				7A8D32DE2111A43B0066691C /* WebUI.mm.h */,
+				7A8D32DF2111A43B0066691C /* WebUI.mm */,
 				7A43E27E2180F35600E834E5 /* Downloads.h */,
 				7A43E27F2180F36B00E834E5 /* Downloads.mm */,
 				7A43E2812180F7C200E834E5 /* Downloads.xib */,

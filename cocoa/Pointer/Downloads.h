@@ -11,6 +11,16 @@
 
 #ifndef Downloads_h
 #define Downloads_h
+
+@interface NSURLSessionTask(Pointer)
+- (void)setFile:(File_)file;
+- (File_)file;
+@end
+
+@interface WebUIURLSessionDownloadTaskDelegate : NSObject<NSURLSessionDownloadDelegate>
+
+@end
+
 @interface DownloadTableItem : NSObject
 {
     NSImage* m_thumbnail;

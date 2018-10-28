@@ -8,7 +8,7 @@
 
 #import "Bookmarks.mm.h"
 #include <docviewer/docviewer.h>
-#import "CppData.mm.h"
+#import "CppData.h"
 
 @implementation BookmarksViewController
 
@@ -27,16 +27,16 @@
     [self->m_bookmarks_collectionview registerClass:BookmarksCollectionViewItem.class forItemWithIdentifier:@"BookmarksCollectionViewItem"];
     [self->m_bookmarks_collectionview registerForDraggedTypes:@[NSPasteboardTypeURL]];
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::rowsInserted, [=]() {
-        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::rowsRemoved, [=]() {
-        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::rowsMoved, [=]() {
-        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::modelReset, [=]() {
-        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
     [super viewDidLoad];
 }

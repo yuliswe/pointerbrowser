@@ -25,42 +25,17 @@ QVariant TabsModel::at(int i) const
 Webpage_ TabsModel::webpage_(int i) const
 {
     if (i < 0 || i >= _tabs.length()) {
-        return Webpage_(nullptr);
+        qCritical(WebpageLogging) << "array index out of range" << i << "/" << count();
+        return shared<Webpage>();
     }
     return _tabs[i];
 }
 
-Webpage* TabsModel::webpage(int i) const
-{
-    return webpage_(i).get();
-}
-
 void TabsModel::replaceModel(const Webpage_List& pages)
 {
-//    clear();
-//    if (pages.isEmpty()) { return; }
-//    emit beginInsertRows(QModelIndex(), 0, pages.count() - 1);
+    emit beginResetModel();
     _tabs = pages;
-//    int n = pages.length();
-//    for (int i = 0; i < n; i++) {
-//        Webpage* p = pages[i].get();
-//        QObject::connect(p, &Webpage::dataChanged, [=]() {
-//            QModelIndex d;
-//            bool found = false;
-//            for (int j = 0; j < count(); j++) {
-//                if (webpage(j) == p) {
-//                    d = TabsModel::index(j,j);
-//                    found = true;
-//                    break;
-//                }
-//            }
-//            if (found) {
-//                emit this->dataChanged(d,d);
-//            }
-//        });
-//    }
     emit endResetModel();
-//    emit endInsertRows();
     emit countChanged();
 }
 
@@ -70,21 +45,6 @@ void TabsModel::insertWebpage_(int idx, const Webpage_ page)
     emit beginInsertRows(QModelIndex(), idx, idx);
     _tabs.insert(idx, page);
     _tabs[idx] = page;
-//    Webpage* p = page.get();
-//    QObject::connect(p, &Webpage::dataChanged, [=]() {
-//        QModelIndex d;
-//        bool found = false;
-//        for (int j = 0; j < count(); j++) {
-//            if (webpage(j) == p) {
-//                d = TabsModel::index(j,j);
-//                found = true;
-//                break;
-//            }
-//        }
-//        if (found) {
-//            emit this->dataChanged(d,d);
-//        }
-//    });
     emit endInsertRows();
     emit countChanged();
 }

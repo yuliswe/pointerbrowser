@@ -18,9 +18,9 @@ class File : public QObject, public QFileInfo
 
     PROP_DEF_BEGINS
     PROP_RWN_D(std::shared_ptr<void>, thumbnail, nullptr)
-    PROP_RWN_D(quint64, size_bytes_downloaded, 0)
-    PROP_RWN_D(quint64, size_bytes_addition, 0)
-    PROP_RWN_D(quint64, size_bytes_expected, 0)
+    PROP_RWN_D(qint64, size_bytes_downloaded, 0)
+    PROP_RWN_D(qint64, size_bytes_addition, 0)
+    PROP_RWN_D(qint64, size_bytes_expected, 0)
     PROP_RWN_D(float, percentage, 0)
     PROP_RN_D(bool, downloading, false)
     PROP_RWN_D(Url, download_url, Url())

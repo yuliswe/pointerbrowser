@@ -8,7 +8,7 @@
 
 #import "MainMenu.h"
 #include <docviewer/docviewer.h>
-#import "CppData.mm.h"
+#import "CppData.h"
 
 @implementation MainMenu
 

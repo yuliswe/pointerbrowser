@@ -21,18 +21,20 @@ QString File::downloadProgress()
     QString total;
     QString percent;
     if (size_bytes_expected() > 0) {
-        total = locale.formattedDataSize(size_bytes_expected());
+        total = locale.formattedDataSize(size_bytes_expected(),2,QLocale::DataSizeTraditionalFormat);
         percent.sprintf("%d%%", int(std::floor(percentage() * 100)));
     } else {
         total = "?";
         percent = "?%";
     }
-    textstream << qSetFieldWidth(0) << "Downloaded "
-               << qSetFieldWidth(0) << locale.formattedDataSize(size_bytes_downloaded())
+    textstream << qSetFieldWidth(0) << "Loading "
+               << qSetFieldWidth(0) << locale.formattedDataSize(size_bytes_downloaded(),2,QLocale::DataSizeTraditionalFormat)
                << qSetFieldWidth(0) << " of total size "
                << qSetFieldWidth(0) << total
                << qSetFieldWidth(0) << " ("
                << qSetFieldWidth(0) << percent
+               << "+"
+               << locale.formattedDataSize(size_bytes_addition(),0,QLocale::DataSizeTraditionalFormat)
                << qSetFieldWidth(0) << ")";
     return rtv;
 }
@@ -40,5 +42,5 @@ QString File::downloadProgress()
 QString File::filesize()
 {
     QLocale locale;
-    return locale.formattedDataSize(size());
+    return locale.formattedDataSize(size(), 2, QLocale::DataSizeTraditionalFormat);
 }

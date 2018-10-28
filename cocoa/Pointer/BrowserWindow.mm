@@ -58,40 +58,40 @@
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()
     {
-        [self performSelectorOnMainThread:@selector(handleNewTextFindState) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(handleNewTextFindState) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(Global::controller,
                      &Controller::crawler_rule_table_enabled_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_enabled_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_crawler_rule_table_enabled_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller,
                      &Controller::bookmark_page_visible_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_bookmarkpage_visible_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller,
                      &Controller::downloads_visible_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_downloads_visible_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_downloads_visible_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_can_go_back_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_can_go_forward_changed,
                      [=]()
                      {
-                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:NO];
+                         [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
-        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:YES];
     });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];

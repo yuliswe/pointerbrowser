@@ -15,6 +15,10 @@ int FileListModel::loadDirectoryContents(QString const& dirpath, void const* sen
     return retval.size();
 }
 
+File_& FileListModel::null()
+{
+    return m_null;
+}
 
 //File_ FileListModel::get(int row)
 //{

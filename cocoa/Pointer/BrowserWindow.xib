@@ -106,7 +106,7 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="agB-Dc-zVv">
-                                                                            <rect key="frame" x="6" y="8" width="7" height="15"/>
+                                                                            <rect key="frame" x="6" y="7" width="7" height="15"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="height" constant="15" id="Ew7-8X-e6N"/>
                                                                                 <constraint firstAttribute="width" constant="7" id="d7M-O9-Xyn"/>

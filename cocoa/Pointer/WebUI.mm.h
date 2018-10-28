@@ -12,10 +12,6 @@
 
 @class TabViewItem;
 
-@interface WebUIURLSessionDownloadTaskDelegate : NSObject<NSURLSessionDownloadDelegate>
-
-@end
-
 @interface WebUI : WKWebView<WKNavigationDelegate>
 {
     Webpage_ m_webpage;
@@ -35,9 +31,4 @@
 {
     
 }
-@end
-
-@interface NSURLSessionTask(Pointer)
-- (void)setFile:(File_)file;
-- (File_)file;
 @end
