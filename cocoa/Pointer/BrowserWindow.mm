@@ -175,13 +175,13 @@
 
 - (IBAction)handleCrawlerRuleButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:nil];
+    [self.window makeFirstResponder:self.window];
     Global::controller->set_crawler_rule_table_visible_async(true);
 }
 
 - (IBAction)handleDownloadsButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:nil];
+    [self.window makeFirstResponder:self.window];
     Global::controller->set_downloads_visible_async(true);
 }
 
@@ -274,6 +274,11 @@
 {
     return nil;
 }
+//
+//- (BOOL)makeFirstResponder:(NSResponder *)responder {
+//    NSLog(@"%@ make first responder", responder);
+//    return [super makeFirstResponder:responder];
+//}
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {

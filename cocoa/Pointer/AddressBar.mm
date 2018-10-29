@@ -270,11 +270,11 @@
 
 - (void)loseFocus
 {
-//    m_surface.hidden = NO;
-//    self.focus = false;
     self.url = self.stringValue;
     self.stringValue = Global::controller->address_bar_title().toNSString();
-    [self.window makeFirstResponder:self.window];
+    if (self.window.firstResponder == self.currentEditor) {
+        [self.window makeFirstResponder:self.window];
+    }
 }
 
 - (void)textDidEndEditing:(NSNotification *)notification
