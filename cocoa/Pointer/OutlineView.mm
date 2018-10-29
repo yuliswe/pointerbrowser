@@ -390,7 +390,7 @@
 {
     if (item == self.open_tabs || item == self.search_results)
     {
-        return 20;
+        return 25;
     }
     if ([outlineView parentForItem:item] == self.open_tabs)
     {
@@ -442,7 +442,7 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
 {
-    return [self isHeader:item];
+    return NO; //[self isHeader:item];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
@@ -510,11 +510,14 @@ shouldShowOutlineCellForItem:(id)item
 - (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView
                pasteboardWriterForItem:(id)item
 {
-    NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
-    Webpage_ webpage = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
-    NSString* urlstr = webpage->url().full().toNSString();
-    [boarditem setString:urlstr forType:NSPasteboardTypeURL];
-    return boarditem;
+    if ([item isKindOfClass:CppSharedData.class]) {
+        NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
+        Webpage_ webpage = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
+        NSString* urlstr = webpage->url().full().toNSString();
+        [boarditem setString:urlstr forType:NSPasteboardTypeURL];
+        return boarditem;
+    }
+    return nil;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
@@ -558,7 +561,7 @@ shouldShowOutlineCellForItem:(id)item
    willBeginAtPoint:(NSPoint)screenPoint
            forItems:(NSArray *)draggedItems
 {
-    outlineView.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleGap;
+//    outlineView.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleGap;
 }
 
 @end
@@ -578,3 +581,11 @@ shouldShowOutlineCellForItem:(id)item
 }
 @end
 
+@implementation OutlineView
+- (NSRect)frameOfCellAtColumn:(NSInteger)column row:(NSInteger)row {
+    NSRect superFrame = [super frameOfCellAtColumn:column row:row];
+    superFrame.origin.x = 8;
+    superFrame.size.width = self.bounds.size.width - 24;
+    return superFrame;
+}
+@end

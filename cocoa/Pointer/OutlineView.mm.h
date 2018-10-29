@@ -101,3 +101,5 @@ typedef enum {
 - (void)updateSelection;
 @end
 
+@interface OutlineView : NSOutlineView
+@end

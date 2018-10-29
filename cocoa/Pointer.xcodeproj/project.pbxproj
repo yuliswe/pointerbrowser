@@ -157,8 +157,8 @@
 				7A78880B211C965300675101 /* docviewer.framework */,
 				7A78880C211C965400675101 /* QtCore.framework */,
 				7A78880A211C965300675101 /* QtSql.framework */,
-				7A0CDD312110F15600FE35C5 /* Pointer */,
 				7A788812211C969100675101 /* Frameworks */,
+				7A0CDD312110F15600FE35C5 /* Pointer */,
 				7A027687217AFED3004A09F6 /* Pointer.app */,
 			);
 			sourceTree = "<group>";
@@ -203,8 +203,8 @@
 				7A43E27F2180F36B00E834E5 /* Downloads.mm */,
 				7A43E2812180F7C200E834E5 /* Downloads.xib */,
 				7AB2318D21856634005B436F /* ErrorPage.xib */,
-				7AB2318F21856649005B436F /* ErrorPage.h */,
 				7AB2319021856649005B436F /* ErrorPage.mm */,
+				7AB2318F21856649005B436F /* ErrorPage.h */,
 			);
 			path = Pointer;
 			sourceTree = "<group>";
