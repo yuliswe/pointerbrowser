@@ -366,6 +366,7 @@ int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
     closeAllPopovers();
+    if (u.isEmpty()) { return false; }
     Webpage_ p = current_tab_webpage();
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
