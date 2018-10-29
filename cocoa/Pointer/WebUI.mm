@@ -175,6 +175,10 @@
 didFailProvisionalNavigation:(WKNavigation *)navigation
       withError:(NSError *)error
 {
+    if (error.code == 102) {
+        // Frame Load Interrupted
+        return;
+    }
     Url u = self.webpage->url();
     NSURL* url = u.toNSURL();
     self->m_erroring_url = url;
