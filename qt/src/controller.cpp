@@ -28,27 +28,27 @@ int Controller::newTab(TabState state,
 
 int Controller::newTab(int index,
                        TabState state,
-                       Url const& uri,
+                       Webpage_ webpage,
                        WhenCreated newBehavior,
                        WhenExists whenExists,
                        void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::newTab"
-                             << state
-                             << uri
-                             << newBehavior
-                             << whenExists;
+                              << state
+                              << webpage->url().full()
+                              << newBehavior
+                              << whenExists;
     int idx = 0;
     if (state == TabStateOpen) {
         bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
-            idx = open_tabs()->findTab(uri);
+            idx = open_tabs()->findTab(webpage.get());
             if (idx == -1) {
-                open_tabs()->insertTab(idx = index, uri);
+                open_tabs()->insertWebpage_(idx = index, webpage);
                 inserted = true;
             }
         } else {
-            open_tabs()->insertTab(idx = index, uri);
+            open_tabs()->insertWebpage_(idx = index, webpage);
             inserted = true;
         }
         if (newBehavior == WhenCreatedViewNew) {
@@ -65,20 +65,20 @@ int Controller::newTab(int index,
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
-            if ((idx = preview_tabs()->findTab(uri)) > -1) {
+            if ((idx = preview_tabs()->findTab(webpage.get())) > -1) {
                 if (newBehavior == WhenCreatedViewNew) {
                     viewTab(TabStatePreview, idx);
                 }
                 return idx;
             } else {
-                preview_tabs()->insertTab(idx = index, uri);
+                preview_tabs()->insertWebpage_(idx = index, webpage);
                 if (newBehavior == WhenCreatedViewNew) {
                     viewTab(state, idx);
                 }
                 return idx;
             }
         } else if (whenExists == WhenExistsOpenNew) {
-            preview_tabs()->insertTab(idx = index, uri);
+            preview_tabs()->insertWebpage_(idx = index, webpage);
             if (newBehavior == WhenCreatedViewNew) {
                 viewTab(state, idx);
             }
@@ -86,6 +86,16 @@ int Controller::newTab(int index,
         }
     }
     return idx;
+}
+
+int Controller::newTab(int index,
+                       TabState state,
+                       Url const& uri,
+                       WhenCreated newBehavior,
+                       WhenExists whenExists,
+                       void const* sender)
+{
+    return newTab(index, state, shared<Webpage>(uri), newBehavior, whenExists, sender);
 }
 
 // switch view
@@ -346,7 +356,7 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
         }
         return 0;
     } else if (fromState == TabStateSearchResult && toState == TabStateOpen) {
-//        Global::searchDB->search_result()->moveTab(fromIndex, toIndex);
+        //        Global::searchDB->search_result()->moveTab(fromIndex, toIndex);
         return 0;
     }
     return 0;

@@ -25,9 +25,20 @@
 {
     self = [super init];
     self.webpage = webpage;
-//    [[WebUI alloc] initWithTabItem:self];
-    self.webview = [[WebUI alloc] initWithTabItem:self];
+    self.webview = [[WebUI alloc] initWithWebpage:webpage frame:tabview.bounds config:nil];
     [self.webview loadUri:webpage->url().full().toNSString()];
+    self.view = self.webview;
+    self.tabview = tabview;
+    return self;
+}
+
+- (instancetype)initWithWebUI:(WebUI*)webui
+                      webpage:(Webpage_)page
+                      tabview:(TabView*)tabview
+{
+    self = [super init];
+    self.webpage = page;
+    self.webview = webui;
     self.view = self.webview;
     self.tabview = tabview;
     return self;
@@ -162,7 +173,12 @@
     int count = last - first + 1;
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i+first);
-        TabViewItem* item = [[TabViewItem alloc] initWithWebpage:w tabview:self];
+        TabViewItem* item;
+        if (w->associated_frontend()) {
+            item = [[TabViewItem alloc] initWithWebUI:(__bridge WebUI*)w->associated_frontend() webpage:w tabview:self];
+        } else {
+            item = [[TabViewItem alloc] initWithWebpage:w tabview:self];
+        }
         if (self.tabViewItems.count == 0) {
             [self addTabViewItem:item];
         } else {
@@ -170,6 +186,14 @@
         }
     }
 }
+//
+//- (TabViewItem*)prependEmptyRow
+//{
+//    Webpage_ w = shared<Webpage>();
+//    w->moveToThread(Global::qCoreApplicationThread);
+//    Global::controller->open_tabs()->insertWebpage_(0, w);
+//
+//}
 
 - (void)onOpenTabRowsRemoved:(NSDictionary*)args
 {

@@ -130,6 +130,7 @@ public:
 
     METH_ASYNC_0(int, newTab)
     METH_ASYNC_4(int, newTab, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTab, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTab, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_2(int, viewTab, Controller::TabState, int)
     METH_ASYNC_4(int, moveTab, Controller::TabState, int, Controller::TabState, int)

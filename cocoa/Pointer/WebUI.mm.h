@@ -13,7 +13,7 @@
 
 @class TabViewItem;
 
-@interface WebUI : WKWebView<WKNavigationDelegate>
+@interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate>
 {
     Webpage_ m_webpage;
     NSURL* m_erroring_url;
@@ -23,7 +23,9 @@
 
 @property Webpage_ webpage;
 
-- (instancetype)initWithTabItem:(TabViewItem*)tabItem;
+- (instancetype)initWithWebpage:(Webpage_)webpage
+                          frame:(NSRect)frame
+                         config:(WKWebViewConfiguration*)config;
 - (void)loadUri:(NSString*)url;
 
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
@@ -31,8 +33,3 @@
 
 @end
 
-@interface WebUIDelegate : NSObject<WKUIDelegate>
-{
-    
-}
-@end

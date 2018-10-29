@@ -23,22 +23,26 @@
     [super mouseDown:event];
 }
 
-- (instancetype)initWithTabItem:(TabViewItem*)tabItem
+- (instancetype)initWithWebpage:(Webpage_)webpage
+                          frame:(NSRect)frame
+                         config:(WKWebViewConfiguration*)config
 {
-    WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    if (! config) {
+        config = [[WKWebViewConfiguration alloc] init];
+    }
     config.applicationNameForUserAgent = @"Version/11.1.2 Safari/605.1.15";
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
-    self = [super initWithFrame:[tabItem.view bounds] configuration:config];
+    self = [super initWithFrame:frame configuration:config];
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
-    static WebUIDelegate* uidelegate = [[WebUIDelegate alloc] init];
-    self.UIDelegate = uidelegate;
+    self.UIDelegate = self;
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
     self.navigationDelegate = self;
-//    self.customUserAgent = @"Pointer";
-    self.webpage = tabItem.webpage;
+    //    self.customUserAgent = @"Pointer";
+    self.webpage = webpage;
+    self.webpage->set_associated_frontend_async((__bridge void*)self);
     [self addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"URL" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
@@ -49,6 +53,11 @@
     self->m_error_page_view_controller.view.hidden = YES;
     [self connect];
     return self;
+}
+
+- (void)dealloc
+{
+    self.webpage->set_associated_frontend_async(nullptr);
 }
 
 - (void)connect
@@ -294,22 +303,22 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
     }
 }
 
-@end
-
-@implementation WebUIDelegate
-- (WKWebView *)webView:(WKWebView *)webView
+- (WKWebView *)webView:(WebUI *)webView
 createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
    forNavigationAction:(WKNavigationAction *)navigationAction
         windowFeatures:(WKWindowFeatures *)windowFeatures
 {
-    Webpage_ w = [(WebUI*)webView webpage];
-
-    NSURL* url = navigationAction.request.URL;
-    if (Global::controller->open_tabs()->findTab(w.get()) >= 0) {
-        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+    Url url = QUrl::fromNSURL(navigationAction.request.URL);
+    Webpage_ new_webpage = shared<Webpage>(url);
+    WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
+    new_webpage->set_associated_frontend((__bridge void*)new_webview);
+    new_webpage->moveToThread(Global::qCoreApplicationThread);
+    if (Global::controller->open_tabs()->findTab(webView.webpage.get()) >= 0) {
+        Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     } else {
-        Global::controller->newTabAsync(Controller::TabStatePreview, QUrl::fromNSURL(url), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        Global::controller->newTabAsync(0, Controller::TabStatePreview, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     }
-    return nil;
+    return new_webview;
 }
 @end
+
