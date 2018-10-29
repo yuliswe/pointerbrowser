@@ -67,7 +67,6 @@ protected:
 //    void modifyRule(CrawlerRule&, CrawlerRule&);
     bool modifyRule(int, CrawlerRule&);
     void updateAssociatedUrl(Url const&);
-    bool hasEnabledAndMatchedRuleForUrl(Url const&);
 
 public:
     CrawlerRuleTable() = default;
@@ -76,6 +75,7 @@ public:
     virtual ~CrawlerRuleTable() = default;
     int rulesCount();
     CrawlerRule rule(int);
+    bool hasEnabledAndMatchedRuleForUrl(Url const&);
 };
 
 typedef QSharedPointer<CrawlerRuleTable> CrawlerRuleTable_;

@@ -1,18 +1,20 @@
 #include "logging.hpp"
 
-QtMsgType level = QtCriticalMsg;
-QLoggingCategory WebpageLogging("Webpage", level);
-QLoggingCategory SearchDBLogging("SearchDB", level);
+QtMsgType release = QtCriticalMsg;
+QtMsgType debug = QtDebugMsg;
 
-QLoggingCategory GlobalLogging("Global", level);
+QLoggingCategory WebpageLogging("Webpage", release);
+QLoggingCategory SearchDBLogging("SearchDB", release);
 
-QLoggingCategory FileLogging("File", level);
+QLoggingCategory GlobalLogging("Global", release);
 
-QLoggingCategory CrawlerLogging("Crawler", level);
-QLoggingCategory CrawlerRuleLogging("CrawlerRule", level);
-QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable", level);
+QLoggingCategory FileLogging("File", release);
 
-QLoggingCategory MacroLogging("Macro", level);
+QLoggingCategory CrawlerLogging("Crawler", release);
+QLoggingCategory CrawlerRuleLogging("CrawlerRule", release);
+QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable", release);
+
+QLoggingCategory MacroLogging("Macro", release);
 
 QLoggingCategory ControllerLogging("Controller", QtInfoMsg);
 

@@ -386,6 +386,12 @@ void SearchWorker::search(QString const& word)
     while (r.isValid()) {
         QSqlRecord record = r.record();
         QString url = record.value("url").value<QString>();
+        if (! Global::crawler->rule_table()->hasEnabledAndMatchedRuleForUrl(url))
+        {
+            qCDebug(SearchDBLogging) << "ignored an entry in" << Url(url).full() << "because it is filtered by crawler rule table";
+            r.next();
+            continue;
+        }
         QRegularExpressionMatch protocal_match = protocal.match(url);
         int url_domain_start = protocal_match.capturedLength();
         QStringList path = url.split(slash, QString::SkipEmptyParts);
