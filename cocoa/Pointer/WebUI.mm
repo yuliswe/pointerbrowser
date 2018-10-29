@@ -321,5 +321,21 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     return new_webview;
 }
 
+- (void)webView:(WKWebView *)webView
+runOpenPanelWithParameters:(WKOpenPanelParameters *)parameters
+initiatedByFrame:(WKFrameInfo *)frame
+completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
+{
+    NSOpenPanel* open_panel = [NSOpenPanel openPanel];
+    open_panel.allowsMultipleSelection = parameters.allowsMultipleSelection;
+    open_panel.canChooseDirectories = parameters.allowsDirectories;
+    [open_panel beginWithCompletionHandler:^(NSModalResponse result) {
+        if (result == NSFileHandlingPanelOKButton) {
+            NSArray* urls = [open_panel URLs];
+            completionHandler(urls);
+        }
+    }];
+}
 @end
+
 
