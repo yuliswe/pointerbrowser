@@ -178,7 +178,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     } else {
         item.thumbnail = [NSWorkspace.sharedWorkspace iconForFileType:@""];
     }
-    f->replaceConnection(0, QObject::connect(f.get(), &File::dataChanged, [=]() {
+    f->replaceConnection(0, QObject::connect(f.get(), &File::propertyChanged, [=]() {
         [self performSelectorOnMainThread:@selector(reloadRow:) withObject:@{@"table":tableView, @"row":[NSNumber numberWithInt:row]} waitUntilDone:YES];
     }));
     return item;

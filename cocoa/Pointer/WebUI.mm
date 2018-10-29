@@ -291,7 +291,20 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
            withEvent:(NSEvent *)event
 {
     [menu filterMenuItems];
+//    NSArray* itemarray = menu.itemArray;
+//    for (int i = itemarray.count - 1; i >= 0; i--) {
+//        NSMenuItem* item = itemarray[i];
+//        if ([item.title containsString:@"Download Linked File"])
+//        {
+////            item.action = @selector()
+//        }
+//    }
 }
+//
+//- (void)downloadLink:(
+//{
+//    self.window.selectedtex
+//}
 
 - (void)webView:(WKWebView *)webView
 decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
@@ -299,6 +312,11 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 {
     if (navigationResponse.canShowMIMEType) {
         decisionHandler(WKNavigationResponsePolicyAllow);
+//        if ([navigationResponse.response.MIMEType containsString:@"pdf"]) {
+//            NSURL* url = navigationResponse.response.URL;
+//            NSString* filename = navigationResponse.response.suggestedFilename;
+//            Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
+//        }
     } else {
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;

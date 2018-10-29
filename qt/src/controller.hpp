@@ -124,6 +124,8 @@ public:
     int loadBookmarks();
     int saveBookmarks();
     int insertBookmark(Webpage_, int);
+    void Q_INVOKABLE onCurrentTabWebpagePropertyChanged(void const* address, void const* sender = nullptr);
+    void helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* address, void const* sender);
 
 public:
     Controller();

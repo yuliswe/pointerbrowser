@@ -122,38 +122,19 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     closeAllPopovers();
     // disconnect from old
     if (old_page != nullptr) {
-        QObject::disconnect(old_page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
-        QObject::disconnect(old_page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
-        QObject::disconnect(old_page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
-        QObject::disconnect(old_page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
-        QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
-        QObject::disconnect(old_page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
-        QObject::disconnect(old_page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
-        QObject::disconnect(old_page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
-        QObject::disconnect(old_page.get(), &Webpage::is_error_changed, this, &Controller::set_current_tab_webpage_is_error);
+        QObject::disconnect(old_page.get(), &Webpage::propertyChanged, this, &Controller::onCurrentTabWebpagePropertyChanged);
         old_page = nullptr;
     }
     if (state == TabStateNull) {
+        Webpage_ empty_page = shared<Webpage>();
         old_page = nullptr;
-        set_crawler_rule_table_enabled(false);
+        helperCurrentTabWebpagePropertyChanged(empty_page, nullptr, sender);
         set_current_open_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         set_current_tab_search_highlight_index(-1,sender);
         set_current_tab_state(TabStateNull);
-        set_current_tab_webpage(nullptr,sender);
-        set_welcome_page_visible(true);
-        showBookmarkPage();
-        FindTextState state = current_webpage_find_text_state();
-        state.visiable = false;
-        set_current_webpage_find_text_state(state);
-        set_address_bar_title("");
-        set_address_bar_load_progress(0);
-        set_current_webpage_crawler_rule_table(CrawlerRuleTable_::create());
-        set_current_tab_webpage_can_go_back(false);
-        set_current_tab_webpage_can_go_forward(false);
-        set_current_tab_webpage_is_blank(true);
-        set_current_tab_webpage_is_error(false);
+        set_current_tab_webpage(empty_page,sender);
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->search_result()->clear();
         }
@@ -175,23 +156,8 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         page = preview_tabs()->webpage_(i);
     }
     Q_ASSERT(page != nullptr);
-    if (page->is_blank()) {
-        showBookmarkPage();
-        set_crawler_rule_table_enabled(false);
-    } else {
-        hideBookmarkPage();
-        set_crawler_rule_table_enabled(true);
-    }
+    helperCurrentTabWebpagePropertyChanged(page, nullptr, sender);
     set_current_tab_state(state);
-    set_address_bar_load_progress(page->load_progress());
-    set_address_bar_title(page->title()); // title must be set after uri
-    set_current_webpage_find_text_state(page->find_text_state());
-    set_welcome_page_visible(false);
-    set_current_tab_webpage_can_go_back(page->can_go_back());
-    set_current_tab_webpage_can_go_forward(page->can_go_forward());
-    set_current_webpage_crawler_rule_table(page->crawler_rule_table());
-    set_current_tab_webpage_is_blank(page->is_blank());
-    set_current_tab_webpage_is_error(page->is_error());
     if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
         set_current_open_tab_highlight_index(i,sender);
@@ -207,15 +173,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     }
     set_current_tab_webpage(page,sender);
     // set up load progress watcher
-    QObject::connect(page.get(), &Webpage::load_progress_changed, this, &Controller::set_address_bar_load_progress);
-    QObject::connect(page.get(), &Webpage::title_changed, this, &Controller::set_address_bar_title);
-    QObject::connect(page.get(), &Webpage::find_text_state_changed, this, &Controller::set_current_webpage_find_text_state);
-    QObject::connect(page.get(), &Webpage::crawler_rule_table_changed, this, &Controller::set_current_webpage_crawler_rule_table);
-    QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_bookmark_page_visible);
-    QObject::connect(page.get(), &Webpage::can_go_back_changed, this, &Controller::set_current_tab_webpage_can_go_back);
-    QObject::connect(page.get(), &Webpage::can_go_forward_changed, this, &Controller::set_current_tab_webpage_can_go_forward);
-    QObject::connect(page.get(), &Webpage::is_blank_changed, this, &Controller::set_current_tab_webpage_is_blank);
-    QObject::connect(page.get(), &Webpage::is_error_changed, this, &Controller::set_current_tab_webpage_is_error);
+    QObject::connect(page.get(), &Webpage::propertyChanged, this, &Controller::onCurrentTabWebpagePropertyChanged);
     old_page = page;
     return i;
 }
@@ -847,5 +805,31 @@ int Controller::closeAllPopovers(void const* sender)
     set_downloads_visible(false, sender);
     set_crawler_rule_table_visible(false, sender);
     return true;
+}
+
+void Controller::onCurrentTabWebpagePropertyChanged(void const* a, void const* sender)
+{
+    return helperCurrentTabWebpagePropertyChanged(current_tab_webpage(), a, sender);
+}
+
+void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* a, void const* sender)
+{
+    if (!a || w->is_load_progress_change(a)) { set_address_bar_load_progress(w->load_progress()); }
+    if (!a || w->is_title_change(a)) { set_address_bar_title(w->title()); }
+    if (!a || w->is_find_text_state_change(a)) { set_current_webpage_find_text_state(w->find_text_state()); }
+    if (!a || w->is_crawler_rule_table_change(a)) { set_current_webpage_crawler_rule_table(w->crawler_rule_table()); }
+    if (!a || w->is_is_blank_change(a)) {
+        set_bookmark_page_visible(w->is_blank());
+        set_current_tab_webpage_is_blank(w->is_blank());
+        set_crawler_rule_table_enabled(! w->is_blank());
+        if (w->is_blank()) {
+            showBookmarkPage();
+        } else {
+            hideBookmarkPage();
+        }
+    }
+    if (!a || w->is_can_go_back_change(a)) { set_current_tab_webpage_can_go_back(w->can_go_back()); }
+    if (!a || w->is_can_go_forward_change(a)) { set_current_tab_webpage_can_go_forward(w->can_go_forward()); }
+    if (!a || w->is_is_error_change(a)) { set_current_tab_webpage_is_error(w->is_error()); }
 }
 

@@ -26,7 +26,7 @@
     }
     [(BookmarkCollectionViewItemRoot*)self.view setWebpage:self.webpage];
     ((BookmarkCollectionViewItemRoot*)self.view).bookmark_collectionviewitem = self;
-    QObject::connect(self.webpage.get(), &Webpage::dataChanged, [=]() {
+    QObject::connect(self.webpage.get(), &Webpage::propertyChanged, [=]() {
         [self.collectionView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
 }

@@ -208,7 +208,7 @@
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
         id item = [CppSharedData wrap:w];
         [self.open_tabs.get insertObject:item atIndex:i];
-        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+        QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
             [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
         });
     }
@@ -248,7 +248,7 @@
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
         CppSharedData* item = [CppSharedData wrap:w];
         [self.open_tabs.get insertObject:item atIndex:i];
-        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+        QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
             [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
         });
     }
@@ -291,7 +291,7 @@
         Webpage_ w = Global::searchDB->search_result()->webpage_(i);
         id item = [CppSharedData wrap:w];
         [self.search_results.get insertObject:item atIndex:i];
-        QObject::connect(w.get(), &Webpage::dataChanged, [=]() {
+        QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
             [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:item waitUntilDone:YES];
         });
         [inserted addIndex:i];

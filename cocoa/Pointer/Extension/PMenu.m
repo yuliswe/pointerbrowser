@@ -46,7 +46,6 @@
             && ! [item.title containsString:@"Paste"]
             && ! [item.title containsString:@"Reload"]
             && ! [item.title containsString:@"Window"]
-            && ! [item.title containsString:@"Download"]
             && ! [item.title containsString:@"URL"]
             && ! [item.title containsString:@"Look Up"])
         {
