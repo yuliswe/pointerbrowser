@@ -175,13 +175,13 @@
 
 - (IBAction)handleCrawlerRuleButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:self.window];
+    [self.window makeFirstResponder:self.window.initialFirstResponder];
     Global::controller->set_crawler_rule_table_visible_async(true);
 }
 
 - (IBAction)handleDownloadsButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:self.window];
+    [self.window makeFirstResponder:self.window.initialFirstResponder];
     Global::controller->set_downloads_visible_async(true);
 }
 
@@ -277,7 +277,8 @@
 //
 - (BOOL)makeFirstResponder:(NSResponder *)responder {
     NSLog(@"%@ make first responder", responder);
-    return [super makeFirstResponder:responder];
+    BOOL rt = [super makeFirstResponder:responder];
+    return rt;
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
@@ -289,7 +290,7 @@
             [ctl.text_find_done_button performClick:self];
             return YES;
         }
-        [self makeFirstResponder:self.windowController];
+        [self makeFirstResponder:self.initialFirstResponder];
         return YES;
     }
     if (event.keyCode == kVK_Tab &&
@@ -342,20 +343,6 @@
 @end
 
 @implementation BrowserWindowView
-//
-//- (BOOL)performKeyEquivalent:(NSEvent *)event
-//{
-//    if (event.keyCode == kVK_Escape)
-//    {
-//        [self.window makeFirstResponder:self];
-//        if (Global::controller->current_webpage_find_text_state().visiable) {
-//            Global::controller->currentTabWebpageFindTextHideAsync();
-//        }
-//        return YES;
-//    }
-//    return [super performKeyEquivalent:event];
-//}
-
 @end
 
 

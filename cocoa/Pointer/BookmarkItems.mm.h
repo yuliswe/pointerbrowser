@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BookmarkItemMenuDelegate : NSObject<NSMenuDelegate>
 {
+    IBOutlet NSViewController* m_view_controller;
     IBOutlet NSCollectionViewItem* m_bookmark_collectionviewitem;
 }
 @end

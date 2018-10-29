@@ -12,6 +12,9 @@ SearchDB::SearchDB()
 }
 
 bool SearchDB::connect() {
+
+    Q_ASSERT(QThread::currentThread() == Global::qCoreApplicationThread);
+
     _db = QSqlDatabase::addDatabase("QSQLITE");
     _dbPath = FileManager::dataPath() + "search.db";
     qCInfo(SearchDBLogging) << "SearchDB: connecting" << _dbPath;
@@ -26,19 +29,42 @@ bool SearchDB::connect() {
     _searchWorker = SearchWorker_::create(_db, _searchWorkerThread, *QThread::currentThread());
     _searchWorkerThread.start();
     qRegisterMetaType<Webpage_List>();
-    QObject::connect(this, &SearchDB::searchAsync, _searchWorker.data(), &SearchWorker::search);
-    QObject::connect(this, &SearchDB::searchAsync, this, [=]() { this->set_is_searching(true); });
-    QObject::connect(_searchWorker.data(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result) {
-        // will this be a race condition?
-        this->search_result()->replaceModel(result);
-        Global::controller->clearPreviews();
+    QObject::connect(_searchWorker.get(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result, void const* sender) {
+        qCDebug(SearchDBLogging) << "search result changed";
+        if (sender == _updateWorker.get()) {
+            qCDebug(SearchDBLogging) << "change was requested by UpdateWorker";
+            // append new ones to back
+            for (auto i = result.begin();
+                 i != result.end() && search_result()->count() < search_limit();
+                 i++)
+            {
+                Webpage_ w = *i;
+                if (! current_url_set()->contains(w->url())) {
+                    // found one that does not already exist
+                    current_url_set()->insert(w->url());
+                    search_result()->insertWebpage_(search_result()->count(), w);
+                }
+            }
+        } else {
+            qCDebug(SearchDBLogging) << "change was requested by user";
+            // replace direclty
+            search_result()->replaceModel(result);
+            Global::controller->preview_tabs()->clear();
+            // reset url set
+            current_url_set()->clear();
+            for (int i = 0; i < search_result()->count(); i++) {
+                Webpage_ w = search_result()->webpage_(i);
+                current_url_set()->insert(w->url());
+            }
+        }
     });
-    QObject::connect(_searchWorker.data(), &SearchWorker::searchStarted, this, [=]() {
+    QObject::connect(_searchWorker.get(), &SearchWorker::searchStarted, this, [=]() {
         this->set_is_searching(true);
     });
-    QObject::connect(_searchWorker.data(), &SearchWorker::searchFinished, this, [=]() {
+    QObject::connect(_searchWorker.get(), &SearchWorker::searchFinished, this, [=]() {
         this->set_is_searching(false);
     });
+
     /* UpdateWorker setup */
     _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
     _updateWorkerThread.start();
@@ -49,6 +75,9 @@ bool SearchDB::connect() {
     QObject::connect(this, &SearchDB::updateSymbolAsync, _updateWorker.data(), &UpdateWorker::updateSymbol);
     QObject::connect(this, &SearchDB::updateWebpageAsync, _updateWorker.data(), &UpdateWorker::updateWebpage);
     QObject::connect(this, &SearchDB::execScriptAsync, _updateWorker.data(), &UpdateWorker::execScript);
+    QObject::connect(_updateWorker.get(), &UpdateWorker::symbolsAdded, [=]() {
+        _searchWorker->searchAsync(search_string(), search_limit(), _updateWorker.get());
+    });
     return true;
 }
 
@@ -159,6 +188,7 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
         query.bindValue(":text", text);
         QVariant sid;
         if (query.exec() && query.first()) {
+            // symbol exists
             qCDebug(SearchDBLogging) << "symbol already exists";
             sid = query.record().value("id");
         } else {
@@ -172,13 +202,12 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
                 if (sid.isValid()) {
                     qCDebug(SearchDBLogging) << "UpdateWorker inserted into symbol table (" << hash << text << ") with id" << sid.value<uint_least64_t>();
                 } else {
-                    qCCritical(SearchDBLogging) << "UpdateWorker datatbase does not support QSqlQuery::lastInsertId()";
-                    return false;
+                    qFatal("UpdateWorker datatbase does not support QSqlQuery::lastInsertId()");
                 }
             } else {
                 qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into symbol table" << hash << text
                             << query.lastError();
-                return false;
+                continue;
             }
         }
         // check if webpage_symbol already exists
@@ -186,8 +215,8 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
         query.bindValue(":wid", wid);
         query.bindValue(":sid", sid);
         if (query.exec() && query.first()) {
+            // webpage_symbol exists
             qCDebug(SearchDBLogging) << "webpage_symbol already exists";
-            return false;
         } else {
             // webpage_symbol insertion begins
             query.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
@@ -195,13 +224,18 @@ bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& s
             query.bindValue(":webpage", wid);
             if (query.exec() && query.numRowsAffected() > 0) {
                 QVariant wsid = query.lastInsertId();
-                qCInfo(SearchDBLogging) << "UpdateWorker inserted into webpage_symbol (" << sid << wid << ") with id" << wsid.value<int>();
+                qCDebug(SearchDBLogging) << "UpdateWorker inserted into webpage_symbol (" << sid << wid << ") with id" << wsid.value<int>();
             } else {
                 qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into webpage_symbol" << hash << text
                                         << query.lastError();
-                return false;
+                continue;
             }
         }
+    }
+    static qint64 last_called = -1;
+    if (QDateTime::currentSecsSinceEpoch() - last_called >= 1) {
+        emit symbolsAdded(url, symbols);
+        last_called = QDateTime::currentSecsSinceEpoch();
     }
     return true;
 }
@@ -236,37 +270,6 @@ bool SearchDB::removeWebpage(QString const& url)
     return false;
 }
 
-//Webpage_ SearchDB::findWebpage_(QString const& url) const
-//{
-//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_" << url;
-//    Q_ASSUME(url.indexOf("#") == -1);
-//    QSqlQuery query(_db);
-//    query.prepare("SELECT * FROM webpage WHERE url = ? LIMIT 1");
-//    query.addBindValue(url);
-//    if (! query.first()) {
-//        qCCritical(SearchDBLogging) << "SearchDB::findWebpage_ not found!" << url;
-//        return Webpage_(nullptr);
-//    }
-//    QSqlRecord r = query.record();
-//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage_ found " << r;
-//    Webpage_ wp = shared<Webpage>(url);
-////    wp->set_title(r.value("title").value<QString>());
-////    wp->set_visited(r.value("visited").value<int>());
-//    return wp;
-//}
-
-//QVariantMap SearchDB::findWebpage(QString const& url) const
-//{
-//    qCInfo(SearchDBLogging) << "SearchDB::findWebpage" << url;
-//    Q_ASSUME(url.indexOf("#") == -1);
-//    Webpage_ p = SearchDB::findWebpage_(url);
-//    if (p.get() == nullptr) {
-//        qCCritical(SearchDBLogging) << "SearchDB::findWebpage not found!" << url;
-//        return QVariantMap();
-//    }
-//    return p->toQVariantMap();
-//}
-
 bool SearchDB::hasWebpage(QString const& url) const
 {
     qCInfo(SearchDBLogging) << "SearchDB::hasWebpage" << url;
@@ -288,6 +291,7 @@ SearchWorker::SearchWorker(const QSqlDatabase& db, QThread& _thread, QThread& _q
     _db.exec("PRAGMA journal_mode=WAL");
     qCInfo(SearchDBLogging) << "SearchWorker::SearchWorker initialized and moved to thread" << &_thread;
 }
+
 SearchWorker::~SearchWorker()
 {
     _db.close();
@@ -311,21 +315,22 @@ UpdateWorker::~UpdateWorker()
     _db.close();
 }
 
-void SearchWorker::search(QString const& word)
+int SearchWorker::search(QString const& word, int search_limit, void const* sender)
 {
     qCInfo(SearchDBLogging) << "SearchWorker::search" << word;
+    set_current_search_string(word);
     Webpage_List pages;
     emit searchStarted();
-    emit resultChanged(pages);
+    emit resultChanged(pages, sender);
     QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QString q;
     if (word == "") {
-        emit resultChanged(pages);
+        emit resultChanged(pages, sender);
         emit searchFinished();
-        return;
+        return true;
 //        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
     } else {
-        if (ws.length() == 0) { return; }
+        if (ws.length() == 0) { return true; }
         /* WITH LEFT JOIN */
         q = QStringLiteral("SELECT DISTINCT * FROM (");
         q += QStringLiteral() +
@@ -369,7 +374,7 @@ void SearchWorker::search(QString const& word)
         q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
         q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";
         q += ", LENGTH(url) ASC";
-        q += " LIMIT 200";
+        q += " LIMIT " + QString::number(search_limit);
     }
     qCInfo(SearchDBLogging) << "SearchWorker::search" << q;
     QSqlQuery r = _db.exec(q);
@@ -377,7 +382,7 @@ void SearchWorker::search(QString const& word)
         qCCritical(SearchDBLogging) << "SearchWorker::search failed"
                     << q
                     << r.lastError();
-        return;
+        return false;
     }
     r.first();
     QRegularExpression searchRegex(ws.join("|"), QRegularExpression::CaseInsensitiveOption);
@@ -426,9 +431,17 @@ void SearchWorker::search(QString const& word)
         pages << wp;
         r.next();
     }
-    emit resultChanged(pages);
+    emit resultChanged(pages, sender);
     emit searchFinished();
     qCInfo(SearchDBLogging) << "SearchWorker::search found" << pages.count();
+    return true;
+}
+
+void SearchDB::searchAsync(QString const& words)
+{
+    set_search_string(words);
+    set_is_searching(true);
+    _searchWorker->searchAsync(words, search_limit());
 }
 
 

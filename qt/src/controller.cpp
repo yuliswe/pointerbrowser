@@ -328,10 +328,6 @@ int Controller::currentTabWebpageGo(QString const& u, void const* sender)
     Webpage_ p = current_tab_webpage();
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
-        Global::crawler->crawlAsync(p->url());
-        if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().domain());
-        }
     } else {
         newTab(TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew);
     }
@@ -412,9 +408,8 @@ bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const*
     qCInfo(ControllerLogging) << "Controller::handleWebpageUrlChanged" << p << url;
     p->handleUrlChanged(url, sender);
     Global::crawler->crawlAsync(p->url());
-    if (current_tab_webpage() != nullptr
-            && p.get() == current_tab_webpage().get()
-            && current_tab_search_word().isEmpty()
+    Webpage_ w = current_tab_webpage();
+    if (p == w && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
         Global::searchDB->searchAsync(p->url().domain());
@@ -594,12 +589,11 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
         set_downloads_visible(false);
         current_tab_webpage()->crawlerRuleTableReloadFromSettings();
     } else {
-        if (crawler_rule_table_visible() && current_tab_webpage() != nullptr) {
-            Global::crawler->crawlAsync(current_tab_webpage()->url());
-
-        }
-        if (current_tab_search_word().isEmpty() && current_tab_webpage() != nullptr) {
-            Global::searchDB->searchAsync(current_tab_webpage()->url().domain());
+        // for better user experience, when crawler rule table is closed, reload searches
+        Webpage_ w = current_tab_webpage();
+        if (crawler_rule_table_visible() && w != nullptr) {
+            Global::crawler->crawlAsync(w->url());
+            Global::searchDB->searchAsync(Global::searchDB->search_string());
         }
         emit_tf_hide_crawler_rule_table_row_hint();
     }
@@ -609,7 +603,6 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
 int Controller::searchTabs(QString const& words, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::searchTabs" << words;
-    if (words == current_tab_search_word()) { return -1; }
     set_current_tab_search_word(words);
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
         Global::searchDB->searchAsync(current_tab_webpage()->url().domain());

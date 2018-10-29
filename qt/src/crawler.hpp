@@ -100,7 +100,6 @@ protected:
 public:
     CrawlerDelegate() = default;
     virtual ~CrawlerDelegate();
-    static QPair<QString,QSet<HtmlLink>> parseHtml(QString const& html, const UrlNoHash& baseUri);
     QThread* thread();
 public slots:
     virtual bool loadUrl(const UrlNoHash&) = 0;
@@ -152,6 +151,7 @@ public:
     Crawler(CrawlerDelegateFactory_ delegateFactory, size_t maxNumThreads, size_t criticalDepth);
     ~Crawler();
     void crawlAsync(const UrlNoHash&);
+    static QPair<QString,QSet<HtmlLink>> parseHtml(QString const& html, const UrlNoHash& baseUri);
     METH_ASYNC_0(int, updateRulesFromSettings)
 
 protected slots:

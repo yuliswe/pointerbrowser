@@ -104,24 +104,8 @@
 
 - (void)connect
 {
-//    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsInserted,
-//                     [=](const QModelIndex &parent, int first, int last)
-//    {
-//        [self performSelectorOnMainThread:@selector(handleSearchResultsInserted:)
-//                               withObject:@{@"first": [NSNumber numberWithInt:first],
-//                                            @"last": [NSNumber numberWithInt:last]}
-//                            waitUntilDone:YES];
-//    });
-//
-//    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsRemoved,
-//                     [=](const QModelIndex &parent, int first, int last)
-//    {
-//        [self performSelectorOnMainThread:@selector(handleSearchResultsRemoved:)
-//                               withObject:@{@"first": [NSNumber numberWithInt:first],
-//                                            @"last": [NSNumber numberWithInt:last]}
-//                            waitUntilDone:YES];
-//    });
- 
+    /* open tabs handlers */
+    
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::rowsInserted,
                      [=] (const QModelIndex &parent, int first, int last)
     {
@@ -130,7 +114,6 @@
                                             @"last": [NSNumber numberWithInt:last]}
                             waitUntilDone:YES];
     });
-    
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::signal_tf_tab_moved,
                      [=] (int from, int to)
                      {
@@ -148,18 +131,38 @@
                                             @"last": [NSNumber numberWithInt:last]}
                             waitUntilDone:YES];
     });
-
     QObject::connect(Global::controller->open_tabs().get(), &TabsModel::modelReset,
                      [=]()
     {
         [self performSelectorOnMainThread:@selector(handleOpenTabsReset) withObject:nil waitUntilDone:YES];
     });
 
+    /* search result handlers */
+    
+    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsInserted,
+                     [=](const QModelIndex &parent, int first, int last)
+                     {
+                         [self performSelectorOnMainThread:@selector(handleSearchResultsInserted:)
+                                                withObject:@{@"first": [NSNumber numberWithInt:first],
+                                                             @"last": [NSNumber numberWithInt:last]}
+                                             waitUntilDone:YES];
+                     });
+    
+    QObject::connect(Global::searchDB->search_result().get(), &TabsModel::rowsRemoved,
+                     [=](const QModelIndex &parent, int first, int last)
+                     {
+                         [self performSelectorOnMainThread:@selector(handleSearchResultsRemoved:)
+                                                withObject:@{@"first": [NSNumber numberWithInt:first],
+                                                             @"last": [NSNumber numberWithInt:last]}
+                                             waitUntilDone:YES];
+                     });
     QObject::connect(Global::searchDB->search_result().get(), &TabsModel::modelReset,
                      [=]()
      {
          [self performSelectorOnMainThread:@selector(handleSearchResultsReset) withObject:nil waitUntilDone:YES];
      });
+    
+    /* other handlers */
     
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
@@ -296,7 +299,9 @@
         });
         [inserted addIndex:i];
     }
+    [self.outline beginUpdates];
     [self.outline insertItemsAtIndexes:inserted inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline endUpdates];
 }
 
 - (void)handleOpenTabsMoved:(NSDictionary*)indices
@@ -319,7 +324,9 @@
         [self.search_results.get removeObjectAtIndex:i];
         [removed addIndex:i];
     }
+    [self.outline beginUpdates];
     [self.outline removeItemsAtIndexes:removed inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
+    [self.outline endUpdates];
 }
 
 - (void)handleDataChanged:(id)item
@@ -584,8 +591,10 @@ shouldShowOutlineCellForItem:(id)item
 @implementation OutlineView
 - (NSRect)frameOfCellAtColumn:(NSInteger)column row:(NSInteger)row {
     NSRect superFrame = [super frameOfCellAtColumn:column row:row];
-    superFrame.origin.x = 8;
-    superFrame.size.width = self.bounds.size.width - 24;
+    NSView* reference = self.enclosingScrollView;
+    superFrame.origin.x = 0;
+    int rightX = reference.frame.origin.x + reference.frame.size.width;
+    superFrame.size.width = rightX - superFrame.origin.x;
     return superFrame;
 }
 @end

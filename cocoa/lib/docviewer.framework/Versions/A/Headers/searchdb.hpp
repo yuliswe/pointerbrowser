@@ -6,21 +6,32 @@
 #include "webpage.hpp"
 #include "tabsmodel.hpp"
 #include "logging.hpp"
+#include "macros.hpp"
 
 typedef QSharedPointer<QSqlRelationalTableModel> QRelTable_;
 
+class SearchDB;
+
 class SearchWorker : public QObject
 {
+    friend class SearchDB;
+
     Q_OBJECT
     QSqlDatabase _db;
     QThread* _dataThread;
+
+    PROP_DEF_BEGINS
+    PROP_RN_D(QString, current_search_string, "")
+    PROP_DEF_ENDS
+
 public:
     explicit SearchWorker(const QSqlDatabase& db, QThread& workerThread, QThread& qmlThread);
     ~SearchWorker();
-public slots:
-    void search(QString const& words);
+
+    METH_ASYNC_2(int, search, QString const&, int)
+
 signals:
-    void resultChanged(const Webpage_List& results);
+    void resultChanged(const Webpage_List& results, void const* sender);
     void searchStarted();
     void searchFinished();
 };
@@ -31,6 +42,10 @@ class UpdateWorker : public QObject
     Q_OBJECT
     QSqlDatabase _db;
     QThread* _qmlThread;
+
+signals:
+    void symbolsAdded(QString const& url, const QMap<QString,QString>& symbols);
+
 public:
     explicit UpdateWorker(const QSqlDatabase& db, QThread& workerThread, QThread& qmlThread);
     ~UpdateWorker();
@@ -62,16 +77,19 @@ protected:
 
     PROP_DEF_BEGINS
     PROP_RN_D(TabsModel_, search_result, shared<TabsModel>())
+    PROP_RN_D(QSharedPointer<QSet<Url>>, current_url_set, QSharedPointer<QSet<Url>>::create())
     PROP_RN_D(bool, is_searching, false)
+    PROP_RN_D(QString, search_string, "")
+    PROP_RN_D(int, search_limit, 200)
     PROP_DEF_ENDS
 
 public:
     explicit SearchDB();
     bool connect();
     void disconnect();
+    void searchAsync(QString const& words);
 
 signals:
-    void searchAsync(QString const& words);
     void addSymbolsAsync(QString const& url, const QMap<QString,QString>& symbols);
     void addSymbolAsync(QString const& url, QString const& hash, QString const& text);
     bool addWebpageAsync(QString const& url);
@@ -80,8 +98,6 @@ signals:
     void execScriptAsync(QString const& filename);
 
 protected slots:
-//    Webpage_ findWebpage_(QString const& url) const;
-//    QVariantMap findWebpage(QString const& url) const;
     bool hasWebpage(QString const& url) const;
     bool removeWebpage(QString const& url);
 };

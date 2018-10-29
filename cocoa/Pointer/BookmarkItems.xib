@@ -95,6 +95,7 @@
         <customObject id="hUR-5h-uem" customClass="BookmarkItemMenuDelegate">
             <connections>
                 <outlet property="m_bookmark_collectionviewitem" destination="-2" id="lkd-EV-yxR"/>
+                <outlet property="m_view_controller" destination="-2" id="2LU-cG-taI"/>
             </connections>
         </customObject>
     </objects>

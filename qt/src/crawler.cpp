@@ -285,7 +285,7 @@ void Crawler::spawnOne()
     });
 
     QObject::connect(delegate, &CrawlerDelegate::urlLoaded, delegate, [=](QString const& html) {
-        QPair<QString,QSet<HtmlLink>> parse = CrawlerDelegate::parseHtml(html, url);
+        QPair<QString,QSet<HtmlLink>> parse = Crawler::parseHtml(html, url);
         QString const& title = parse.first;
         const QSet<HtmlLink>& links = parse.second;
         QSet<UrlNoHash> hrefs;
@@ -348,7 +348,7 @@ void Crawler::processParseResult(const UrlNoHash& base, QString const& title, co
     markUrlDone(base);
 }
 
-QPair<QString,QSet<HtmlLink>> CrawlerDelegate::parseHtml(QString const& html, const UrlNoHash& baseUrl)
+QPair<QString,QSet<HtmlLink>> Crawler::parseHtml(QString const& html, const UrlNoHash& baseUrl)
 {
     QPair<QString,QSet<HtmlLink>> output;
     CDocument doc;
@@ -370,7 +370,7 @@ QPair<QString,QSet<HtmlLink>> CrawlerDelegate::parseHtml(QString const& html, co
         HtmlLink link;
         QString href = QString::fromStdString(n.attribute("href"));
         if (href.isEmpty()) { continue; }
-        QString text = QString::fromStdString(n.text());
+        QString text = QString::fromStdString(n.text()).trimmed();
         UrlNoHash url(href);
         if (! url.isValid()) { continue; }
         if (url.scheme().isEmpty()) {
