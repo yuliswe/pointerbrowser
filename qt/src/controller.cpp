@@ -583,7 +583,7 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
 {
     if (visible) {
         qCInfo(ControllerLogging) << "Controller::showCrawlerRuleTable";
-        if (! current_tab_webpage()) {
+        if (current_tab_webpage() == nullptr) {
             qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
             return false;
         }
@@ -594,6 +594,13 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
         set_downloads_visible(false);
         current_tab_webpage()->crawlerRuleTableReloadFromSettings();
     } else {
+        if (crawler_rule_table_visible() && current_tab_webpage() != nullptr) {
+            Global::crawler->crawlAsync(current_tab_webpage()->url());
+
+        }
+        if (current_tab_search_word().isEmpty() && current_tab_webpage() != nullptr) {
+            Global::searchDB->searchAsync(current_tab_webpage()->url().domain());
+        }
         emit_tf_hide_crawler_rule_table_row_hint();
     }
     return visible;

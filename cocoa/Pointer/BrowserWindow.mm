@@ -275,10 +275,10 @@
     return nil;
 }
 //
-//- (BOOL)makeFirstResponder:(NSResponder *)responder {
-//    NSLog(@"%@ make first responder", responder);
-//    return [super makeFirstResponder:responder];
-//}
+- (BOOL)makeFirstResponder:(NSResponder *)responder {
+    NSLog(@"%@ make first responder", responder);
+    return [super makeFirstResponder:responder];
+}
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {

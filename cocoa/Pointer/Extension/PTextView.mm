@@ -32,12 +32,12 @@
 {
     [menu filterMenuItems];
 }
-
-- (BOOL)becomeFirstResponder
-{
-    Global::controller->closeAllPopoversAsync();
-    return [super becomeFirstResponder];
-}
+//
+//- (BOOL)becomeFirstResponder
+//{
+//    Global::controller->closeAllPopoversAsync();
+//    return [super becomeFirstResponder];
+//}
 
 - (id)validRequestorForSendType:(NSPasteboardType)sendType
                      returnType:(NSPasteboardType)returnType
