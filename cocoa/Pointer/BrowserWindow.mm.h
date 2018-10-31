@@ -27,6 +27,7 @@
 - (IBAction)menuShowPrevTab:(id)sender;
 - (IBAction)menuEditBookmarks:(id)sender;
 - (IBAction)menuEditCrawlerRules:(id)sender;
+- (IBAction)menuShowEULA:(id)sender;
 @end
 
 

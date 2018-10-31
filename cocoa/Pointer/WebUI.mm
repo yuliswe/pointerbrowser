@@ -333,6 +333,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     Url url = QUrl::fromNSURL(navigationAction.request.URL);
     Webpage_ new_webpage = shared<Webpage>(url);
     WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
+//    [new_webview loadRequest:navigationAction.request];
     new_webpage->set_associated_frontend((__bridge void*)new_webview);
     new_webpage->moveToThread(Global::qCoreApplicationThread);
     if (Global::controller->open_tabs()->findTab(webView.webpage.get()) >= 0) {

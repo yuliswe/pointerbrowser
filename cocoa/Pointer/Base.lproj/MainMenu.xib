@@ -376,19 +376,42 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                         <items>
-                            <menuItem title="Acknowledgments..." id="FKE-Sm-Kum">
+                            <menuItem title="License..." id="FKE-Sm-Kum">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>
+                                    <action selector="menuShowEULA:" target="-1" id="bYg-hd-fx7"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="User Privacy..." id="WAZ-v0-jFU">
+                            <menuItem title="Privacy Statement..." id="WAZ-v0-jFU">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuShowEULA:" target="-1" id="Hqg-ug-9dU"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Contact Support..." id="F20-rn-MYm">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuShowEULA:" target="-1" id="3GY-2r-fUj"/>
+                                </connections>
                             </menuItem>
                         </items>
                     </menu>
                 </menuItem>
             </items>
+        </menu>
+        <menu id="kaJ-C4-gXO">
+            <items>
+                <menuItem title="Item 1" id="nLa-XI-fTO">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Item 2" id="ue4-0f-rpy">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Item 3" id="tjC-73-4aj">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="208" y="380"/>
         </menu>
     </objects>
 </document>

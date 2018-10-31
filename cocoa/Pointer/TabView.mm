@@ -26,7 +26,13 @@
     self = [super init];
     self.webpage = webpage;
     self.webview = [[WebUI alloc] initWithWebpage:webpage frame:tabview.bounds config:nil];
-    [self.webview loadUri:webpage->url().full().toNSString()];
+    if (webpage->url().full() == "about:eula") {
+        NSString* eula_path = [[NSBundle mainBundle] pathForResource:@"eula" ofType:@"html"];
+        NSString* eula = [NSString stringWithContentsOfFile:eula_path encoding:NSUTF8StringEncoding error:nil];
+        [self.webview loadHTMLString:eula baseURL:webpage->url().toNSURL()];
+    } else {
+        [self.webview loadUri:webpage->url().full().toNSString()];
+    }
     self.view = self.webview;
     self.tabview = tabview;
     return self;

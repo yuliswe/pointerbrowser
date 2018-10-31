@@ -69,7 +69,8 @@ public:
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RWN_D(float, load_progress, 0)
     PROP_RWN_D(void*, associated_frontend, nullptr)
-    PROP_RWN_D(QString, html, "")
+    PROP_RWN_D(QString, offline_html, "")
+    PROP_RWN_D(bool, should_use_offline_html, false)
     PROP_RN_D(FindTextState, find_text_state, FindTextState{})
     PROP_R_N_D(CrawlerRuleTable_, crawler_rule_table, CrawlerRuleTable_::create())
     PROP_DEF_ENDS

@@ -37,6 +37,9 @@
 		7A788813211C969100675101 /* docviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A78880B211C965300675101 /* docviewer.framework */; };
 		7A788816211C969100675101 /* QtSql.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A78880A211C965300675101 /* QtSql.framework */; };
 		7A78881E211D191C00675101 /* libqsqlite.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7A788819211CBB5300675101 /* libqsqlite.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7A7C503121881A82007FB18C /* eula.html in Resources */ = {isa = PBXBuildFile; fileRef = 7A7C503021881A81007FB18C /* eula.html */; };
+		7A7C503821894730007FB18C /* libgumbo.dylib in Embed Frameworks (3 items) (3 items) */ = {isa = PBXBuildFile; fileRef = 7A7C503621894730007FB18C /* libgumbo.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7A7C503921894730007FB18C /* libgq.dylib in Embed Frameworks (3 items) (3 items) */ = {isa = PBXBuildFile; fileRef = 7A7C503721894730007FB18C /* libgq.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7A7DBEF3217EC6A500C6E778 /* PView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEF2217EC6A500C6E778 /* PView.m */; };
 		7A7DBEF6217EC7DE00C6E778 /* PCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */; };
 		7A7DBEFC217ECA2600C6E778 /* MainMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */; };
@@ -53,7 +56,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				7A7C503921894730007FB18C /* libgq.dylib in Embed Frameworks (3 items) (3 items) */,
 				7A78880F211C965400675101 /* QtSql.framework in Embed Frameworks (3 items) (3 items) */,
+				7A7C503821894730007FB18C /* libgumbo.dylib in Embed Frameworks (3 items) (3 items) */,
 				7A65147F211EAB7900977B87 /* QtCore.framework in Embed Frameworks (3 items) (3 items) */,
 				7A788810211C965400675101 /* docviewer.framework in Embed Frameworks (3 items) (3 items) */,
 			);
@@ -120,6 +125,9 @@
 		7A78880C211C965400675101 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = lib/QtCore.framework; sourceTree = "<group>"; };
 		7A788817211CBB3800675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A788819211CBB5300675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
+		7A7C503021881A81007FB18C /* eula.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = eula.html; path = ../eula.html; sourceTree = "<group>"; };
+		7A7C503621894730007FB18C /* libgumbo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo.dylib; path = lib/libgumbo.dylib; sourceTree = "<group>"; };
+		7A7C503721894730007FB18C /* libgq.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgq.dylib; path = lib/libgq.dylib; sourceTree = "<group>"; };
 		7A7DBEF1217EC6A500C6E778 /* PView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PView.h; sourceTree = "<group>"; };
 		7A7DBEF2217EC6A500C6E778 /* PView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PView.m; sourceTree = "<group>"; };
 		7A7DBEF4217EC7DE00C6E778 /* PCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCollectionView.h; sourceTree = "<group>"; };
@@ -153,7 +161,10 @@
 		7A0CDD262110F15600FE35C5 = {
 			isa = PBXGroup;
 			children = (
+				7A7C503721894730007FB18C /* libgq.dylib */,
+				7A7C503621894730007FB18C /* libgumbo.dylib */,
 				7A788819211CBB5300675101 /* libqsqlite.dylib */,
+				7A7C503021881A81007FB18C /* eula.html */,
 				7A78880B211C965300675101 /* docviewer.framework */,
 				7A78880C211C965400675101 /* QtCore.framework */,
 				7A78880A211C965300675101 /* QtSql.framework */,
@@ -327,6 +338,7 @@
 				7A02768C217B89BB004A09F6 /* BookmarkItems.xib in Resources */,
 				7A43E2822180F7C200E834E5 /* Downloads.xib in Resources */,
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
+				7A7C503121881A82007FB18C /* eula.html in Resources */,
 				7AB2318E21856634005B436F /* ErrorPage.xib in Resources */,
 				7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */,
 				7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */,
@@ -530,6 +542,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -578,6 +591,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;

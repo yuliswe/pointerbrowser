@@ -228,6 +228,12 @@
 {
     [self.newtab_button performClick:self];
 }
+
+- (IBAction)menuShowEULA:(id)sender
+{
+    Global::controller->newTabAsync(Controller::TabStateOpen, Url("about:eula"), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+}
+
 @end
 
 @implementation NSResponder(Pointer)

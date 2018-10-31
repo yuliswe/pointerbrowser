@@ -234,20 +234,20 @@
             </connections>
         </popover>
         <visualEffectView blendingMode="behindWindow" material="popover" state="followsWindowActiveState" id="iwg-lo-nmk">
-            <rect key="frame" x="0.0" y="0.0" width="153" height="36"/>
+            <rect key="frame" x="0.0" y="0.0" width="293" height="36"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i8Z-9f-Sq1">
-                    <rect key="frame" x="0.0" y="10" width="153" height="17"/>
+                    <rect key="frame" x="-2" y="10" width="297" height="17"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="URL pattern is invalid" id="rNJ-tQ-9q2">
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="URL pattern must begin with the domain" id="rNJ-tQ-9q2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
             </subviews>
-            <point key="canvasLocation" x="32.5" y="-43"/>
+            <point key="canvasLocation" x="102.5" y="-43"/>
         </visualEffectView>
     </objects>
 </document>
