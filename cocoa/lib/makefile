@@ -7,6 +7,7 @@ docviewer.framework:
 	ln -sF A ./docviewer.framework/Versions/Current
 
 	install_name_tool -id @rpath/docviewer.framework/Versions/A/docviewer ./docviewer.framework/docviewer
+	install_name_tool -change /usr/local/lib/libgq.dylib @rpath/libgq.dylib ./docviewer.framework/docviewer
 	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./docviewer.framework/docviewer
 	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @rpath/QtSql.framework/Versions/A/QtSql ./docviewer.framework/docviewer
 	
