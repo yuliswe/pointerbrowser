@@ -123,8 +123,6 @@
     NSTabViewItem* item = [self tabViewItemAtIndex:from];
     [self removeTabViewItem:item];
     [self insertTabViewItem:item atIndex:(from < to ? to - 1 : to)];
-    //    [self handleOpenTabsReset]
-//    [self.outline reloadItem:nil reloadChildren:YES];
 }
 
 - (void)onPreviewTabRowsRemoved:(NSDictionary*)args
@@ -192,14 +190,6 @@
         }
     }
 }
-//
-//- (TabViewItem*)prependEmptyRow
-//{
-//    Webpage_ w = shared<Webpage>();
-//    w->moveToThread(Global::qCoreApplicationThread);
-//    Global::controller->open_tabs()->insertWebpage_(0, w);
-//
-//}
 
 - (void)onOpenTabRowsRemoved:(NSDictionary*)args
 {
@@ -209,17 +199,11 @@
     int count = last - first + 1;
     auto current = self.tabViewItems;
     for (int i = 0; i < count; i++) {
-        NSTabViewItem* item = current[i+first];
+        int remove_idx = i + first;
+        NSTabViewItem* item = current[remove_idx];
         [self removeTabViewItem:item];
     }
 }
-//
-//- (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
-//{
-//    TabViewItem* item = (TabViewItem*)tabViewItem;
-//    self.hidden = item && item.webpage->is_blank();
-//    [super selectTabViewItem:tabViewItem];
-//}
 
 // called when the tabs are reloaded
 // typically once at the start of the application

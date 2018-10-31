@@ -281,13 +281,11 @@
     [self.outline beginUpdates];
     [self.outline deselectAll:self];
     [self.outline removeItemsAtIndexes:range inParent:self.open_tabs withAnimation:NSTableViewAnimationSlideUp];
-    NSIndexSet* new_selected;
     if (Global::controller->current_tab_state() == Controller::TabStatePreview) {
+        NSIndexSet* new_selected;
         new_selected = [NSIndexSet indexSetWithIndex:[selected firstIndex] - 1];
-    } else {
-        new_selected = selected;
+        [self.outline selectRowIndexes:new_selected byExtendingSelection:NO];
     }
-    [self.outline selectRowIndexes:new_selected byExtendingSelection:NO];
     [self.outline endUpdates];
 }
 

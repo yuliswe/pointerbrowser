@@ -101,7 +101,7 @@ int Controller::newTab(int index,
 // switch view
 int Controller::viewTab(TabState state, int i, void const* sender)
 {
-    qCInfo(ControllerLogging) << "BrowserController::viewTab" << state << i;
+    qCInfo(ControllerLogging) << "BrowserController::viewTab" << state << i << sender;
     if (current_tab_state() == state
             && state == TabStateOpen
             && 0 <= i && i < open_tabs()->count()
