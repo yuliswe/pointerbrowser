@@ -49,11 +49,11 @@ void TabsModel::insertWebpage_(int idx, const Webpage_ page)
     emit countChanged();
 }
 
-void TabsModel::insertTab(int idx, Url const& uri)
-{
-    Webpage_ page = shared<Webpage>(uri);
-    insertWebpage_(idx, page);
-}
+//void TabsModel::insertTab(int idx, Url const& uri)
+//{
+//    Webpage_ page = shared<Webpage>(uri);
+//    insertWebpage_(idx, page);
+//}
 
 bool TabsModel::removeTab(int row)
 {

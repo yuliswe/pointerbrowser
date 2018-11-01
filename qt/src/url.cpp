@@ -44,6 +44,16 @@ QString Url::schemeless() const
     return authority(QUrl::FullyEncoded) + path(QUrl::FullyEncoded);
 }
 
+QString Url::directoryPath() const
+{
+    return adjusted(RemoveFilename|RemoveQuery|RemoveFragment|NormalizePathSegments).toString(QUrl::FullyEncoded);
+}
+
+QString Url::filePath() const
+{
+    return adjusted(RemoveQuery|RemoveFragment|NormalizePathSegments).toString(QUrl::FullyEncoded);
+}
+
 Url Url::fromAmbiguousText(QString const& input)
 {
     QUrl url(input, QUrl::StrictMode);

@@ -175,10 +175,12 @@ int Webpage::updateFindTextFound(int nfound)
 bool Webpage::crawlerRuleTableInsertRule(CrawlerRule& rule)
 {
     qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule" << rule;
+    bool rtv = true;
     if (! rule.valid())
     {
         qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableInsertRule rule is invalid" << rule;
-        return false;
+        rule.set_enabled(false);
+        return rtv = false;
     }
     if (rule.domain() != url().domain())
     {
@@ -186,13 +188,14 @@ bool Webpage::crawlerRuleTableInsertRule(CrawlerRule& rule)
                     << rule;
         qCCritical(WebpageLogging) << "does not match the domain"
                     << url();
-        return false;
+        rule.set_enabled(false);
+        return rtv = false;
     }
     CrawlerRuleTable_ table = crawler_rule_table();
     table->insertRule(rule);
     table->updateAssociatedUrl(url());
     set_crawler_rule_table(table);
-    return true;
+    return rtv;
 }
 
 
@@ -211,21 +214,24 @@ bool Webpage::crawlerRuleTableRemoveRule(int idx)
 bool Webpage::crawlerRuleTableModifyRule(int old, CrawlerRule& modified)
 {
     qCInfo(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule" << old << modified;
+    bool rtv = true;
     if (! modified.valid())
     {
         qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule is invalid" << modified;
-        return false;
+        modified.set_enabled(false);
+        return rtv = false;
     }
     if (modified.domain() != url().domain())
     {
         qCCritical(WebpageLogging) << "Webpage::crawlerRuleTableModifyRule rule" << modified.toString() << "does not belong to the domain" << url();
-        return false;
+        modified.set_enabled(false);
+        return rtv = false;
     }
     CrawlerRuleTable_ table = crawler_rule_table();
     table->modifyRule(old, modified);
     table->updateAssociatedUrl(url());
     set_crawler_rule_table(table);
-    return true;
+    return rtv;
 }
 
 CrawlerRuleTable_ Webpage::custom_set_crawler_rule_table(CrawlerRuleTable_ const& tb, void const* sender)

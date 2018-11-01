@@ -24,7 +24,7 @@ class TabsModel : public QAbstractListModel
 
     public slots:
         void insertWebpage_(int idx, const Webpage_ wp);
-        void insertTab(int i, Url const& uri);
+//        void insertTab(int i, Url const& uri);
 //        void insertTab(int i, const QVariantMap&);
 //        void updateTab(int i, QString property, QVariant value);
         bool removeTab(int idx);

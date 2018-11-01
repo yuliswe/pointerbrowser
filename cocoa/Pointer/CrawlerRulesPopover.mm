@@ -197,11 +197,25 @@
     } else if (row == Global::controller->current_webpage_crawler_rule_table()->rulesCount())
     {
         CrawlerRule rule = CrawlerRule::fromString(QString::fromNSString(data.pattern));
-        Global::controller->currentTabWebpageCrawlerRuleTableInsertRuleAsync(rule);
+//        if (rule.valid()) {
+            Global::controller->currentTabWebpageCrawlerRuleTableInsertRuleAsync(rule);
+//        } else {
+//            NSTableRowView* rowview = [self rowViewAtRow:row makeIfNecessary:NO];
+//            CrawlerRuleTableCellView* cell = [rowview viewAtColumn:1];
+//            [self.window makeFirstResponder:cell.textfield];
+//            [self->m_hint_popover showRelativeToRect:[rowview bounds] ofView:rowview preferredEdge:NSRectEdgeMinY];
+//        }
     } else {
         CrawlerRule rule = CrawlerRule::fromString(QString::fromNSString(data.pattern));
-        rule.set_enabled(data.enabled);
-        Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(row, rule);
+//        if (rule.valid()) {
+            rule.set_enabled(data.enabled);
+            Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(row, rule);
+//        } else {
+//            NSTableRowView* rowview = [self rowViewAtRow:row makeIfNecessary:NO];
+//            CrawlerRuleTableCellView* cell = [rowview viewAtColumn:1];
+//            [self.window makeFirstResponder:cell.textfield];
+//            [self->m_hint_popover showRelativeToRect:[rowview bounds] ofView:rowview preferredEdge:NSRectEdgeMinY];
+//        }
     }
 }
 @end

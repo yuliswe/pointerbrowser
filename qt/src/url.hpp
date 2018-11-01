@@ -15,6 +15,8 @@ public:
     QString full() const;
     QString domain() const;
     QString schemeless() const;
+    QString directoryPath() const;
+    QString filePath() const;
     bool isBlank() const;
 //    bool isError();
     virtual ~Url() = default;

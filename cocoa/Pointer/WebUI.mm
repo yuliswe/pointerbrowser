@@ -237,6 +237,10 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         return;
     }
     self.webpage->handleSuccessAsync();
+//    if (self.tab_state() == Controller::TabStatePreview && navigationAction.navigationType) {
+//        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+//        return;
+//    }
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand
         && navigationAction.buttonNumber == 1)
     {

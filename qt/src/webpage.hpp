@@ -11,6 +11,7 @@
 class Webpage;
 typedef std::shared_ptr<Webpage> Webpage_;
 typedef QList<Webpage_> Webpage_List;
+class Controller;
 
 struct FindTextState
 {
@@ -66,6 +67,7 @@ public:
     PROP_RN_D(bool, is_error, false)
     PROP_RN_D(QString, error, "")
     PROP_RWN_D(bool, can_go_forward, false)
+    PROP_RWN_D(uint, tab_state, 0)
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RWN_D(float, load_progress, 0)
     PROP_RWN_D(void*, associated_frontend, nullptr)

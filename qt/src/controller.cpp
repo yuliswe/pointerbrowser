@@ -39,6 +39,7 @@ int Controller::newTab(int index,
                               << newBehavior
                               << whenExists;
     int idx = 0;
+    webpage->set_tab_state(state);
     if (state == TabStateOpen) {
         bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
@@ -164,7 +165,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_tab_search_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         if (current_tab_search_word().isEmpty()) {
-            Global::searchDB->searchAsync(page->url().domain());
+            Global::searchDB->searchAsync(page->url().filePath());
         }
     } else if (state == TabStatePreview) {
         set_current_preview_tab_index(i,sender);
@@ -345,7 +346,7 @@ int Controller::currentTabWebpageBack(void const* sender)
         emit p->emit_tf_back();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().domain());
+            Global::searchDB->searchAsync(p->url().filePath());
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -363,7 +364,7 @@ int Controller::currentTabWebpageForward(void const* sender)
         emit p->emit_tf_forward();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().domain());
+            Global::searchDB->searchAsync(p->url().filePath());
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -395,7 +396,7 @@ int Controller::currentTabWebpageRefresh(void const* sender)
         p->findClear();
         Global::crawler->crawlAsync(p->url());
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().domain());
+            Global::searchDB->searchAsync(p->url().filePath());
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -412,7 +413,7 @@ bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const*
     if (p == w && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
-        Global::searchDB->searchAsync(p->url().domain());
+        Global::searchDB->searchAsync(p->url().filePath());
     }
     saveLastOpen();
     return true;
@@ -489,42 +490,6 @@ int Controller::currentTabWebpageFindTextHide(void const* sender)
     return 0;
 }
 
-//bool Controller::currentTabWebpageCrawlerRuleTableEnableRule(CrawlerRule rule)
-//{
-//    if (! current_tab_webpage()) {
-//        qCInfo(ControllerLogging) << "no current tab";
-//        return false;
-//    }
-//    if (! current_tab_webpage()->crawlerRuleTableEnableRule(rule))
-//    {
-//        emit_tf_show_crawler_rule_table_row_hint(current_webpage_crawler_rule_table()->rulesCount());
-//        return false;
-//    }
-//    emit_tf_hide_crawler_rule_table_row_hint();
-//    Global::crawler->updateRulesFromSettingsAsync();
-//    current_tab_webpage()->crawler_rule_table()->writePartialTableToSettings();
-//    return true;
-//}
-
-
-//bool Controller::currentTabWebpageCrawlerRuleTableDisableRule(CrawlerRule rule)
-//{
-//    if (! current_tab_webpage()) {
-//        qCInfo(ControllerLogging) << "no current tab";
-//        return false;
-//    }
-//    if (! current_tab_webpage()->crawlerRuleTableDisableRule(rule))
-//    {
-//        emit_tf_show_crawler_rule_table_row_hint(current_webpage_crawler_rule_table()->rulesCount());
-//        return false;
-//    }
-//    emit_tf_hide_crawler_rule_table_row_hint();
-//    Global::crawler->updateRulesFromSettingsAsync();
-//    current_tab_webpage()->crawler_rule_table()->writePartialTableToSettings();
-//    return true;
-//}
-
-
 bool Controller::currentTabWebpageCrawlerRuleTableInsertRule(CrawlerRule rule, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::currentTabWebpageCrawlerRuleTableInsertRule" << rule;
@@ -533,7 +498,9 @@ bool Controller::currentTabWebpageCrawlerRuleTableInsertRule(CrawlerRule rule, v
         return false;
     }
     if (! current_tab_webpage()->crawlerRuleTableInsertRule(rule)) {
-        emit_tf_show_crawler_rule_table_row_hint(current_webpage_crawler_rule_table()->rulesCount());
+        if (crawler_rule_table_visible()) {
+            emit_tf_show_crawler_rule_table_row_hint(current_webpage_crawler_rule_table()->rulesCount());
+        }
         return false;
     }
     emit_tf_hide_crawler_rule_table_row_hint();
@@ -565,7 +532,9 @@ bool Controller::currentTabWebpageCrawlerRuleTableModifyRule(int old, CrawlerRul
         return false;
     }
     if (! current_tab_webpage()->crawlerRuleTableModifyRule(old, modified)) {
-        emit_tf_show_crawler_rule_table_row_hint(old);
+        if (crawler_rule_table_visible()) {
+            emit_tf_show_crawler_rule_table_row_hint(old);
+        }
         return false;
     }
     emit_tf_hide_crawler_rule_table_row_hint();
@@ -605,7 +574,7 @@ int Controller::searchTabs(QString const& words, void const* sender)
     qCInfo(ControllerLogging) << "Controller::searchTabs" << words;
     set_current_tab_search_word(words);
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
-        Global::searchDB->searchAsync(current_tab_webpage()->url().domain());
+        Global::searchDB->searchAsync(current_tab_webpage()->url().filePath());
         return 0;
     }
     Global::searchDB->searchAsync(words);
