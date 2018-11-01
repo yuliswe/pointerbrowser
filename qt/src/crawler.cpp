@@ -358,6 +358,7 @@ QPair<QString,QSet<HtmlLink>> Crawler::parseHtml(QString const& html, const UrlN
     if (t.nodeNum() > 0)
     {
         QString title = QString::fromStdString(t.nodeAt(0).text());
+        title.replace(QRegularExpression("\\s+"), " ");
         if (title.length() > 0)
         {
             output.first = title;

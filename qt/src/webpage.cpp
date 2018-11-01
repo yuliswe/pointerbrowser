@@ -72,11 +72,13 @@ bool Webpage::crawlerRuleTableReloadFromSettings()
 
 QString Webpage::custom_set_title(QString const& title, void const* sender)
 {
-    if (title.isEmpty()) {
+    QString trimmed = title;
+    trimmed.replace(QRegularExpression("\\s+"), " ");
+    if (trimmed.isEmpty()) {
         qCDebug(WebpageLogging) << "title is empty, use url" << url().full() << "instead";
         return url().full();
     } else {
-        return title;
+        return trimmed;
     }
 }
 

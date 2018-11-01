@@ -42,7 +42,7 @@ int Controller::newTab(int index,
     if (state == TabStateOpen) {
         bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
-            idx = open_tabs()->findTab(webpage.get());
+            idx = open_tabs()->findTab(webpage->url());
             if (idx == -1) {
                 open_tabs()->insertWebpage_(idx = index, webpage);
                 inserted = true;
@@ -65,7 +65,7 @@ int Controller::newTab(int index,
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
-            if ((idx = preview_tabs()->findTab(webpage.get())) > -1) {
+            if ((idx = preview_tabs()->findTab(webpage->url())) > -1) {
                 if (newBehavior == WhenCreatedViewNew) {
                     viewTab(TabStatePreview, idx);
                 }

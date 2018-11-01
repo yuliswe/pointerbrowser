@@ -369,7 +369,7 @@ int SearchWorker::search(QString const& word, int search_limit, void const* send
             }
         }
         q += ") ";
-        q += " ORDER BY visited DESC";
+        q += " GROUP BY url ORDER BY visited DESC";
         q += ", CASE WHEN LENGTH(symbol) = 0 THEN 99999 ELSE LENGTH(symbol) END ASC";
         q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
         q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";

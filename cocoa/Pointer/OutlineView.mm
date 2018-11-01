@@ -45,6 +45,12 @@
     [super mouseMoved:event];
 }
 
+- (void)mouseDown:(NSEvent *)event
+{
+    self.hovered = YES;
+    [super mouseDown:event];
+}
+
 - (void)mouseExited:(NSEvent *)event
 {
     self.hovered = NO;
