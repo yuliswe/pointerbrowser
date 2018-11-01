@@ -32,7 +32,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Pointer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="QvC-M9-y7g" customClass="BrowserWindow">
+        <window title="Pointer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="QvC-M9-y7g" customClass="BrowserWindow" propertyAccessControl="all">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="400" y="250" width="712" height="440"/>
@@ -45,7 +45,7 @@
                     <splitView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xwr-Fb-Rdj">
                         <rect key="frame" x="0.0" y="0.0" width="712" height="440"/>
                         <subviews>
-                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" id="RBK-6X-r4o" userLabel="Left Panel Visual Effect View" propertyAccessControl="all">
+                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" id="RBK-6X-r4o" userLabel="Left Panel Visual Effect View" propertyAccessControl="none">
                                 <rect key="frame" x="0.0" y="0.0" width="242" height="440"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
@@ -247,7 +247,7 @@
                                                 <searchField wantsLayer="YES" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-AJ-hTf" userLabel="Search Tabs">
                                                     <rect key="frame" x="8" y="7" width="189" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search Tabs" usesSingleLineMode="YES" bezelStyle="round" id="73L-3w-x96">
+                                                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search History" usesSingleLineMode="YES" bezelStyle="round" id="73L-3w-x96">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

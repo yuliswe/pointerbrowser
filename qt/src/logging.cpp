@@ -4,7 +4,7 @@ QtMsgType release = QtCriticalMsg;
 QtMsgType debug = QtDebugMsg;
 
 QLoggingCategory WebpageLogging("Webpage", release);
-QLoggingCategory SearchDBLogging("SearchDB", release);
+QLoggingCategory SearchDBLogging("SearchDB", debug);
 
 QLoggingCategory GlobalLogging("Global", release);
 

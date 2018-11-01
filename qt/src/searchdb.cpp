@@ -328,17 +328,16 @@ int SearchWorker::search(QString const& word, int search_limit, void const* send
         emit resultChanged(pages, sender);
         emit searchFinished();
         return true;
-//        q = QStringLiteral("SELECT DISTINCT webpage.id, url, COALESCE(title, '') as title, visited FROM webpage ORDER BY visited DESC LIMIT 50");
     } else {
         if (ws.length() == 0) { return true; }
         /* WITH LEFT JOIN */
-        q = QStringLiteral("SELECT DISTINCT * FROM (");
+        q = QStringLiteral("SELECT DISTINCT IFNULL(url,'') AS url, IFNULL(title,'') as title, IFNULL(hash,'') as hash, IFNULL(symbol,'') as symbol FROM (");
         q += QStringLiteral() +
             "SELECT " +
             "   url, title, symbol.visited AS visited, hash, symbol.text AS symbol " +
             " FROM webpage" +
-            " INNER JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-            " INNER JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+            " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+            " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
             " WHERE ";
         for (auto w = ws.begin(); w != ws.end(); w++) {
             q += QStringLiteral() +
@@ -369,11 +368,10 @@ int SearchWorker::search(QString const& word, int search_limit, void const* send
             }
         }
         q += ") ";
-        q += " GROUP BY url ORDER BY visited DESC";
+        q += " ORDER BY url ASC, visited DESC";
         q += ", CASE WHEN LENGTH(symbol) = 0 THEN 99999 ELSE LENGTH(symbol) END ASC";
         q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
         q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";
-        q += ", LENGTH(url) ASC";
         q += " LIMIT " + QString::number(search_limit);
     }
     qCInfo(SearchDBLogging) << "SearchWorker::search" << q;
