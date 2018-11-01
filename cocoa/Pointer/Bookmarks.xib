@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -28,8 +28,8 @@
                             <collectionView ambiguous="YES" selectable="YES" id="qNr-Yy-xql">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="352"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="30" minimumLineSpacing="25" id="8U3-Tu-wEz">
-                                    <size key="itemSize" width="60" height="100"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="30" id="8U3-Tu-wEz">
+                                    <size key="itemSize" width="100" height="130"/>
                                     <edgeInsets key="sectionInset" left="50" right="50" top="50" bottom="50"/>
                                 </collectionViewFlowLayout>
                                 <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

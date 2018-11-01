@@ -228,7 +228,7 @@ int Controller::closeTab(TabState state, int index, void const* sender)
         // at the moment there is only one way to close a preview tab:
         // use ctrl+w when current view is a preview. in this case we
         // assume the user wants to close all preview tabs
-        preview_tabs()->clear();
+        clearPreviews();
         set_current_tab_search_highlight_index(-1);
         set_current_preview_tab_index(-1);
     }
@@ -435,7 +435,7 @@ void Controller::clearPreviews()
             viewTab(TabStateNull, -1);
         }
     }
-    preview_tabs()->replaceModel(Webpage_List());
+    preview_tabs()->clear();
 }
 
 int Controller::currentTabWebpageFindTextNext(QString const& txt, void const* sender)
@@ -573,6 +573,7 @@ int Controller::searchTabs(QString const& words, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::searchTabs" << words;
     set_current_tab_search_word(words);
+    clearPreviews();
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
         Global::searchDB->searchAsync(current_tab_webpage()->url().filePath());
         return 0;
