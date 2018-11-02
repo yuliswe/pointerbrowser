@@ -514,14 +514,14 @@ shouldShowOutlineCellForItem:(id)item
     }
 }
 
-- (BOOL)selectionShouldChangeInOutlineView:(NSOutlineView *)outlineView
-{
-    if (Global::controller->current_tab_state() == Controller::TabStateOpen)
-    {
-        return (outlineView.selectedRow == Global::controller->current_open_tab_index() + 1);
-    }
-    return YES;
-}
+//- (BOOL)sel   ectionShouldChangeInOutlineView:(NSOutlineView *)outlineView
+//{
+//    if (Global::controller->current_tab_state() == Controller::TabStateOpen)
+//    {
+//        return (outlineView.selectedRow == Global::controller->current_open_tab_index() + 1);
+//    }
+//    return YES;
+//}
 
 
 - (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView

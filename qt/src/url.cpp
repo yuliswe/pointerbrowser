@@ -1,7 +1,7 @@
 #include "url.hpp"
 
 Url::Url(QString const& url)
-    : QUrl(url)
+    : QUrl(QUrl(url).adjusted(NormalizePathSegments))
 {
     if (fragment() == "")
     {
@@ -10,7 +10,7 @@ Url::Url(QString const& url)
 }
 
 Url::Url(const QUrl& url)
-    : QUrl(url)
+    : QUrl(url.adjusted(NormalizePathSegments))
 {
     if (fragment() == "")
     {
@@ -19,7 +19,7 @@ Url::Url(const QUrl& url)
 }
 
 QString Url::base() const {
-    return this->adjusted(QUrl::NormalizePathSegments | QUrl::RemoveFragment).toString(QUrl::FullyEncoded);
+    return this->adjusted(RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
 QString Url::hash() const {
@@ -46,12 +46,12 @@ QString Url::schemeless() const
 
 QString Url::directoryPath() const
 {
-    return adjusted(RemoveFilename|RemoveQuery|RemoveFragment|NormalizePathSegments).toString(QUrl::FullyEncoded);
+    return adjusted(RemoveFilename|RemoveQuery|RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
 QString Url::filePath() const
 {
-    return adjusted(RemoveQuery|RemoveFragment|NormalizePathSegments).toString(QUrl::FullyEncoded);
+    return adjusted(RemoveQuery|RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
 Url Url::fromAmbiguousText(QString const& input)
@@ -81,17 +81,17 @@ Url Url::fromAmbiguousText(QString const& input)
 }
 
 UrlNoHash::UrlNoHash(QString const& url)
-    : QUrl(url)
+    : QUrl(QUrl(url).adjusted(NormalizePathSegments))
 {
 }
 
 UrlNoHash::UrlNoHash(const QUrl& url)
-    : QUrl(url)
+    : QUrl(url.adjusted(NormalizePathSegments))
 {
 }
 
 QString UrlNoHash::base() const {
-    return this->adjusted(QUrl::NormalizePathSegments | QUrl::RemoveFragment).toString(QUrl::FullyEncoded);
+    return adjusted(RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
 uint qHash(const UrlNoHash& url)
@@ -104,20 +104,19 @@ bool operator==(const Url& a, const Url& b)
     return a.full() == b.full();
 }
 
-bool operator==(const UrlNoHash& a, const UrlNoHash& b)
+bool operator==(UrlNoHash const& a, UrlNoHash const& b)
 {
     return a.base() == b.base();
 }
 
-QDebug& operator<<(QDebug& debug, const UrlNoHash& url)
+bool operator!=(UrlNoHash const& a, UrlNoHash const& b)
 {
-    return debug << url.base();
+    return a.base() != b.base();
 }
 
-Url UrlNoHash::toUrl() const
+QDebug& operator<<(QDebug& debug, const UrlNoHash& url)
 {
-    QUrl copy(*this);
-    return Url(copy);
+    return debug << url.base() << "(" << url.fragment() << ")";
 }
 
 bool Url::isBlank() const
@@ -125,7 +124,7 @@ bool Url::isBlank() const
     return full() == "about:blank";
 }
 
-//bool Url::isError()
-//{
-//    return full().indexOf("about:error") == 0;
-//}
+UrlNoHash UrlNoHash::adjusted(QUrl::FormattingOptions ops) const
+{
+    return UrlNoHash(QUrl::adjusted(ops));
+}

@@ -172,7 +172,7 @@ protected slots:
     void spawnMore();
     void spawnOne();
 
-    void processParseResult(const UrlNoHash&, QString const&, const QSet<UrlNoHash>&, const QSet<HtmlLink>&);
+    void processParseResult(const UrlNoHash&, QString const&, const QSet<HtmlLink>&);
     static bool isProbablySymbol(const HtmlLink&, const UrlNoHash&);
 };
 

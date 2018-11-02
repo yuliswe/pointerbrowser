@@ -7,31 +7,55 @@
 #include "tabsmodel.hpp"
 
 
-SearchDB::SearchDB()
+QSqlDatabase SearchWorker::db()
 {
+    if (FileManager::searchDBPath() == ":memory:") {
+        return QSqlDatabase::database("UpdateWorker");
+    }
+    return QSqlDatabase::database("SearchWorker");
+}
+
+
+QSqlDatabase UpdateWorker::db()
+{
+    return QSqlDatabase::database("UpdateWorker");
 }
 
 bool SearchDB::connect() {
 
     Q_ASSERT(QThread::currentThread() == Global::qCoreApplicationThread);
 
-    _db = QSqlDatabase::addDatabase("QSQLITE");
-    _dbPath = FileManager::dataPath() + "search.db";
-    qCInfo(SearchDBLogging) << "SearchDB: connecting" << _dbPath;
-    _db.setDatabaseName(_dbPath);
-    _db.setConnectOptions("QSQLITE_OPEN_READONLY");
-    if (! _db.open()) {
-        qFatal("SearchDB Error: connection with database failed");
-    }
-    qCInfo(SearchDBLogging) << "SearchDB: connection ok";
-    _db.exec("PRAGMA journal_mode=WAL");
+    /* UpdateWorker setup */
+    update_worker()->moveToThread(update_worker_thread().get());
+    update_worker_thread()->start();
+    update_worker_thread()->setPriority(QThread::LowestPriority);
+    update_worker()->connectBlocking();
+    qCInfo(SearchDBLogging) << "UpdateWorker::UpdateWorker initialized and moved to its thread.";
+
+    QObject::connect(update_worker().get(), &UpdateWorker::newEntriesWritten, [=]() {
+        //        if (search_worker()->is_reading()) { return; }
+        Webpage_ w = search_webpage();
+        if (w) {
+            search_worker()->searchForWebpageAsync(w, search_limit(), update_worker().get());
+        } else {
+            search_worker()->searchAsync(search_string(), search_limit(), update_worker().get());
+        }
+    });
+
     /* SearchWorker setup */
-    _searchWorker = SearchWorker_::create(_db, _searchWorkerThread, *QThread::currentThread());
-    _searchWorkerThread.start();
+    if (FileManager::searchDBPath() == ":memory:") {
+        search_worker()->moveToThread(update_worker_thread().get());
+    } else {
+        search_worker()->moveToThread(search_worker_thread().get());
+        search_worker_thread()->start();
+    }
+    search_worker()->connectBlocking();
+    qCInfo(SearchDBLogging) << "SearchWorker::SearchWorker initialized and moved to its thread";
+
     qRegisterMetaType<Webpage_List>();
-    QObject::connect(_searchWorker.get(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result, void const* sender) {
+    QObject::connect(search_worker().get(), &SearchWorker::resultChanged, this, [=](const Webpage_List& result, void const* sender) {
         qCDebug(SearchDBLogging) << "search result changed";
-        if (sender == _updateWorker.get()) {
+        if (sender == update_worker().get()) {
             qCDebug(SearchDBLogging) << "change was requested by UpdateWorker";
             // append new ones to back
             for (auto i = result.begin();
@@ -58,75 +82,56 @@ bool SearchDB::connect() {
             }
         }
     });
-    QObject::connect(_searchWorker.get(), &SearchWorker::searchStarted, this, [=]() {
-        this->set_is_searching(true);
-    });
-    QObject::connect(_searchWorker.get(), &SearchWorker::searchFinished, this, [=]() {
-        this->set_is_searching(false);
-    });
-
-    /* UpdateWorker setup */
-    _updateWorker = UpdateWorker_::create(_db, _updateWorkerThread, *QThread::currentThread());
-    _updateWorkerThread.start();
-    _updateWorkerThread.setPriority(QThread::LowestPriority);
-    QObject::connect(this, &SearchDB::addSymbolsAsync, _updateWorker.data(), &UpdateWorker::addSymbols);
-    QObject::connect(this, &SearchDB::addSymbolAsync, _updateWorker.data(), &UpdateWorker::addSymbol);
-    QObject::connect(this, &SearchDB::addWebpageAsync, _updateWorker.data(), &UpdateWorker::addWebpage);
-    QObject::connect(this, &SearchDB::updateSymbolAsync, _updateWorker.data(), &UpdateWorker::updateSymbol);
-    QObject::connect(this, &SearchDB::updateWebpageAsync, _updateWorker.data(), &UpdateWorker::updateWebpage);
-    QObject::connect(this, &SearchDB::execScriptAsync, _updateWorker.data(), &UpdateWorker::execScript);
-    QObject::connect(_updateWorker.get(), &UpdateWorker::symbolsAdded, [=]() {
-        _searchWorker->searchAsync(search_string(), search_limit(), _updateWorker.get());
-    });
     return true;
 }
 
 void SearchDB::disconnect() {
     qCInfo(SearchDBLogging) << "SearchDB::disconnect";
-    _db.close();
     qCInfo(SearchDBLogging) << "SearchDB::db closed";
-    _searchWorkerThread.quit();
-    _searchWorkerThread.wait();
+    search_worker()->disconnectBlocking();
+    search_worker_thread()->quit();
+    search_worker_thread()->wait();
     qCInfo(SearchDBLogging) << "SearchDB::SearchWorkerThread quit";
-    _updateWorkerThread.quit();
-    _updateWorkerThread.wait();
+    update_worker()->disconnectBlocking();
+    update_worker_thread()->quit();
+    update_worker_thread()->wait();
     qCInfo(SearchDBLogging) << "SearchDB::UpdateWorkerThread quit";
     qCInfo(SearchDBLogging) << "SearchDB: disconnected";
 }
 
-bool UpdateWorker::execScript(QString const& filename)
+bool UpdateWorker::execScript(QString const& filename, void const* sender)
 {
     QString s = FileManager::readQrcFileS(filename);
     return execMany(s.replace("\n","").split(";", QString::SkipEmptyParts));
 }
 
-bool UpdateWorker::execMany(const QStringList& lines)
+bool UpdateWorker::execMany(const QStringList& lines, void const* sender)
 {
     for (QString const& l : lines) {
         qCInfo(SearchDBLogging) << "UpdateWorker::execMany" << l;
-        QSqlQuery query = _db.exec(l);
-        if (query.lastError().isValid()) {
+        QSqlQuery query = db().exec(l);
+        if (query.lastError().isValid() || db().lastError().isValid()) {
             qCCritical(SearchDBLogging) << "UpdateWorker::execMany error when executing"
-                        << query.executedQuery()
-                        << query.lastError();
+                                        << query.executedQuery()
+                                        << query.lastError()
+                                        << db().lastError().isValid();
             return false;
         }
     }
     return true;
 }
 
-bool UpdateWorker::updateWebpage(QString const& url, QString const& property, const QVariant& value)
+bool UpdateWorker::updateWebpage(UrlNoHash const& url, QString const& property, const QVariant& value, void const* sender)
 {
     qCInfo(SearchDBLogging) << "UpdateWorker::updateWebpage" << property << value << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    QSqlQuery query(_db);
-    query.prepare("UPDATE webpage SET " + property + " = ? WHERE url = '" + url + "'");
+    QSqlQuery query(db());
+    query.prepare("UPDATE webpage SET " + property + " = ? WHERE url = '" + url.base() + "'");
     query.addBindValue(value);
     if (! query.exec() || query.numRowsAffected() < 1) {
         qCCritical(SearchDBLogging) << "UpdateWorker::updateWebpage failed" << url << property << value
-                    << query.numRowsAffected()
-                    << query.executedQuery()
-                    << query.lastError();
+                                    << query.numRowsAffected()
+                                    << query.executedQuery()
+                                    << query.lastError();
         return false;
     } else {
         qCInfo(SearchDBLogging) << "UpdateWorker::updateWebpage" << query.executedQuery();
@@ -135,17 +140,17 @@ bool UpdateWorker::updateWebpage(QString const& url, QString const& property, co
 }
 
 
-bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, const QVariant &value)
+bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, const QVariant &value, void const* sender)
 {
     qCInfo(SearchDBLogging) << "SearchDB::updateSymbol" << property << value << hash;
-    QSqlQuery query(_db);
+    QSqlQuery query(db());
     query.prepare("UPDATE symbol SET " + property + " = :value WHERE hash = '" + hash +"'");
     query.bindValue(":value", value);
     if (! query.exec() || query.numRowsAffected() < 1) {
         qCCritical(SearchDBLogging) << "UpdateWorker::updateSymbol failed" << hash << property << value
-                    << query.numRowsAffected()
-                    << query.executedQuery()
-                    << query.lastError();
+                                    << query.numRowsAffected()
+                                    << query.executedQuery()
+                                    << query.lastError();
         return false;
     } else {
         qCInfo(SearchDBLogging) << "UpdateWorker::updateSymbol" << query.executedQuery();
@@ -154,236 +159,359 @@ bool UpdateWorker::updateSymbol(const QString &hash, const QString &property, co
 }
 
 
-bool UpdateWorker::addSymbol(QString const& url, QString const& hash, QString const& text)
+bool UpdateWorker::addSymbol(UrlNoHash const& url, QString const& hash, QString const& text)
 {
     QMap<QString,QString> map;
     map[hash] = text;
     return addSymbols(url, map);
 }
 
-bool UpdateWorker::addSymbols(QString const& url, const QMap<QString,QString>& symbols)
+bool UpdateWorker::addSymbols(UrlNoHash const& url, const QMap<QString,QString>& symbols, void const* sender)
 {
-    qCInfo(SearchDBLogging) << "UpdateWorker::addSymbols" << url << symbols;
-    Q_ASSUME(url.indexOf("#") == -1);
+    qCInfo(SearchDBLogging) << "UpdateWorker::addSymbols" << url.base() << symbols;
     // find id for webpage
-    QSqlQuery query(_db);
+    QSqlQuery query(db());
     query.prepare("SELECT id FROM webpage WHERE url = :url");
-    query.bindValue(":url", url);
+    query.bindValue(":url", url.base());
     if (! query.exec() || ! query.first() || !query.isValid()) {
         qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols didn't find the webpage" << url
-                    << query.executedQuery()
-                    << query.lastError();
+                                    << query.executedQuery()
+                                    << query.lastError();
         return false;
     }
     const QVariant wid = query.record().value("id");
-    qCDebug(SearchDBLogging) << "Find webpage url" << url << "id" << wid.value<uint_least64_t>();
-    // insertion begins
+    qCDebug(SearchDBLogging) << "Find webpage url" << url.base() << "id" << wid.value<uint_least64_t>();
+    // symbol table insertion begins
+    QVariantList hash_ls;
+    QVariantList text_ls;
+    QVariantList visited_ls;
+    qint64 visited = QDateTime::currentSecsSinceEpoch();
+    query.prepare("INSERT INTO symbol (hash,text,visited) VALUES (:hash,:text,:visited)");
     for (auto i = symbols.keyBegin(); i != symbols.keyEnd(); i++)
     {
         QString hash = (*i);
         QString text = symbols[hash];
         // check if symbol already exists
-        query.prepare("SELECT id FROM symbol WHERE hash = :hash AND text = :text");
-        query.bindValue(":hash", hash);
-        query.bindValue(":text", text);
-        QVariant sid;
-        if (query.exec() && query.first()) {
-            // symbol exists
-            qCDebug(SearchDBLogging) << "symbol already exists";
-            sid = query.record().value("id");
-        } else {
-            // symbol insertion begins
-            query.prepare("INSERT INTO symbol (hash,text,visited) VALUES (:hash,:text,:visited)");
-            query.bindValue(":hash", hash);
-            query.bindValue(":text", text);
-            query.bindValue(":visited", 0);
-            if (query.exec() && query.numRowsAffected() > 0) {
-                sid = query.lastInsertId();
-                if (sid.isValid()) {
-                    qCDebug(SearchDBLogging) << "UpdateWorker inserted into symbol table (" << hash << text << ") with id" << sid.value<uint_least64_t>();
-                } else {
-                    qFatal("UpdateWorker datatbase does not support QSqlQuery::lastInsertId()");
-                }
-            } else {
-                qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into symbol table" << hash << text
-                            << query.lastError();
-                continue;
-            }
-        }
-        // check if webpage_symbol already exists
-        query.prepare("SELECT id FROM webpage_symbol WHERE webpage = :wid AND symbol = :sid");
-        query.bindValue(":wid", wid);
-        query.bindValue(":sid", sid);
-        if (query.exec() && query.first()) {
-            // webpage_symbol exists
-            qCDebug(SearchDBLogging) << "webpage_symbol already exists";
-        } else {
-            // webpage_symbol insertion begins
-            query.prepare("INSERT INTO webpage_symbol (webpage,symbol) VALUES (:webpage,:symbol)");
-            query.bindValue(":symbol", sid);
-            query.bindValue(":webpage", wid);
-            if (query.exec() && query.numRowsAffected() > 0) {
-                QVariant wsid = query.lastInsertId();
-                qCDebug(SearchDBLogging) << "UpdateWorker inserted into webpage_symbol (" << sid << wid << ") with id" << wsid.value<int>();
-            } else {
-                qCCritical(SearchDBLogging) << "UpdateWorker failed to insert into webpage_symbol" << hash << text
-                                        << query.lastError();
-                continue;
-            }
-        }
+        hash_ls << hash;
+        text_ls << text;
+        visited_ls << visited;
     }
+    query.bindValue(":hash", hash_ls);
+    query.bindValue(":text", text_ls);
+    query.bindValue(":visited", text_ls);
+    if (query.execBatch() && ! query.lastError().isValid()) {
+        qCDebug(SearchDBLogging) << "UpdateWorker::addSymbols inserted" << query.numRowsAffected() << "rows";
+    } else {
+        qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols failed to insert into symbol table"<< query.lastError();
+    }
+    // webpage_symbol table insertion begins
+    query.prepare("INSERT INTO webpage_symbol (webpage,symbol) SELECT webpage.id, symbol.id FROM webpage,symbol WHERE webpage.url = :url AND symbol.hash = :hash AND symbol.text = :text");
+    QVariantList url_ls;
+    for (int i = 0; i < hash_ls.count(); i++) { url_ls << url.base(); }
+    query.bindValue(":hash", hash_ls);
+    query.bindValue(":text", text_ls);
+    query.bindValue(":url", url_ls);
+    if (query.execBatch() && ! query.lastError().isValid() && ! db().lastError().isValid()) {
+        qCDebug(SearchDBLogging) << "UpdateWorker::addSymbols inserted into webpage_symbol" << query.numRowsAffected() << "rows";
+    } else {
+        qCCritical(SearchDBLogging) << "UpdateWorker::addSymbols failed to insert into webpage_symbol"
+                                    << query.lastError();
+    }
+
     static qint64 last_called = -1;
-    if (QDateTime::currentSecsSinceEpoch() - last_called >= 1) {
-        emit symbolsAdded(url, symbols);
+    if (QDateTime::currentSecsSinceEpoch() - last_called >= 5) {
+        emit newEntriesWritten();
         last_called = QDateTime::currentSecsSinceEpoch();
     }
     return true;
 }
 
-bool UpdateWorker::addWebpage(QString const& url)
+
+bool UpdateWorker::addReferer(UrlNoHash const& from, const QStringStringMap& to, void const* sender)
 {
-    qCInfo(SearchDBLogging) << "UpdateWorker::addWebpage" << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    QSqlQuery query(_db);
-    // check if already exists
-    query.prepare("SELECT id FROM webpage WHERE url = :url");
-    query.bindValue(":url", url);
-    if (query.exec() && query.first()) {
-        qCDebug(SearchDBLogging) << "webpage already exists";
-        return false;
+    qCInfo(SearchDBLogging) << "UpdateWorker::addReferer" << from.base() << to;
+    // find id for webpage
+    QSqlQuery query(db());
+    // insertion begins
+    QVariantList to_urls;
+    QVariantList from_urls;
+    QVariantList to_text;
+    query.prepare("INSERT INTO webpage_referer (webpage,referer,text) SELECT child.id, parent.id, :to_text FROM webpage child, webpage parent WHERE parent.url = :from_urls AND child.url = :to_urls");
+    for (auto k = to.keyBegin(); k != to.keyEnd(); k++)
+    {
+        from_urls << from;
+        to_urls << *k;
+        to_text << to[*k].trimmed();
     }
-    // begin insertion
-    query.prepare("INSERT INTO webpage (url, title, visited, html) VALUES (:url,'','',0)");
-    query.bindValue(":url", url);
-    if (! query.exec()) {
-        qCCritical(SearchDBLogging) << "ERROR: UpdateWorker::addWebpage failed!" << query.lastError();
-        return false;
+    query.bindValue(":from_urls", from_urls);
+    query.bindValue(":to_urls", to_urls);
+    query.bindValue(":to_text", to_text);
+    if (query.execBatch() && ! query.lastError().isValid()) {
+        qCDebug(SearchDBLogging) << "UpdateWorker::addReferer inserted into webpage_referer table" << query.numRowsAffected();
+    } else {
+        qCCritical(SearchDBLogging) << "UpdateWorker::addReferer failed to insert into webpage_referer table"
+                                    << query.lastError();
     }
-    qCDebug(SearchDBLogging) << "inserted new webpage" << url << "id" << query.lastInsertId().value<unsigned long long>();
+
+    static qint64 last_called = -1;
+    if (QDateTime::currentSecsSinceEpoch() - last_called >= 5) {
+        emit newEntriesWritten();
+        last_called = QDateTime::currentSecsSinceEpoch();
+    }
     return true;
 }
 
-bool SearchDB::removeWebpage(QString const& url)
+
+bool UpdateWorker::addWebpage(Webpage_ w, void const* sender)
 {
-    qCInfo(SearchDBLogging) << "SearchDB::removeWebpage" << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    return false;
+    QList<Webpage_> ls;
+    ls << w;
+    return addWebpages(ls, sender);
 }
 
-bool SearchDB::hasWebpage(QString const& url) const
+bool UpdateWorker::addWebpage(UrlNoHash const& w, void const* sender)
 {
-    qCInfo(SearchDBLogging) << "SearchDB::hasWebpage" << url;
-    Q_ASSUME(url.indexOf("#") == -1);
-    QSqlQuery query(_db);
-    query.prepare("SELECT url FROM webpage WHERE url = ? LIMIT 1");
-    query.addBindValue(url);
-    bool b = query.first();
-    qCInfo(SearchDBLogging) << "SearchDB::hasWebpage" << url << b;
-    return b;
+    QSet<UrlNoHash> ls;
+    ls << w;
+    return addWebpages(ls, sender);
 }
 
-SearchWorker::SearchWorker(const QSqlDatabase& db, QThread& _thread, QThread& _qmlThread)
-    : _db(QSqlDatabase::cloneDatabase(db, "SearchWorker")), _dataThread(&_qmlThread)
+bool UpdateWorker::addWebpages(QSet<UrlNoHash> const& s, void const* sender)
 {
-    this->moveToThread(&_thread);
-    _db.setConnectOptions("QSQLITE_OPEN_READONLY");
-    _db.open();
-    _db.exec("PRAGMA journal_mode=WAL");
-    qCInfo(SearchDBLogging) << "SearchWorker::SearchWorker initialized and moved to thread" << &_thread;
+    QList<Webpage_> ls;
+    for (auto i = s.begin(); i != s.end(); i++)
+    {
+        Webpage_ w = shared<Webpage>(i->base());
+        ls << w;
+        qCDebug(SearchDBLogging) << "UpdateWorker::addWebpages add" << w->url();
+    }
+    return addWebpages(ls);
 }
 
-SearchWorker::~SearchWorker()
+bool UpdateWorker::addWebpages(QList<Webpage_> const& ls, void const* sender)
 {
-    _db.close();
+    qCInfo(SearchDBLogging) << "UpdateWorker::addWebpages" << ls.count() << "pages: ";
+    QSqlQuery query(db());
+    QVariantList url_ls;
+    QVariantList title_ls;
+    QVariantList visited_ls;
+    QVariantList html_ls;
+    query.prepare("INSERT INTO webpage (url, title, visited, html) VALUES (:url,:title,'',0)");
+    for (int i = 0; i < ls.count(); i++) {
+        Webpage_ w = ls[i];
+        url_ls << UrlNoHash(w->url()).base();
+        title_ls << w->title();
+        html_ls << "";
+        visited_ls << 0;
+        qCDebug(SearchDBLogging) << "UpdateWorker::addWebpage" << UrlNoHash(w->url()) << "pages: ";
+    }
+    query.bindValue(":url", url_ls);
+    query.bindValue(":title", title_ls);
+    query.bindValue(":visited", visited_ls);
+    query.bindValue(":html", html_ls);
+    if (query.execBatch() && ! query.lastError().isValid()) {
+        qCDebug(SearchDBLogging) << "UpdateWorker::addWebpages added" << query.numRowsAffected() << "new webpages";
+    } else {
+        qCCritical(SearchDBLogging) << "ERROR: UpdateWorker::addWebpage failed" << query.lastError();
+    }
+    return true;
 }
 
-UpdateWorker::UpdateWorker(const QSqlDatabase& db, QThread& _thread, QThread& _qmlThread)
-    : _db(QSqlDatabase::cloneDatabase(db, "UpdateWorker")), _qmlThread(&_qmlThread)
+int SearchWorker::connect(void const* sender)
 {
-    this->moveToThread(&_thread);
-    _db.setConnectOptions();
-    _db.open();
-    _db.exec("PRAGMA journal_mode=WAL");
-    qCInfo(SearchDBLogging) << "UpdateWorker::UpdateWorker initialized and moved to thread" << &_thread;
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "SearchWorker");
+    db.setDatabaseName(FileManager::searchDBPath());
+    db.setConnectOptions("QSQLITE_OPEN_READONLY, QSQLITE_ENABLE_SHARED_CACHE");
+    if (! db.open()) {
+        qFatal("SearchWorker Error: connection with database failed");
+    }
+    qCInfo(SearchDBLogging) << "SearchWorker: connection ok";
+    db.exec("PRAGMA journal_mode=WAL");
+    return true;
 }
 
-UpdateWorker::~UpdateWorker()
+
+int UpdateWorker::connect(void const* sender)
+{
+    qRegisterMetaType<QStringStringMap>();
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "UpdateWorker");
+    db.setDatabaseName(FileManager::searchDBPath());
+    db.setConnectOptions("QSQLITE_ENABLE_SHARED_CACHE");
+    if (! db.open()) {
+        qFatal("UpdateWorker Error: connection with database failed");
+    }
+    qCInfo(SearchDBLogging) << "UpdateWorker: connection ok";
+    db.exec("PRAGMA journal_mode=WAL");
+    if (Global::isNewInstall) {
+        execScript("db/dropAll.sqlite3");
+    }
+    execScript("db/setup.sqlite3");
+    return true;
+}
+
+int SearchWorker::disconnect(void const* sender)
+{
+    db().close();
+    return true;
+}
+
+int UpdateWorker::disconnect(void const* sender)
 {
     if (! execScript("db/exit.sqlite3")) {
         qCInfo(SearchDBLogging) << "UpdateWorker::disconnect failed";
     }
-    _db.close();
+    db().close();
+    return true;
 }
 
 int SearchWorker::search(QString const& word, int search_limit, void const* sender)
 {
-    qCInfo(SearchDBLogging) << "SearchWorker::search" << word;
+    qCInfo(SearchDBLogging) << "SearchWorker::search" << word << sender;
+    set_is_reading(true);
     set_current_search_string(word);
-    Webpage_List pages;
-    emit searchStarted();
-    emit resultChanged(pages, sender);
+    emit resultChanged(QList<Webpage_>(), sender);
     QStringList ws = word.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QString q;
     if (word == "") {
-        emit resultChanged(pages, sender);
-        emit searchFinished();
+        emit resultChanged(QList<Webpage_>(), sender);
+        set_is_reading(false);
         return true;
-    } else {
-        if (ws.length() == 0) { return true; }
-        /* WITH LEFT JOIN */
-        q = QStringLiteral("SELECT DISTINCT IFNULL(url,'') AS url, IFNULL(title,'') as title, IFNULL(hash,'') as hash, IFNULL(symbol,'') as symbol FROM (");
-        q += QStringLiteral() +
-            "SELECT " +
-            "   url, title, symbol.visited AS visited, hash, symbol.text AS symbol " +
-            " FROM webpage" +
-            " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
-            " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
-            " WHERE ";
-        for (auto w = ws.begin(); w != ws.end(); w++) {
-            q += QStringLiteral() +
-                 " (" +
-                 "    INSTR(LOWER(text),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(hash),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
-                 " )";
-            if (w != ws.end() - 1) {
-                q += " AND ";
-            }
-        }
-        q += " UNION ";
-        /* WITHOUT LEFT JOIN */
-        q += QStringLiteral() +
-            "SELECT " +
-            "  url, title, visited, '' AS hash, '' AS symbol" +
-            " FROM webpage WHERE ";
-        for (auto w = ws.begin(); w != ws.end(); w++) {
-            q += QStringLiteral() +
-                 " (" +
-                 "    INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
-                 "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
-                 " )";
-            if (w != ws.end() - 1) {
-                q += " AND ";
-            }
-        }
-        q += ") ";
-        q += " ORDER BY url ASC, visited DESC";
-        q += ", CASE WHEN LENGTH(symbol) = 0 THEN 99999 ELSE LENGTH(symbol) END ASC";
-        q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
-        q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";
-        q += " LIMIT " + QString::number(search_limit);
     }
+    if (ws.length() == 0) { return true; }
+    /* WITH LEFT JOIN */
+    q = QStringLiteral("SELECT DISTINCT IFNULL(url,'') AS url, IFNULL(title,'') as title, IFNULL(hash,'') as hash, IFNULL(symbol,'') as symbol FROM (");
+    q += QStringLiteral() +
+         "SELECT " +
+         "   url, title, symbol.visited AS visited, hash, symbol.text AS symbol " +
+         " FROM webpage" +
+         " LEFT JOIN webpage_symbol ON webpage.id = webpage_symbol.webpage" +
+         " LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol" +
+         " WHERE ";
+    for (auto w = ws.begin(); w != ws.end(); w++) {
+        q += QStringLiteral() +
+             " (" +
+             "    INSTR(LOWER(text),LOWER('" + (*w) + "'))" +
+             "    OR INSTR(LOWER(hash),LOWER('" + (*w) + "'))" +
+             "    OR INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
+             "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
+             " )";
+        if (w != ws.end() - 1) {
+            q += " AND ";
+        }
+    }
+    q += " UNION ";
+    /* WITHOUT LEFT JOIN */
+    q += QStringLiteral() +
+         "SELECT " +
+         "  url, title, visited, '' AS hash, '' AS symbol" +
+         " FROM webpage WHERE ";
+    for (auto w = ws.begin(); w != ws.end(); w++) {
+        q += QStringLiteral() +
+             " (" +
+             "    INSTR(LOWER(title),LOWER('" + (*w) + "'))" +
+             "    OR INSTR(LOWER(url),LOWER('" + (*w) + "'))" +
+             " )";
+        if (w != ws.end() - 1) {
+            q += " AND ";
+        }
+    }
+    q += ") ";
+    q += " ORDER BY url ASC, visited DESC";
+    q += ", CASE WHEN LENGTH(symbol) = 0 THEN 99999 ELSE LENGTH(symbol) END ASC";
+    q += ", CASE WHEN LENGTH(hash) = 0 THEN 99999 ELSE LENGTH(hash) END ASC";
+    q += ", CASE WHEN LENGTH(title) = 0 THEN 99999 ELSE LENGTH(title) END ASC";
+    q += " LIMIT " + QString::number(search_limit);
+
     qCInfo(SearchDBLogging) << "SearchWorker::search" << q;
-    QSqlQuery r = _db.exec(q);
-    if (r.lastError().isValid()) {
-        qCCritical(SearchDBLogging) << "SearchWorker::search failed"
-                    << q
-                    << r.lastError();
+    QSqlQuery r = db().exec(q);
+    QList<Webpage_> pages = webpagesFromQuery(r);
+    emit resultChanged(pages, sender);
+    qCInfo(SearchDBLogging) << "SearchWorker::search found" << pages.count();
+    set_is_reading(false);
+    return true;
+}
+
+bool SearchWorker::custom_set_is_reading(bool const& reading, void const* sender)
+{
+    if (reading) {
+        qCDebug(SearchDBLogging) << "SearchWorker::reading db..";
+    } else {
+        qCDebug(SearchDBLogging) << "SearchWorker::reading db done.";
+    }
+    return reading;
+}
+
+int SearchWorker::searchForWebpage(Webpage_ w, int search_limit, void const* sender)
+{
+    qCInfo(SearchDBLogging) << "SearchWorker::searchForWebpage" << w << sender;
+    set_is_reading(true);
+    emit resultChanged(QList<Webpage_>(), sender);
+    QSqlQuery query(db());
+    query.prepare("SELECT id FROM webpage WHERE url = :url");
+    query.bindValue(":url", w->url().base());
+    if (! query.exec() || ! query.first() || !query.isValid()) {
+        qCCritical(SearchDBLogging) << "SearchWorker::searchForWebpage didn't find the webpage" << w->url()
+                                    << query.executedQuery()
+                                    << query.lastError();
+        set_is_reading(false);
         return false;
     }
+    QVariant pid = query.record().value("id");
+    QString q;
+    /* WITH LEFT JOIN */
+    q = QStringLiteral() +
+        "SELECT DISTINCT IFNULL(url,'') AS url, COALESCE(text,title,'') AS title, IFNULL(hash,'') AS hash, IFNULL(symbol,'') AS symbol " +
+        " FROM ( SELECT url, text, title, NULL AS hash, NULL AS symbol " +
+        "        FROM webpage_referer LEFT JOIN webpage ON webpage.id = webpage_referer.webpage " +
+        "        WHERE referer = :pid " +
+        "        UNION SELECT url, NULL AS text, title, symbol.text AS symbol, symbol.hash AS hash " +
+        "        FROM webpage LEFT JOIN webpage_symbol on webpage_symbol.webpage = webpage.id " +
+        "                     LEFT JOIN symbol ON symbol.id = webpage_symbol.symbol " +
+        "        WHERE webpage.id = :pid ) " +
+        " ORDER BY url ASC " +
+        " LIMIT " + QString::number(search_limit);
+    qCInfo(SearchDBLogging) << "SearchWorker::search" << q << pid;
+
+    QSqlQuery r(db());
+    r.prepare(q);
+    r.bindValue(":pid", pid);
+    r.exec();
+    QList<Webpage_> pages = webpagesFromQuery(r);
+    emit resultChanged(pages, sender);
+    qCInfo(SearchDBLogging) << "SearchWorker::search found" << pages.count();
+    set_is_reading(false);
+    return true;
+}
+
+int SearchDB::search(QString const& words, void const* sender)
+{
+    qCInfo(SearchDBLogging) << "SearchDB::search" << words;
+    set_search_string(words);
+    set_search_webpage(nullptr);
+    set_is_searching(true);
+    search_worker()->searchAsync(words, search_limit());
+    return true;
+}
+
+int SearchDB::searchForWebpage(Webpage_ w, void const* sender)
+{
+    qCInfo(SearchDBLogging) << "SearchDB::searchForWebpage" << w->url();
+    set_search_string("");
+    set_search_webpage(w);
+    set_is_searching(true);
+    search_worker()->searchForWebpageAsync(w, search_limit());
+    return true;
+}
+
+QList<Webpage_> SearchWorker::webpagesFromQuery(QSqlQuery& r)
+{
+    QList<Webpage_> pages;
+    if (r.lastError().isValid()) {
+        qCCritical(SearchDBLogging) << "SearchWorker::search failed"
+                                    << r.lastError();
+        return pages;
+    }
     r.first();
-    QRegularExpression searchRegex(ws.join("|"), QRegularExpression::CaseInsensitiveOption);
     QRegularExpression slash("/");
     QRegularExpression protocal("^(.+://)");
     while (r.isValid()) {
@@ -400,7 +528,7 @@ int SearchWorker::search(QString const& word, int search_limit, void const* send
         QStringList path = url.split(slash, QString::SkipEmptyParts);
         QString last = path.length() > 0 ? path[path.length() - 1] : "";
         int last_index = url.lastIndexOf(last);
-        QString display_filename = "./" + last + "  ";
+        QString display_filename = "/" + last + "  ";
         QString display_partial_url = "";
         display_partial_url += url.leftRef(last_index);
         // special case when at root domain
@@ -425,24 +553,10 @@ int SearchWorker::search(QString const& word, int search_limit, void const* send
                          << display_symbol + display_hash + display_filename
                          << display_partial_url;
         Webpage_ wp = shared<Webpage>(Url(url + "#" + hash), display_title, display_symbol + display_hash + display_filename, display_partial_url);
-        wp->moveToThread(_dataThread);
+        wp->moveToThread(Global::qCoreApplicationThread);
         pages << wp;
         r.next();
     }
-    emit resultChanged(pages, sender);
-    emit searchFinished();
-    qCInfo(SearchDBLogging) << "SearchWorker::search found" << pages.count();
-    return true;
+    return pages;
 }
-
-void SearchDB::searchAsync(QString const& words)
-{
-    set_search_string(words);
-    set_is_searching(true);
-    _searchWorker->searchAsync(words, search_limit());
-}
-
-
-
-
 

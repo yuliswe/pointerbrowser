@@ -77,17 +77,17 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     qCoreApplication->moveToThread(qCoreApplicationThread);
 
     QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
-        initGlobalObjects();
-        Global::sig.emit_tf_global_objects_initialized();
         dumpLibraryInfo();
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
-        qCInfo(GlobalLogging) << "running version" << currV
-                << "data version" << dataV;
+        qCCritical(GlobalLogging) << "running version" << currV << "data version" << dataV;
         if (currV != dataV) {
+            Global::isNewInstall = true;
             FileManager::rmDataDir();
+            FileManager::mkDataDir();
         }
-        FileManager::mkDataDir();
+        initGlobalObjects();
+        Global::sig.emit_tf_global_objects_initialized();
         searchDB->connect();
         controller->loadLastOpen();
         controller->loadBookmarks();
@@ -104,6 +104,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
 void Global::stopQCoreApplicationThread()
 {
     qCoreApplicationThread->quit();
+    qCoreApplicationThread->wait();
 }
 
 QCoreApplication* Global::qCoreApplication = nullptr;
@@ -124,7 +125,9 @@ void Global::initGlobalObjects()
     controller = new Controller();
 
 #ifdef Q_OS_MACOS
-    crawler = new Crawler(MacCrawlerDelegateFactory_::create(), 100, 1);
+    crawler = new Crawler(MacCrawlerDelegateFactory_::create(), 100, 0);
 #endif
 
 }
+
+bool Global::isNewInstall = false;

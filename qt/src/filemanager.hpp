@@ -43,6 +43,7 @@ class FileManager : public QObject
 
         static QString bookmarksPath();
         static QString crawlerRulesPath();
+        static QString searchDBPath();
 };
 
 #endif // FILEMANAGER_H

@@ -57,7 +57,7 @@
 
 - (void)dealloc
 {
-    self.webpage->set_associated_frontend_async(nullptr);
+//    self.webpage->set_associated_frontend_async(nullptr);
 }
 
 - (void)connect
@@ -247,7 +247,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ w = [(WebUI*)webView webpage];
         NSURL* url = navigationAction.request.URL;
-        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        Global::controller->newTabAsync(Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }
@@ -334,7 +334,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
    forNavigationAction:(WKNavigationAction *)navigationAction
         windowFeatures:(WKWindowFeatures *)windowFeatures
 {
-    Url url = QUrl::fromNSURL(navigationAction.request.URL);
+    Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
     WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
 //    [new_webview loadRequest:navigationAction.request];

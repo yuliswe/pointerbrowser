@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
         }
         else if (c == "links") {
             cout << "Retriving links in current webpage" << endl;
-            Global::crawler->crawlAsync(Global::controller->current_tab_webpage()->url());
+            Global::crawler->crawlAsync(UrlNoHash(Global::controller->current_tab_webpage()->url()));
             continue;
         }
         else if (c == "lsd") {

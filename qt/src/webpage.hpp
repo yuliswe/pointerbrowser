@@ -30,6 +30,7 @@ class Webpage : public QObject
 //    friend class TabsModel;
 //    friend class SearchDB;
     friend class SearchWorker;
+    friend class Crawler;
     Q_OBJECT
 
     void findNext(QString const&);

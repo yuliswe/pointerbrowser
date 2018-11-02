@@ -31,6 +31,7 @@ public:
     static Crawler* crawler;
     static Controller* controller;
     static QThread* const qCoreApplicationThread;
+    static bool isNewInstall;
 
 //#ifdef Q_OS_MACOS
 //#endif

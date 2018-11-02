@@ -11,8 +11,7 @@ void FileManager::mkDataDir()
     qCInfo(FileLogging) << "FileManager::mkDataDir"<< FileManager::dataPath();
     dir.mkpath(FileManager::dataPath());
     QStringList defaults;
-    defaults << "search.db"
-             << "bookmarks.json"
+    defaults << "bookmarks.json"
              << "version";
     for (QString file : defaults) {
         QFile_ src = FileManager::qrcFile("defaults/"+file);
@@ -62,6 +61,12 @@ QString FileManager::bookmarksPath()
 QString FileManager::crawlerRulesPath()
 {
     return FileManager::dataPath("discovery-rules.json");
+}
+
+QString FileManager::searchDBPath()
+{
+//    return FileManager::dataPath("search.db");
+    return ":memory:";
 }
 
 

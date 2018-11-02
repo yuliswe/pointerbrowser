@@ -155,15 +155,15 @@ bool Crawler::shouldEnqueueUrl(const UrlNoHash& url)
         qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is being processed" << url;
         return false;
     }
-    if (urlIsDone(url)) {
-        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is done" << url;
-        return false;
-    }
+//    if (urlIsDone(url)) {
+//        qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is done" << url;
+//        return false;
+//    }
     if (urlDepth(url) > m_critical_depth) {
         qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is too deep" << url;
         return false;
     }
-    if (! rule_table()->hasEnabledAndMatchedRuleForUrl(url)) {
+    if (! rule_table()->hasEnabledAndMatchedRuleForUrl(url.base())) {
         qCDebug(CrawlerLogging) << "Crawler::shouldEnqueueUrl skip url because it is not whitelisted or not enabled" << url;
         return false;
     }
@@ -285,18 +285,13 @@ void Crawler::spawnOne()
     });
 
     QObject::connect(delegate, &CrawlerDelegate::urlLoaded, delegate, [=](QString const& html) {
+        // get title, and (child-url,hash,text) triples
         QPair<QString,QSet<HtmlLink>> parse = Crawler::parseHtml(html, url);
         QString const& title = parse.first;
         const QSet<HtmlLink>& links = parse.second;
-        QSet<UrlNoHash> hrefs;
-        for (const HtmlLink& link : links) {
-            hrefs.insert(link.url);
-        }
-        qCDebug(CrawlerLogging) << "Crawler found" << hrefs.count() << "links in" << url << title;
         QMetaObject::invokeMethod(this, "processParseResult",
                                   Q_ARG(const UrlNoHash&, url),
                                   Q_ARG(QString const&, title),
-                                  Q_ARG(const QSet<UrlNoHash>&, hrefs),
                                   Q_ARG(const QSet<HtmlLink>&, links));
         delegate->thread()->quit();
     });
@@ -311,39 +306,66 @@ void Crawler::spawnOne()
 
 bool Crawler::isProbablySymbol(const HtmlLink& link, const UrlNoHash& base)
 {
-    if (link.hash.length() > 0
-            && link.hash.length() < 32
-            && link.text.length() > 0
-            && link.text.length() < 32
-            && link.url == base)
-    {
-        return true;
+    if (link.hash.length() == 0 || link.hash.length() > 32) {
+        qCDebug(CrawlerLogging) << "Crawler::processParseResult ignored" << link << "because hash lenght is not right";
+        return false;
+    } else if (link.text.length() == 0 || link.text.length() > 32) {
+        qCDebug(CrawlerLogging) << "Crawler::processParseResult ignored" << link << "because text lenght is not right";
+        return false;
+    } else if (link.url != base) {
+        qCDebug(CrawlerLogging) << "Crawler::processParseResult ignored" << link << "because base url is not" << base;
+        return false;
     }
-    return false;
+    return true;
 }
 
-void Crawler::processParseResult(const UrlNoHash& base, QString const& title, const QSet<UrlNoHash>& sublinks, const QSet<HtmlLink>& links)
+void Crawler::processParseResult(const UrlNoHash& base, QString const& title, const QSet<HtmlLink>& links)
 {
     qCInfo(CrawlerLogging) << "Crawler::processParseResult" << base;
+    qCDebug(CrawlerLogging) << "Crawler found" << links.count() << "links in" << base << title;
     int current_depth = urlDepth(base);
+    QList<Webpage_> new_pages;
+    QSet<UrlNoHash> next_urls;
     if (actionForUrl(base) == SaveUrlTitleAndSymbols
             || actionForUrl(base) == SaveUrlTitleAndSymbolsThenCrawlSublinks)
     {
-        Global::searchDB->addWebpageAsync(base.base());
-        Global::searchDB->updateWebpageAsync(base.base(), "title", title);
+        Global::searchDB->update_worker()->addWebpageAsync(base);
+        Global::searchDB->update_worker()->updateWebpageAsync(base, "title", title.trimmed());
+        QMap<QString,QString> new_symbols;
+        QMap<QString,QString> new_referers;
         for (const HtmlLink& link : links)
         {
+            if (base.authority() != link.url.authority()) {
+                qCDebug(CrawlerLogging) << "Crawler::processParseResult ignored link on other authority" << base << link.url;
+                continue;
+            }
             if (Crawler::isProbablySymbol(link, base))
             {
-                qCDebug(CrawlerLogging) << "symbol found" << link;
-                Global::searchDB->addWebpageAsync(link.url.base());
-                Global::searchDB->addSymbolAsync(link.url.base(), link.hash, link.text);
-                Global::searchDB->updateWebpageAsync(link.url.base(), "title", title);
+                new_symbols[link.hash] = link.text;
+            } else {
+                // guess a fine link text with link text and url
+                QString linktxt = link.text.trimmed();
+                if (linktxt.isEmpty()) {
+                    linktxt = link.url.fileName();
+                }
+                if (linktxt.isEmpty()) {
+                    linktxt = link.url.authority();
+                }
+                Webpage_ w = shared<Webpage>(link.url.base());
+                // guess a fine title with link text and url
+                w->set_title(linktxt + " [Found in "+ title +"]");
+                new_pages << w;
+                new_referers[link.url.base()] = "[Link] " + linktxt;
+                next_urls << link.url;
             }
         }
+        qCDebug(CrawlerLogging) << "Crawler::processParseResult found" << new_symbols.count() << "possible symbols";
+        Global::searchDB->update_worker()->addSymbolsAsync(base, new_symbols);
+        Global::searchDB->update_worker()->addWebpagesAsync(new_pages); // next are all urls on current page
+        Global::searchDB->update_worker()->addRefererAsync(base, new_referers);
     }
     if (actionForUrl(base) == SaveUrlTitleAndSymbolsThenCrawlSublinks) {
-        enqueue(sublinks, current_depth + 1);
+        enqueue(next_urls, current_depth + 1);
     }
     markUrlDone(base);
 }
@@ -372,31 +394,59 @@ QPair<QString,QSet<HtmlLink>> Crawler::parseHtml(QString const& html, const UrlN
         QString href = QString::fromStdString(n.attribute("href"));
         if (href.isEmpty()) { continue; }
         QString text = QString::fromStdString(n.text()).trimmed();
-        UrlNoHash url(href);
-        if (! url.isValid()) { continue; }
-        if (url.scheme().isEmpty()) {
-            UrlNoHash newUrl;
-            if (url.path().isEmpty()) {
-                newUrl = baseUrl;
-            } else if (url.path()[0] == "/") {
-                newUrl = baseUrl.adjusted(QUrl::RemovePath);
+        Url secondhalf(href); // in html this may be relative to current location
+        if (! secondhalf.isValid()) {
+            qCDebug(CrawlerLogging) << "Crawler::parseHtml ignored" << href << secondhalf;
+            continue;
+        }
+        qCDebug(CrawlerLogging) << "Crawler::parseHtml sees" << href << baseUrl;
+        Url final;
+        if (secondhalf.scheme().isEmpty()) {
+            // determine href is absolute, relative etc,
+            // then normalize the url
+            if (secondhalf.path().isEmpty()) {
+                // eg. #hash only
+                final = Url(baseUrl.base());
+                final.setFragment(secondhalf.fragment());
+            } else if (secondhalf.path()[0] == "/") {
+                qDebug() << "Crawler::parseHtml sees" << secondhalf.path();
+                if (secondhalf.full().indexOf("//") == 0) {
+                    // url is absolute, ie "//rest"
+                    // leaves only scheme
+                    final = Url(baseUrl.scheme() + secondhalf.full());
+                } else {
+                    // absolute path from root of site, eg "/paths"
+                    // leaves only scheme + host
+                    UrlNoHash firsthalf = baseUrl.adjusted(QUrl::RemovePath);
+                    final = Url(firsthalf.base() + secondhalf.full());
+                }
             } else {
-                newUrl = baseUrl.adjusted(QUrl::RemoveFilename);
+                // relative path from current dictory, possibly ends with index.html
+                // eg, "relative.html", "relative/relative.html", "relative/relative"
+                // remove file name to get current directory name
+                UrlNoHash firsthalf = baseUrl.adjusted(QUrl::RemoveFilename);
+                final = Url(firsthalf.base() + secondhalf.full());
             }
-            newUrl.setPath(newUrl.path() + url.path());
-            newUrl.setQuery(url.query());
-            newUrl.setFragment(url.fragment());
-            url = newUrl;
+        } else if (secondhalf.scheme() == "https") {
+            final = secondhalf;
+        } else if (secondhalf.scheme() == "http") {
+            secondhalf.setScheme("https");
+            final = secondhalf;
+        } else {
+            qCDebug(CrawlerLogging) << "Crawler::parseHtml ignored link because scheme is neither http or https" << baseUrl << secondhalf;
+            continue;
         }
-        if (url.authority() != baseUrl.authority()) { continue; }
-        if (! url.errorString().isEmpty()) {
-            qCDebug(CrawlerLogging) << url.errorString();
+        qCDebug(CrawlerLogging) << "Crawler::parseHtml interprets as" << final;
+        if (! final.errorString().isEmpty()) {
+            qCDebug(CrawlerLogging) << "Crawler::parseHtml could not parse" << secondhalf << final.errorString();
+            continue;
         }
-        link.hash = url.fragment();
-        link.url = url;
-        link.text = text;
+        link.hash = final.fragment();
+        link.url = UrlNoHash(final);
+        link.text = text.trimmed();
         output.second << link;
     }
+    qCDebug(CrawlerLogging) << "Crawler::parseHtml returns" << output;
     return output;
 }
 
@@ -596,7 +646,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
             qCritical(CrawlerRuleLogging) << "CrawlerRule::readPartialTableFromSettings invalid pattern in settings" << pattern;
             continue;
         }
-        if (url.domain() == rule.domain()) {
+        if (url.domain() == rule.domain().full()) {
             rule.set_enabled(in[pattern].value<bool>());
             table->insertRule(rule);
         }

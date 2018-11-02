@@ -8,7 +8,8 @@ class Url : public QUrl
 public:
     Url() = default;
     Url(QString const&);
-    Url(const QUrl&);
+    // use explict to prevent conversion between url and nohash url
+    explicit Url(const QUrl&);
     Url(Url const&) = default;
     QString hash() const;
     QString base() const;
@@ -28,15 +29,16 @@ class UrlNoHash : public QUrl
 public:
     UrlNoHash() = default;
     UrlNoHash(QString const&);
-    UrlNoHash(const QUrl&);
+    explicit UrlNoHash(const QUrl&);
     UrlNoHash(const UrlNoHash&) = default;
     QString base() const;
-    Url toUrl() const;
+    UrlNoHash adjusted(QUrl::FormattingOptions) const;
     virtual ~UrlNoHash() = default;
 };
 
 uint qHash(const UrlNoHash& url);
 bool operator==(const UrlNoHash& a, const UrlNoHash& b);
+bool operator!=(const UrlNoHash& a, const UrlNoHash& b);
 QDebug& operator<<(QDebug& debug, const UrlNoHash& url);
 
 Q_DECLARE_METATYPE(Url)

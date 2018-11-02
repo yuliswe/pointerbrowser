@@ -10,7 +10,7 @@ QLoggingCategory GlobalLogging("Global", release);
 
 QLoggingCategory FileLogging("File", release);
 
-QLoggingCategory CrawlerLogging("Crawler", release);
+QLoggingCategory CrawlerLogging("Crawler", debug);
 QLoggingCategory CrawlerRuleLogging("CrawlerRule", release);
 QLoggingCategory CrawlerRuleTableLogging("CrawlerRuleTable", release);
 

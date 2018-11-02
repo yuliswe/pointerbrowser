@@ -165,7 +165,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_tab_search_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         if (current_tab_search_word().isEmpty()) {
-            Global::searchDB->searchAsync(page->url().filePath());
+            Global::searchDB->searchForWebpageAsync(page);
         }
     } else if (state == TabStatePreview) {
         set_current_preview_tab_index(i,sender);
@@ -346,7 +346,7 @@ int Controller::currentTabWebpageBack(void const* sender)
         emit p->emit_tf_back();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().filePath());
+            Global::searchDB->searchForWebpageAsync(p);
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -364,7 +364,7 @@ int Controller::currentTabWebpageForward(void const* sender)
         emit p->emit_tf_forward();
         p->findClear();
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().filePath());
+            Global::searchDB->searchForWebpageAsync(p);
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -394,9 +394,9 @@ int Controller::currentTabWebpageRefresh(void const* sender)
     if (p.get()) {
         emit p->emit_tf_refresh();
         p->findClear();
-        Global::crawler->crawlAsync(p->url());
+        Global::crawler->crawlAsync(UrlNoHash(p->url()));
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
-            Global::searchDB->searchAsync(p->url().filePath());
+            Global::searchDB->searchForWebpageAsync(p);
         }
     } else {
         qCInfo(ControllerLogging) << "no current tab";
@@ -408,12 +408,12 @@ bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const*
 {
     qCInfo(ControllerLogging) << "Controller::handleWebpageUrlChanged" << p << url;
     p->handleUrlChanged(url, sender);
-    Global::crawler->crawlAsync(p->url());
+    Global::crawler->crawlAsync(UrlNoHash(p->url()));
     Webpage_ w = current_tab_webpage();
     if (p == w && current_tab_search_word().isEmpty()
             && current_tab_state() == TabStateOpen)
     {
-        Global::searchDB->searchAsync(p->url().filePath());
+        Global::searchDB->searchForWebpageAsync(p);
     }
     saveLastOpen();
     return true;
@@ -561,8 +561,13 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
         // for better user experience, when crawler rule table is closed, reload searches
         Webpage_ w = current_tab_webpage();
         if (crawler_rule_table_visible() && w != nullptr) {
-            Global::crawler->crawlAsync(w->url());
-            Global::searchDB->searchAsync(Global::searchDB->search_string());
+            Global::crawler->crawlAsync(UrlNoHash(w->url()));
+            if (current_tab_search_word().isEmpty()) {
+                Global::searchDB->searchForWebpageAsync(w);
+            } else {
+                Global::searchDB->searchAsync(Global::controller->current_tab_search_word());
+            }
+
         }
         emit_tf_hide_crawler_rule_table_row_hint();
     }
@@ -575,7 +580,7 @@ int Controller::searchTabs(QString const& words, void const* sender)
     set_current_tab_search_word(words);
     clearPreviews();
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
-        Global::searchDB->searchAsync(current_tab_webpage()->url().filePath());
+        Global::searchDB->searchForWebpageAsync(current_tab_webpage());
         return 0;
     }
     Global::searchDB->searchAsync(words);
