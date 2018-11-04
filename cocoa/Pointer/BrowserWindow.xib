@@ -20,7 +20,7 @@
                 <outlet property="m_newtab_button" destination="0YT-Gb-veT" id="Dsx-L3-9ld"/>
                 <outlet property="m_outlineview" destination="7XU-ob-ZGc" id="FN7-ZS-kty"/>
                 <outlet property="m_tab_searchfield" destination="3OF-AJ-hTf" id="u3q-Ge-6f6"/>
-                <outlet property="m_tabview" destination="uWz-yS-VPn" id="X14-ow-cbc"/>
+                <outlet property="m_tabview" destination="Vdr-gK-mbW" id="d0N-o6-fue"/>
                 <outlet property="m_text_find_done_button" destination="9Eg-ac-gam" id="wMM-l1-knQ"/>
                 <outlet property="m_text_find_label" destination="MYh-0H-9HI" id="v0q-ow-YA0"/>
                 <outlet property="m_text_find_next_button" destination="jnD-LX-yBO" id="FoE-fZ-hbX"/>
@@ -273,7 +273,7 @@
                                     </box>
                                 </subviews>
                             </visualEffectView>
-                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" id="Ws7-mG-qfj" userLabel="Right Panel Visual Effect View" propertyAccessControl="all">
+                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" id="Ws7-mG-qfj" userLabel="Right Panel Visual Effect View" propertyAccessControl="none">
                                 <rect key="frame" x="243" y="0.0" width="469" height="440"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -338,15 +338,11 @@
                                         </view>
                                         <size key="contentViewMargins" width="7" height="0.0"/>
                                     </box>
-                                    <tabView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="uWz-yS-VPn" customClass="TabView">
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
                                         <rect key="frame" x="0.0" y="0.0" width="469" height="389"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                        <connections>
-                                            <outlet property="m_address_bar" destination="dSB-oO-gPA" id="17y-hc-Zcs"/>
-                                        </connections>
-                                    </tabView>
-                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
+                                    </customView>
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vdr-gK-mbW">
                                         <rect key="frame" x="0.0" y="0.0" width="469" height="389"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </customView>
@@ -585,6 +581,11 @@
                 <outlet property="delegate" destination="RLZ-S0-cVf" id="u3I-yd-Gu5"/>
             </connections>
         </popover>
+        <viewController id="Eh5-II-hEm" customClass="TabViewController">
+            <connections>
+                <outlet property="m_parent_view" destination="Vdr-gK-mbW" id="dDz-Tp-VHG"/>
+            </connections>
+        </viewController>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

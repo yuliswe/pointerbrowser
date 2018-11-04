@@ -11,28 +11,15 @@
 #include "AddressBar.mm.h"
 
 @class WebUI;
-@class TabView;
+@class TabViewController;
 
-@interface TabViewItem : NSTabViewItem
+@interface TabViewController : NSTabViewController
 {
-    Webpage_ m_webpage;
-    WebUI* m_webview;
-    __weak TabView* m_tabview;
+    IBOutlet AddressBar* m_address_bar;
+    IBOutlet NSWindowController* m_window_controller;
+    IBOutlet NSView* m_parent_view;
 }
 
-@property WebUI* webview;
-@property Webpage_ webpage;
-@property (weak) TabView* tabview;
-
-- (TabViewItem*)initWithWebpage:(Webpage_)webpage tabview:(TabView*)tabview;
-
-@end
-
-@interface TabView : NSTabView
-{
-    IBOutlet __weak AddressBar* m_address_bar;
-}
-
-@property (weak) AddressBar* address_bar;
+@property AddressBar* address_bar;
 
 @end

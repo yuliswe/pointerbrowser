@@ -34,7 +34,7 @@
 @interface BrowserWindowController : NSWindowController
 {
     IBOutlet NSOutlineView* m_outlineview;
-    IBOutlet NSTabView* m_tabview;
+    IBOutlet NSView* m_tabview;
     IBOutlet NSSearchField* m_tab_searchfield;
     IBOutlet AddressBar* m_addressbar;
     IBOutlet NSButton* m_crawler_rules_popover_button;

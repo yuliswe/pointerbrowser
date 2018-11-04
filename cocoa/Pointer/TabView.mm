@@ -14,59 +14,37 @@
 #include <docviewer/global.hpp>
 #include <QtCore/QObject>
 
-@implementation TabViewItem
-
-@synthesize webview = m_webview;
-@synthesize webpage = m_webpage;
-@synthesize tabview = m_tabview;
-
-- (instancetype)initWithWebpage:(Webpage_)webpage
-                        tabview:(TabView*)tabview
-{
-    self = [super init];
-    self.webpage = webpage;
-    self.webview = [[WebUI alloc] initWithWebpage:webpage frame:tabview.bounds config:nil];
-    if (webpage->url().full() == "about:eula") {
-        NSString* eula_path = [[NSBundle mainBundle] pathForResource:@"eula" ofType:@"html"];
-        NSString* eula = [NSString stringWithContentsOfFile:eula_path encoding:NSUTF8StringEncoding error:nil];
-        [self.webview loadHTMLString:eula baseURL:webpage->url().toNSURL()];
-    } else {
-        [self.webview loadUri:webpage->url().full().toNSString()];
-    }
-    self.view = self.webview;
-    self.tabview = tabview;
-    return self;
-}
-
-- (instancetype)initWithWebUI:(WebUI*)webui
-                      webpage:(Webpage_)page
-                      tabview:(TabView*)tabview
-{
-    self = [super init];
-    self.webpage = page;
-    self.webview = webui;
-    self.view = self.webview;
-    self.tabview = tabview;
-    return self;
-}
-
-- (void)dealloc
-{
-    [self.webview stopLoading];
-    [self.webview loadUri:@""];
-    self.webpage->disconnect(); // it is important to release connection so WebUI can be freed by GC
-}
-
-@end
-
-@implementation TabView
+@implementation TabViewController
 
 @synthesize address_bar = m_address_bar;
 
-- (TabView*)initWithCoder:(NSCoder*)coder
+- (void)insertChildViewControllerWithWebpage:(Webpage_)webpage frame:(NSRect)frame index:(NSUInteger)index
+{
+    NSViewController* childViewController = [[NSViewController alloc] init];
+    WebUI* webui = [[WebUI alloc] initWithWebpage:webpage frame:frame config:nil];
+    childViewController.view = webui;
+    if (webpage->url().full() == "about:eula") {
+        NSString* eula_path = [[NSBundle mainBundle] pathForResource:@"eula" ofType:@"html"];
+        NSString* eula = [NSString stringWithContentsOfFile:eula_path encoding:NSUTF8StringEncoding error:nil];
+        [webui loadHTMLString:eula baseURL:webpage->url().toNSURL()];
+    } else {
+        [webui loadUri:webpage->url().full().toNSString()];
+    }
+    [self insertChildViewController:childViewController atIndex:index];
+}
+
+
+- (void)addChildViewControllerWithWebUI:(WebUI*)webui 
+{
+    NSViewController* childViewController = [[NSViewController alloc] init];
+    childViewController.view = webui;
+    [self insertChildViewController:childViewController atIndex:0];
+}
+
+
+- (TabViewController*)initWithCoder:(NSCoder*)coder
 {
     self = [super initWithCoder:coder];
-    self.hidden = YES;
     QObject::connect(Global::controller->open_tabs().get(),
                      &TabsModel::rowsInserted,
                      [=](const QModelIndex &parent, int first, int last) {
@@ -105,24 +83,38 @@
                      [=]() {
                          [self performSelectorOnMainThread:@selector(handle_preview_tab_model_reset) withObject:nil waitUntilDone:YES];
                      });
-    [self reload];
     // selection changed signal should only be connected after view is for sure loaded
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
                      [=]() {
                          [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
                      });
-    
+    self.transitionOptions = NSViewControllerTransitionNone;
+    self.tabStyle = NSTabViewControllerTabStyleUnspecified;
+    [self loadView];
     return self;
+}
+
+- (void)viewDidLoad
+{
+    self.view.frame = self->m_parent_view.bounds;
+    self.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self->m_parent_view addSubview:self.view];
+    [self reload];
 }
 
 - (void)handleOpenTabsMoved:(NSDictionary*)indices
 {
     int from = [indices[@"from"] intValue];
     int to = [indices[@"to"] intValue];
-    NSTabViewItem* item = [self tabViewItemAtIndex:from];
-    [self removeTabViewItem:item];
-    [self insertTabViewItem:item atIndex:(from < to ? to - 1 : to)];
+    NSMutableArray* items_arr = [self.tabViewItems mutableCopy];
+    TabItemView* item = (TabItemView*)items_arr[from];
+    [items_arr removeObjectsAtIndexes:[NSIndexSet indexSetWithIndex:from]];
+    [items_arr insertObject:item atIndex:(to <= from ? to : to - 1)];
+    self.tabViewItems = items_arr;
+    if (self.selectedTabViewItemIndex == from) {
+        self.selectedTabViewItemIndex = (to <= from ? to : to - 1);
+    }
 }
 
 - (void)onPreviewTabRowsRemoved:(NSDictionary*)args
@@ -132,22 +124,16 @@
     
     int count = last - first + 1;
     int offset = Global::controller->open_tabs()->count();
-    auto current = self.tabViewItems;
-    for (int i = 0; i < count; i++) {
-        NSTabViewItem* item = current[i+first+offset];
-        [self removeTabViewItem:item];
-//        [[(TabViewItem*)item webview] loadUri:@"about:blank"];
+    for (int i = count - 1; i >= 0; i--) {
+        [self removeChildViewControllerAtIndex:(i+first+offset)];
     }
 }
 
 - (void)handle_preview_tab_model_reset
 {
     int offset = Global::controller->open_tabs()->count();
-    auto current = self.tabViewItems;
-    int count = self.tabViewItems.count;
-    for (int i = offset; i < count; i++) {
-        NSTabViewItem* item = current[i];
-        [self removeTabViewItem:item];
+    for (int i = self.childViewControllers.count - 1; i >= offset; i--) {
+        [self removeChildViewControllerAtIndex:i];
     }
 }
 
@@ -160,12 +146,7 @@
     int offset = Global::controller->open_tabs()->count();
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::controller->preview_tabs()->webpage_(i+first);
-        TabViewItem* item = [[TabViewItem alloc] initWithWebpage:w tabview:self];
-        if (self.tabViewItems.count == 0) {
-            [self addTabViewItem:item];
-        } else {
-            [self insertTabViewItem:item atIndex:(i+first+offset)];
-        }
+        [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(i+first+offset)];
     }
 }
 
@@ -177,16 +158,10 @@
     int count = last - first + 1;
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i+first);
-        TabViewItem* item;
         if (w->associated_frontend()) {
-            item = [[TabViewItem alloc] initWithWebUI:(__bridge WebUI*)w->associated_frontend() webpage:w tabview:self];
+            [self addChildViewControllerWithWebUI:(__bridge WebUI*)w->associated_frontend()];
         } else {
-            item = [[TabViewItem alloc] initWithWebpage:w tabview:self];
-        }
-        if (self.tabViewItems.count == 0) {
-            [self addTabViewItem:item];
-        } else {
-            [self insertTabViewItem:item atIndex:(i+first)];
+            [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(i+first)];
         }
     }
 }
@@ -197,11 +172,9 @@
     int last = [args[@"last"] intValue];
     
     int count = last - first + 1;
-    auto current = self.tabViewItems;
-    for (int i = 0; i < count; i++) {
+    for (int i = count - 1; i >= 0; i--) {
         int remove_idx = i + first;
-        NSTabViewItem* item = current[remove_idx];
-        [self removeTabViewItem:item];
+        [self removeChildViewControllerAtIndex:remove_idx];
     }
 }
 
@@ -210,39 +183,36 @@
 // or when the page array is changed
 - (void)updateSelection
 {
-    if (self.numberOfTabViewItems == 0) {
+    if (self.childViewControllers.count == 0) {
         [self reload];
     }
     if (Global::controller->current_tab_state() == Controller::TabStateNull) {
-        [self selectTabViewItem:nil];
+        self.selectedTabViewItemIndex = -1;
     } else if (Global::controller->current_tab_state() == Controller::TabStateOpen) {
         int i = Global::controller->current_open_tab_index();
-        [self selectTabViewItemAtIndex:i];
+        self.selectedTabViewItemIndex = i;
     } else if (Global::controller->current_tab_state() == Controller::TabStatePreview) {
         int i = Global::controller->open_tabs()->count() + Global::controller->current_preview_tab_index();
-        [self selectTabViewItemAtIndex:i];
+        self.selectedTabViewItemIndex = i;
     }
 }
 
 - (void)reload
 {
     auto current = self.tabViewItems;
-    for (TabViewItem* item in current)
+    for (int i = self.childViewControllers.count - 1; i >= 0; i--)
     {
-        [self removeTabViewItem:item];
-        // [item release];
+        [self removeChildViewControllerAtIndex:i];
     }
     int open_size = Global::controller->open_tabs()->count();
     for (int i = 0; i < open_size; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
-        TabViewItem* c = [[TabViewItem alloc] initWithWebpage:w tabview:self];
-        [self addTabViewItem:c];
+        [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:i];
     }
     int preview_size = Global::controller->preview_tabs()->count();
     for (int i = 0; i < preview_size; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
-        TabViewItem* c = [[TabViewItem alloc] initWithWebpage:w tabview:self];
-        [self addTabViewItem:c];
+        [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(open_size+i)];
     }
 }
 

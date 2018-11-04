@@ -65,8 +65,8 @@ QString FileManager::crawlerRulesPath()
 
 QString FileManager::searchDBPath()
 {
-//    return FileManager::dataPath("search.db");
-    return ":memory:";
+    return FileManager::dataPath("search.db");
+//    return ":memory:";
 }
 
 

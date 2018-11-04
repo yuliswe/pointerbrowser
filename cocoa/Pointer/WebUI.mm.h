@@ -11,7 +11,7 @@
 #include "TabView.mm.h"
 #import "ErrorPage.h"
 
-@class TabViewItem;
+@class TabItemView;
 
 @interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate>
 {
