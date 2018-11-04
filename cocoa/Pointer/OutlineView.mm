@@ -18,7 +18,7 @@
 @synthesize outline = m_outline;
 @synthesize data_item = m_data_item;
 @synthesize tracking_area = m_tracking_area;
-@synthesize webpage = m_webpage;
+//@synthesize webpage = m_webpage;
 
 - (id)initWithCoder:(NSCoder *)coder
 {
@@ -78,7 +78,7 @@
 @synthesize line1 = m_line1;
 @synthesize line2 = m_line2;
 @synthesize line3 = m_line3;
-@synthesize webpage = m_webpage;
+//@synthesize webpage = m_webpage;
 @end
 
 @implementation TabsList
@@ -382,7 +382,7 @@
     {
         OpenTabCellView* result = [outlineView makeViewWithIdentifier:@"OpenTabRowView" owner:self];
         Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
-        result.webpage = w;
+//        result.webpage = w;
         result.data_item = item;
         result.outline = outlineView;
         result.line1 = w->title().toNSString();
@@ -396,7 +396,7 @@
         result.line1 = w->title().toNSString();
         result.line2 = w->title_2().toNSString();
         result.line3 = w->title_3().toNSString();
-        result.webpage = w;
+//        result.webpage = w;
         return result;
     }
     return nil;

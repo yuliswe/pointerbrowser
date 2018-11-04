@@ -19,7 +19,7 @@
     NSTrackingArea* m_tracking_area;
     NSOutlineView* m_outline;
     CppData* m_data_item;
-    Webpage_ m_webpage;
+//    Webpage_ m_webpage;
 }
 @property NSString* line1;
 @property BOOL hovered;
@@ -41,7 +41,7 @@
     NSString* m_line1;
     NSString* m_line2;
     NSString* m_line3;
-    Webpage_ m_webpage;
+//    Webpage_ m_webpage;
 }
 @property NSString* line1;
 @property NSString* line2;

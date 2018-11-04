@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -22,7 +22,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="288" height="411"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="fm6-7l-M0G">
-                            <rect key="frame" x="124" y="230" width="41" height="17"/>
+                            <rect key="frame" x="124" y="239" width="41" height="17"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="800" id="SGR-JE-2SK"/>
                             </constraints>
@@ -40,8 +40,8 @@
                             </connections>
                         </textField>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Aa0-go-QYB">
-                            <rect key="frame" x="54" y="257" width="181" height="38"/>
-                            <textFieldCell key="cell" alignment="center" title="Pointer Could Not Open the Webpage :(" id="jNM-hs-eyN">
+                            <rect key="frame" x="23" y="266" width="244" height="19"/>
+                            <textFieldCell key="cell" alignment="center" title="Pointer Could Not Open the Page" id="jNM-hs-eyN">
                                 <font key="font" metaFont="systemSemibold" size="15"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

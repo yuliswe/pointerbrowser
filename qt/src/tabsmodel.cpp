@@ -34,6 +34,9 @@ Webpage_ TabsModel::webpage_(int i) const
 void TabsModel::replaceModel(const Webpage_List& pages)
 {
     emit beginResetModel();
+    for (int i = _tabs.count() - 1; i >= 0; i--) {
+        _tabs[i]->disconnect();
+    }
     _tabs = pages;
     emit endResetModel();
     emit countChanged();
@@ -59,6 +62,7 @@ bool TabsModel::removeTab(int row)
 {
     if (row >= _tabs.length()) { return false; }
     emit beginRemoveRows(QModelIndex(), row, row);
+    _tabs[row]->disconnect();
     _tabs.removeAt(row);
     emit endRemoveRows();
     emit countChanged();
@@ -182,7 +186,9 @@ bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int cou
 void TabsModel::clear() {
     if (_tabs.isEmpty()) { return; }
     emit beginResetModel();
-//    emit beginRemoveRows(QModelIndex(), 0, _tabs.count() - 1);
+    for (int i = _tabs.count() - 1; i >= 0; i--) {
+        _tabs[i]->disconnect();
+    }
     _tabs.clear();
     emit endResetModel();
 //    emit endRemoveRows();
