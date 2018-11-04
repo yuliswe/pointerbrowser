@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>db/setup.sqlite3</file>
-        <file>db/exit.sqlite3</file>
-        <file>db/dropAll.sqlite3</file>
-    </qresource>
-</RCC>

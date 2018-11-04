@@ -1,8 +1,0 @@
-https://api.jquery.com
-https://docs.python.org/3/library/
-http://www.cplusplus.com/reference/
-https://getbootstrap.com/docs
-https://devdocs.io/python
-https://devdocs.io/cpp
-https://devdocs.io/css
-https://devdocs.io/sqlite

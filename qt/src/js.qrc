@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>js/docview</file>
-    </qresource>
-</RCC>
