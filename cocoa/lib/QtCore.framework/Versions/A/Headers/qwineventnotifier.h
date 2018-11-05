@@ -70,7 +70,7 @@ Q_SIGNALS:
     void activated(HANDLE hEvent, QPrivateSignal);
 
 protected:
-    bool event(QEvent *e) override;
+    bool event(QEvent * e);
 };
 
 QT_END_NAMESPACE

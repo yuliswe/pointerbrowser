@@ -306,8 +306,7 @@ private:
     void destruct(T *from, T *to);
     bool isValidIterator(const iterator &i) const
     {
-        const std::less<const T*> less = {};
-        return !less(d->end(), i) && !less(i, d->begin());
+        return (i <= d->end()) && (d->begin() <= i);
     }
     class AlignmentDummy { Data header; T array[1]; };
 };

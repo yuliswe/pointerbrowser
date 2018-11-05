@@ -1,17 +1,16 @@
 #include "url.hpp"
 
 Url::Url(QString const& url)
-    : QUrl(QUrl(url).adjusted(NormalizePathSegments))
+    : Url(QUrl(url))
 {
-    if (fragment() == "")
-    {
-        setFragment(QString());
-    }
 }
 
 Url::Url(const QUrl& url)
     : QUrl(url.adjusted(NormalizePathSegments))
 {
+    if (scheme() == "http") {
+        setScheme("https");
+    }
     if (fragment() == "")
     {
         setFragment(QString());
@@ -81,13 +80,16 @@ Url Url::fromAmbiguousText(QString const& input)
 }
 
 UrlNoHash::UrlNoHash(QString const& url)
-    : QUrl(QUrl(url).adjusted(NormalizePathSegments))
+    : UrlNoHash(QUrl(url))
 {
 }
 
 UrlNoHash::UrlNoHash(const QUrl& url)
     : QUrl(url.adjusted(NormalizePathSegments))
 {
+    if (scheme() == "http") {
+        setScheme("https");
+    }
 }
 
 QString UrlNoHash::base() const {

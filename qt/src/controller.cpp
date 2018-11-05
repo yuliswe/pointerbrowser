@@ -707,9 +707,12 @@ bool Controller::custom_set_downloads_visible(const bool& visible, void const* s
     return visible;
 }
 
-File_ Controller::downloadFileFromUrlAndRename(Url const& url, QString const& filename, void const* sender)
+File_ Controller::downloadFileFromUrlAndRename(Url url, QString const& filename, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::downloadFileFromUrlAndRename" << url << filename;
+    if (url.scheme() == "http") {
+        url.setScheme("https");
+    }
     // check if already downloaded
     for (int i = 0; i < download_files()->count(); i++)
     {

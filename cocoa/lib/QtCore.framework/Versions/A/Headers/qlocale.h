@@ -437,19 +437,19 @@ public:
         Osage = 358,
         Tangut = 359,
 
-        Afan = Oromo,
-        Bhutani = Dzongkha,
-        Byelorussian = Belarusian,
-        Cambodian = Khmer,
-        Chewa = Nyanja,
-        Frisian = WesternFrisian,
-        Kurundi = Rundi,
-        Moldavian = Romanian,
         Norwegian = NorwegianBokmal,
-        RhaetoRomance = Romansh,
+        Moldavian = Romanian,
         SerboCroatian = Serbian,
         Tagalog = Filipino,
         Twi = Akan,
+        Afan = Oromo,
+        Byelorussian = Belarusian,
+        Bhutani = Dzongkha,
+        Cambodian = Khmer,
+        Kurundi = Rundi,
+        RhaetoRomance = Romansh,
+        Chewa = Nyanja,
+        Frisian = WesternFrisian,
         Uigur = Uighur,
 
         LastLanguage = Tangut
@@ -851,7 +851,7 @@ public:
         Serbia = 243,
         SaintBarthelemy = 244,
         SaintMartin = 245,
-        LatinAmerica = 246,
+        LatinAmericaAndTheCaribbean = 246,
         AscensionIsland = 247,
         AlandIslands = 248,
         DiegoGarcia = 249,
@@ -865,20 +865,17 @@ public:
         Kosovo = 257,
         EuropeanUnion = 258,
         OutlyingOceania = 259,
-        World = 260,
-        Europe = 261,
 
+        Tokelau = TokelauCountry,
+        Tuvalu = TuvaluCountry,
         DemocraticRepublicOfCongo = CongoKinshasa,
-        DemocraticRepublicOfKorea = NorthKorea,
-        LatinAmericaAndTheCaribbean = LatinAmerica,
         PeoplesRepublicOfCongo = CongoBrazzaville,
+        DemocraticRepublicOfKorea = NorthKorea,
         RepublicOfKorea = SouthKorea,
         RussianFederation = Russia,
         SyrianArabRepublic = Syria,
-        Tokelau = TokelauCountry,
-        Tuvalu = TuvaluCountry,
 
-        LastCountry = Europe
+        LastCountry = OutlyingOceania
     };
 // GENERATED PART ENDS HERE
 
@@ -1004,7 +1001,7 @@ public:
     QString dateFormat(FormatType format = LongFormat) const;
     QString timeFormat(FormatType format = LongFormat) const;
     QString dateTimeFormat(FormatType format = LongFormat) const;
-#if QT_CONFIG(datestring)
+#ifndef QT_NO_DATESTRING
     QDate toDate(const QString &string, FormatType = LongFormat) const;
     QTime toTime(const QString &string, FormatType = LongFormat) const;
     QDateTime toDateTime(const QString &string, FormatType format = LongFormat) const;

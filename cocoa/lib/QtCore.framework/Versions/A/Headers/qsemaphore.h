@@ -42,9 +42,10 @@
 
 #include <QtCore/qglobal.h>
 
-QT_REQUIRE_CONFIG(thread);
-
 QT_BEGIN_NAMESPACE
+
+
+#ifndef QT_NO_THREAD
 
 class QSemaphorePrivate;
 
@@ -111,6 +112,8 @@ private:
     QSemaphore *m_sem = nullptr;
     int m_n;
 };
+
+#endif // QT_NO_THREAD
 
 QT_END_NAMESPACE
 

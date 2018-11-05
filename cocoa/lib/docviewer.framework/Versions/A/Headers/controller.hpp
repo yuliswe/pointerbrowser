@@ -118,7 +118,7 @@ public:
     PROP_RWN_D(QString, downloads_dirpath, "")
     METH_ASYNC_1(int, handleFileDownloadFinished, File_)
     METH_ASYNC_1(int, handleFileDownloadStopped, File_)
-    METH_ASYNC_2(File_, downloadFileFromUrlAndRename, Url const&, QString const&)
+    METH_ASYNC_2(File_, downloadFileFromUrlAndRename, Url, QString const&)
     PROP_DEF_ENDS
 
     int loadBookmarks();

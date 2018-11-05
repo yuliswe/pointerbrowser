@@ -1,5 +1,32 @@
+.PHONY: setup
+setup:
+	rm -rf Qt*.dylib*
+	rm -rf Qt*.framework*
+	rm -rf libqsqlite.dylib*
+	cp -r ~/Qt/5.11.2/clang_64/lib/QtCore.framework .
+	cp -r ~/Qt/5.11.2/clang_64/lib/QtCore.framework.dSYM .
+	cp -r ~/Qt/5.11.2/clang_64/lib/QtSql.framework .
+	cp -r ~/Qt/5.11.2/clang_64/lib/QtSql.framework.dSYM .
+	cp -r ~/Qt/5.11.2/clang_64/plugins/sqldrivers/libqsqlite.dylib .
+	cp -r ~/Qt/5.11.2/clang_64/plugins/sqldrivers/libqsqlite.dylib.dSYM .
+	make QtCore.framework
+	make QtSql.framework
+	make libqsqlite.dylib
+	make docviewer.framework
+
+.PHONY: codesign
+codesign:
+	codesign -v -s $(CODESIGN_APP_STORE) QtCore.framework/QtCore
+	codesign -v -s $(CODESIGN_APP_STORE) QtSql.framework/QtSql
+	codesign -v -s $(CODESIGN_APP_STORE) docviewer.framework/docviewer
+	codesign -v -s $(CODESIGN_APP_STORE) libqsqlite.dylib
+
 .PHONY: docviewer.framework
 docviewer.framework:
+	rm -rf docviewer.framework
+	cp -r ../../qt/release-build/docviewer.framework .
+	cd docviewer.framework && rm -rf `echo [^V]*` Versions/Current 
+
 	mv ./docviewer.framework/Versions/1 ./docviewer.framework/Versions/A
 	ln -sF Versions/A/Headers ./docviewer.framework/Headers
 	ln -sF Versions/A/Resources ./docviewer.framework/Resources
@@ -7,9 +34,9 @@ docviewer.framework:
 	ln -sF A ./docviewer.framework/Versions/Current
 
 	install_name_tool -id @rpath/docviewer.framework/Versions/A/docviewer ./docviewer.framework/docviewer
-	install_name_tool -change /usr/local/lib/libgq.dylib @rpath/libgq.dylib ./docviewer.framework/docviewer
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./docviewer.framework/docviewer
-	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @rpath/QtSql.framework/Versions/A/QtSql ./docviewer.framework/docviewer
+	install_name_tool -change /usr/local/lib/libgq.dylib @executable_path/../Frameworks/libgq.dylib ./docviewer.framework/docviewer
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./docviewer.framework/docviewer
+	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/A/QtSql ./docviewer.framework/docviewer
 	
 	otool -L ./docviewer.framework/docviewer
 	ls -l ./docviewer.framework
@@ -20,9 +47,7 @@ docviewer.framework:
 .PHONY: QtCore.framework
 QtCore.framework:
 	echo If rm fails the framework is already signed.
-	rm ./QtCore.framework/QtCore_debug
-	rm ./QtCore.framework/Versions/5/QtCore_debug
-	rm ./QtCore.framework/.prl
+	cd QtCore.framework && rm -rf `echo [^V]*` Versions/Current
 
 	mv ./QtCore.framework/Versions/5 ./QtCore.framework/Versions/A
 	ln -sF Versions/A/Headers ./QtCore.framework/Headers
@@ -31,38 +56,17 @@ QtCore.framework:
 	ln -sF A ./QtCore.framework/Versions/Current
 
 	install_name_tool -id @rpath/QtCore.framework/Versions/A/QtCore ./QtCore.framework/QtCore
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./QtCore.framework/QtCore
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./QtCore.framework/QtCore
 	
 	otool -L ./QtCore.framework/QtCore
 	ls -l ./QtCore.framework
 	ls -l ./QtCore.framework/Versions
 
-.PHONY: QtGui.framework
-QtGui.framework:
-	echo If rm fails the framework is already signed.
-	rm ./QtGui.framework/QtGui_debug
-	rm ./QtGui.framework/Versions/5/QtGui_debug
-	rm ./QtGui.framework/.prl
-
-	mv ./QtGui.framework/Versions/5 ./QtGui.framework/Versions/A
-	ln -sF Versions/A/Headers ./QtGui.framework/Headers
-	ln -sF Versions/A/Resources ./QtGui.framework/Resources
-	ln -sF Versions/Current/QtGui ./QtGui.framework/QtGui
-	ln -sF A ./QtGui.framework/Versions/Current
-
-	install_name_tool -id @rpath/QtGui.framework/Versions/A/QtGui ./QtGui.framework/QtGui
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./QtGui.framework/QtGui
-	
-	otool -L ./QtGui.framework/QtGui
-	ls -l ./QtGui.framework
-	ls -l ./QtGui.framework/Versions
-
-
 .PHONY: libqsqlite.dylib
 libqsqlite.dylib:
 	install_name_tool -id @rpath/libqsqlite.dylib ./libqsqlite.dylib
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./libqsqlite.dylib
-	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @rpath/QtSql.framework/Versions/A/QtSql ./libqsqlite.dylib	
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./libqsqlite.dylib
+	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/A/QtSql ./libqsqlite.dylib	
 
 	otool -L libqsqlite.dylib
 
@@ -70,9 +74,7 @@ libqsqlite.dylib:
 .PHONY: QtSql.framework
 QtSql.framework:
 	echo If rm fails the framework is already signed.
-	rm ./QtSql.framework/QtSql_debug
-	rm ./QtSql.framework/Versions/5/QtSql_debug
-	rm ./QtSql.framework/.prl
+	cd QtSql.framework && rm -rf `echo [^V]*` Versions/Current
 
 	mv ./QtSql.framework/Versions/5 ./QtSql.framework/Versions/A
 	ln -sF Versions/A/Headers ./QtSql.framework/Headers
@@ -81,7 +83,7 @@ QtSql.framework:
 	ln -sF A ./QtSql.framework/Versions/Current
 
 	install_name_tool -id @rpath/QtSql.framework/Versions/A/QtSql ./QtSql.framework/QtSql
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/A/QtCore ./QtSql.framework/QtSql
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./QtSql.framework/QtSql
 
 	otool -L ./QtSql.framework/QtSql
 	ls -l ./QtSql.framework

@@ -125,7 +125,7 @@
                                                                             </connections>
                                                                         </button>
                                                                         <textField identifier="OpenTabRowViewText" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oT7-QV-yII" userLabel="OpenTabRowViewText">
-                                                                            <rect key="frame" x="18" y="7" width="206" height="16"/>
+                                                                            <rect key="frame" x="18" y="7" width="211" height="16"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="FG4-SJ-9bf">
                                                                                 <font key="font" metaFont="systemLight" size="12"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -146,7 +146,7 @@
                                                                         <constraint firstItem="agB-Dc-zVv" firstAttribute="centerY" secondItem="Qrg-qa-dAH" secondAttribute="centerY" constant="1" id="f7H-te-W92"/>
                                                                         <constraint firstItem="agB-Dc-zVv" firstAttribute="leading" secondItem="Qrg-qa-dAH" secondAttribute="leading" constant="8" id="kjz-Kd-n5F"/>
                                                                         <constraint firstItem="oT7-QV-yII" firstAttribute="leading" secondItem="Qrg-qa-dAH" secondAttribute="leading" constant="20" id="rJx-GV-dE0"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="oT7-QV-yII" secondAttribute="trailing" constant="20" id="xBN-Db-BVW"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="oT7-QV-yII" secondAttribute="trailing" constant="15" id="xBN-Db-BVW"/>
                                                                     </constraints>
                                                                 </tableCellView>
                                                                 <tableCellView identifier="SearchResultsRowView" id="0FU-Tm-QdB" userLabel="SearchResultsRowView" customClass="SearchResultCellView">

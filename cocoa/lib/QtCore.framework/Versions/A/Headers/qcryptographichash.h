@@ -101,7 +101,6 @@ public:
     QByteArray result() const;
 
     static QByteArray hash(const QByteArray &data, Algorithm method);
-    static int hashLength(Algorithm method);
 private:
     Q_DISABLE_COPY(QCryptographicHash)
     QCryptographicHashPrivate *d;

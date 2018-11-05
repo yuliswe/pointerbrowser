@@ -633,7 +633,6 @@ public:
         const_iterator &operator-=(int j);
         const_iterator operator+(int j) const;
         const_iterator operator-(int j) const;
-        friend inline const_iterator operator+(int j, const_iterator k) { return k + j; }
     };
 
     friend struct const_iterator;
@@ -691,7 +690,6 @@ public:
         const_iterator &operator-=(int j);
         const_iterator operator+(int j) const;
         const_iterator operator-(int j) const;
-        friend inline const_iterator operator+(int j, const_iterator k) { return k + j; }
     };
 
     friend struct const_iterator;

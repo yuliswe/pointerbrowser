@@ -44,8 +44,6 @@
 #include <QtSql/qsqldatabase.h>
 #include <QtSql/qsqlquerymodel.h>
 
-QT_REQUIRE_CONFIG(sqlmodel);
-
 QT_BEGIN_NAMESPACE
 
 

@@ -26,9 +26,6 @@
 #define QT_FEATURE_c__11 1
 #define QT_FEATURE_c__14 1
 #define QT_FEATURE_c__1z -1
-#define QT_FEATURE_c99 1
-#define QT_FEATURE_c11 1
-#define QT_FEATURE_thread 1
 #define QT_FEATURE_future 1
 #define QT_FEATURE_concurrent 1
 #define QT_FEATURE_pkg_config -1
@@ -42,7 +39,7 @@
 #define QT_FEATURE_simulator_and_device -1
 #define QT_FEATURE_static -1
 #define QT_COMPILER_SUPPORTS_SIMD_ALWAYS 1
-#define QT_VERSION_STR "5.12.0"
+#define QT_VERSION_STR "5.11.2"
 #define QT_VERSION_MAJOR 5
-#define QT_VERSION_MINOR 12
-#define QT_VERSION_PATCH 0
+#define QT_VERSION_MINOR 11
+#define QT_VERSION_PATCH 2

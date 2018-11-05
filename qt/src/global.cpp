@@ -13,40 +13,12 @@
 #include "mac_crawler.hpp"
 #endif
 
-
-void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
-{
-#ifdef QT_NO_DEBUG_OUTPUT
-    return;
-#endif
-    QString txt;
-    switch (type) {
-    case QtFatalMsg: txt = QString("Fatal: %1\n").arg(msg); break;
-    case QtCriticalMsg: txt = QString("Critical: %1\n").arg(msg); break;
-    case QtWarningMsg: txt = QString("Warning: %1\n").arg(msg); break;
-    case QtInfoMsg: txt = QString("Info: %1\n").arg(msg); break;
-    case QtDebugMsg: txt = QString("Debug: %1\n").arg(msg); break;
-    }
-    switch (type) {
-    case QtFatalMsg:
-        FileManager::appendDataFileS("fatal.log", txt);
-    case QtCriticalMsg:
-        FileManager::appendDataFileS("critical.log", txt);
-    case QtWarningMsg:
-        FileManager::appendDataFileS("warning.log", txt);
-    case QtInfoMsg:
-        FileManager::appendDataFileS("info.log", txt);
-    case QtDebugMsg:
-        FileManager::appendDataFileS("debug.log", txt);
-    }
-}
-
 void dumpLibraryInfo()
 {
     qCInfo(GlobalLogging) << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
     qCInfo(GlobalLogging) << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::ImportsPath" << QLibraryInfo::location(QLibraryInfo::ImportsPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::DataPath" << QLibraryInfo::location(QLibraryInfo::DataPath);
+    qCInfo(GlobalLogging) << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    qCInfo(GlobalLogging) << "QCoreApplication::applicationDirPath" << QCoreApplication::applicationDirPath();
 }
 
 Global::Global(QObject *parent) : QObject(parent)
@@ -78,6 +50,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
 
     QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
         dumpLibraryInfo();
+
         QString currV = FileManager::readQrcFileS("defaults/version");
         QString dataV = FileManager::readDataFileS("version");
         qCCritical(GlobalLogging) << "running version" << currV << "data version" << dataV;

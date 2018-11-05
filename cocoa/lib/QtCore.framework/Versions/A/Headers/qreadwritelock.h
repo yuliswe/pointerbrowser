@@ -45,7 +45,7 @@
 QT_BEGIN_NAMESPACE
 
 
-#if QT_CONFIG(thread)
+#ifndef QT_NO_THREAD
 
 class QReadWriteLockPrivate;
 
@@ -174,7 +174,7 @@ inline QWriteLocker::QWriteLocker(QReadWriteLock *areadWriteLock)
 #pragma warning( pop )
 #endif
 
-#else // QT_CONFIG(thread)
+#else // QT_NO_THREAD
 
 class Q_CORE_EXPORT QReadWriteLock
 {
@@ -225,7 +225,7 @@ private:
     Q_DISABLE_COPY(QWriteLocker)
 };
 
-#endif // QT_CONFIG(thread)
+#endif // QT_NO_THREAD
 
 QT_END_NAMESPACE
 

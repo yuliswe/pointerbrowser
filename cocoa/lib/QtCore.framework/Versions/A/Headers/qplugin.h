@@ -55,21 +55,6 @@ QT_BEGIN_NAMESPACE
 #  endif
 #endif
 
-inline constexpr unsigned char qPluginArchRequirements()
-{
-    return 0
-#ifndef QT_NO_DEBUG
-            | 1
-#endif
-#ifdef __AVX2__
-            | 2
-#  ifdef __AVX512F__
-            | 4
-#  endif
-#endif
-    ;
-}
-
 typedef QObject *(*QtPluginInstanceFunction)();
 typedef const char *(*QtPluginMetaDataFunction)();
 
@@ -105,6 +90,7 @@ void Q_CORE_EXPORT qRegisterStaticPluginFunction(QStaticPlugin staticPlugin);
 #  define QT_PLUGIN_METADATA_SECTION \
     __declspec(allocate(".qtmetadata"))
 #else
+#  define QT_PLUGIN_VERIFICATION_SECTION
 #  define QT_PLUGIN_METADATA_SECTION
 #endif
 
@@ -119,21 +105,11 @@ void Q_CORE_EXPORT qRegisterStaticPluginFunction(QStaticPlugin staticPlugin);
         }; \
        static Static##PLUGIN##PluginInstance static##PLUGIN##Instance;
 
-#if defined(QT_PLUGIN_RESOURCE_INIT_FUNCTION)
-#  define QT_PLUGIN_RESOURCE_INIT \
-          extern void QT_PLUGIN_RESOURCE_INIT_FUNCTION(); \
-          QT_PLUGIN_RESOURCE_INIT_FUNCTION();
-#else
-#  define QT_PLUGIN_RESOURCE_INIT
-#endif
-
 #define Q_PLUGIN_INSTANCE(IMPLEMENTATION) \
         { \
             static QT_PREPEND_NAMESPACE(QPointer)<QT_PREPEND_NAMESPACE(QObject)> _instance; \
-            if (!_instance) {    \
-                QT_PLUGIN_RESOURCE_INIT \
+            if (!_instance)      \
                 _instance = new IMPLEMENTATION; \
-            } \
             return _instance; \
         }
 

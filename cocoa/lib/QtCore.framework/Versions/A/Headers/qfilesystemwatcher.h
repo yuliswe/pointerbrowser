@@ -42,7 +42,7 @@
 
 #include <QtCore/qobject.h>
 
-QT_REQUIRE_CONFIG(filesystemwatcher);
+#ifndef QT_NO_FILESYSTEMWATCHER
 
 QT_BEGIN_NAMESPACE
 
@@ -78,4 +78,5 @@ private:
 
 QT_END_NAMESPACE
 
+#endif // QT_NO_FILESYSTEMWATCHER
 #endif // QFILESYSTEMWATCHER_H

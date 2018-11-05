@@ -30,11 +30,6 @@
 #include "qbytearraylist.h"
 #include "qbytearraymatcher.h"
 #include "qcache.h"
-#include "qcborarray.h"
-#include "qcborcommon.h"
-#include "qcbormap.h"
-#include "qcborstream.h"
-#include "qcborvalue.h"
 #include "qchar.h"
 #include "qcollator.h"
 #if QT_CONFIG(commandlineparser)
@@ -70,9 +65,7 @@
 #include "qfiledevice.h"
 #include "qfileinfo.h"
 #include "qfileselector.h"
-#if QT_CONFIG(filesystemwatcher)
 #include "qfilesystemwatcher.h"
-#endif
 #if QT_CONFIG(statemachine)
 #include "qfinalstate.h"
 #endif
@@ -164,10 +157,7 @@
 #include "qsavefile.h"
 #include "qscopedpointer.h"
 #include "qscopedvaluerollback.h"
-#include "qscopeguard.h"
-#if QT_CONFIG(thread)
 #include "qsemaphore.h"
-#endif
 #include "qsequentialanimationgroup.h"
 #include "qset.h"
 #include "qsettings.h"
@@ -211,9 +201,7 @@
 #include "qtextcodec.h"
 #include "qtextstream.h"
 #include "qthread.h"
-#if QT_CONFIG(thread)
 #include "qthreadpool.h"
-#endif
 #include "qthreadstorage.h"
 #include "qtimeline.h"
 #include "qtimer.h"

@@ -47,11 +47,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef min // MSVC
-#undef min
-#undef max
-#endif
-
 QT_BEGIN_NAMESPACE
 
 /*
@@ -162,14 +157,6 @@ template <typename T> inline void qbswap(const T src, void *dest)
     qToUnaligned<T>(qbswap<T>(src), dest);
 }
 
-template <int Size> void *qbswap(const void *source, qsizetype count, void *dest) noexcept;
-template<> inline void *qbswap<1>(const void *source, qsizetype count, void *dest) noexcept
-{
-    return source != dest ? memcpy(dest, source, size_t(count)) : dest;
-}
-template<> Q_CORE_EXPORT void *qbswap<2>(const void *source, qsizetype count, void *dest) noexcept;
-template<> Q_CORE_EXPORT void *qbswap<4>(const void *source, qsizetype count, void *dest) noexcept;
-template<> Q_CORE_EXPORT void *qbswap<8>(const void *source, qsizetype count, void *dest) noexcept;
 
 #if Q_BYTE_ORDER == Q_BIG_ENDIAN
 
@@ -185,15 +172,6 @@ template <typename T> inline void qToBigEndian(T src, void *dest)
 { qToUnaligned<T>(src, dest); }
 template <typename T> inline void qToLittleEndian(T src, void *dest)
 { qbswap<T>(src, dest); }
-
-template <typename T> inline void qToBigEndian(const void *source, qsizetype count, void *dest)
-{ if (source != dest) memcpy(dest, source, count * sizeof(T)); }
-template <typename T> inline void qToLittleEndian(const void *source, qsizetype count, void *dest)
-{ qbswap<sizeof(T)>(source, count, dest); }
-template <typename T> inline void qFromBigEndian(const void *source, qsizetype count, void *dest)
-{ if (source != dest) memcpy(dest, source, count * sizeof(T)); }
-template <typename T> inline void qFromLittleEndian(const void *source, qsizetype count, void *dest)
-{ qbswap<sizeof(T)>(source, count, dest); }
 #else // Q_LITTLE_ENDIAN
 
 template <typename T> inline Q_DECL_CONSTEXPR T qToBigEndian(T source)
@@ -209,14 +187,6 @@ template <typename T> inline void qToBigEndian(T src, void *dest)
 template <typename T> inline void qToLittleEndian(T src, void *dest)
 { qToUnaligned<T>(src, dest); }
 
-template <typename T> inline void qToBigEndian(const void *source, qsizetype count, void *dest)
-{ qbswap<sizeof(T)>(source, count, dest); }
-template <typename T> inline void qToLittleEndian(const void *source, qsizetype count, void *dest)
-{ if (source != dest) memcpy(dest, source, count * sizeof(T)); }
-template <typename T> inline void qFromBigEndian(const void *source, qsizetype count, void *dest)
-{ qbswap<sizeof(T)>(source, count, dest); }
-template <typename T> inline void qFromLittleEndian(const void *source, qsizetype count, void *dest)
-{ if (source != dest) memcpy(dest, source, count * sizeof(T)); }
 #endif // Q_BYTE_ORDER == Q_BIG_ENDIAN
 
 
@@ -284,27 +254,6 @@ public:
     {   return (*this = S::fromSpecial(val) & i); }
     QSpecialInteger &operator ^=(T i)
     {   return (*this = S::fromSpecial(val) ^ i); }
-    QSpecialInteger &operator ++()
-    {   return (*this = S::fromSpecial(val) + 1); }
-    QSpecialInteger &operator --()
-    {   return (*this = S::fromSpecial(val) - 1); }
-    QSpecialInteger operator ++(int)
-    {
-        QSpecialInteger<S> pre = *this;
-        *this += 1;
-        return pre;
-    }
-    QSpecialInteger operator --(int)
-    {
-        QSpecialInteger<S> pre = *this;
-        *this -= 1;
-        return pre;
-    }
-
-    static constexpr QSpecialInteger max()
-    { return QSpecialInteger(std::numeric_limits<T>::max()); }
-    static constexpr QSpecialInteger min()
-    { return QSpecialInteger(std::numeric_limits<T>::min()); }
 };
 
 template<typename T>
@@ -342,13 +291,6 @@ public:
     QLEInteger &operator |=(T i);
     QLEInteger &operator &=(T i);
     QLEInteger &operator ^=(T i);
-    QLEInteger &operator ++();
-    QLEInteger &operator --();
-    QLEInteger &operator ++(int);
-    QLEInteger &operator --(int);
-
-    static constexpr QLEInteger max();
-    static constexpr QLEInteger min();
 };
 
 template<typename T>
@@ -369,13 +311,6 @@ public:
     QBEInteger &operator |=(T i);
     QBEInteger &operator &=(T i);
     QBEInteger &operator ^=(T i);
-    QBEInteger &operator ++();
-    QBEInteger &operator --();
-    QBEInteger &operator ++(int);
-    QBEInteger &operator --(int);
-
-    static constexpr QBEInteger max();
-    static constexpr QBEInteger min();
 };
 #else
 

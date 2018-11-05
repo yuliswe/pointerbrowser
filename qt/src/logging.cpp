@@ -6,7 +6,7 @@ QtMsgType debug = QtDebugMsg;
 QLoggingCategory WebpageLogging("Webpage", release);
 QLoggingCategory SearchDBLogging("SearchDB", release);
 
-QLoggingCategory GlobalLogging("Global", release);
+QLoggingCategory GlobalLogging("Global", QtInfoMsg);
 
 QLoggingCategory FileLogging("File", release);
 

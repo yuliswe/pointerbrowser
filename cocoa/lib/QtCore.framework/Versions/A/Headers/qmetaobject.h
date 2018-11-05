@@ -209,7 +209,6 @@ public:
     Q_DECL_CONSTEXPR inline QMetaEnum() : mobj(nullptr), handle(0) {}
 
     const char *name() const;
-    const char *enumName() const;
     bool isFlag() const;
     bool isScoped() const;
 

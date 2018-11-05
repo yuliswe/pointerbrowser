@@ -282,7 +282,7 @@
 }
 //
 - (BOOL)makeFirstResponder:(NSResponder *)responder {
-    NSLog(@"%@ make first responder", responder);
+//    NSLog(@"%@ make first responder", responder);
     BOOL rt = [super makeFirstResponder:responder];
     return rt;
 }

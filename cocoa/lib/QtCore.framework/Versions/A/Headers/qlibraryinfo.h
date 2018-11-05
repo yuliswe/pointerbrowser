@@ -56,11 +56,11 @@ public:
     static QT_DEPRECATED QString licensedProducts();
 #endif
 
-#if QT_CONFIG(datestring)
+#ifndef QT_NO_DATESTRING
 #if QT_DEPRECATED_SINCE(5, 5)
     static QT_DEPRECATED QDate buildDate();
 #endif // QT_DEPRECATED_SINCE(5, 5)
-#endif // datestring
+#endif //QT_NO_DATESTRING
 
     static const char * build() Q_DECL_NOTHROW;
 
