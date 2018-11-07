@@ -138,6 +138,7 @@ public:
     METH_ASYNC_4(int, moveTab, Controller::TabState, int, Controller::TabState, int)
     METH_ASYNC_0(int, closeTab)
     METH_ASYNC_2(int, closeTab, Controller::TabState, int)
+    METH_ASYNC_2(int, closeTab, Controller::TabState, Webpage_)
     METH_ASYNC_2(int, closeTab, Controller::TabState, Url const&)
     int loadLastOpen();
     int saveLastOpen();

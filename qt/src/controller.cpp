@@ -120,7 +120,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         return 0;
     }
     static Webpage_ old_page = nullptr;
-    closeAllPopovers();
+//    closeAllPopovers();
     // disconnect from old
     if (old_page != nullptr) {
         QObject::disconnect(old_page.get(), &Webpage::propertyChanged, this, &Controller::onCurrentTabWebpagePropertyChanged);
@@ -233,6 +233,18 @@ int Controller::closeTab(TabState state, int index, void const* sender)
         set_current_preview_tab_index(-1);
     }
     return 0;
+}
+
+int Controller::closeTab(TabState state, Webpage_ w, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::closeTab" << state << w->url();
+    int idx = -1;
+    if (state == TabStateOpen) {
+        idx = open_tabs()->findTab(w);
+    } else if (state == TabStatePreview) {
+        idx = preview_tabs()->findTab(w);
+    }
+    return closeTab(state, idx);
 }
 
 int Controller::closeTab(TabState state, Url const& uri, void const* sender)

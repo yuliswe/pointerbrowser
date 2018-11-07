@@ -36,6 +36,7 @@
     self = [super initWithFrame:frame configuration:config];
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
+    self->m_new_request_is_download = false;
     self.UIDelegate = self;
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
@@ -295,25 +296,45 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
            withEvent:(NSEvent *)event
 {
     [menu filterMenuItems];
-//    NSArray* itemarray = menu.itemArray;
-//    for (int i = itemarray.count - 1; i >= 0; i--) {
-//        NSMenuItem* item = itemarray[i];
-//        if ([item.title containsString:@"Download Linked File"])
-//        {
-////            item.action = @selector()
-//        }
-//    }
+    NSArray* itemarray = menu.itemArray;
+    // dirty hacking
+    // steal the private API from WKWebView
+    for (int i = itemarray.count - 1; i >= 0; i--) {
+        NSMenuItem* item = itemarray[i];
+        if ([item.title containsString:@"Open Link in New Window"])
+        {
+            NSMenuItem* m_wkwebview_menu_open_in_new_window_clone = [item copy];
+            m_wkwebview_menu_open_in_new_window_clone.title = @"Download Link as File";
+            m_wkwebview_menu_open_in_new_window_clone.target = self;
+            m_wkwebview_menu_open_in_new_window_clone.action = @selector(downloadLink:);
+            self->m_wkwebview_menu_target_for_open_in_new_window = item.target;
+            self->m_wkwebview_menu_action_for_open_in_new_window = item.action;
+            [menu insertItem:m_wkwebview_menu_open_in_new_window_clone atIndex:1];
+            break;
+        }
+    }
+    // dirty ends
 }
-//
-//- (void)downloadLink:(
-//{
-//    self.window.selectedtex
-//}
 
-- (void)webView:(WKWebView *)webView
+//
+- (void)downloadLink:(id)sender
+{
+    self->m_new_request_is_download = true;
+    [self->m_wkwebview_menu_target_for_open_in_new_window performSelector:self->m_wkwebview_menu_action_for_open_in_new_window withObject:sender];
+}
+
+- (void)webView:(WebUI *)webView
 decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
 decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 {
+    if (webView.webpage->is_for_download()) {
+        NSURL* url = navigationResponse.response.URL;
+        NSString* filename = navigationResponse.response.suggestedFilename;
+        Global::controller->downloadFileFromUrlAndRenameAsync(webView.webpage->url(), QString::fromNSString(filename));
+        Global::controller->closeTabAsync(Controller::TabStateOpen, webView.webpage);
+        decisionHandler(WKNavigationResponsePolicyCancel);
+        return;
+    }
     if (navigationResponse.canShowMIMEType) {
         decisionHandler(WKNavigationResponsePolicyAllow);
 //        if ([navigationResponse.response.MIMEType containsString:@"pdf"]) {
@@ -338,8 +359,12 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     Webpage_ new_webpage = shared<Webpage>(url);
     WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
     new_webpage->set_associated_frontend((__bridge void*)new_webview);
+    if (m_new_request_is_download) {
+        m_new_request_is_download = false;
+        new_webpage->set_is_for_download(true);
+    }
     new_webpage->moveToThread(Global::qCoreApplicationThread);
-    if (Global::controller->open_tabs()->findTab(webView.webpage.get()) >= 0) {
+    if (Global::controller->open_tabs()->findTab(webView.webpage) >= 0) {
         Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     } else {
         Global::controller->newTabAsync(0, Controller::TabStatePreview, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
@@ -362,6 +387,7 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
         }
     }];
 }
+
 @end
 
 

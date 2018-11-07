@@ -86,10 +86,10 @@ int TabsModel::findTab(Url const& uri) {
     return -1;
 }
 
-int TabsModel::findTab(Webpage* w) {
+int TabsModel::findTab(Webpage_ w) {
     int i = 0;
     for (Webpage_ tab : _tabs) {
-        if (tab.get() == w) {
+        if (tab == w) {
             return i;
         }
         i++;

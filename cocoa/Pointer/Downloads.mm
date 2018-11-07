@@ -134,6 +134,15 @@
     }];
 }
 
+- (IBAction)openDownloadedFile:(id)sender
+{
+    int row = self->m_tableview.selectedRow - Global::controller->downloading_files()->count();
+    if (row >= 0) {
+        File_ f = Global::controller->download_files()->get(row);
+        [[NSWorkspace sharedWorkspace] openFile:f->absoluteFilePath().toNSString()];
+    }
+}
+
 @end
 
 @implementation DownloadTableItem

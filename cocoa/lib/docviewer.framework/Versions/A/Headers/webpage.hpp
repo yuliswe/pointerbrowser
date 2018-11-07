@@ -66,6 +66,7 @@ public:
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(bool, is_blank, true)
     PROP_RN_D(bool, is_error, false)
+    PROP_RWN_D(bool, is_for_download, false)
     PROP_RN_D(QString, error, "")
     PROP_RWN_D(bool, can_go_forward, false)
     PROP_RWN_D(uint, tab_state, 0)

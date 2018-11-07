@@ -31,7 +31,7 @@ class TabsModel : public QAbstractListModel
         bool removeTab(Url const& uri);
         void moveTab(int from, int to);
         int findTab(Url const& uri);
-        int findTab(Webpage*);
+        int findTab(Webpage_);
         int count() const;
 //        void saveTabs();
 //        void loadTabs();
