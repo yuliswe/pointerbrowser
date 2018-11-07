@@ -319,7 +319,7 @@ bool Crawler::isProbablySymbol(const HtmlLink& link, const UrlNoHash& base)
     return true;
 }
 
-void Crawler::processParseResult(const UrlNoHash& base, QString const& title, const QSet<HtmlLink>& links)
+void Crawler::processParseResult(const UrlNoHash& base, QString title, const QSet<HtmlLink>& links)
 {
     qCInfo(CrawlerLogging) << "Crawler::processParseResult" << base;
     qCDebug(CrawlerLogging) << "Crawler found" << links.count() << "links in" << base << title;
@@ -330,7 +330,15 @@ void Crawler::processParseResult(const UrlNoHash& base, QString const& title, co
             || actionForUrl(base) == SaveUrlTitleAndSymbolsThenCrawlSublinks)
     {
         Global::searchDB->update_worker()->addWebpageAsync(base);
-        Global::searchDB->update_worker()->updateWebpageAsync(base, "title", title.trimmed());
+        if (title.isEmpty()) {
+            // guess a good title from url
+            title = base.fileName();
+            // url path might point to a directory
+            if (title.isEmpty()) {
+                title = base.authority();
+            }
+        }
+        Global::searchDB->update_worker()->updateWebpageAsync(base, "title", title);
         QMap<QString,QString> new_symbols;
         QMap<QString,QString> new_referers;
         for (const HtmlLink& link : links)
@@ -348,6 +356,7 @@ void Crawler::processParseResult(const UrlNoHash& base, QString const& title, co
                 if (linktxt.isEmpty()) {
                     linktxt = link.url.fileName();
                 }
+                // url path might point to a directory
                 if (linktxt.isEmpty()) {
                     linktxt = link.url.authority();
                 }
@@ -383,8 +392,10 @@ QPair<QString,QSet<HtmlLink>> Crawler::parseHtml(QString const& html, const UrlN
         title.replace(QRegularExpression("\\s+"), " ");
         if (title.length() > 0)
         {
-            output.first = title;
+            output.first = title.trimmed();
         }
+    } else {
+        output.first = "";
     }
     QString scheme = baseUrl.scheme();
     QString host = baseUrl.authority();

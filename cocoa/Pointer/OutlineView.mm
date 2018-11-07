@@ -237,10 +237,14 @@
 
 - (void)handleSearchResultsReset
 {
-    NSMutableIndexSet* old_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.search_results.get.count)];
-    
-    [self.search_results.get removeAllObjects];
     int count = Global::searchDB->search_result()->count();
+    if ((self.search_results.get.count == 0 && count > 0)
+        || (self.search_results.get.count > 0 && count == 0))
+    {
+        [self.outline reloadItem:self.search_results reloadChildren:NO];
+    }
+    NSMutableIndexSet* old_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.search_results.get.count)];
+    [self.search_results.get removeAllObjects];
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::searchDB->search_result()->webpage_(i);
         id item = [CppSharedData wrap:w];
@@ -299,6 +303,13 @@
 {
     int first = [indices[@"first"] intValue];
     int last = [indices[@"last"] intValue];
+    
+    if ((self.search_results.get.count == 0 && Global::searchDB->search_result()->count() > 0)
+        || (self.search_results.get.count > 0 && Global::searchDB->search_result()->count() == 0))
+    {
+        [self.outline reloadItem:self.search_results reloadChildren:NO];
+    }
+    
     NSMutableIndexSet* inserted = [[NSMutableIndexSet alloc] init];
     for (int i = first; i <= last; i++) {
         Webpage_ w = Global::searchDB->search_result()->webpage_(i);
@@ -309,6 +320,7 @@
         });
         [inserted addIndex:i];
     }
+    
     [self.outline beginUpdates];
     [self.outline insertItemsAtIndexes:inserted inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
     [self.outline endUpdates];
@@ -329,14 +341,23 @@
 {
     int first = [indices[@"first"] intValue];
     int last = [indices[@"last"] intValue];
+    
+    if ((self.search_results.get.count == 0 && Global::searchDB->search_result()->count() > 0)
+        || (self.search_results.get.count > 0 && Global::searchDB->search_result()->count() == 0))
+    {
+        [self.outline reloadItem:self.search_results reloadChildren:NO];
+    }
+    
     NSMutableIndexSet* removed = [[NSMutableIndexSet alloc] init];
     for (int i = first; i <= last; i++) {
         [self.search_results.get removeObjectAtIndex:i];
         [removed addIndex:i];
     }
+    [self.outline reloadItem:self.search_results reloadChildren:NO];
     [self.outline beginUpdates];
     [self.outline removeItemsAtIndexes:removed inParent:self.search_results withAnimation:NSTableViewAnimationEffectNone];
     [self.outline endUpdates];
+    
 }
 
 - (void)handleDataChanged:(id)item
@@ -376,6 +397,7 @@
     if (item == self.search_results) {
         NSTextField *result = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
         result.objectValue = @"Discoveries";
+        result.hidden = (Global::searchDB->search_result()->count() == 0);
         return result;
     }
     if ([outlineView parentForItem:item] == self.open_tabs)
