@@ -180,6 +180,10 @@ didFailProvisionalNavigation:(WKNavigation *)navigation
         // Frame Load Interrupted
         return;
     }
+    if (error.code == -999) {
+        // Too many requests
+        return;
+    }
     Url u = self.webpage->url();
     NSURL* url = u.toNSURL();
     self->m_erroring_url = url;
