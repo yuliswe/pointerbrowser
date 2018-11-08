@@ -231,13 +231,23 @@ didCommitNavigation:(WKNavigation *)navigation {
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    if ([navigationAction.request.URL.absoluteString hasPrefix:@"about:error:"]) {
+    // change url to https
+    Url url(QUrl::fromNSURL(navigationAction.request.URL));
+    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
+        && navigationAction.targetFrame.isMainFrame)
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        qDebug() << url.full().toNSString();
+        [webView loadUri:url.full().toNSString()];
+        return;
+    }
+    if (url.full().indexOf("about:error:") == 0) {
         if (self->m_redirected_from_error) {
             self->m_redirected_from_error = false;
             decisionHandler(WKNavigationActionPolicyAllow);
         } else {
             decisionHandler(WKNavigationActionPolicyCancel);
-            [webView loadUri:[navigationAction.request.URL.absoluteString substringFromIndex:12]];
+            [webView loadUri:url.full().mid(12).toNSString()];
         }
         return;
     }
@@ -251,8 +261,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     {
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ w = [(WebUI*)webView webpage];
-        NSURL* url = navigationAction.request.URL;
-        Global::controller->newTabAsync(Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        Global::controller->newTabAsync(Controller::TabStateOpen, url, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }
