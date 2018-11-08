@@ -7,6 +7,18 @@ QDebug& operator<<(QDebug& debug, const FindTextState& state)
     return debug << "FindTextState("<< state.visiable << "," << state.current << "/" << state.found << state.text << ")";
 }
 
+// copy contruct
+Webpage::Webpage(Webpage_ w)
+    : m_url(w->url())
+    , m_title(w->title())
+    , m_is_blank(w->is_blank())
+    , m_is_error(w->is_error())
+    , m_can_go_forward(w->can_go_forward())
+    , m_can_go_back(w->can_go_back())
+{
+
+}
+
 Webpage::Webpage(QString const& url)
 {
     go(url);

@@ -27,13 +27,12 @@
 
 @property Webpage_ webpage;
 
-- (instancetype)initWithWebpage:(Webpage_)webpage
-                          frame:(NSRect)frame
-                         config:(WKWebViewConfiguration*)config;
+- (instancetype)initWithFrame:(NSRect)frame
+                       config:(WKWebViewConfiguration*)config;
 - (void)loadUri:(NSString*)url;
 
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;
-
+- (void)connect:(Webpage_)webpage;
 @end
 

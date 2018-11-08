@@ -102,4 +102,8 @@ typedef enum {
 @end
 
 @interface OutlineView : NSOutlineView
+{
+    IBOutlet NSMenu* m_open_tab_menu;
+    IBOutlet NSMenu* m_search_result_tab_menu;
+}
 @end

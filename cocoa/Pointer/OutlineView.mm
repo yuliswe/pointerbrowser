@@ -51,6 +51,17 @@
     [super mouseDown:event];
 }
 
+- (void)rightMouseDown:(NSEvent *)event
+{
+    [NSMenu popUpContextMenu:self.menu withEvent:event forView:self];
+    [super rightMouseDown:event];
+}
+
+- (NSMenu*)menuForEvent:(NSEvent *)event
+{
+    return self.menu;
+}
+
 - (void)mouseExited:(NSEvent *)event
 {
     self.hovered = NO;
@@ -182,7 +193,20 @@
                          if (sender == (__bridge void*)self) { return; }
                          [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
                      });
+    QObject::connect(Global::controller,
+                     &Controller::crawler_rule_table_visible_changed,
+                     [=](bool visible, void const* sender) {
+                         if (sender == (__bridge void*)self) { return; }
+                         [self performSelectorOnMainThread:@selector(handle_crawler_table_visible_changed) withObject:nil waitUntilDone:YES];
+                     });
     [self reloadAll];
+}
+
+- (void)handle_crawler_table_visible_changed
+{
+//    NSIndexSet* before = self.outline.selectedRowIndexes;
+//    [self.outline reloadItem:self.search_results reloadChildren:YES];
+//    [self.outline selectRowIndexes:before byExtendingSelection:NO];
 }
 
 - (void)updateSelection
@@ -404,7 +428,6 @@
     {
         OpenTabCellView* result = [outlineView makeViewWithIdentifier:@"OpenTabRowView" owner:self];
         Webpage_ w = std::static_pointer_cast<Webpage>([(CppSharedData*)item ptr]);
-//        result.webpage = w;
         result.data_item = item;
         result.outline = outlineView;
         result.line1 = w->title().toNSString();
@@ -418,7 +441,7 @@
         result.line1 = w->title().toNSString();
         result.line2 = w->title_2().toNSString();
         result.line3 = w->title_3().toNSString();
-//        result.webpage = w;
+//        result.hidden = Global::controller->crawler_rule_table_visible();
         return result;
     }
     return nil;
@@ -487,7 +510,15 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView
    shouldSelectItem:(id)item
 {
-    return ! [self isHeader:item];
+    if ([self isHeader:item]) {
+        return false;
+    }
+    if ([self.outline parentForItem:item] == self.open_tabs) {
+        return true;
+    }
+    if ([self.outline parentForItem:item] == self.search_results) {
+        return ! Global::controller->crawler_rule_table_visible();
+    }
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
@@ -501,6 +532,11 @@ shouldShowOutlineCellForItem:(id)item
     Global::controller->searchTabsAsync(QString::fromNSString(m_searchfield.stringValue));
 }
 
+- (IBAction)clicked:(id)sender
+{
+//    Global::controller->closeAllPopoversAsync();
+}
+
 - (IBAction)doubleClicked:(id)sender
 {
     NSInteger index = [self.outline clickedRow] - Global::controller->open_tabs()->count() - 2; // -2 for labels
@@ -508,9 +544,9 @@ shouldShowOutlineCellForItem:(id)item
         // clicked on search result
         Webpage_ p = Global::searchDB->search_result()->webpage_(static_cast<int>(index));
         Global::controller->newTabAsync(Controller::TabStateOpen,
-                                                  p->url(),
-                                                  Controller::WhenCreatedViewNew,
-                                                  Controller::WhenExistsViewExisting);
+                                        p->url(),
+                                        Controller::WhenCreatedViewNew,
+                                        Controller::WhenExistsViewExisting);
     }
 }
 
@@ -628,5 +664,22 @@ shouldShowOutlineCellForItem:(id)item
     int rightX = reference.frame.origin.x + reference.frame.size.width;
     superFrame.size.width = rightX - superFrame.origin.x;
     return superFrame;
+}
+
+- (NSMenu*)menuForEvent:(NSEvent *)event
+{
+    NSPoint p = event.locationInWindow;
+    NSPoint pt = [self convertPoint:p fromView:nil];
+    int row = [self rowAtPoint:pt];
+    [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+    NSInteger index = row - 1; // -1 for labels
+    if (index >= 0 && index < Global::controller->open_tabs()->count()) {
+        return self->m_open_tab_menu;
+    }
+    index = row - Global::controller->open_tabs()->count() - 2;
+    if (index >= 0 && index < Global::searchDB->search_result()->count()) {
+        return self->m_search_result_tab_menu;
+    }
+    return nil;
 }
 @end

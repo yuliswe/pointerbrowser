@@ -155,6 +155,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         }
         if (i >= preview_tabs()->count()) { i = preview_tabs()->count() - 1; }
         page = preview_tabs()->webpage_(i);
+        set_crawler_rule_table_visible(false);
     }
     Q_ASSERT(page != nullptr);
     helperCurrentTabWebpagePropertyChanged(page, nullptr, sender);
@@ -807,11 +808,20 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
     if (!a || w->is_load_progress_change(a)) { set_address_bar_load_progress(w->load_progress()); }
     if (!a || w->is_title_change(a)) { set_address_bar_title(w->title()); }
     if (!a || w->is_find_text_state_change(a)) { set_current_webpage_find_text_state(w->find_text_state()); }
-    if (!a || w->is_crawler_rule_table_change(a)) { set_current_webpage_crawler_rule_table(w->crawler_rule_table()); }
+    if (!a || w->is_crawler_rule_table_change(a)) {
+        if (! w->crawler_rule_table()->is_loaded()) {
+            w->crawlerRuleTableReloadFromSettings();
+        }
+        set_current_webpage_crawler_rule_table(w->crawler_rule_table());
+    }
     if (!a || w->is_is_blank_change(a)) {
         set_bookmark_page_visible(w->is_blank());
         set_current_tab_webpage_is_blank(w->is_blank());
-        set_crawler_rule_table_enabled(! w->is_blank());
+        if (w->associated_container() == open_tabs().get()) {
+            set_crawler_rule_table_enabled(! w->is_blank());
+        } else {
+            set_crawler_rule_table_enabled(false);
+        }
         if (w->is_blank()) {
             showBookmarkPage();
         } else {

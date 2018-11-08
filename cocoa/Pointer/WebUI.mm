@@ -23,9 +23,8 @@
     [super mouseDown:event];
 }
 
-- (instancetype)initWithWebpage:(Webpage_)webpage
-                          frame:(NSRect)frame
-                         config:(WKWebViewConfiguration*)config
+- (instancetype)initWithFrame:(NSRect)frame
+                       config:(WKWebViewConfiguration*)config
 {
     if (! config) {
         config = [[WKWebViewConfiguration alloc] init];
@@ -42,17 +41,9 @@
     self.allowsMagnification = YES;
     self.navigationDelegate = self;
     //    self.customUserAgent = @"Pointer";
-    self.webpage = webpage;
-    self.webpage->set_associated_frontend_async((__bridge void*)self);
-    [self addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"URL" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     self->m_error_page_view_controller = [[ErrorPageViewController alloc] init];
     [self addSubviewAndFill:self->m_error_page_view_controller.view];
     self->m_error_page_view_controller.view.hidden = YES;
-    [self connect];
     return self;
 }
 
@@ -61,8 +52,15 @@
 //    self.webpage->set_associated_frontend_async(nullptr);
 }
 
-- (void)connect
+- (void)connect:(Webpage_)webpage
 {
+    self.webpage = webpage;
+    self.webpage->set_associated_frontend_async((__bridge void*)self);
+    [self addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"URL" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     QObject::connect(self.webpage.get(), &Webpage::url_changed,
                      [=](const Url& url, void const* sender)
     {
@@ -206,9 +204,10 @@ didFailProvisionalNavigation:(WKNavigation *)navigation
     [webView loadRequest:[NSURLRequest requestWithURL:redirect]];
 }
 
-- (void)webView:(WKWebView *)webView
+- (void)webView:(WebUI *)webView
 didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
 {
+    webView.webpage->set_is_loaded_async(false);
 }
 
 - (void)webView:(WKWebView *)webView
@@ -219,8 +218,9 @@ didStartProvisionalNavigation:(WKNavigation *)navigation {
 {
 }
 
-- (void)webView:(WKWebView *)webView
+- (void)webView:(WebUI *)webView
 didFinishNavigation:(WKNavigation *)navigation {
+    webView.webpage->set_is_loaded_async(true);
 }
 
 - (void)webView:(WKWebView *)webView
@@ -231,16 +231,13 @@ didCommitNavigation:(WKNavigation *)navigation {
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    // change url to https
-    Url url(QUrl::fromNSURL(navigationAction.request.URL));
-    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
-        && navigationAction.targetFrame.isMainFrame)
-    {
-        decisionHandler(WKNavigationActionPolicyCancel);
-        qDebug() << url.full().toNSString();
-        [webView loadUri:url.full().toNSString()];
+    // Only want to handle main frame requests
+    if (navigationAction.targetFrame && ! navigationAction.targetFrame.isMainFrame) {
+        decisionHandler(WKNavigationActionPolicyAllow);
         return;
     }
+    Url url(QUrl::fromNSURL(navigationAction.request.URL));
+    // is url from error?
     if (url.full().indexOf("about:error:") == 0) {
         if (self->m_redirected_from_error) {
             self->m_redirected_from_error = false;
@@ -251,11 +248,32 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         }
         return;
     }
+    // change url to https
+    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
+        && navigationAction.targetFrame
+        && navigationAction.targetFrame.isMainFrame)
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        [webView loadUri:url.full().toNSString()];
+        return;
+    }
+    // made sure is https
+//* Do you want this?
+    // if request is from preview, open new window
+    if (webView.webpage->associated_container() == Global::controller->preview_tabs().get()
+        && webView.webpage->is_loaded()
+        && navigationAction.navigationType == WKNavigationTypeLinkActivated)
+    {
+        Webpage_ w = shared<Webpage>(webView.webpage);
+        w->set_associated_frontend((__bridge_retained void*) self);
+        w->moveToThread(Global::qCoreApplicationThread);
+        Global::controller->newTabAsync(0, Controller::TabStateOpen, w, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        decisionHandler(WKNavigationActionPolicyAllow);
+        return;
+    }
+//*/
+    // made sure request is from open tab
     self.webpage->handleSuccessAsync();
-//    if (self.tab_state() == Controller::TabStatePreview && navigationAction.navigationType) {
-//        Global::controller->newTabAsync(Controller::TabStateOpen, QUrl::fromNSURL(url), Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
-//        return;
-//    }
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand
         && navigationAction.buttonNumber == 1)
     {
@@ -350,11 +368,6 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
     }
     if (navigationResponse.canShowMIMEType) {
         decisionHandler(WKNavigationResponsePolicyAllow);
-//        if ([navigationResponse.response.MIMEType containsString:@"pdf"]) {
-//            NSURL* url = navigationResponse.response.URL;
-//            NSString* filename = navigationResponse.response.suggestedFilename;
-//            Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
-//        }
     } else {
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
@@ -368,19 +381,20 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
    forNavigationAction:(WKNavigationAction *)navigationAction
         windowFeatures:(WKWindowFeatures *)windowFeatures
 {
+    // javascript requested window
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
-    WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
-    new_webpage->set_associated_frontend((__bridge void*)new_webview);
+    WebUI* new_webview = [[WebUI alloc] initWithFrame:self.bounds config:configuration];
+    new_webpage->set_associated_frontend((__bridge_retained void*)new_webview);
     if (m_new_request_is_download) {
         m_new_request_is_download = false;
         new_webpage->set_is_for_download(true);
     }
     new_webpage->moveToThread(Global::qCoreApplicationThread);
-    if (Global::controller->open_tabs()->findTab(webView.webpage) >= 0) {
+    if (webView.webpage->associated_container() == Global::controller->open_tabs().get()) {
         Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     } else {
-        Global::controller->newTabAsync(0, Controller::TabStatePreview, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     }
     return new_webview;
 }

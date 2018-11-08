@@ -420,7 +420,6 @@ QPair<QString,QSet<HtmlLink>> Crawler::parseHtml(QString const& html, const UrlN
                 final = Url(baseUrl.base());
                 final.setFragment(secondhalf.fragment());
             } else if (secondhalf.path()[0] == "/") {
-                qDebug() << "Crawler::parseHtml sees" << secondhalf.path();
                 if (secondhalf.full().indexOf("//") == 0) {
                     // url is absolute, ie "//rest"
                     // leaves only scheme
@@ -583,6 +582,7 @@ bool CrawlerRule::matchUrl(Url const& url)
     if (! valid()) { return false; }
     qCDebug(CrawlerRuleLogging) << "CrawlerRule::matchUrl" << url.schemeless() << regex();
     QString schemeless = url.schemeless();
+    if (schemeless.isEmpty()) { return false; }
     QRegularExpressionMatch matched = regex().match(schemeless);
     return matched.hasMatch();
 }
@@ -662,6 +662,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readPartialTableFromSettings(Url const& url)
             table->insertRule(rule);
         }
     }
+    table->set_is_loaded(true);
     return table;
 }
 
@@ -676,6 +677,7 @@ CrawlerRuleTable_ CrawlerRuleTable::readEntireTableFromSettings()
         rule.set_enabled(in[pattern].value<bool>());
         table->insertRule(rule);
     }
+    table->set_is_loaded(true);
     return table;
 }
 
@@ -729,6 +731,7 @@ CrawlerRuleTable_ CrawlerRuleTable::defaultTableForDomain(Url const& url)
     CrawlerRuleTable_ table = CrawlerRuleTable_::create();
     CrawlerRule rule = CrawlerRule::defaultRuleForDomain(url);
     table->insertRule(rule);
+    table->set_is_loaded(true);
     return table;
 }
 

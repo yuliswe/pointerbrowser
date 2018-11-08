@@ -218,9 +218,12 @@
                                                         </tableColumn>
                                                     </tableColumns>
                                                     <connections>
+                                                        <action selector="clicked:" target="eSe-jn-caN" id="5zX-63-d2Y"/>
                                                         <action trigger="doubleAction" selector="doubleClicked:" target="eSe-jn-caN" id="zla-5z-i3L"/>
                                                         <outlet property="dataSource" destination="eSe-jn-caN" id="Z2T-aF-bW0"/>
                                                         <outlet property="delegate" destination="eSe-jn-caN" id="znx-bZ-6Lq"/>
+                                                        <outlet property="m_open_tab_menu" destination="70C-g4-9ce" id="8pc-zC-Djm"/>
+                                                        <outlet property="m_search_result_tab_menu" destination="Gz4-Un-d5A" id="DaO-Pi-uyo"/>
                                                     </connections>
                                                 </outlineView>
                                             </subviews>
@@ -586,6 +589,36 @@
                 <outlet property="m_parent_view" destination="Vdr-gK-mbW" id="dDz-Tp-VHG"/>
             </connections>
         </viewController>
+        <menu id="70C-g4-9ce" userLabel="Open Tab Menu">
+            <items>
+                <menuItem title="Add to Bookmark" id="5qF-qR-uAj">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="ZdT-HQ-W9L"/>
+                <menuItem title="Open in Safari" id="Uxt-D4-73L">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-205" y="-89"/>
+        </menu>
+        <menu id="Gz4-Un-d5A" userLabel="Search Result Tab Menu">
+            <items>
+                <menuItem title="Preview (Current)" id="dKX-tk-ZmP">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Open in New Tab" id="AxN-9U-Qle">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="ABb-7Y-coC"/>
+                <menuItem title="Show This Entry More Often" id="lbp-Df-YXq">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="I Don't Want to See This Entry" id="Dnv-M5-1of">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-490.5" y="-89"/>
+        </menu>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

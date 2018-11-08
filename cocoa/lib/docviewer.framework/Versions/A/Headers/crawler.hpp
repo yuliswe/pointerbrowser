@@ -53,6 +53,7 @@ class CrawlerRuleTable : public QObject
     PROP_DEF_BEGINS
     PROP_RN_D(QSharedPointer<QSet<CrawlerRule>>, rules, QSharedPointer<QSet<CrawlerRule>>::create())
     PROP_RN_D(Url, domain, Url{})
+    PROP_RN_D(bool, is_loaded, false) // support lazy loading
     PROP_DEF_ENDS
 
 protected:

@@ -21,7 +21,8 @@
 - (void)insertChildViewControllerWithWebpage:(Webpage_)webpage frame:(NSRect)frame index:(NSUInteger)index
 {
     NSViewController* childViewController = [[NSViewController alloc] init];
-    WebUI* webui = [[WebUI alloc] initWithWebpage:webpage frame:frame config:nil];
+    WebUI* webui = [[WebUI alloc] initWithFrame:frame config:nil];
+    [webui connect:webpage];
     childViewController.view = webui;
     if (webpage->url().full() == "about:eula") {
         NSString* eula_path = [[NSBundle mainBundle] pathForResource:@"eula" ofType:@"html"];
@@ -34,10 +35,11 @@
 }
 
 
-- (void)addChildViewControllerWithWebUI:(WebUI*)webui 
+- (void)addChildViewControllerWithWebUI:(WebUI*)webui webpage:(Webpage_)webpage
 {
     NSViewController* childViewController = [[NSViewController alloc] init];
     childViewController.view = webui;
+    [webui connect:webpage];
     [self insertChildViewController:childViewController atIndex:0];
 }
 
@@ -159,7 +161,7 @@
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i+first);
         if (w->associated_frontend()) {
-            [self addChildViewControllerWithWebUI:(__bridge WebUI*)w->associated_frontend()];
+            [self addChildViewControllerWithWebUI:(__bridge_transfer WebUI*)w->associated_frontend() webpage:w];
         } else {
             [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(i+first)];
         }

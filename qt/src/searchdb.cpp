@@ -218,11 +218,12 @@ bool UpdateWorker::addSymbols(UrlNoHash const& url, const QMap<QString,QString>&
                                     << query.lastError();
     }
 
-    static qint64 last_called = -1;
-    if (QDateTime::currentSecsSinceEpoch() - last_called >= 5) {
-        emit newEntriesWritten();
-        last_called = QDateTime::currentSecsSinceEpoch();
-    }
+//    static qint64 last_called = -1;
+//    if (QDateTime::currentSecsSinceEpoch() - last_called >= 1) {
+//        emit newEntriesWritten();
+//        last_called = QDateTime::currentSecsSinceEpoch();
+//    }
+    emit newEntriesWritten();
     return true;
 }
 
@@ -253,11 +254,12 @@ bool UpdateWorker::addReferer(UrlNoHash const& from, const QStringStringMap& to,
                                     << query.lastError();
     }
 
-    static qint64 last_called = -1;
-    if (QDateTime::currentSecsSinceEpoch() - last_called >= 5) {
-        emit newEntriesWritten();
-        last_called = QDateTime::currentSecsSinceEpoch();
-    }
+//    static qint64 last_called = -1;
+//    if (QDateTime::currentSecsSinceEpoch() - last_called >= 1) {
+//        emit newEntriesWritten();
+//        last_called = QDateTime::currentSecsSinceEpoch();
+//    }
+    emit newEntriesWritten();
     return true;
 }
 
