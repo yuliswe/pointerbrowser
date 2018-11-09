@@ -24,11 +24,11 @@
                     <rect key="frame" x="-3" y="227" width="563" height="36"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <view key="contentView" ambiguous="YES" id="cI5-UF-MEn">
-                        <rect key="frame" x="2" y="2" width="559" height="32"/>
+                        <rect key="frame" x="3" y="3" width="557" height="30"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vo1-v4-jeC">
-                                <rect key="frame" x="64" y="8" width="404" height="18"/>
+                                <rect key="frame" x="64" y="6" width="402" height="18"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="What Discovery Should Show on &quot;https://&quot;" id="uU1-dq-dhj">
                                     <font key="font" metaFont="system"/>
@@ -37,7 +37,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FVa-F9-VLd">
-                                <rect key="frame" x="474" y="7" width="72" height="19"/>
+                                <rect key="frame" x="472" y="5" width="72" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hmk-q0-WvN">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -50,17 +50,17 @@
                         </subviews>
                     </view>
                 </box>
-                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a5P-dI-Jj0">
+                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="26" horizontalPageScroll="10" verticalLineScroll="26" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a5P-dI-Jj0">
                     <rect key="frame" x="0.0" y="0.0" width="557" height="233"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="vcC-uM-fdb">
                         <rect key="frame" x="0.0" y="0.0" width="557" height="233"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="20" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="26" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="557" height="210"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
                                     <tableColumn identifier="EnableButtonColumn" width="60" minWidth="60" maxWidth="60" id="jFr-oc-guJ">
@@ -77,11 +77,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="EnableButtonCell" id="aZD-sR-GeT" userLabel="EnableButtonCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="20"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULt-zj-2d5" customClass="CrawlerRuleTableCellEnableButton">
-                                                        <rect key="frame" x="21" y="-1" width="22" height="22"/>
+                                                        <rect key="frame" x="21" y="2" width="22" height="22"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" inset="2" id="um9-gW-VNB">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -119,11 +119,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="RegularExpressionCell" id="mJo-8e-puG" userLabel="RegularExpressionCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="60" y="0.0" width="437" height="20"/>
+                                                <rect key="frame" x="60" y="0.0" width="437" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7rP-GB-wYj" customClass="CrawlerRuleTableCellTextField">
-                                                        <rect key="frame" x="1" y="0.0" width="435" height="20"/>
+                                                        <rect key="frame" x="1" y="3" width="435" height="20"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Add expression" id="NS7-GA-6m1">
                                                             <font key="font" metaFont="system"/>
@@ -164,11 +164,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="MatchIndicatorCell" id="wyf-v3-g1Y" userLabel="MatchIndicatorCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="497" y="0.0" width="60" height="22"/>
+                                                <rect key="frame" x="497" y="0.0" width="60" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-G9-X2y" customClass="CrawlerRuleTableCellMatchIndicator">
-                                                        <rect key="frame" x="20" y="1" width="22" height="20"/>
+                                                        <rect key="frame" x="20" y="3" width="22" height="20"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dKQ-Ro-Uzg">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -206,11 +206,11 @@
                         </subviews>
                         <nil key="backgroundColor"/>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="euF-bb-OsF">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="euF-bb-OsF">
                         <rect key="frame" x="0.0" y="218" width="553" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="2dX-0w-tsK">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2dX-0w-tsK">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
