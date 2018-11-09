@@ -19,18 +19,18 @@
             <rect key="frame" x="0.0" y="0.0" width="67" height="132"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <box boxType="custom" borderWidth="0.0" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="RrS-vq-bwl">
-                    <rect key="frame" x="20" y="106" width="27" height="26"/>
+                <box misplaced="YES" boxType="custom" borderWidth="0.0" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="RrS-vq-bwl">
+                    <rect key="frame" x="20" y="105" width="26" height="26"/>
                     <view key="contentView" id="zgY-YY-a2A">
-                        <rect key="frame" x="0.0" y="0.0" width="27" height="26"/>
+                        <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MJ2-LR-ghB">
-                                <rect key="frame" x="3" y="-6" width="22" height="36"/>
+                                <rect key="frame" x="3" y="-5" width="22" height="36"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="justified" title="B" id="eeP-G6-Eb9">
                                     <font key="font" metaFont="systemThin" size="30"/>
-                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                         </subviews>
@@ -40,9 +40,9 @@
                         </constraints>
                     </view>
                     <constraints>
-                        <constraint firstAttribute="width" secondItem="RrS-vq-bwl" secondAttribute="height" multiplier="1:0.97" id="wwS-Nm-Ezw"/>
+                        <constraint firstAttribute="width" secondItem="RrS-vq-bwl" secondAttribute="height" multiplier="1:1" id="wwS-Nm-Ezw"/>
                     </constraints>
-                    <color key="fillColor" red="0.87825858160621761" green="0.87825858160621761" blue="0.87825858160621761" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="fillColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                 </box>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lbb-is-1Kf">
                     <rect key="frame" x="-2" y="0.0" width="71" height="98"/>

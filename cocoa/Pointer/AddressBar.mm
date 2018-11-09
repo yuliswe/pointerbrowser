@@ -58,7 +58,7 @@
      toItem:self
      attribute:NSLayoutAttributeTrailing
      multiplier:1
-     constant:-1].active = YES;
+     constant:0].active = YES;
     
     [NSLayoutConstraint
      constraintWithItem:refresh
@@ -67,7 +67,7 @@
      toItem:self
      attribute:NSLayoutAttributeCenterY
      multiplier:1
-     constant:-1].active = YES;
+     constant:0].active = YES;
     
     refresh.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -254,7 +254,7 @@
 }
 
 - (BOOL)wantsLayer { return YES; }
-- (BOOL)wantsUpdateLayer { return NO; }
+- (BOOL)wantsUpdateLayer { return YES; }
 
 - (void)resetCursorRects {
     [self addCursorRect:[self bounds] cursor:[NSCursor arrowCursor]];

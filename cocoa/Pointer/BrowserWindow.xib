@@ -32,32 +32,32 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Pointer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="QvC-M9-y7g" customClass="BrowserWindow" propertyAccessControl="all">
+        <window title="Pointer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="QvC-M9-y7g" customClass="BrowserWindow" propertyAccessControl="none">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="400" y="250" width="712" height="440"/>
+            <rect key="contentRect" x="400" y="200" width="750" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
-            <value key="minSize" type="size" width="600" height="400"/>
+            <value key="minSize" type="size" width="400" height="200"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ" customClass="BrowserWindowView">
-                <rect key="frame" x="0.0" y="0.0" width="712" height="440"/>
+                <rect key="frame" x="0.0" y="0.0" width="750" height="550"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <splitView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xwr-Fb-Rdj">
-                        <rect key="frame" x="0.0" y="0.0" width="712" height="440"/>
+                    <splitView horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xwr-Fb-Rdj" propertyAccessControl="none">
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="550"/>
                         <subviews>
-                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" id="RBK-6X-r4o" userLabel="Left Panel Visual Effect View" propertyAccessControl="none">
-                                <rect key="frame" x="0.0" y="0.0" width="242" height="440"/>
+                            <visualEffectView appearanceType="inheritedVibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" id="RBK-6X-r4o" userLabel="Left Panel Visual Effect View" propertyAccessControl="none">
+                                <rect key="frame" x="0.0" y="0.0" width="242" height="550"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <scrollView focusRingType="none" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="60" horizontalPageScroll="10" verticalLineScroll="60" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="BHo-7m-Ucn" propertyAccessControl="none">
-                                        <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="242" height="500"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="1iJ-u2-c04">
-                                            <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="242" height="500"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <outlineView focusRingType="none" verticalHuggingPriority="750" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="60" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="1" indentationMarkerFollowsCell="NO" autoresizesOutlineColumn="YES" outlineTableColumn="5vy-NT-zXR" id="7XU-ob-ZGc" customClass="OutlineView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="390"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="500"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -231,24 +231,24 @@
                                             <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                         </clipView>
                                         <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
-                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Q3g-g7-NNQ">
+                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="Q3g-g7-NNQ">
                                             <rect key="frame" x="-100" y="-100" width="242" height="15"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="dta-qh-gBN">
+                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="dta-qh-gBN">
                                             <rect key="frame" x="-100" y="-100" width="16" height="390"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
                                     <box fixedFrame="YES" borderType="line" title="ToolBar" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RoG-yi-wd6">
-                                        <rect key="frame" x="-3" y="387" width="248" height="36"/>
+                                        <rect key="frame" x="-3" y="497" width="248" height="36"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <view key="contentView" ambiguous="YES" id="g8y-AK-Jh9">
-                                            <rect key="frame" x="6" y="1" width="236" height="34"/>
+                                            <rect key="frame" x="8" y="3" width="232" height="30"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <searchField wantsLayer="YES" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3OF-AJ-hTf" userLabel="Search Tabs">
-                                                    <rect key="frame" x="8" y="7" width="189" height="22"/>
+                                                    <rect key="frame" x="5" y="5" width="190" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Discovey" usesSingleLineMode="YES" bezelStyle="round" id="73L-3w-x96">
                                                         <font key="font" metaFont="system"/>
@@ -260,7 +260,7 @@
                                                     </connections>
                                                 </searchField>
                                                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0YT-Gb-veT" userLabel="Plus" colorLabel="IBBuiltInLabel-Red">
-                                                    <rect key="frame" x="204" y="4" width="28" height="27"/>
+                                                    <rect key="frame" x="202" y="2" width="28" height="27"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" id="LlS-8c-Qq4">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -276,15 +276,15 @@
                                     </box>
                                 </subviews>
                             </visualEffectView>
-                            <visualEffectView appearanceType="vibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" id="Ws7-mG-qfj" userLabel="Right Panel Visual Effect View" propertyAccessControl="none">
-                                <rect key="frame" x="243" y="0.0" width="469" height="440"/>
+                            <visualEffectView appearanceType="inheritedVibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" id="Ws7-mG-qfj" userLabel="Right Panel Visual Effect View" propertyAccessControl="none">
+                                <rect key="frame" x="243" y="0.0" width="507" height="550"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <box fixedFrame="YES" boxType="custom" borderType="line" title="ToolBar" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OLf-qm-hYL">
-                                        <rect key="frame" x="0.0" y="387" width="469" height="36"/>
+                                        <rect key="frame" x="0.0" y="497" width="507" height="36"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <view key="contentView" ambiguous="YES" id="khi-lX-Fhc">
-                                            <rect key="frame" x="8" y="1" width="453" height="34"/>
+                                            <rect key="frame" x="8" y="1" width="491" height="34"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p5J-Ck-mGN" userLabel="Backward" customClass="GoBackButton">
@@ -304,7 +304,7 @@
                                                     </buttonCell>
                                                 </button>
                                                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bqP-8a-CEC" userLabel="Downloads" colorLabel="IBBuiltInLabel-Red">
-                                                    <rect key="frame" x="424" y="4" width="30" height="27"/>
+                                                    <rect key="frame" x="462" y="4" width="30" height="27"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSTouchBarDownloadTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WoE-40-knN">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -315,7 +315,7 @@
                                                     </connections>
                                                 </button>
                                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dSB-oO-gPA" userLabel="Address" customClass="AddressBar">
-                                                    <rect key="frame" x="65" y="7" width="318" height="22"/>
+                                                    <rect key="frame" x="64" y="7" width="358" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" alignment="center" title="Address" usesSingleLineMode="YES" bezelStyle="round" id="N2g-lu-Xgk" customClass="AddressBarCell">
                                                         <font key="font" metaFont="system"/>
@@ -327,7 +327,7 @@
                                                     </textFieldCell>
                                                 </textField>
                                                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wxK-ad-KW5" userLabel="Docview" colorLabel="IBBuiltInLabel-Red">
-                                                    <rect key="frame" x="391" y="4" width="30" height="27"/>
+                                                    <rect key="frame" x="429" y="4" width="30" height="27"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSQuickLookTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="x6U-Ub-nSA">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -342,26 +342,26 @@
                                         <size key="contentViewMargins" width="7" height="0.0"/>
                                     </box>
                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
-                                        <rect key="frame" x="0.0" y="0.0" width="469" height="389"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="507" height="499"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </customView>
                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vdr-gK-mbW">
-                                        <rect key="frame" x="0.0" y="0.0" width="469" height="389"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="507" height="499"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </customView>
                                     <box fixedFrame="YES" boxType="custom" borderType="none" title="FindText" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IbV-je-7ev">
-                                        <rect key="frame" x="0.0" y="359" width="469" height="30"/>
+                                        <rect key="frame" x="0.0" y="469" width="507" height="30"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <view key="contentView" ambiguous="YES" id="tEq-93-AEm">
-                                            <rect key="frame" x="0.0" y="0.0" width="469" height="30"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <visualEffectView wantsLayer="YES" fixedFrame="YES" blendingMode="withinWindow" material="popover" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q9i-bD-ITt">
-                                                    <rect key="frame" x="0.0" y="0.0" width="469" height="30"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RbB-uT-wnc">
-                                                            <rect key="frame" x="217" y="5" width="170" height="19"/>
+                                                            <rect key="frame" x="255" y="5" width="170" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <searchFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Find on this page" usesSingleLineMode="YES" bezelStyle="round" sendsWholeSearchString="YES" id="ghG-FY-t4m">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -373,7 +373,7 @@
                                                             </connections>
                                                         </searchField>
                                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Eg-ac-gam">
-                                                            <rect key="frame" x="398" y="4" width="60" height="19"/>
+                                                            <rect key="frame" x="436" y="4" width="60" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="r9C-al-CzY">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -384,7 +384,7 @@
                                                             </connections>
                                                         </button>
                                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jnD-LX-yBO">
-                                                            <rect key="frame" x="187" y="2" width="25" height="25"/>
+                                                            <rect key="frame" x="226.5" y="2" width="24" height="25"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSRightFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YPi-tJ-9W9">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -395,7 +395,7 @@
                                                             </connections>
                                                         </button>
                                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tWp-IK-hQI">
-                                                            <rect key="frame" x="163" y="2" width="25" height="25"/>
+                                                            <rect key="frame" x="202.5" y="2" width="24" height="25"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSLeftFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QA8-BN-z4u">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -406,7 +406,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MYh-0H-9HI">
-                                                            <rect key="frame" x="8" y="8" width="149" height="14"/>
+                                                            <rect key="frame" x="10" y="8" width="185" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Found 0 match" id="CRd-Jv-Pxa">
                                                                 <font key="font" metaFont="smallSystem"/>
