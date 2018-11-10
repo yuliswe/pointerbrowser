@@ -127,7 +127,7 @@
                                                                         <textField identifier="OpenTabRowViewText" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oT7-QV-yII" userLabel="OpenTabRowViewText">
                                                                             <rect key="frame" x="18" y="7" width="211" height="16"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="FG4-SJ-9bf">
-                                                                                <font key="font" metaFont="systemLight" size="12"/>
+                                                                                <font key="font" metaFont="system" size="12"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>

@@ -51,8 +51,8 @@
                     </constraints>
                     <textFieldCell key="cell" truncatesLastVisibleLine="YES" focusRingType="none" alignment="center" title="Bookmark" placeholderString="Bookmark" id="Dru-Jt-9gn">
                         <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="alternateSelectedControlColor" catalog="System" colorSpace="catalog"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
                         <action selector="handle_title_edit_done:" target="-2" id="Ubb-fO-0uB"/>
