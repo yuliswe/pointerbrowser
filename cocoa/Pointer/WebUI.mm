@@ -23,8 +23,9 @@
     [super mouseDown:event];
 }
 
-- (instancetype)initWithFrame:(NSRect)frame
-                       config:(WKWebViewConfiguration*)config
+- (instancetype)initWithWebpage:(Webpage_)webpage
+                          frame:(NSRect)frame
+                         config:(WKWebViewConfiguration*)config
 {
     if (! config) {
         config = [[WKWebViewConfiguration alloc] init];
@@ -36,6 +37,10 @@
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
     self->m_new_request_is_download = false;
+    self->m_webpage = webpage;
+    if (! webpage->associated_frontend()) {
+        self.webpage->set_associated_frontend_async((__bridge void*)self);
+    }
     self.UIDelegate = self;
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
@@ -44,18 +49,17 @@
     self->m_error_page_view_controller = [[ErrorPageViewController alloc] init];
     [self addSubviewAndFill:self->m_error_page_view_controller.view];
     self->m_error_page_view_controller.view.hidden = YES;
+    [self connect];
     return self;
 }
 
 - (void)dealloc
 {
-//    self.webpage->set_associated_frontend_async(nullptr);
+    self.webpage->set_associated_frontend_async(nullptr);
 }
 
-- (void)connect:(Webpage_)webpage
+- (void)connect
 {
-    self.webpage = webpage;
-    self.webpage->set_associated_frontend_async((__bridge void*)self);
     [self addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"URL" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
@@ -384,7 +388,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     // javascript requested window
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
-    WebUI* new_webview = [[WebUI alloc] initWithFrame:self.bounds config:configuration];
+    WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
     new_webpage->set_associated_frontend((__bridge_retained void*)new_webview);
     if (m_new_request_is_download) {
         m_new_request_is_download = false;

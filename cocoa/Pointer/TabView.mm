@@ -21,8 +21,7 @@
 - (void)insertChildViewControllerWithWebpage:(Webpage_)webpage frame:(NSRect)frame index:(NSUInteger)index
 {
     NSViewController* childViewController = [[NSViewController alloc] init];
-    WebUI* webui = [[WebUI alloc] initWithFrame:frame config:nil];
-    [webui connect:webpage];
+    WebUI* webui = [[WebUI alloc] initWithWebpage:webpage frame:frame config:nil];
     childViewController.view = webui;
     if (webpage->url().full() == "about:eula") {
         NSString* eula_path = [[NSBundle mainBundle] pathForResource:@"eula" ofType:@"html"];
@@ -39,7 +38,6 @@
 {
     NSViewController* childViewController = [[NSViewController alloc] init];
     childViewController.view = webui;
-    [webui connect:webpage];
     [self insertChildViewController:childViewController atIndex:0];
 }
 

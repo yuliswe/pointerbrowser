@@ -327,8 +327,8 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
             viewTab(toState, toIndex);
         }
         return 0;
-    } else if (fromState == TabStateSearchResult && toState == TabStateOpen) {
-        //        Global::searchDB->search_result()->moveTab(fromIndex, toIndex);
+    } else if (fromState == TabStatePreview && toState == TabStateOpen) {
+        // better handled in cocoa?
         return 0;
     }
     return 0;
