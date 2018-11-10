@@ -56,7 +56,7 @@ macx {
         FRAMEWORK_HEADERS.files = $${HEADERS}
         FRAMEWORK_HEADERS.path = Headers
         QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
-        LIBS += -L/usr/local/lib/ -lgq -framework Foundation
+        LIBS += -L/usr/local/lib/ -lgumbo_query -framework Foundation
         INCLUDEPATH += /usr/local/include/
         HEADERS += mac_crawler.hpp
         SOURCES += mac_crawler.mm

@@ -1,7 +1,7 @@
 #include "crawler.hpp"
 #include "global.hpp"
-#include <gq/Document.h>
-#include <gq/Node.h>
+#include <gumbo_query/Document.h>
+#include <gumbo_query/Node.h>
 
 uint qHash(const HtmlLink& link)
 {

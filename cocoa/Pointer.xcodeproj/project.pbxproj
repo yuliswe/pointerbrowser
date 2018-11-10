@@ -37,7 +37,6 @@
 		7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A1219049E700E5D117 /* QtCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A2219049E800E5D117 /* QtSql.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A3219049E800E5D117 /* libgumbo.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		7A8A42AC219049E800E5D117 /* libgq.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A4219049E800E5D117 /* libgq.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7A8A42AD219049E800E5D117 /* docviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A5219049E800E5D117 /* docviewer.framework */; };
 		7A8A42AE219049E800E5D117 /* docviewer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A5219049E800E5D117 /* docviewer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A8A42B121904A7000E5D117 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A65147B211EAB1D00977B87 /* WebKit.framework */; };
@@ -46,6 +45,7 @@
 		7AB2318E21856634005B436F /* ErrorPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB2318D21856634005B436F /* ErrorPage.xib */; };
 		7AB2319121856649005B436F /* ErrorPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319021856649005B436F /* ErrorPage.mm */; };
 		7AB2319421856A28005B436F /* PViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319321856A28005B436F /* PViewController.m */; };
+		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,10 +55,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7A8A42AC219049E800E5D117 /* libgq.dylib in Embed Frameworks */,
 				7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks */,
 				7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks */,
 				7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks */,
+				B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */,
 				7A8A42AE219049E800E5D117 /* docviewer.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -145,6 +145,7 @@
 		7AB2319021856649005B436F /* ErrorPage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ErrorPage.mm; sourceTree = "<group>"; };
 		7AB2319221856A28005B436F /* PViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PViewController.h; sourceTree = "<group>"; };
 		7AB2319321856A28005B436F /* PViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PViewController.m; sourceTree = "<group>"; };
+		B2F6648B219676850069F547 /* libgumbo_query.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo_query.dylib; path = lib/libgumbo_query.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +165,7 @@
 		7A0CDD262110F15600FE35C5 = {
 			isa = PBXGroup;
 			children = (
+				B2F6648B219676850069F547 /* libgumbo_query.dylib */,
 				7A8A428A219040C400E5D117 /* libqsqlite.dylib */,
 				7A8A42A5219049E800E5D117 /* docviewer.framework */,
 				7A7C503721894730007FB18C /* libgq.dylib */,
