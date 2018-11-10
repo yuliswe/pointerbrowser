@@ -452,7 +452,7 @@
 {
     if (item == self.open_tabs || item == self.search_results)
     {
-        return 25;
+        return 23;
     }
     if ([outlineView parentForItem:item] == self.open_tabs)
     {
