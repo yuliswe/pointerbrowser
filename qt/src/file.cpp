@@ -27,7 +27,7 @@ QString File::downloadProgress()
         total = "?";
         percent = "?%";
     }
-    textstream << qSetFieldWidth(0) << "Loading "
+    textstream << qSetFieldWidth(0) << "Received "
                << qSetFieldWidth(0) << locale.formattedDataSize(size_bytes_downloaded(),2,QLocale::DataSizeTraditionalFormat)
                << qSetFieldWidth(0) << " of total size "
                << qSetFieldWidth(0) << total
