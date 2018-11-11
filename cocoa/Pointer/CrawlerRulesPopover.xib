@@ -57,9 +57,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="557" height="233"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="26" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="24" rowSizeStyle="systemDefault" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="557" height="210"/>
                                 <autoresizingMask key="autoresizingMask"/>
+                                <size key="intercellSpacing" width="0.0" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
@@ -77,12 +78,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="EnableButtonCell" id="aZD-sR-GeT" userLabel="EnableButtonCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="26"/>
+                                                <rect key="frame" x="0.0" y="1" width="60" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULt-zj-2d5" customClass="CrawlerRuleTableCellEnableButton">
-                                                        <rect key="frame" x="21" y="2" width="22" height="22"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ULt-zj-2d5" customClass="CrawlerRuleTableCellEnableButton">
+                                                        <rect key="frame" x="21" y="4" width="22" height="18"/>
                                                         <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" inset="2" id="um9-gW-VNB">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -99,6 +99,10 @@
                                                         </connections>
                                                     </button>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="ULt-zj-2d5" firstAttribute="centerX" secondItem="aZD-sR-GeT" secondAttribute="centerX" constant="1" id="aAz-sU-1op"/>
+                                                    <constraint firstItem="ULt-zj-2d5" firstAttribute="centerY" secondItem="aZD-sR-GeT" secondAttribute="centerY" id="iAC-W0-sES"/>
+                                                </constraints>
                                                 <connections>
                                                     <outlet property="m_enable_button" destination="ULt-zj-2d5" id="yKP-bX-CMc"/>
                                                 </connections>
@@ -119,12 +123,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="RegularExpressionCell" id="mJo-8e-puG" userLabel="RegularExpressionCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="60" y="0.0" width="437" height="26"/>
+                                                <rect key="frame" x="60" y="1" width="437" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7rP-GB-wYj" customClass="CrawlerRuleTableCellTextField">
-                                                        <rect key="frame" x="1" y="3" width="435" height="20"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7rP-GB-wYj" customClass="CrawlerRuleTableCellTextField">
+                                                        <rect key="frame" x="-2" y="6" width="441" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Add expression" id="NS7-GA-6m1">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -143,6 +146,11 @@
                                                         </connections>
                                                     </textField>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="7rP-GB-wYj" firstAttribute="centerY" secondItem="mJo-8e-puG" secondAttribute="centerY" constant="-1" id="H1b-TU-3DB"/>
+                                                    <constraint firstItem="7rP-GB-wYj" firstAttribute="leading" secondItem="mJo-8e-puG" secondAttribute="leading" id="XTa-OP-fRx"/>
+                                                    <constraint firstAttribute="trailing" secondItem="7rP-GB-wYj" secondAttribute="trailing" id="tej-XX-dlf"/>
+                                                </constraints>
                                                 <connections>
                                                     <outlet property="m_textfield" destination="7rP-GB-wYj" id="aLi-qC-fh2"/>
                                                     <outlet property="textField" destination="7rP-GB-wYj" id="5Ac-io-OIA"/>
@@ -164,12 +172,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="MatchIndicatorCell" id="wyf-v3-g1Y" userLabel="MatchIndicatorCell" customClass="CrawlerRuleTableCellView">
-                                                <rect key="frame" x="497" y="0.0" width="60" height="26"/>
+                                                <rect key="frame" x="497" y="1" width="60" height="26"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-G9-X2y" customClass="CrawlerRuleTableCellMatchIndicator">
-                                                        <rect key="frame" x="20" y="3" width="22" height="20"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-G9-X2y" customClass="CrawlerRuleTableCellMatchIndicator">
+                                                        <rect key="frame" x="21" y="4" width="22" height="18"/>
                                                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dKQ-Ro-Uzg">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -190,6 +197,10 @@
                                                         </connections>
                                                     </button>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="RJa-G9-X2y" firstAttribute="centerX" secondItem="wyf-v3-g1Y" secondAttribute="centerX" constant="2" id="7wH-lv-agb"/>
+                                                    <constraint firstItem="RJa-G9-X2y" firstAttribute="centerY" secondItem="wyf-v3-g1Y" secondAttribute="centerY" id="KbP-H9-B5z"/>
+                                                </constraints>
                                                 <connections>
                                                     <outlet property="m_match_indicator" destination="RJa-G9-X2y" id="ecQ-rp-NgM"/>
                                                 </connections>
@@ -207,7 +218,7 @@
                         <nil key="backgroundColor"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="euF-bb-OsF">
-                        <rect key="frame" x="0.0" y="218" width="553" height="15"/>
+                        <rect key="frame" x="0.0" y="217" width="557" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2dX-0w-tsK">

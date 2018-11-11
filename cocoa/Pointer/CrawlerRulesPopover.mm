@@ -86,7 +86,7 @@
     CrawlerRuleTable_ table = Global::controller->current_webpage_crawler_rule_table();
     QSet<CrawlerRule> rule = *table->rules();
     NSString* domain = table->domain().full().toNSString();
-    NSString* title = [NSString stringWithFormat:@"Discovery rules on \"%@\"", domain];
+    NSString* title = [NSString stringWithFormat:@"Discovery rules for \"%@\"", domain];
     self.table_title_textfield.stringValue = title;
     [self.table reloadData];
 }
