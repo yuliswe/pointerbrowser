@@ -146,8 +146,12 @@
             self.webpage->set_title_async(QString::fromNSString(title));
         }
     } else if ([keyPath isEqualToString:@"title"]) {
-        NSString * _Nullable title = self.title;
-        self.webpage->set_title_async(QString::fromNSString(title));
+        NSString* title = self.title;
+//        if (title.length > 0) {
+            self.webpage->set_title_async(QString::fromNSString(title));
+//        } else {
+//            self.webpage->set_title_async(QString::fromNSString(self.URL.lastPathComponent));
+//        }
     } else if ([keyPath isEqualToString:@"canGoBack"]) {
         self.webpage->set_can_go_back_async(self.canGoBack);
     } else if ([keyPath isEqualToString:@"canGoForward"]) {
@@ -225,6 +229,12 @@ didStartProvisionalNavigation:(WKNavigation *)navigation {
 - (void)webView:(WebUI *)webView
 didFinishNavigation:(WKNavigation *)navigation {
     webView.webpage->set_is_loaded_async(true);
+    NSString* title = self.title;
+    if (title.length > 0) {
+        self.webpage->set_title_async(QString::fromNSString(title));
+    } else {
+        self.webpage->set_title_async(QString::fromNSString(self.URL.lastPathComponent));
+    }
 }
 
 - (void)webView:(WKWebView *)webView
