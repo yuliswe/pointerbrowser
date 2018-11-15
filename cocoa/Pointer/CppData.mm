@@ -59,3 +59,20 @@
 }
 
 @end
+
+
+@implementation MutableArrayWrapper : NSObject
+@synthesize get = m_get;
+- (instancetype)initWithArray:(NSMutableArray*)array
+{
+    self = [super init];
+    self->m_get = array;
+    return self;
+}
+
++ (instancetype)wrap:(NSMutableArray*)array
+{
+    return [[MutableArrayWrapper alloc] initWithArray:array];
+}
+@end
+

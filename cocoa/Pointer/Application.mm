@@ -8,15 +8,11 @@
 
 #import "Application.mm.h"
 #import "BrowserWindow.mm.h"
-#include <docviewer/global.hpp>
-#include <QtCore/QStringList>
-#include <QtCore/QString>
+#include <docviewer/docviewer.h>
 
 @implementation AppDelegate
-
-@synthesize browserWindows = m_browserWindows;
-
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification {
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    self.browserWindowController = [[BrowserWindowController alloc] init];
     NSArray *args = [[NSProcessInfo processInfo] arguments];
     QStringList argv;
     int argc = static_cast<int>([args count]);
@@ -27,18 +23,9 @@
         NSArray* urls = [[NSFileManager defaultManager] URLsForDirectory:NSDownloadsDirectory inDomains:NSUserDomainMask];
         NSURL* downloads_url = urls[0];
         Global::controller->set_downloads_dirpath(QString::fromNSString(downloads_url.path));
+        [self.browserWindowController performSelectorOnMainThread:@selector(showWindow:) withObject:self waitUntilDone:YES];
     });
     Global::startQCoreApplicationThread(argc, argv);
-    
-}
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    self.browserWindows = [[NSArray alloc] initWithObjects:[[BrowserWindowController alloc] init], nil];
-    // Insert code here to initialize your application
-    size_t s = [self.browserWindows count];
-    for (size_t i = 0; i < s; i++) {
-        [self.browserWindows[i] showWindow:self];
-    }
 }
 
 

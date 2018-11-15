@@ -8,10 +8,12 @@
 #include "macros.hpp"
 #include "crawler.hpp"
 #include "logging.hpp"
+#include "tags.hpp"
 
 class Controller : public QObject
 {
     Q_OBJECT
+    friend class Global;
 
 public:
     virtual ~Controller() = default;
@@ -20,6 +22,7 @@ public:
         TabStateNull,
         TabStateOpen,
         TabStatePreview,
+        TabStateWorkspace,
         TabStateSearchResult
     };
     Q_ENUM(TabState)
@@ -46,7 +49,10 @@ public:
     // tabs
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, preview_tabs, shared<TabsModel>())
+    PROP_RN_D(TabsModel_, workspace_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, bookmarks, shared<TabsModel>())
+    PROP_RN_D(TagsCollection_, tags, TagsCollection_::create())
+    PROP_RN_D(TagsCollection_, workspaces, TagsCollection_::create())
 
     PROP_RN_D(QString, home_url, "about:blank")
     PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
@@ -57,6 +63,7 @@ public:
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
     PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
     PROP_RN_D(int, current_open_tab_index, -1)
+    PROP_RN_D(int, current_workspace_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     // tabs highlighting
     PROP_RWN_D(int, current_open_tab_hovered_index, -1)
@@ -87,6 +94,7 @@ public:
     PROP_RwN_D(bool, crawler_rule_table_visible, false)
     SIG_TF_1(show_crawler_rule_table_row_hint, int)
     SIG_TF_0(hide_crawler_rule_table_row_hint)
+    SIG_TF_0(close_all_popovers)
 
     METH_ASYNC_2(bool, currentTabWebpageCrawlerRuleTableModifyRule, int, CrawlerRule)
 //    METH_ASYNC_1(bool, currentTabWebpageCrawlerRuleTableEnableRule, CrawlerRule)
@@ -124,14 +132,22 @@ public:
     PROP_RN_D(TabState, next_tab_state, TabStateNull)
     PROP_RN_D(int, next_tab_index, -1)
 
+    // tags
+    PROP_RN_D(qint8, tag_listing_last_cache, 0)
+
     PROP_DEF_ENDS
 
-    int loadBookmarks();
     int saveBookmarks();
     int insertBookmark(Webpage_, int);
     void Q_INVOKABLE onCurrentTabWebpagePropertyChanged(void const* address, void const* sender = nullptr);
     void helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* address, void const* sender);
     void setNextTabStateAndIndex(TabState state, int index);
+
+    int loadLastOpen();
+    int saveLastOpen();
+    void clearPreviews();
+    void saveAllTags();
+    void saveTagsList();
 
 public:
     Controller();
@@ -140,23 +156,39 @@ public:
     METH_ASYNC_4(int, newTab, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTab, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTab, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_1(int, viewTab, Webpage_)
     METH_ASYNC_2(int, viewTab, Controller::TabState, int)
     METH_ASYNC_4(int, moveTab, Controller::TabState, int, Controller::TabState, int)
+    METH_ASYNC_3(int, moveTab, Webpage_, Controller::TabState, int)
     METH_ASYNC_0(int, closeTab)
     METH_ASYNC_2(int, closeTab, Controller::TabState, int)
     METH_ASYNC_2(int, closeTab, Controller::TabState, Webpage_)
     METH_ASYNC_2(int, closeTab, Controller::TabState, Url const&)
 
-    int loadLastOpen();
-    int saveLastOpen();
-    void clearPreviews();
-
+    METH_ASYNC_0(int, reloadBookmarks)
     METH_ASYNC_1(int, removeBookmark, int)
     METH_ASYNC_2(int, renameBookmark, Webpage_, QString const&)
     METH_ASYNC_2(int, moveBookmark, int, int)
 
-    METH_ASYNC_0(int, closeAllPopovers)
+    int indexOfTagContainerByTitle(QString const&);
+    METH_ASYNC_0(int, reloadAllTags)
+    METH_ASYNC_3(int, tagContainerInsertWebpageCopy, TagContainer_, int, Webpage_)
+    METH_ASYNC_3(int, tagContainerMoveWebpage, TagContainer_, int, int)
+    METH_ASYNC_2(int, tagContainerRemoveWebpage, TagContainer_, Webpage_)
+    METH_ASYNC_3(int, tagContainerRemoveWebpage, TagContainer_, Webpage_, bool)
+    METH_ASYNC_3(int, createTagContainer, QString const&, int, Webpage_)
+    METH_ASYNC_1(int, removeTagContainer, int)
+    METH_ASYNC_2(int, moveTagContainer, int, int)
+    METH_ASYNC_2(int, renameTagContainer, TagContainer_, QString const&)
 
+    METH_ASYNC_2(int, workspacesInsertTagContainer, int, TagContainer_)
+    METH_ASYNC_2(int, workspacesMoveTagContainer, int, int)
+    METH_ASYNC_1(int, workspacesRemoveTagContainer, int)
+
+    TagsCollection_ listTagsMatching(QString const&);
+    std::pair<TagsCollection_,TagsCollection_> partitionTagsByUrl(Url const&);
+
+    METH_ASYNC_0(int, closeAllPopovers)
 };
 
 Q_DECLARE_METATYPE(Controller::TabState)

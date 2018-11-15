@@ -11,9 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PViewController : NSViewController
-{
-    IBOutlet NSView* m_parentView;
-}
 @property IBOutlet NSView* parentView;
 @end
 

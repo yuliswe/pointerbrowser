@@ -9,14 +9,10 @@
 #import "PViewController.h"
 
 @implementation PViewController
-
-@synthesize parentView = m_parentView;
-
 - (void)loadView {
     [super loadView];
     self.view.frame = self.parentView.bounds;
     self.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [self.parentView addSubview:self.view];
 }
-
 @end

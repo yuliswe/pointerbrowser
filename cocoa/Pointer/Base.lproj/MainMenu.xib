@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -89,12 +89,7 @@ CQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
-                            <menuItem title="New Tab" keyEquivalent="t" id="Was-JA-tGl">
-                                <connections>
-                                    <action selector="menuNewTab:" target="-1" id="713-8i-YK1"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="New Tab (Alternative)" keyEquivalent="n" id="cQJ-XP-Gw3">
+                            <menuItem title="New Tab" keyEquivalent="n" id="cQJ-XP-Gw3">
                                 <connections>
                                     <action selector="menuNewTab:" target="-1" id="NTL-HK-uDu"/>
                                 </connections>
@@ -108,11 +103,6 @@ CQ
                             <menuItem title="Minimize" keyEquivalent="m" id="OY7-WF-poV">
                                 <connections>
                                     <action selector="performMiniaturize:" target="-1" id="VwT-WD-YPe"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Print…" keyEquivalent="p" id="aTl-1u-JFS">
-                                <connections>
-                                    <action selector="print:" target="-1" id="qaZ-4w-aoO"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -324,19 +314,6 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="View" id="H8h-7b-M4v">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="View" id="HyV-fh-RgO">
-                        <items>
-                            <menuItem title="Full Screen" keyEquivalent="f" id="4J7-dP-txa">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleFullScreen:" target="-1" id="dU3-MA-1Rq"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
                 <menuItem title="Bookmarks" id="KbU-c8-hAL">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Bookmarks" id="tNu-Ls-m4x">
@@ -344,12 +321,31 @@ CA
                             <menuItem title="Add Bookmark" keyEquivalent="b" id="e3c-IV-cbi">
                                 <connections>
                                     <action selector="menuAddBookmark:" target="-1" id="Zre-C7-4Tt"/>
+                                    <binding destination="moP-pP-G6P" name="enabled" keyPath="self.currentStateNotNull" id="Hsm-kI-Sll"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Edit Bookmarks..." id="6am-FZ-k80">
+                            <menuItem title="Edit Bookmarks as JSON File..." id="6am-FZ-k80">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="menuEditBookmarks:" target="-2" id="RJi-po-YdT"/>
+                                    <action selector="menuEditBookmarksAsJsonFile:" target="-2" id="Rv4-WT-Hmb"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Tag..." keyEquivalent="t" id="lV6-tg-eTc">
+                                <connections>
+                                    <action selector="menuAddTagsForCurrentTab:" target="-1" id="aUp-Bm-u3R"/>
+                                    <binding destination="moP-pP-G6P" name="enabled" keyPath="self.currentStateNotNull" id="rWA-i0-Osc"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Edit Tags as JSON Files..." id="Fzi-Kk-YNi">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuEditTagsAsJsonFile:" target="-2" id="rSw-uV-oX5"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Reload All from JSON File" id="oqb-BX-Fyw">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuReloadBookmarksAndTags:" target="-2" id="f2C-4j-Pry"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="N2C-PC-Hgh"/>
@@ -363,10 +359,10 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Discovery" id="2nT-Jv-go1">
                         <items>
-                            <menuItem title="Edit Rules..." id="cRf-l2-ID1">
+                            <menuItem title="Edit Rules as JSON File..." id="cRf-l2-ID1">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="menuEditCrawlerRules:" target="-2" id="eOH-pB-nKY"/>
+                                    <action selector="menuEditCrawlerRules:" target="-2" id="PaE-MU-5BK"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -399,19 +395,19 @@ CA
                 </menuItem>
             </items>
         </menu>
-        <menu id="kaJ-C4-gXO">
+        <menu id="bSb-Vh-jcm">
             <items>
-                <menuItem title="Item 1" id="nLa-XI-fTO">
+                <menuItem title="Item 1" id="V8d-I7-yJ0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
-                <menuItem title="Item 2" id="ue4-0f-rpy">
+                <menuItem title="Item 2" id="ql0-ie-DsO">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
-                <menuItem title="Item 3" id="tjC-73-4aj">
+                <menuItem title="Item 3" id="P1Q-BU-9kx">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="208" y="380"/>
+            <point key="canvasLocation" x="246" y="418"/>
         </menu>
     </objects>
 </document>

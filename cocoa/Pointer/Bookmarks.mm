@@ -9,6 +9,7 @@
 #import "Bookmarks.mm.h"
 #include <docviewer/docviewer.h>
 #import "CppData.h"
+#import "OutlineView.mm.h"
 
 @implementation BookmarksViewController
 
@@ -24,8 +25,9 @@
     [self->m_parent addSubview:self.view];
     self.view.frame = self->m_parent.bounds;
     self.view.autoresizingMask = NSViewHeightSizable | NSViewWidthSizable;
-    [self->m_bookmarks_collectionview registerClass:BookmarksCollectionViewItem.class forItemWithIdentifier:@"BookmarksCollectionViewItem"];
-    [self->m_bookmarks_collectionview registerForDraggedTypes:@[NSPasteboardTypeURL]];
+    [self->m_bookmarks_collectionview registerClass:BookmarkCollectionViewItem.class forItemWithIdentifier:@"BookmarksCollectionViewItem"];
+    [self->m_bookmarks_collectionview registerClass:TagCollectionViewItem.class forItemWithIdentifier:@"TagsCollectionViewItem"];
+    [self->m_bookmarks_collectionview registerForDraggedTypes:@[NSPasteboardTypeURL, @"com.pointerbrowser.pasteboarditem.collection.bookmark", @"com.pointerbrowser.pasteboarditem.collection.tag"]];
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::rowsInserted, [=]() {
         [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
@@ -38,15 +40,20 @@
     QObject::connect(Global::controller->bookmarks().get(), &TabsModel::modelReset, [=]() {
         [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
     });
+    QObject::connect(&Global::controller->tags()->sig, &BaseListModelSignals::signal_tf_rows_inserted, [=]() {
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+    });
+    QObject::connect(&Global::controller->tags()->sig, &BaseListModelSignals::signal_tf_rows_removed, [=]() {
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+    });
+    QObject::connect(&Global::controller->tags()->sig, &BaseListModelSignals::signal_tf_rows_moved, [=]() {
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+    });
+    QObject::connect(&Global::controller->tags()->sig, &BaseListModelSignals::signal_tf_model_reset, [=]() {
+        [self->m_bookmarks_collectionview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+    });
     [super viewDidLoad];
 }
-//
-//- (void)mouseDown:(NSEvent*)event
-//{
-//    Global::controller->closeAllPopoversAsync();
-//    [self.view.window makeFirstResponder:self.view.window];
-//}
-
 @end
 
 
@@ -54,13 +61,21 @@
 @implementation BookmarksCollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(NSCollectionView *)collectionView
 {
-    return 1;
+    // index 0 lists bookmarks
+    // index 1 lists tags
+    return 2;
 }
 
 - (NSInteger)collectionView:(NSCollectionView *)collectionView
      numberOfItemsInSection:(NSInteger)section
 {
-    return Global::controller->bookmarks()->count();
+    if (section == 0) {
+        return Global::controller->bookmarks()->count();
+    }
+    if (section == 1) {
+        return Global::controller->tags()->count();
+    }
+    return 0;
 }
 
 - (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView
@@ -68,8 +83,15 @@
 {
     if (indexPath.section == 0) {
         Webpage_ w = Global::controller->bookmarks()->webpage_(indexPath.item);
-        BookmarksCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"BookmarksCollectionViewItem" forIndexPath:indexPath];
+        BookmarkCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"BookmarksCollectionViewItem" forIndexPath:indexPath];
         item.webpage = w;
+        [item connect];
+        return item;
+    }
+    if (indexPath.section == 1) {
+        TagContainer_ c = Global::controller->tags()->get(indexPath.item);
+        TagCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"TagsCollectionViewItem" forIndexPath:indexPath];
+        item.tagContainer = c;
         [item connect];
         return item;
     }
@@ -82,11 +104,15 @@
 - (id<NSPasteboardWriting>)collectionView:(NSCollectionView *)collectionView
        pasteboardWriterForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSPasteboardItem* boarditem = [[NSPasteboardItem alloc] init];
-    BookmarksCollectionViewItem* item = (BookmarksCollectionViewItem*)[collectionView itemAtIndexPath:indexPath];
-    Webpage_ w = item.webpage;
-    [boarditem setString:w->url().full().toNSString() forType:NSPasteboardTypeURL];
-    return boarditem;
+    if (indexPath.section == 0) {
+        BookmarkCollectionViewItem* item = (BookmarkCollectionViewItem*)[collectionView itemAtIndexPath:indexPath];
+        return item;
+    }
+    if (indexPath.section == 1) {
+        TagCollectionViewItem* item = (TagCollectionViewItem*)[collectionView itemAtIndexPath:indexPath];
+        return item;
+    }
+    return nil;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView
@@ -94,18 +120,35 @@
              indexPath:(NSIndexPath *)indexPath
          dropOperation:(NSCollectionViewDropOperation)dropOperation
 {
-    NSPasteboard* pasteboard = draggingInfo.draggingPasteboard;
-    NSPasteboardItem* boarditem = pasteboard.pasteboardItems[0];
-    NSString* urlstr = [boarditem stringForType:NSPasteboardTypeURL];
-    int old_index = Global::controller->bookmarks()->findTab(QString::fromNSString(urlstr));
     int new_index = indexPath.item;
-    if (old_index >= 0) {
-        Global::controller->moveBookmarkAsync(old_index, new_index, (__bridge void*)self);
-    } else {
-        Webpage_ w = shared<Webpage>(QString::fromNSString(urlstr));
-        Global::controller->insertBookmark(w, new_index);
+    NSPasteboard* pasteboard = draggingInfo.draggingPasteboard;
+    if (indexPath.section == 0) {
+        NSArray<id>* boarditems = [pasteboard readObjectsForClasses:@[SearchResultTabItem.class, OpenTabItem.class, WorkspaceTabItem.class, BookmarkCollectionViewItem.class] options:nil];
+        for (int i = boarditems.count - 1; i >= 0; i--) {
+            id item = boarditems[i];
+            if ([item isKindOfClass:BookmarkCollectionViewItem.class]) {
+                Webpage_ webpage = [item webpage];
+                int old = Global::controller->bookmarks()->findTab(webpage);
+                Global::controller->moveBookmarkAsync(old, new_index);
+                return YES;
+            }
+        }
+        return NO;
     }
-    return YES;
+    if (indexPath.section == 1) {
+        NSArray<id>* boarditems = [pasteboard readObjectsForClasses:@[SearchResultTabItem.class, OpenTabItem.class, WorkspaceTabItem.class, TagCollectionViewItem.class] options:nil];
+        for (int i = boarditems.count - 1; i >= 0; i--) {
+            id item = boarditems[i];
+            if ([item isKindOfClass:TagCollectionViewItem.class]) {
+                TagContainer_ container = [item tagContainer];
+                int old = Global::controller->tags()->indexOf(container);
+                Global::controller->moveTagContainerAsync(old, new_index);
+                return YES;
+            }
+        }
+        return NO;
+    }
+    return NO;
 }
 
 - (NSDragOperation)collectionView:(NSCollectionView *)collectionView
@@ -114,10 +157,26 @@
                     dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation
 {
     NSIndexPath* path = *proposedDropIndexPath;
-    if (draggingInfo.draggingSource != collectionView) {
-        return NSDragOperationCopy;
+    NSPasteboard* pasteboard = draggingInfo.draggingPasteboard;
+    if ([pasteboard canReadObjectForClasses:@[BookmarkCollectionViewItem.class] options:nil]
+        && path.section == 0)
+    {
+        return NSDragOperationMove;
     }
-    return NSDragOperationMove;
+    if ([pasteboard canReadObjectForClasses:@[TagCollectionViewItem.class] options:nil]
+        && path.section == 1)
+    {
+        return NSDragOperationMove;
+    }
+    return NSDragOperationNone;
 }
 
+@end
+
+@implementation BookmarkCollectionView
+- (void)mouseDown:(NSEvent*)event
+{
+    Global::controller->closeAllPopoversAsync();
+    [super mouseDown:event];
+}
 @end

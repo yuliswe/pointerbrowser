@@ -25,7 +25,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="480" height="352"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView ambiguous="YES" selectable="YES" id="qNr-Yy-xql">
+                            <collectionView ambiguous="YES" selectable="YES" id="qNr-Yy-xql" customClass="BookmarkCollectionView">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="352"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="30" id="8U3-Tu-wEz">
@@ -40,11 +40,11 @@
                             </collectionView>
                         </subviews>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="RZq-V8-4DV">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="RZq-V8-4DV">
                         <rect key="frame" x="-100" y="-100" width="233" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="u1Z-gT-pmL">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="u1Z-gT-pmL">
                         <rect key="frame" x="234" y="1" width="15" height="143"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>

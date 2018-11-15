@@ -37,13 +37,13 @@ void TabsModel::replaceModel(const Webpage_List& new_pages)
     for (int i = _tabs.count() - 1; i >= 0; i--) {
         if (_tabs[i]->associated_container() == this) {
             _tabs[i]->set_associated_container(nullptr);
+            _tabs[i]->disconnect();
         }
-        _tabs[i]->disconnect();
-    }
-    for (int i = new_pages.count() - 1; i >= 0; i--) {
-        new_pages[i]->set_associated_container(this);
     }
     _tabs = new_pages;
+    for (int i = _tabs.count() - 1; i >= 0; i--) {
+        _tabs[i]->set_associated_container(this);
+    }
     emit endResetModel();
     emit countChanged();
 }
@@ -71,8 +71,8 @@ bool TabsModel::removeTab(int row)
     emit beginRemoveRows(QModelIndex(), row, row);
     if (_tabs[row]->associated_container() == this) {
         _tabs[row]->set_associated_container(nullptr);
+        _tabs[row]->disconnect();
     }
-    _tabs[row]->disconnect();
     _tabs.removeAt(row);
     emit endRemoveRows();
     emit countChanged();
@@ -107,32 +107,16 @@ int TabsModel::findTab(Webpage_ w) {
     return -1;
 }
 
-//void TabsModel::saveTabs(void) {
-//    qCInfo() << "TabsModel::saveTabs";
-//    QJsonArray tabs;
-//    for (Webpage_ tab : _tabs) {
-//        tabs << tab->toQJsonObject();
-//    }
-//    QJsonDocument doc(tabs);
-//    FileManager::writeDataFileB("open.json", doc.toJson());
-//}
-
-//void TabsModel::loadTabs(void) {
-//    QByteArray contents = Global::fileManager->readDataFileB("open.json");
-//    QJsonDocument doc = QJsonDocument::fromJson(contents);
-//    QJsonArray jarr = doc.array();
-//    qCInfo() << jarr;
-//    qCInfo() << "TabsModel::loadTabs";
-//    emit beginResetModel();
-//    _tabs.clear();
-//    for (QJsonValue jval : jarr) {
-//        QJsonObject jobj = jval.toObject();
-//        Webpage_ page_ = Webpage::fromQJsonObject(jobj);
-//        _tabs << page_;
-//    }
-//    emit endResetModel();
-//    emit countChanged();
-//}
+int TabsModel::findTabByRefOrUrl(Webpage_ w) {
+    int i = 0;
+    for (Webpage_ tab : _tabs) {
+        if (tab == w || w->url() == tab->url()) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
 
 QVariant TabsModel::data(const QModelIndex& idx, int role) const
 {
@@ -153,12 +137,6 @@ int TabsModel::rowCount(const QModelIndex &parent) const
     return _tabs.length();
 }
 
-QHash<int, QByteArray> TabsModel::roleNames() const {
-    QHash<int, QByteArray> roles;
-    roles[0] = "model";
-    return roles;
-}
-
 void TabsModel::moveTab(int target, int moveBefore)
 {
     QModelIndex parent;
@@ -168,12 +146,6 @@ void TabsModel::moveTab(int target, int moveBefore)
 
 bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
 {
-//    if (sourceRow < 0 || destinationChild < 0
-//            || sourceRow + count - 1 > _tabs.count()
-//            || destinationChild + count - 1 > _tabs.count()
-//            || (sourceRow == destinationChild && count == 1)) {
-//        return false;
-//    }
     if (! beginMoveRows(sourceParent, sourceRow, count, destinationParent, destinationChild))
     {
         return false;
@@ -188,10 +160,6 @@ bool TabsModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int cou
     emit endMoveRows();
     return true;
 }
-//Qt::ItemFlags TabsModel::flags(const QModelIndex &index) const
-//{
-//    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-//}
 
 void TabsModel::clear() {
     if (_tabs.isEmpty()) { return; }
@@ -199,11 +167,11 @@ void TabsModel::clear() {
     for (int i = _tabs.count() - 1; i >= 0; i--) {
         if (_tabs[i]->associated_container() == this) {
             _tabs[i]->set_associated_container(nullptr);
+            _tabs[i]->disconnect();
         }
-        _tabs[i]->disconnect();
     }
     _tabs.clear();
     emit endResetModel();
-//    emit endRemoveRows();
     emit countChanged();
 }
+

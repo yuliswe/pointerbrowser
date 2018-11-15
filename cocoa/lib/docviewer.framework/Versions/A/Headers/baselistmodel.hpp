@@ -74,6 +74,14 @@ public:
         return rt;
     }
 
+    int indexOf(T const& target)
+    {
+        lock_for_read();
+        int i = m_list.indexOf(target);
+        unlock_for_read();
+        return i;
+    }
+
 protected:
     bool insertRows(int row, int n)
     {
@@ -122,15 +130,6 @@ protected:
         sig.emit_tf_model_reset();
     }
 
-    int indexOf(T const& target)
-    {
-        lock_for_read();
-        int i = m_list.indexOf(target);
-        unlock_for_read();
-        return i;
-    }
-
-
     void insert(T const& t, int i = 0)
     {
         lock_for_read_write();
@@ -156,6 +155,33 @@ protected:
             unlock_for_read_write();
             sig.emit_tf_rows_removed(i, 1);
         }
+    }
+
+    void move(int first, int len, int to)
+    {
+        int last = first + len - 1;
+        lock_for_read_write();
+        int count = m_list.count();
+        if (to > count) {
+            to = count;
+        }
+        if (first < 0) {
+            first = 0;
+        }
+        QList<T> targets;
+        if (to < first) {
+            for (int i = 0; i < len; i++)
+            {
+                m_list.move(last, to);
+            }
+        } else if (to > first) {
+            for (int i = 0; i < len; i++)
+            {
+                m_list.move(first, to - 1);
+            }
+        }
+        unlock_for_read_write();
+        sig.emit_tf_rows_moved(first, len, to);
     }
 };
 

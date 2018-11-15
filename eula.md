@@ -22,3 +22,9 @@ be it indirect, special, incidental or consequential damages
 
 ## Contact Support
 If you experience any issue while using Pointer Browser, please email to _[pointerbrowser@gmail.com](mailto:pointerbrowser@gmail.com)_ or open an issue on [GitHub](https://github.com/YLiLarry/docviewer/issues).
+
+## Acknowledgement
+Pointer Browser is made by a passionate team of two.
+
+* Development: 李宇 (Li Yu) @ University of Waterloo
+* Icon & Graphics Design: 唐思齐 (Tang Si Qi) @ University of Michigan 

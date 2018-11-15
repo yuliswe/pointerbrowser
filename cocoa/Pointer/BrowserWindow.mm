@@ -19,8 +19,6 @@
 @end
 
 @implementation BrowserWindowController
-
-@synthesize outlineview = m_outlineview;
 @synthesize text_find_toolbar = m_text_find_toolbar;
 @synthesize text_find_searchfield = m_text_find_searchfield;
 @synthesize text_find_done_button = m_text_find_done_button;
@@ -31,7 +29,6 @@
 @synthesize addressbar = m_addressbar;
 @synthesize newtab_button = m_newtab_button;
 @synthesize crawler_rules_popover = m_crawler_rules_popover;
-@synthesize bookmarks_viewcontroller = m_bookmarks_viewcontroller;
 //@synthesize tabview = m_tabview;
 
 - (NSNibName) windowNibName {
@@ -48,10 +45,8 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+    [self.outlineViewController loadView];
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
-    [self.outlineview expandItem:nil expandChildren:YES];
-    [(OutlineViewDelegateAndDataSource*)self.outlineview.delegate updateSelection];
-    [self.outlineview registerForDraggedTypes:@[NSPasteboardTypeURL]];
     self.text_find_toolbar.hidden = YES;
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,
@@ -125,22 +120,25 @@
 - (void)handle_bookmarkpage_visible_changed
 {
     bool visible = Global::controller->bookmark_page_visible();
-    self->m_bookmarks.hidden = ! visible;
-    self->m_tabview.hidden = visible;
+    self.bookmarks_view_container.hidden = ! visible;
+    self.tab_view_container.hidden = visible;
+    if (self.bookmarks_view_container.hidden) {
+        [self.window makeFirstResponder:nil];
+    }
 }
 
 - (void)handle_can_go_buttons_enable_changed
 {
-    self->m_go_back_button.enabled = Global::controller->current_tab_webpage_can_go_back();
-    self->m_go_forward_button.enabled = Global::controller->current_tab_webpage_can_go_forward();
+    self.go_back_button.enabled = Global::controller->current_tab_webpage_can_go_back();
+    self.go_forward_button.enabled = Global::controller->current_tab_webpage_can_go_forward();
 }
 
 - (void)handle_crawler_rule_table_enabled_changed
 {
     if (Global::controller->crawler_rule_table_enabled()) {
-        self->m_crawler_rule_table_button.enabled = YES;
+        self.crawler_rule_table_button.enabled = YES;
     } else {
-        self->m_crawler_rule_table_button.enabled = NO;
+        self.crawler_rule_table_button.enabled = NO;
     }
 }
 
@@ -175,13 +173,13 @@
 
 - (IBAction)handleCrawlerRuleButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:self.window.initialFirstResponder];
+    [self.window makeFirstResponder:nil];
     Global::controller->set_crawler_rule_table_visible_async(true);
 }
 
 - (IBAction)handleDownloadsButtonClicked:(id)sender
 {
-    [self.window makeFirstResponder:self.window.initialFirstResponder];
+    [self.window makeFirstResponder:nil];
     Global::controller->set_downloads_visible_async(true);
 }
 
@@ -195,11 +193,11 @@
 - (void)handle_downloads_visible_changed
 {
     if (Global::controller->downloads_visible()) {
-        [self->m_downloads_popover showRelativeToRect:[self->m_downloads_button bounds]
-                                               ofView:self->m_downloads_button
+        [self.downloads_popover showRelativeToRect:[self.downloads_button bounds]
+                                               ofView:self.downloads_button
                                         preferredEdge:NSRectEdgeMaxY];
     } else {
-        [self->m_downloads_popover close];
+        [self.downloads_popover close];
     }
 }
 
@@ -209,24 +207,29 @@
     Global::controller->newTabAsync();
 }
 
-- (void)menuFocusAddress:(id)sender
+- (IBAction)menuFocusAddress:(id)sender
 {
     [self.addressbar getFocus];
 }
 
-- (void)menuFocusFindSymbol:(id)sender
+- (IBAction)menuFocusFindSymbol:(id)sender
 {
     [self.window makeFirstResponder:self.tab_searchfield];
 }
 
-- (void)menuRefreshTab:(id)sender
+- (IBAction)menuRefreshTab:(id)sender
 {
     [self.addressbar.surface.refresh_button handleClicked];
 }
 
-- (void)menuNewTab:(id)sender
+- (IBAction)menuNewTab:(id)sender
 {
     [self.newtab_button performClick:self];
+}
+
+- (IBAction)menuAddTagsForCurrentTab:(id)sender
+{
+    [self.outlineViewController showAddTagsPopoverForCurrentTab:nil];
 }
 
 - (IBAction)menuShowEULA:(id)sender
@@ -234,6 +237,10 @@
     Global::controller->newTabAsync(Controller::TabStateOpen, Url("about:eula"), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
 }
 
+- (IBAction)searchTab:(id)sender
+{
+    Global::controller->searchTabsAsync(QString::fromNSString(self.tab_searchfield.stringValue));
+}
 @end
 
 @implementation NSResponder(Pointer)
@@ -262,14 +269,44 @@
     Global::controller->showPrevOpenTabAsync();
 }
 
-- (void)menuEditBookmarks:(id)sender
+- (void)menuEditBookmarksAsJsonFile:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openFile:FileManager::bookmarksPath().toNSString()];
+}
+
+- (void)menuEditTagsAsJsonFile:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openFile:FileManager::dataPath("tags").toNSString()];
 }
 
 - (void)menuEditCrawlerRules:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openFile:FileManager::crawlerRulesPath().toNSString()];
+}
+
+- (IBAction)menuOpenInSafari:(id)sender
+{
+    Webpage_ w = Global::controller->current_tab_webpage();
+    [[NSWorkspace sharedWorkspace] openURLs:[NSArray arrayWithObject:w->url().toNSURL()] withAppBundleIdentifier:@"com.apple.Safari" options:NSWorkspaceLaunchDefault additionalEventParamDescriptor:nil launchIdentifiers:nil];
+}
+
+- (IBAction)menuReloadBookmarksAndTags:(id)sender
+{
+    Global::controller->reloadBookmarksAsync();
+    Global::controller->reloadAllTagsAsync();
+}
+
+
++ (void)inspectResponderChain
+{
+    NSWindow *mainWindow = [NSApplication sharedApplication].mainWindow;
+    NSMutableString* toprint = [[NSMutableString alloc] initWithString:@"Responder chain:"];
+    NSResponder *responder = mainWindow.firstResponder;
+    do {
+        NSString* newpart = [NSString stringWithFormat:@" -> %@", responder];
+        [toprint appendString:newpart];
+    } while ((responder = [responder nextResponder]));
+    NSLog(@"%@", toprint);
 }
 @end
 
@@ -280,9 +317,20 @@
 {
     return nil;
 }
-//
+
+- (NSResponder*)initialFirstResponder
+{
+    BrowserWindowController* controller = (BrowserWindowController*)self.windowController;
+    return controller.outlineViewController.outlineView;
+}
+
 - (BOOL)makeFirstResponder:(NSResponder *)responder {
 //    NSLog(@"%@ make first responder", responder);
+//    [NSResponder inspectResponderChain];
+    if (responder == nil) {
+        BrowserWindowController* controller = (BrowserWindowController*)self.windowController;
+        responder = controller.outlineViewController.outlineView;
+    }
     BOOL rt = [super makeFirstResponder:responder];
     return rt;
 }
@@ -302,40 +350,15 @@
     if (event.keyCode == kVK_Tab &&
         (event.modifierFlags & NSEventModifierFlagControl))
     {
-        [self makeFirstResponder:[(BrowserWindowController*)self.windowController outlineview]];
+        BrowserWindowController* windowController = self.windowController;
+        [self makeFirstResponder:windowController.outlineViewController.outlineView];
     }
     return [super performKeyEquivalent:event];
 }
-//
-//- (PTextView *)fieldEditor:(BOOL)createFlag
-//              forObject:(id)object
-//{
-//    NSText* text = [super fieldEditor:createFlag forObject:object];
-//    if (text) {
-//        static PTextView* ptextview = [[PTextView alloc] initWithNSText:text];
-//    //    ptextview.delegate = text.delegate;
-//    //    static PMenuDelegate* delegate = [[PMenuDelegate alloc] init];
-//    //    text.menu = [[PMenu alloc] init];
-//    //    text.menu.delegate = delegate;
-//
-//        return ptextview;
-//    }
-//    return nil;
-//}
 @end
 
 
 @implementation BrowserWindowDelegate
-
-- (instancetype)init
-{
-    self = [super init];
-    self->m_general_ptextview = [[PTextView alloc] init];
-    self->m_general_textviewdelegate = [[GeneralTextViewDelegate alloc] init];
-    self->m_general_ptextview.delegate = self->m_general_textviewdelegate;
-    return self;
-}
-//
 - (id)windowWillReturnFieldEditor:(NSWindow *)sender
                          toObject:(id)client
 {

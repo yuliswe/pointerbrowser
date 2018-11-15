@@ -273,7 +273,7 @@
     self.url = self.stringValue;
     self.stringValue = Global::controller->address_bar_title().toNSString();
     if (self.window.firstResponder == self.currentEditor) {
-        [self.window makeFirstResponder:self.window.initialFirstResponder];
+        [self.window makeFirstResponder:nil];
     }
 }
 

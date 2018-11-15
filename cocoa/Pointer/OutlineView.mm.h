@@ -9,101 +9,103 @@
 #import <Cocoa/Cocoa.h>
 #include <docviewer/tabsmodel.hpp>
 #include "CppData.h"
+#import "Extension/PViewController.h"
+#import "AddTagsPopover.h"
 
-@class OutlineViewDelegateAndDataSource;
+@class OutlineView;
 
-@interface OpenTabCellView : NSTableCellView
-{
-    NSString* m_line1;
-    BOOL m_hovered;
-    NSTrackingArea* m_tracking_area;
-    NSOutlineView* m_outline;
-    CppData* m_data_item;
-//    Webpage_ m_webpage;
-}
-@property NSString* line1;
-@property BOOL hovered;
-@property NSOutlineView* outline;
-@property CppData* data_item;
-@property NSTrackingArea* tracking_area;
+@interface OpenTabItem : NSObject<WebpageWrapper,NSCoding,NSPasteboardWriting,NSPasteboardReading>
+@property NSString* title;
 @property Webpage_ webpage;
-- (IBAction)closeTab:(id)sender;
+@property OutlineView* outlineView;
 @end
-//
-//@interface CloseButton : NSButton
-//{
-//    IBOutlet OpenTab* m_open_tab;
-//}
-//@end
 
-@interface SearchResultCellView : NSTableCellView
-{
-    NSString* m_line1;
-    NSString* m_line2;
-    NSString* m_line3;
-//    Webpage_ m_webpage;
-}
+@interface OpenGroupItem : NSObject
+@property NSMutableArray<OpenTabItem*>* children;
+@property OutlineView* outlineView;
+@end
+
+@interface SearchResultTabItem : NSObject<WebpageWrapper,NSPasteboardWriting,NSPasteboardReading>
 @property NSString* line1;
 @property NSString* line2;
 @property NSString* line3;
 @property Webpage_ webpage;
+@property OutlineView* outlineView;
 @end
 
-typedef enum {
-    OpenTabsListType,
-    SearchResultsListType
-} TabsListType;
-
-@interface TabsList : NSObject
-{
-    TabsListType m_type;
-    NSString* m_label;
-    CppData* m_tabs;
-}
-
-@property TabsListType type;
-@property NSString* label;
-@property CppData* tabs;
-
-- (TabsList*) initType:(TabsListType)type label:(NSString*)label;
+@interface SearchResultGroupItem : NSObject
+@property NSMutableArray<SearchResultTabItem*>* children;
+@property OutlineView* outlineView;
 @end
 
-@interface MutableArrayWrapper : NSObject
-{
-    NSMutableArray* m_get;
-}
-@property (readonly) NSMutableArray* get;
-- (instancetype)initWithArray:(NSMutableArray*)array;
-+ (instancetype)wrap:(NSMutableArray*)array;
+@interface WorkspaceTabItem : NSObject<WebpageWrapper,NSPasteboardWriting,NSPasteboardReading>
+@property NSString* title;
+@property TagContainer_ tagContainer;
+@property Webpage_ webpage;
+@property OutlineView* outlineView;
 @end
 
+@interface WorkspaceGroupItem : NSObject<TagContainerWrapper,NSPasteboardWriting,NSPasteboardReading>
+@property NSString* title;
+@property TagContainer_ tagContainer;
+@property NSMutableArray<WorkspaceTabItem*>* children;
+@property OutlineView* outlineView;
+@end
 
-@interface OutlineViewDelegateAndDataSource : NSObject<NSOutlineViewDataSource, NSOutlineViewDelegate>
-{
-//    TabsModel_ m_openTabsList;
-//    TabsModel_ m_searchTabsList;
-    IBOutlet NSOutlineView* m_outline;
-    IBOutlet NSTextField* m_searchfield;
-    OpenTabCellView* m_currently_hovered_opentab_cellview;
-    MutableArrayWrapper* m_open_tabs;
-    MutableArrayWrapper* m_search_results;
-}
+@interface TrackingAreaCellView : NSTableCellView
+@property BOOL hovered;
+@property NSTrackingArea* tracking_area;
+@property id item;
+@property OutlineView* outlineView;
+- (IBAction)closeTab:(id)sender;
+@end
 
-@property OpenTabCellView* currently_hovered_opentab_cellview;
-@property NSOutlineView* outline;
-@property (readonly) MutableArrayWrapper* open_tabs;
-@property (readonly) MutableArrayWrapper* search_results;
+@interface WorkspaceHeaderCellView : TrackingAreaCellView
+- (IBAction)unpin:(id)sender;
+@end
+
+@interface WorkspaceHeaderCellUnpinButton : NSButton
+@property IBOutlet WorkspaceHeaderCellView* headerCellView;
+@end
+
+@interface WorkspaceTabItemMenu : NSMenu<WebpageWrapper>
+@property Webpage_ webpage;
+- (void)listRemoveTabOptionsForTagContainer:(TagContainer_)c webpage:(Webpage_)w;
+@end
+
+@interface OpenTabItemMenu : NSMenu<WebpageWrapper>
+@property Webpage_ webpage;
+@end
+
+@interface SearchResultTabItemMenu : NSMenu<WebpageWrapper>
+@property Webpage_ webpage;
+@end
+
+@interface RemoveTagMenuItem : NSMenuItem
+@property TagContainer_ tagContainer;
+@property Webpage_ webpage;
+@end
+
+@interface OutlineView : NSOutlineView<NSOutlineViewDataSource, NSOutlineViewDelegate>
+@property IBOutlet OpenTabItemMenu* open_tab_menu;
+@property IBOutlet WorkspaceTabItemMenu* workspace_tab_menu;
+@property IBOutlet SearchResultTabItemMenu* search_result_tab_menu;
+@property SearchResultGroupItem* search_result_group_item;
+@property OpenGroupItem* open_group_item;
+@property NSMutableArray<WorkspaceGroupItem*>* workspaces;
 
 - (IBAction)searchTab:(id)sender;
-- (void)reloadAll;
 - (void)reloadIndex:(id)item;
 - (IBAction)doubleClicked:(id)sender;
 - (void)updateSelection;
+- (BOOL)isHeader:(id)item;
+- (NSUInteger)workspacesOffset;
+- (NSUInteger)openTabsOffset;
+- (NSUInteger)searchResultsOffset;
 @end
 
-@interface OutlineView : NSOutlineView
-{
-    IBOutlet NSMenu* m_open_tab_menu;
-    IBOutlet NSMenu* m_search_result_tab_menu;
-}
+@interface OutlineViewController : PViewController
+@property IBOutlet OutlineView* outlineView;
+@property IBOutlet AddTagsPopover* add_tags_popover;
+- (void)showAddTagsPopoverForCurrentTab:(id)sender;
 @end

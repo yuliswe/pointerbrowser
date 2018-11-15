@@ -8,6 +8,15 @@
 #include <docviewer/docviewer.h>
 #import <Foundation/Foundation.h>
 
+@interface MutableArrayWrapper : NSObject
+{
+    NSMutableArray* m_get;
+}
+@property (readonly) NSMutableArray* get;
+- (instancetype)initWithArray:(NSMutableArray*)array;
++ (instancetype)wrap:(NSMutableArray*)array;
+@end
+
 @interface CppData : NSObject
 {
     void* m_ptr;
@@ -39,4 +48,12 @@
 - (nonnull instancetype)initWithPtr:(QSharedPointer<QObject>)ptr;
 @property (readonly) QSharedPointer<QObject> ptr;
 
+@end
+
+@protocol WebpageWrapper
+@property Webpage_ webpage;
+@end
+
+@protocol TagContainerWrapper
+@property TagContainer_ tagContainer;
 @end

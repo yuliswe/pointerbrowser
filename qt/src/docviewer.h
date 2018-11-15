@@ -11,5 +11,6 @@
 #include "tabsmodel.hpp"
 #include "webpage.hpp"
 #include "url.hpp"
+#include "tags.hpp"
 
 #endif // DOCVIEWER_H

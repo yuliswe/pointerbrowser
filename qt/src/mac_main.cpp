@@ -152,6 +152,35 @@ int main(int argc, char *argv[])
             }
             continue;
         }
+        else if (c == "tags") {
+            cout << "Tags:" << endl;
+            Global::controller->tags();
+            for (int i = 0; i < Global::controller->tags()->count(); i++)
+            {
+                TagContainer_ container = Global::controller->tags()->get(i);
+                qInfo() << container->title();
+            }
+            continue;
+        }
+        else if (c == "tags-c") {
+            Global::controller->createTagContainerAsync("new tag", 0, Global::controller->current_tab_webpage());
+            continue;
+        }
+        else if (c == "tags-r") {
+            cout << "Remove a tag? (Waiting for an index.)" << endl;
+            int index;
+            cin >> index;
+            Global::controller->removeTagContainerAsync(index);
+            continue;
+        }
+        else if (c == "tags-n") {
+            cout << "Rename a tag? (Waiting for a new name string.)" << endl;
+            string name;
+            cin >> name;
+            TagContainer_ container = Global::controller->tags()->get(0);
+            Global::controller->renameTagContainerAsync(container, QString::fromStdString(name));
+            continue;
+        }
         else if (c == "q" || c == "quit" || c == "exit") {
             qInfo() << "Exiting...";
             break;

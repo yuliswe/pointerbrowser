@@ -20,7 +20,8 @@ HEADERS += \
     logging.hpp \
     file.hpp \
     filelistmodel.hpp \
-    baselistmodel.hpp
+    baselistmodel.hpp \
+    tags.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -43,7 +44,8 @@ SOURCES += \
     logging.cpp \
     file.cpp \
     filelistmodel.cpp \
-    baselistmodel.cpp
+    baselistmodel.cpp \
+    tags.cpp
 
 RESOURCES += \
     db.qrc \

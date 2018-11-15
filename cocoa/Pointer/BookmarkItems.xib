@@ -6,7 +6,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="BookmarksCollectionViewItem">
+        <customObject id="-2" userLabel="File's Owner" customClass="BookmarkCollectionViewItem">
             <connections>
                 <outlet property="m_letter" destination="MJ2-LR-ghB" id="w92-Z0-pcV"/>
                 <outlet property="m_title" destination="lbb-is-1Kf" id="f2Y-bL-bNf"/>
@@ -15,7 +15,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <view id="JWJ-8O-oP5" customClass="BookmarkCollectionViewItemRoot">
+        <view id="JWJ-8O-oP5" customClass="BookmarkCollectionViewItemRootView">
             <rect key="frame" x="0.0" y="0.0" width="67" height="132"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -27,7 +27,7 @@
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MJ2-LR-ghB">
                                 <rect key="frame" x="3" y="-5" width="22" height="36"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="justified" title="B" id="eeP-G6-Eb9">
+                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="justified" title="B" allowsEditingTextAttributes="YES" id="eeP-G6-Eb9">
                                     <font key="font" metaFont="systemThin" size="30"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
@@ -44,8 +44,8 @@
                     </constraints>
                     <color key="fillColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                 </box>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lbb-is-1Kf">
-                    <rect key="frame" x="-2" y="0.0" width="71" height="98"/>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="lbb-is-1Kf">
+                    <rect key="frame" x="-2" y="62" width="71" height="35"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="35" id="p31-hE-MTa"/>
                     </constraints>

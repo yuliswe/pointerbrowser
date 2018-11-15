@@ -43,7 +43,7 @@ int Controller::newTab(int index,
     if (state == TabStateOpen) {
         bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
-            idx = open_tabs()->findTab(webpage->url());
+            idx = open_tabs()->findTabByRefOrUrl(webpage);
             if (idx == -1) {
                 open_tabs()->insertWebpage_(idx = index, webpage);
                 inserted = true;
@@ -57,7 +57,7 @@ int Controller::newTab(int index,
         } else if (newBehavior == WhenCreatedViewCurrent) {
             if (current_tab_state() == TabStateOpen) {
                 if (inserted) {
-                    viewTab(TabStateOpen, current_open_tab_index() + 1);
+                    viewTab(state, current_open_tab_index() + 1);
                 }
             }
         }
@@ -66,9 +66,9 @@ int Controller::newTab(int index,
         }
     } else if (state == TabStatePreview) {
         if (whenExists == WhenExistsViewExisting) {
-            if ((idx = preview_tabs()->findTab(webpage->url())) > -1) {
+            if ((idx = preview_tabs()->findTabByRefOrUrl(webpage)) > -1) {
                 if (newBehavior == WhenCreatedViewNew) {
-                    viewTab(TabStatePreview, idx);
+                    viewTab(state, idx);
                 }
                 return idx;
             } else {
@@ -80,6 +80,27 @@ int Controller::newTab(int index,
             }
         } else if (whenExists == WhenExistsOpenNew) {
             preview_tabs()->insertWebpage_(idx = index, webpage);
+            if (newBehavior == WhenCreatedViewNew) {
+                viewTab(state, idx);
+            }
+            return idx;
+        }
+    } else if (state == TabStateWorkspace) {
+        if (whenExists == WhenExistsViewExisting) {
+            if ((idx = workspace_tabs()->findTabByRefOrUrl(webpage)) > -1) {
+                if (newBehavior == WhenCreatedViewNew) {
+                    viewTab(state, idx);
+                }
+                return idx;
+            } else {
+                workspace_tabs()->insertWebpage_(idx = index, webpage);
+                if (newBehavior == WhenCreatedViewNew) {
+                    viewTab(state, idx);
+                }
+                return idx;
+            }
+        } else if (whenExists == WhenExistsOpenNew) {
+            workspace_tabs()->insertWebpage_(idx = index, webpage);
             if (newBehavior == WhenCreatedViewNew) {
                 viewTab(state, idx);
             }
@@ -97,6 +118,26 @@ int Controller::newTab(int index,
                        void const* sender)
 {
     return newTab(index, state, shared<Webpage>(uri), newBehavior, whenExists, sender);
+}
+
+int Controller::viewTab(Webpage_ webpage, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::viewTab" << webpage;
+    TabState state;
+    int index;
+    if (webpage->associated_container() == open_tabs().get()) {
+        state = TabStateOpen;
+        index = open_tabs()->findTab(webpage);
+    } else if (webpage->associated_container() == preview_tabs().get()) {
+        state = TabStatePreview;
+        index = preview_tabs()->findTab(webpage);
+    } else if (webpage->associated_container() == workspace_tabs().get()) {
+        state = TabStateWorkspace;
+        index = workspace_tabs()->findTab(webpage);
+    } else {
+        return false;
+    }
+    return viewTab(state, index, sender);
 }
 
 // switch view
@@ -131,6 +172,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         old_page = nullptr;
         helperCurrentTabWebpagePropertyChanged(empty_page, nullptr, sender);
         set_current_open_tab_index(-1,sender);
+        set_current_workspace_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         set_current_tab_search_highlight_index(-1,sender);
@@ -156,8 +198,11 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         if (i >= preview_tabs()->count()) { i = preview_tabs()->count() - 1; }
         page = preview_tabs()->webpage_(i);
         set_crawler_rule_table_visible(false);
+    } else if (state == TabStateWorkspace) {
+        page = workspace_tabs()->webpage_(i);
     }
     Q_ASSERT(page != nullptr);
+    INFO(ControllerLogging) << "new page:" << page;
     helperCurrentTabWebpagePropertyChanged(page, nullptr, sender);
     set_current_tab_state(state);
     if (state == TabStateOpen) {
@@ -165,6 +210,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_open_tab_highlight_index(i,sender);
         set_current_tab_search_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
+        set_current_workspace_tab_index(-1,sender);
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->searchForWebpageAsync(page);
         }
@@ -172,6 +218,16 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_preview_tab_index(i,sender);
         set_current_open_tab_index(-1,sender);
         set_current_open_tab_highlight_index(-1,sender);
+        set_current_workspace_tab_index(-1,sender);
+    } else if (state == TabStateWorkspace) {
+        set_current_workspace_tab_index(i,sender);
+        set_current_open_tab_index(-1,sender);
+        set_current_open_tab_highlight_index(-1,sender);
+        set_current_preview_tab_index(-1,sender);
+        set_current_tab_search_highlight_index(-1,sender);
+        if (current_tab_search_word().isEmpty()) {
+            Global::searchDB->searchForWebpageAsync(page);
+        }
     }
     set_current_tab_webpage(page,sender);
     // set up load progress watcher
@@ -222,8 +278,8 @@ int Controller::closeTab(TabState state, int index, void const* sender)
             viewTab(next_tab_state(), next_tab_index());
             set_current_tab_search_highlight_index(-1);
             set_current_preview_tab_index(-1);
-        } else if (current_tab_state() == TabStatePreview) {
-            setNextTabStateAndIndex(TabStatePreview, current_preview_tab_index());
+        } else {
+            setNextTabStateAndIndex(current_tab_state(), current_preview_tab_index());
             open_tabs()->removeTab(index);
             viewTab(next_tab_state(), next_tab_index());
         }
@@ -294,27 +350,53 @@ int Controller::closeTab(void const* sender)
 
 int Controller::loadLastOpen()
 {
-    QVariantList contents = FileManager::readDataJsonFileA("open.json");
-    qCInfo(ControllerLogging) << "BrowserController::loadLastOpen";
+    INFO(ControllerLogging);
+    QVariantMap object = FileManager::readDataJsonFileM("open.json");
+    QVariantList open_tabs_encoded = object["tabs"].value<QVariantList>();
+    QVariantList workspaces_encoded = object["workspaces"].value<QVariantList>();
+
     Webpage_List tabs;
-    for (const QVariant& item : contents) {
+    for (const QVariant& item : open_tabs_encoded) {
         tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
     }
     open_tabs()->replaceModel(tabs);
     if (open_tabs()->count() > 0) {
         viewTab(TabStateOpen, 0);
     }
+
+    QList<TagContainer_> new_tags;
+    for (const QVariant& item : workspaces_encoded) {
+        QString title = item.value<QString>();
+        // find
+        for (int i = tags()->count() - 1; i >= 0; i--) {
+            if (tags()->get(i)->title() == title) {
+                new_tags << tags()->get(i);
+            }
+        }
+    }
+    workspaces()->resetModel(new_tags);
+    CRIT(ControllerLogging) << workspaces()->count();
     return 0;
 }
 
 int Controller::saveLastOpen()
 {
-    QVariantList contents;
-    int count = open_tabs()->count();
-    for (int i = 0; i < count; i++) {
-        contents << open_tabs()->webpage_(i)->toQVariantMap();
+    INFO(ControllerLogging);
+    QVariantMap object;
+
+    QVariantList open_tabs_encoded;
+    for (int i = 0; i < open_tabs()->count(); i++) {
+        open_tabs_encoded << open_tabs()->webpage_(i)->toQVariantMap();
     }
-    FileManager::writeDataJsonFileA("open.json", contents);
+    object["tabs"] = open_tabs_encoded;
+
+    QVariantList workspace_encoded;
+    for (int i = 0; i < workspaces()->count(); i++) {
+        workspace_encoded << workspaces()->get(i)->title();
+    }
+    object["workspaces"] = workspace_encoded;
+
+    FileManager::writeDataJsonFileM("open.json", object);
     return 0;
 }
 
@@ -341,6 +423,23 @@ int Controller::moveTab(TabState fromState, int fromIndex, TabState toState, int
         return 0;
     }
     return 0;
+}
+
+int Controller::moveTab(Webpage_ webpage, TabState toState, int toIndex, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::moveTab" << webpage << toState << toIndex;
+    TabState fromState;
+    int fromIndex;
+    if (webpage->associated_container() == open_tabs().get()) {
+        fromState = TabStateOpen;
+        fromIndex = open_tabs()->findTabByRefOrUrl(webpage);
+    } else if (webpage->associated_container() == preview_tabs().get()) {
+        fromState = TabStatePreview;
+        fromIndex = preview_tabs()->findTabByRefOrUrl(webpage);
+    } else {
+        return false;
+    }
+    return moveTab(fromState, fromIndex, toState, toIndex, sender);
 }
 
 int Controller::currentTabWebpageGo(QString const& u, void const* sender)
@@ -622,10 +721,10 @@ int Controller::saveBookmarks()
     return count;
 }
 
-int Controller::loadBookmarks()
+int Controller::reloadBookmarks(void const* sender)
 {
     QVariantList contents = FileManager::readDataJsonFileA("bookmarks.json");
-    qCInfo(ControllerLogging) << "BrowserController::loadBookmarks";
+    INFO(ControllerLogging) << sender;
     Webpage_List tabs;
     for (const QVariant& item : contents) {
         tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
@@ -675,7 +774,7 @@ int Controller::moveBookmark(int from, int to, void const* sender)
 int Controller::showBookmarkPage(void const*sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::showBookmarkPage";
-    loadBookmarks();
+    reloadBookmarks();
     set_bookmark_page_visible(true);
     return 0;
 }
@@ -804,18 +903,23 @@ int Controller::closeAllPopovers(void const* sender)
 {
     set_downloads_visible(false, sender);
     set_crawler_rule_table_visible(false, sender);
+    emit_tf_close_all_popovers();
     return true;
 }
 
 void Controller::onCurrentTabWebpagePropertyChanged(void const* a, void const* sender)
 {
+    DEBUG(ControllerLogging) << a << sender;
     return helperCurrentTabWebpagePropertyChanged(current_tab_webpage(), a, sender);
 }
 
 void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* a, void const* sender)
 {
+    DEBUG(ControllerLogging) << w << a << sender;
     if (!a || w->is_load_progress_change(a)) { set_address_bar_load_progress(w->load_progress()); }
-    if (!a || w->is_title_change(a)) { set_address_bar_title(w->title()); }
+    if (!a || w->is_title_change(a)) {
+        set_address_bar_title(w->title());
+    }
     if (!a || w->is_find_text_state_change(a)) { set_current_webpage_find_text_state(w->find_text_state()); }
     if (!a || w->is_crawler_rule_table_change(a)) {
         if (! w->crawler_rule_table()->is_loaded()) {
@@ -826,7 +930,7 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
     if (!a || w->is_is_blank_change(a)) {
         set_bookmark_page_visible(w->is_blank());
         set_current_tab_webpage_is_blank(w->is_blank());
-        if (w->associated_container() == open_tabs().get()) {
+        if (w->associated_container() != preview_tabs().get()) {
             set_crawler_rule_table_enabled(! w->is_blank());
         } else {
             set_crawler_rule_table_enabled(false);

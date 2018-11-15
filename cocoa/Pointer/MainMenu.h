@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface BookmarkMenuDelegate : NSObject<NSMenuDelegate>
+@property BOOL currentStateNotNull;
 @end
 
 NS_ASSUME_NONNULL_END

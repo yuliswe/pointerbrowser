@@ -3,5 +3,8 @@
         <file>defaults/search.db</file>
         <file>defaults/version</file>
         <file>defaults/bookmarks.json</file>
+        <file>defaults/open.json</file>
+        <file>defaults/tags/data/Favorite Sites.json</file>
+        <file>defaults/tags/tags.json</file>
     </qresource>
 </RCC>

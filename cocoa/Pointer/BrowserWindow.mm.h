@@ -14,6 +14,8 @@
 #import "Extension/PTextView.h"
 #import "Downloads.h"
 #import "ErrorPage.h"
+#import "AddTagsPopover.h"
+#import "OutlineView.mm.h"
 
 @interface NSResponder(Pointer)
 - (IBAction)menuNewTab:(id)sender;
@@ -25,50 +27,36 @@
 - (IBAction)menuAddBookmark:(id)sender;
 - (IBAction)menuShowNextTab:(id)sender;
 - (IBAction)menuShowPrevTab:(id)sender;
-- (IBAction)menuEditBookmarks:(id)sender;
+- (IBAction)menuEditBookmarksAsJsonFile:(id)sender;
 - (IBAction)menuEditCrawlerRules:(id)sender;
 - (IBAction)menuShowEULA:(id)sender;
+- (IBAction)menuAddTagsForCurrentTab:(id)sender;
+- (IBAction)menuEditTagsAsJsonFile:(id)sender;
++ (void)inspectResponderChain;
 @end
 
 
 @interface BrowserWindowController : NSWindowController
-{
-    IBOutlet NSOutlineView* m_outlineview;
-    IBOutlet NSView* m_tabview;
-    IBOutlet NSSearchField* m_tab_searchfield;
-    IBOutlet AddressBar* m_addressbar;
-    IBOutlet NSButton* m_crawler_rules_popover_button;
-    IBOutlet NSBox* m_text_find_toolbar;
-    IBOutlet NSSearchField* m_text_find_searchfield;
-    IBOutlet NSButton* m_text_find_done_button;
-    IBOutlet NSButton* m_text_find_next_button;
-    IBOutlet NSButton* m_text_find_prev_button;
-    IBOutlet NSTextField* m_text_find_label;
-    IBOutlet NSButton* m_newtab_button;
-    IBOutlet CrawlerRulesPopover* m_crawler_rules_popover;
-    IBOutlet NSPopover* m_downloads_popover;
-    IBOutlet DownloadsViewController* m_download_viewcontroller;
-    IBOutlet NSButton* m_crawler_rule_table_button;
-    IBOutlet NSButton* m_downloads_button;
-    IBOutlet NSView* m_bookmarks;
-    IBOutlet BookmarksViewController* m_bookmarks_viewcontroller;
-    IBOutlet NSButton* m_go_back_button;
-    IBOutlet NSButton* m_go_forward_button;
-}
-
-@property NSOutlineView* outlineview;
-@property NSBox* text_find_toolbar;
-@property NSSearchField* text_find_searchfield;
-@property NSSearchField* tab_searchfield;
-@property AddressBar* addressbar;
-@property NSButton* newtab_button;
-@property NSButton* text_find_done_button;
-@property NSButton* text_find_next_button;
-@property NSButton* text_find_prev_button;
-@property NSTextField* text_find_label;
-@property CrawlerRulesPopover* crawler_rules_popover;
-@property BookmarksViewController* bookmarks_viewcontroller;
-@property NSView* bookmarks;
+@property IBOutlet OutlineViewController* outlineViewController;
+@property IBOutlet NSBox* text_find_toolbar;
+@property IBOutlet NSSearchField* text_find_searchfield;
+@property IBOutlet NSSearchField* tab_searchfield;
+@property IBOutlet AddressBar* addressbar;
+@property IBOutlet NSButton* newtab_button;
+@property IBOutlet NSButton* text_find_done_button;
+@property IBOutlet NSButton* text_find_next_button;
+@property IBOutlet NSButton* text_find_prev_button;
+@property IBOutlet NSTextField* text_find_label;
+@property IBOutlet NSButton* go_back_button;
+@property IBOutlet NSButton* go_forward_button;
+@property IBOutlet NSButton* downloads_button;
+@property IBOutlet NSPopover* downloads_popover;
+@property IBOutlet DownloadsViewController* download_viewcontroller;
+@property IBOutlet CrawlerRulesPopover* crawler_rules_popover;
+@property IBOutlet NSButton* crawler_rule_table_button;
+@property IBOutlet BookmarksViewController* bookmarks_viewcontroller;
+@property IBOutlet NSView* bookmarks_view_container;
+@property IBOutlet NSView* tab_view_container;
 @end
 
 @interface GeneralTextViewDelegate : NSObject<NSTextViewDelegate>
@@ -78,16 +66,9 @@
 @end
 
 @interface BrowserWindowDelegate : NSObject<NSWindowDelegate>
-{
-    PTextView* m_general_ptextview;
-    GeneralTextViewDelegate* m_general_textviewdelegate;
-}
 @end
 
 @interface BrowserWindowView : NSView
-{
-    
-}
 @end
 
 

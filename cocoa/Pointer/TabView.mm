@@ -47,7 +47,7 @@
     if (Global::controller->next_tab_state() == Controller::TabStateOpen) {
         self.selectedTabViewItemIndex = Global::controller->next_tab_index();
     } else if (Global::controller->next_tab_state() == Controller::TabStatePreview) {
-        self.selectedTabViewItemIndex = Global::controller->preview_tabs()->count() + Global::controller->next_tab_index();
+        self.selectedTabViewItemIndex = Global::controller->open_tabs()->count() + Global::controller->next_tab_index();
     } else if (Global::controller->next_tab_state() == Controller::TabStateNull) {
         self.selectedTabViewItemIndex = -1;
     }
@@ -88,12 +88,29 @@
                      &TabsModel::rowsRemoved,
                      [=](const QModelIndex &parent, int first, int last) {
                          NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
-                         [self performSelectorOnMainThread:@selector(onPreviewTabRowsRemoved:) withObject:args waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handlePreviewTabRowsRemoved:) withObject:args waitUntilDone:YES];
                      });
     QObject::connect(Global::controller->preview_tabs().get(),
                      &TabsModel::modelReset,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(handle_preview_tab_model_reset) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handlePreviewTabModelReset) withObject:nil waitUntilDone:YES];
+                     });
+    QObject::connect(Global::controller->workspace_tabs().get(),
+                     &TabsModel::rowsInserted,
+                     [=](const QModelIndex &parent, int first, int last) {
+                         NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
+                         [self performSelectorOnMainThread:@selector(handleWorkspaceTabRowsInserted:) withObject:args waitUntilDone:YES];
+                     });
+    QObject::connect(Global::controller->workspace_tabs().get(),
+                     &TabsModel::rowsRemoved,
+                     [=](const QModelIndex &parent, int first, int last) {
+                         NSDictionary* args = @{@"first" : [NSNumber numberWithInt:first], @"last": [NSNumber numberWithInt:last]};
+                         [self performSelectorOnMainThread:@selector(handleWorkspaceTabRowsRemoved:) withObject:args waitUntilDone:YES];
+                     });
+    QObject::connect(Global::controller->workspace_tabs().get(),
+                     &TabsModel::modelReset,
+                     [=]() {
+                         [self performSelectorOnMainThread:@selector(handleWorkspaceTabModelReset) withObject:nil waitUntilDone:YES];
                      });
     // selection changed signal should only be connected after view is for sure loaded
     QObject::connect(Global::controller,
@@ -129,7 +146,7 @@
     }
 }
 
-- (void)onPreviewTabRowsRemoved:(NSDictionary*)args
+- (void)handlePreviewTabRowsRemoved:(NSDictionary*)args
 {
     int first = [args[@"first"] intValue];
     int last = [args[@"last"] intValue];
@@ -141,10 +158,10 @@
     }
 }
 
-- (void)handle_preview_tab_model_reset
+- (void)handlePreviewTabModelReset
 {
     int offset = Global::controller->open_tabs()->count();
-    for (int i = self.childViewControllers.count - 1; i >= offset; i--) {
+    for (int i = self.childViewControllers.count - Global::controller->workspace_tabs()->count() - 1; i >= offset; i--) {
         [self removeChildViewControllerAtIndex:i];
     }
 }
@@ -190,6 +207,39 @@
     }
 }
 
+
+- (void)handleWorkspaceTabRowsRemoved:(NSDictionary*)args
+{
+    int first = [args[@"first"] intValue];
+    int last = [args[@"last"] intValue];
+    
+    int count = last - first + 1;
+    int offset = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count();
+    for (int i = count - 1; i >= 0; i--) {
+        [self removeChildViewControllerAtIndex:(i+first+offset)];
+    }
+}
+
+- (void)handleWorkspaceTabModelReset
+{
+    int offset = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count();
+    for (int i = self.childViewControllers.count - 1; i >= offset; i--) {
+        [self removeChildViewControllerAtIndex:i];
+    }
+}
+
+- (void)handleWorkspaceTabRowsInserted:(NSDictionary*)args
+{
+    int first = [args[@"first"] intValue];
+    int last = [args[@"last"] intValue];
+    
+    int count = last - first + 1;
+    int offset = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count();
+    for (int i = 0; i < count; i++) {
+        Webpage_ w = Global::controller->workspace_tabs()->webpage_(i+first);
+        [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(i+first+offset)];
+    }
+}
 // called when the tabs are reloaded
 // typically once at the start of the application
 // or when the page array is changed
@@ -205,6 +255,9 @@
         self.selectedTabViewItemIndex = i;
     } else if (Global::controller->current_tab_state() == Controller::TabStatePreview) {
         int i = Global::controller->open_tabs()->count() + Global::controller->current_preview_tab_index();
+        self.selectedTabViewItemIndex = i;
+    } else if (Global::controller->current_tab_state() == Controller::TabStateWorkspace) {
+        int i = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count() + Global::controller->current_workspace_tab_index();
         self.selectedTabViewItemIndex = i;
     }
 }

@@ -33,6 +33,8 @@
     config.applicationNameForUserAgent = @"Version/11.1.2 Safari/605.1.15";
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
+    static WKProcessPool* processPool = [[WKProcessPool alloc] init];
+    config.processPool = processPool;
     self = [super initWithFrame:frame configuration:config];
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
@@ -271,21 +273,19 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         [webView loadUri:url.full().toNSString()];
         return;
     }
-    // made sure is https
-//* Do you want this?
-    // if request is from preview, open new window
-    if (webView.webpage->associated_container() == Global::controller->preview_tabs().get()
-        && webView.webpage->is_loaded()
-        && navigationAction.navigationType == WKNavigationTypeLinkActivated)
+    // if request is from preview or workspace, open new window
+    Webpage_ w = webView.webpage;
+    bool is_preview_tab = w->associated_container() == Global::controller->preview_tabs().get();
+    bool is_workspace_tab = w->associated_container() == Global::controller->workspace_tabs().get();
+    bool is_loaded = w->is_loaded();
+    WKNavigationType type = navigationAction.navigationType;
+    if ((is_preview_tab || is_workspace_tab) && is_loaded
+        && type != WKNavigationTypeReload)
     {
-        Webpage_ w = shared<Webpage>(webView.webpage);
-        w->set_associated_frontend((__bridge_retained void*) self);
-        w->moveToThread(Global::qCoreApplicationThread);
-        Global::controller->newTabAsync(0, Controller::TabStateOpen, w, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
-        decisionHandler(WKNavigationActionPolicyAllow);
+        Global::controller->newTabAsync(0, Controller::TabStateOpen, url, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
-//*/
     // made sure request is from open tab
     self.webpage->handleSuccessAsync();
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand

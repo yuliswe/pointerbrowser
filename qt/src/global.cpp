@@ -15,10 +15,11 @@
 
 void dumpLibraryInfo()
 {
-    qCInfo(GlobalLogging) << "QLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
-    qCInfo(GlobalLogging) << "QLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
-    qCInfo(GlobalLogging) << "QCoreApplication::applicationDirPath" << QCoreApplication::applicationDirPath();
+    qCInfo(GlobalLogging) << "dumpLibraryInfo::PrefixPath" << QLibraryInfo::location(QLibraryInfo::PrefixPath);
+    qCInfo(GlobalLogging) << "dumpLibraryInfo::LibrariesPath" << QLibraryInfo::location(QLibraryInfo::LibrariesPath);
+    qCInfo(GlobalLogging) << "dumpLibraryInfo::PluginsPath" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    qCInfo(GlobalLogging) << "dumpLibraryInfo::applicationDirPath" << QCoreApplication::applicationDirPath();
+    qCInfo(GlobalLogging) << "dumpLibraryInfo::rootDataPath" << FileManager::dataPath();
 }
 
 Global::Global(QObject *parent) : QObject(parent)
@@ -44,6 +45,8 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     qRegisterMetaType<CrawlerRule>();
     qRegisterMetaType<CrawlerRuleTable>();
     qRegisterMetaType<uint_least64_t>();
+    qRegisterMetaType<TagContainer_>();
+    qRegisterMetaType<TagsCollection_>();
 
     qCoreApplication = new QCoreApplication(argc, argv);
     qCoreApplication->moveToThread(qCoreApplicationThread);
@@ -56,14 +59,15 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         qCCritical(GlobalLogging) << "running version" << currV << "data version" << dataV;
         if (currV != dataV) {
             Global::isNewInstall = true;
-            FileManager::rmDataDir();
-            FileManager::mkDataDir();
+            FileManager::rmRootDataDir();
         }
+        FileManager::mkRootDataDir();
         initGlobalObjects();
         Global::sig.emit_tf_global_objects_initialized();
         searchDB->connect();
+        controller->reloadBookmarks();
+        controller->reloadAllTags();
         controller->loadLastOpen();
-        controller->loadBookmarks();
         Global::sig.emit_tf_everything_loaded();
     });
 

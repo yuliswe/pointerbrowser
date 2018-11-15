@@ -45,6 +45,9 @@
 		7AB2318E21856634005B436F /* ErrorPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB2318D21856634005B436F /* ErrorPage.xib */; };
 		7AB2319121856649005B436F /* ErrorPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319021856649005B436F /* ErrorPage.mm */; };
 		7AB2319421856A28005B436F /* PViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319321856A28005B436F /* PViewController.m */; };
+		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
+		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
+		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
 		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -145,6 +148,10 @@
 		7AB2319021856649005B436F /* ErrorPage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ErrorPage.mm; sourceTree = "<group>"; };
 		7AB2319221856A28005B436F /* PViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PViewController.h; sourceTree = "<group>"; };
 		7AB2319321856A28005B436F /* PViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PViewController.m; sourceTree = "<group>"; };
+		B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTagsPopover.xib; sourceTree = "<group>"; };
+		B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddTagsPopover.h; sourceTree = "<group>"; };
+		B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AddTagsPopover.mm; sourceTree = "<group>"; };
+		B2713A8121A4D12900FCF4C1 /* OutlineView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OutlineView.xib; sourceTree = "<group>"; };
 		B2F6648B219676850069F547 /* libgumbo_query.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo_query.dylib; path = lib/libgumbo_query.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -193,6 +200,9 @@
 				7A651483211FD47B00977B87 /* AddressBar.mm.h */,
 				7A0CDD332110F15600FE35C5 /* Application.mm */,
 				7A0CDD322110F15600FE35C5 /* Application.mm.h */,
+				B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */,
+				B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */,
+				B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */,
 				7A0CDD352110F15800FE35C5 /* Assets.xcassets */,
 				7A0CDD452110F3D400FE35C5 /* BrowserWindow.mm.h */,
 				7A0CDD462110F3D400FE35C5 /* BrowserWindow.mm */,
@@ -216,6 +226,7 @@
 				7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */,
 				7A737409211690E10061AD5F /* OutlineView.mm */,
 				7A737408211690E10061AD5F /* OutlineView.mm.h */,
+				B2713A8121A4D12900FCF4C1 /* OutlineView.xib */,
 				7A0CDD3D2110F15900FE35C5 /* Pointer.entitlements */,
 				7A651481211EAC2100977B87 /* TabView.mm */,
 				7A651480211EAC2100977B87 /* TabView.mm.h */,
@@ -346,9 +357,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */,
 				7A0CDD442110F22900FE35C5 /* BrowserWindow.xib in Resources */,
 				7A0CDD362110F15800FE35C5 /* Assets.xcassets in Resources */,
 				7A02768C217B89BB004A09F6 /* BookmarkItems.xib in Resources */,
+				B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */,
 				7A43E2822180F7C200E834E5 /* Downloads.xib in Resources */,
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
 				7A7C503121881A82007FB18C /* eula.html in Resources */,
@@ -377,6 +390,7 @@
 				7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */,
 				7AB2319421856A28005B436F /* PViewController.m in Sources */,
 				7A0CDD3C2110F15800FE35C5 /* main.m in Sources */,
+				B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */,
 				7A11A574217AFD2A003E456E /* Bookmarks.mm in Sources */,
 				7A59D52721408DAA001C082B /* CrawlerRulesPopover.mm in Sources */,
 				7A651482211EAC2100977B87 /* TabView.mm in Sources */,

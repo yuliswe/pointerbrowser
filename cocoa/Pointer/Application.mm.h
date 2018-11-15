@@ -7,15 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "BrowserWindow.mm.h"
 @interface AppDelegate : NSObject <NSApplicationDelegate>
-{
-    NSArray* m_browserWindows;
-}
-
-@property NSArray* browserWindows;
-
-- (IBAction)closeTab:(id)sender;
-
+@property BrowserWindowController* browserWindowController;
 @end
 
