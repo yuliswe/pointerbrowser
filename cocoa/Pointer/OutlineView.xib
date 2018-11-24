@@ -332,26 +332,30 @@
         </menu>
         <menu id="6ZS-rR-INS" userLabel="Search Result Tab Menu" customClass="SearchResultTabItemMenu">
             <items>
-                <menuItem title="Preview (Current)" id="8hp-4B-2nP">
+                <menuItem title="Keep Open" id="kkr-GN-pwd">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="Open in New Tab" id="mER-YN-b4r">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="fPh-uh-aId"/>
-                <menuItem title="Show This Entry More Often" id="i6C-oK-s40">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="I Don't Want to See This Entry" id="0Pl-4M-ANs">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="Vca-jf-74t">
                     <connections>
-                        <action selector="menuOpenInSafari:" target="-1" id="lUn-Od-1UZ"/>
+                        <action selector="menuKeepCurrentTabOpen:" target="-1" id="P58-LN-Ib8"/>
                     </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="3Ws-Ib-oFY"/>
+                <menuItem title="Tags..." keyEquivalent="t" id="ZuF-UG-47k">
+                    <connections>
+                        <action selector="menuAddTagsForCurrentTab:" target="-1" id="LAt-Ni-ZyA"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="6Ua-73-h2W"/>
+                <menuItem title="Add to Bookmark" keyEquivalent="b" id="hGG-gD-6pS">
+                    <connections>
+                        <action selector="menuAddBookmark:" target="-1" id="7Wo-QB-nCA"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="fPh-uh-aId"/>
                 <menuItem title="Open in Safari" id="OQ1-eh-iu1">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="menuOpenInSafari:" target="-1" id="3xe-gJ-h3l"/>
+                    </connections>
                 </menuItem>
             </items>
             <point key="canvasLocation" x="-284" y="-38"/>

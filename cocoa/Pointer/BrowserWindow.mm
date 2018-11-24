@@ -241,6 +241,12 @@
 {
     Global::controller->searchTabsAsync(QString::fromNSString(self.tab_searchfield.stringValue));
 }
+
+- (IBAction)menuKeepCurrentTabOpen:(id)sender
+{
+    Webpage_ w = Global::controller->current_tab_webpage();
+    Global::controller->newTabAsync(Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+}
 @end
 
 @implementation NSResponder(Pointer)

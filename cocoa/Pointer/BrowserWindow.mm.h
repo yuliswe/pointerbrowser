@@ -32,6 +32,7 @@
 - (IBAction)menuShowEULA:(id)sender;
 - (IBAction)menuAddTagsForCurrentTab:(id)sender;
 - (IBAction)menuEditTagsAsJsonFile:(id)sender;
+- (IBAction)menuKeepCurrentTabOpen:(id)sender;
 + (void)inspectResponderChain;
 @end
 
