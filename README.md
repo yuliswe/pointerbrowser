@@ -21,7 +21,7 @@ be it indirect, special, incidental or consequential damages
 (including but not limited to damages for loss of business, loss of profits, loss of data, interruption or the like).
 
 ## Contact Support
-If you experience any issue while using Pointer Browser, please email to _[pointerbrowser@gmail.com](mailto:pointerbrowser@gmail.com)_ or open an issue on [GitHub](https://github.com/YLiLarry/docviewer/issues).
+If you experience any issue while using Pointer Browser, please email to _[pointerbrowser@gmail.com](mailto:pointerbrowser@gmail.com)_ or open an issue on [GitHub](https://github.com/YLiLarry/pointerbrowser/issues).
 
 ## Acknowledgement
 Pointer Browser is made by a passionate team of two.
