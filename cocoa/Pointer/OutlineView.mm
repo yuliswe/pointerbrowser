@@ -974,48 +974,63 @@ shouldShowOutlineCellForItem:(id)item
     NSArray<id>* boarditems = [pasteboard readObjectsForClasses:@[SearchResultTabItem.class, OpenTabItem.class, WorkspaceTabItem.class, WorkspaceGroupItem.class] options:nil];
     [boarditems enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop)
     {
-        if ([dropLocation isKindOfClass:OpenGroupItem.class] && [item isKindOfClass:OpenTabItem.class]) {
-            Webpage_ w = [item webpage];
-            int index = Global::controller->open_tabs()->findTab(w);
-            Global::controller->moveTabAsync(Controller::TabStateOpen, index, Controller::TabStateOpen, new_index, (__bridge void*)self);
-        } else if ([dropLocation isKindOfClass:OpenGroupItem.class] && [item isKindOfClass:SearchResultTabItem.class]) {
-            Webpage_ w = [item webpage];
-            int index = Global::controller->preview_tabs()->findTab(w);
-            Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew, (__bridge void*)self);
-        }
-        // dropping at a workspace group to tag tab
-        else if ([dropLocation isKindOfClass:WorkspaceGroupItem.class]
-                   && ([item isKindOfClass:SearchResultTabItem.class]
-                       || [item isKindOfClass:OpenTabItem.class]))
-        {
-            TagContainer_ c = [dropLocation tagContainer];
-            Webpage_ w = [item webpage];
-            Global::controller->tagContainerInsertWebpageCopyAsync(c, new_index, w);
-        } else if ([dropLocation isKindOfClass:WorkspaceGroupItem.class] && [item isKindOfClass:WorkspaceTabItem.class]) {
-            Webpage_ w = [item webpage];
-            if ([item tagContainer] == [dropLocation tagContainer]) {
-                // within the same container, move
+        // dropping on root
+        if (dropLocation == nil) {
+            // moving workspace group
+            if ([item isKindOfClass:WorkspaceGroupItem.class]) {
+                int offset = self.workspacesOffset;
                 TagContainer_ c = [item tagContainer];
-                int old_index = c->indexOfUrl(w->url());
-                if (old_index == new_index || new_index == old_index + 1) {
-                    // ignore
-                    return;
-                }
-                Global::controller->tagContainerMoveWebpageAsync(c, old_index, new_index);
-            } else {
-                // otherwise copy
-                Global::controller->tagContainerInsertWebpageCopyAsync([dropLocation tagContainer], new_index, w);
+                int old_index = Global::controller->workspaces()->indexOf(c);
+                Global::controller->workspacesMoveTagContainerAsync(old_index, new_index - offset);
             }
-        } else if ([dropLocation isKindOfClass:OpenGroupItem.class] && [item isKindOfClass:WorkspaceTabItem.class]) {
-            TagContainer_ c = [item tagContainer];
-            Webpage_ w = [item webpage];
-            Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
-            Global::controller->tagContainerRemoveWebpageAsync(c, w);
-        } else if (dropLocation == nil && [item isKindOfClass:WorkspaceGroupItem.class]) {
-            int offset = self.workspacesOffset;
-            TagContainer_ c = [item tagContainer];
-            int old_index = Global::controller->workspaces()->indexOf(c);
-            Global::controller->workspacesMoveTagContainerAsync(old_index, new_index - offset);
+        }
+        // dropping on open group
+        else if ([dropLocation isKindOfClass:OpenGroupItem.class]) {
+            // moving open tab
+            if ([item isKindOfClass:OpenTabItem.class]) {
+                Webpage_ w = [item webpage];
+                int index = Global::controller->open_tabs()->findTab(w);
+                Global::controller->moveTabAsync(Controller::TabStateOpen, index, Controller::TabStateOpen, new_index, (__bridge void*)self);
+            }
+            // dragging search result
+            else if ([item isKindOfClass:SearchResultTabItem.class]) {
+                Webpage_ w = [item webpage];
+                Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew, (__bridge void*)self);
+            }
+            // dragging workspace tab
+            else if ([item isKindOfClass:WorkspaceTabItem.class]) {
+                TagContainer_ c = [item tagContainer];
+                Webpage_ w = [item webpage];
+                Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+                Global::controller->tagContainerRemoveWebpageAsync(c, w);
+            }
+        }
+        // dropping on a workspace group
+        else if ([dropLocation isKindOfClass:WorkspaceGroupItem.class]) {
+            // dragging search result or open tab
+            if ([item isKindOfClass:SearchResultTabItem.class] || [item isKindOfClass:OpenTabItem.class])
+            {
+                TagContainer_ c = [dropLocation tagContainer];
+                Webpage_ w = [item webpage];
+                Global::controller->tagContainerInsertWebpageCopyAsync(c, new_index, w);
+            }
+            // dragging a workpace item
+            else if ([item isKindOfClass:WorkspaceTabItem.class]) {
+                Webpage_ w = [item webpage];
+                if ([item tagContainer] == [dropLocation tagContainer]) {
+                    // within the same container, move
+                    TagContainer_ c = [item tagContainer];
+                    int old_index = c->indexOfUrl(w->url());
+                    if (old_index == new_index || new_index == old_index + 1) {
+                        // ignore
+                        return;
+                    }
+                    Global::controller->tagContainerMoveWebpageAsync(c, old_index, new_index);
+                } else {
+                    // otherwise copy
+                    Global::controller->tagContainerInsertWebpageCopyAsync([dropLocation tagContainer], new_index, w);
+                }
+            }
         }
     }];
     return YES;
@@ -1058,6 +1073,13 @@ shouldShowOutlineCellForItem:(id)item
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
             [outlineView setDropItem:nil dropChildIndex:1];
             return NSDragOperationMove;
+        }
+        // dragging a search result
+        if ([pasteboard canReadObjectForClasses:@[SearchResultTabItem.class] options:nil]) {
+            if (index < 0) {
+                [outlineView setDropItem:parent dropChildIndex:0];
+            }
+            return NSDragOperationCopy;
         }
     }
     // dropping on a workspace group (any)
