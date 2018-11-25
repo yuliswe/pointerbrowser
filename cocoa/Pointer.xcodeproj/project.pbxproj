@@ -127,7 +127,6 @@
 		7A788819211CBB5300675101 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A7C503021881A81007FB18C /* eula.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = eula.html; path = ../eula.html; sourceTree = "<group>"; };
 		7A7C503621894730007FB18C /* libgumbo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo.dylib; path = lib/libgumbo.dylib; sourceTree = "<group>"; };
-		7A7C503721894730007FB18C /* libgq.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgq.dylib; path = lib/libgq.dylib; sourceTree = "<group>"; };
 		7A7DBEF1217EC6A500C6E778 /* PView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PView.h; sourceTree = "<group>"; };
 		7A7DBEF2217EC6A500C6E778 /* PView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PView.m; sourceTree = "<group>"; };
 		7A7DBEF4217EC7DE00C6E778 /* PCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCollectionView.h; sourceTree = "<group>"; };
@@ -138,7 +137,6 @@
 		7A8A42A1219049E700E5D117 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = lib/QtCore.framework; sourceTree = "<group>"; };
 		7A8A42A2219049E800E5D117 /* QtSql.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtSql.framework; path = lib/QtSql.framework; sourceTree = "<group>"; };
 		7A8A42A3219049E800E5D117 /* libgumbo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo.dylib; path = lib/libgumbo.dylib; sourceTree = "<group>"; };
-		7A8A42A4219049E800E5D117 /* libgq.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgq.dylib; path = lib/libgq.dylib; sourceTree = "<group>"; };
 		7A8A42A5219049E800E5D117 /* docviewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = docviewer.framework; path = lib/docviewer.framework; sourceTree = "<group>"; };
 		7A8A42A6219049E800E5D117 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A8D32DE2111A43B0066691C /* WebUI.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebUI.mm.h; sourceTree = "<group>"; };
@@ -175,8 +173,6 @@
 				B2F6648B219676850069F547 /* libgumbo_query.dylib */,
 				7A8A428A219040C400E5D117 /* libqsqlite.dylib */,
 				7A8A42A5219049E800E5D117 /* docviewer.framework */,
-				7A7C503721894730007FB18C /* libgq.dylib */,
-				7A8A42A4219049E800E5D117 /* libgq.dylib */,
 				7A7C503621894730007FB18C /* libgumbo.dylib */,
 				7A788819211CBB5300675101 /* libqsqlite.dylib */,
 				7A8A42A3219049E800E5D117 /* libgumbo.dylib */,
