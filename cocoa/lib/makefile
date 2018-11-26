@@ -28,8 +28,8 @@ docviewer.framework:
 	cd docviewer.framework && rm -rf `echo [^V]*` Versions/Current 
 
 	mv ./docviewer.framework/Versions/1 ./docviewer.framework/Versions/A
-	ln -sF Versions/A/Headers ./docviewer.framework/Headers
-	ln -sF Versions/A/Resources ./docviewer.framework/Resources
+	ln -sF Versions/Current/Headers ./docviewer.framework/Headers
+	ln -sF Versions/Current/Resources ./docviewer.framework/Resources
 	ln -sF Versions/Current/docviewer ./docviewer.framework/docviewer
 	ln -sF A ./docviewer.framework/Versions/Current
 
@@ -50,8 +50,8 @@ QtCore.framework:
 	cd QtCore.framework && rm -rf `echo [^V]*` Versions/Current
 
 	mv ./QtCore.framework/Versions/5 ./QtCore.framework/Versions/A
-	ln -sF Versions/A/Headers ./QtCore.framework/Headers
-	ln -sF Versions/A/Resources ./QtCore.framework/Resources
+	ln -sF Versions/Current/Headers ./QtCore.framework/Headers
+	ln -sF Versions/Current/Resources ./QtCore.framework/Resources
 	ln -sF Versions/Current/QtCore ./QtCore.framework/QtCore
 	ln -sF A ./QtCore.framework/Versions/Current
 
@@ -77,8 +77,8 @@ QtSql.framework:
 	cd QtSql.framework && rm -rf `echo [^V]*` Versions/Current
 
 	mv ./QtSql.framework/Versions/5 ./QtSql.framework/Versions/A
-	ln -sF Versions/A/Headers ./QtSql.framework/Headers
-	ln -sF Versions/A/Resources ./QtSql.framework/Resources
+	ln -sF Versions/Current/Headers ./QtSql.framework/Headers
+	ln -sF Versions/Current/Resources ./QtSql.framework/Resources
 	ln -sF Versions/Current/QtSql ./QtSql.framework/QtSql
 	ln -sF A ./QtSql.framework/Versions/Current
 
