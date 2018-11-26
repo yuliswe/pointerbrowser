@@ -15,8 +15,6 @@
 
 @implementation WebUI
 
-@synthesize webpage = m_webpage;
-
 - (void)mouseDown:(NSEvent*)event
 {
     Global::controller->closeAllPopoversAsync();
@@ -39,7 +37,7 @@
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
     self->m_new_request_is_download = false;
-    self->m_webpage = webpage;
+    self.webpage = webpage;
     if (! webpage->associated_frontend()) {
         self.webpage->set_associated_frontend_async((__bridge void*)self);
     }

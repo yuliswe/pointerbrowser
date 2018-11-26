@@ -15,7 +15,6 @@
 
 @interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate>
 {
-    Webpage_ m_webpage;
     NSURL* m_erroring_url;
     bool m_redirected_from_error;
     bool m_new_request_is_download;

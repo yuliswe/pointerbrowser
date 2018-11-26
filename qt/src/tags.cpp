@@ -49,7 +49,9 @@ int Controller::tagContainerRemoveWebpage(TagContainer_ container, Webpage_ w, b
             return true;
         }
         // if the current view is this tab, switch to a different tab
-        if (current_tab_webpage() == w) {
+        if (current_tab_webpage()->url() == w->url()
+                && current_tab_state() == TabStateWorkspace)
+        {
             if (open_tabs()->count() > 0) {
                 viewTab(TabStateOpen, 0);
             } else {
@@ -351,7 +353,8 @@ int Controller::workspacesRemoveTagContainer(int index, void const* sender)
             if (opened_in_other_workspace) {
                 continue;
             }
-            if (current_tab_webpage().get() == w.get())
+            if (current_tab_webpage()->url() == w->url()
+                    && current_tab_state() == TabStateWorkspace)
             {
                 if (open_tabs()->count() > 0) {
                     viewTab(TabStateOpen, 0);
