@@ -75,7 +75,7 @@ public:
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RWN_D(float, load_progress, 0)
     PROP_RWN_D(void*, associated_frontend, nullptr)
-    PROP_RN_D(TabsModel*, associated_container, nullptr)
+    PROP_RN_D(void*, associated_container, nullptr)
     PROP_RWN_D(bool, is_loaded, false)
     PROP_RWN_D(QString, offline_html, "")
     PROP_RWN_D(bool, should_use_offline_html, false)

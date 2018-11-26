@@ -957,9 +957,12 @@ shouldShowOutlineCellForItem:(id)item
 {
     if ([item isKindOfClass:OpenTabItem.class]
         || [item isKindOfClass:SearchResultTabItem.class]
-        || [item isKindOfClass:WorkspaceTabItem.class]
-        || [item isKindOfClass:WorkspaceGroupItem.class])
+        || [item isKindOfClass:WorkspaceTabItem.class])
     {
+        int row = [outlineView rowForItem:item];
+        [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+        return item;
+    } else if ([item isKindOfClass:WorkspaceGroupItem.class]) {
         return item;
     }
     return nil;

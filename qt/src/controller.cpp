@@ -125,17 +125,25 @@ int Controller::viewTab(Webpage_ webpage, void const* sender)
     qCInfo(ControllerLogging) << "BrowserController::viewTab" << webpage;
     TabState state;
     int index;
-    if (webpage->associated_container() == open_tabs().get()) {
+    if (webpage->associated_container() == open_tabs().get())
+    {
         state = TabStateOpen;
-        index = open_tabs()->findTab(webpage);
-    } else if (webpage->associated_container() == preview_tabs().get()) {
+        index = open_tabs()->findTabByRefOrUrl(webpage);
+    } else if (webpage->associated_container() == preview_tabs().get()
+               || webpage->tab_state() == TabStateSearchResult)
+    {
         state = TabStatePreview;
-        index = preview_tabs()->findTab(webpage);
-    } else if (webpage->associated_container() == workspace_tabs().get()) {
+        index = preview_tabs()->findTabByRefOrUrl(webpage);
+    } else if (webpage->associated_container() == workspace_tabs().get()
+               || webpage->tab_state() == TabStateTagged)
+    {
         state = TabStateWorkspace;
-        index = workspace_tabs()->findTab(webpage);
+        index = workspace_tabs()->findTabByRefOrUrl(webpage);
     } else {
         return false;
+    }
+    if (index == -1) {
+        state = TabStateNull;
     }
     return viewTab(state, index, sender);
 }

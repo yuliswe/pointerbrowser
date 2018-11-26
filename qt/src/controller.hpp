@@ -23,6 +23,7 @@ public:
         TabStateOpen,
         TabStatePreview,
         TabStateWorkspace,
+        TabStateTagged,
         TabStateSearchResult
     };
     Q_ENUM(TabState)

@@ -263,7 +263,9 @@ void TagContainer::reloadFromFile()
     QVariantList contents = FileManager::readDataJsonFileA(filename());
     QList<Webpage_> out;
     for (int i = contents.count() - 1; i >= 0; i--) {
-        out << Webpage::fromQVariantMap(contents[i].value<QVariantMap>());
+        Webpage_ w = Webpage::fromQVariantMap(contents[i].value<QVariantMap>());
+        w->set_tab_state(Controller::TabStateTagged);
+        out << w;
     }
     resetModel(out);
 }
@@ -311,6 +313,7 @@ void TagContainer::insertWebpage(Webpage_ w, int i)
     if (! containsUrl(w->url()))
     {
         insert(w, i);
+        w->set_tab_state(Controller::TabStateTagged);
     }
 }
 
