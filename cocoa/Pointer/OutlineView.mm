@@ -1055,6 +1055,7 @@ shouldShowOutlineCellForItem:(id)item
 //            }
 //            return NSDragOperationMove;
 //        }
+        return NSDragOperationNone;
     }
     // dropping on open tab group
     else if ([parent isKindOfClass:OpenGroupItem.class]) {
@@ -1074,7 +1075,7 @@ shouldShowOutlineCellForItem:(id)item
         }
         // dragging a workspace around, redirect
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
-            [outlineView setDropItem:nil dropChildIndex:1];
+            [outlineView setDropItem:nil dropChildIndex:self.workspacesOffset];
             return NSDragOperationMove;
         }
         // dragging a search result
@@ -1108,9 +1109,15 @@ shouldShowOutlineCellForItem:(id)item
         }
         // dragging a workspace around, redirect
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
-            int parent_index = [outlineView childIndexForItem:parent];
-            [outlineView setDropItem:nil dropChildIndex:parent_index];
-            return NSDragOperationMove;
+//            WorkspaceGroupItem* item = [pasteboard readObjectsForClasses:@[WorkspaceGroupItem.class] options:nil][0];
+//            int parent_index = [outlineView childIndexForItem:parent];
+//            int current_index = [self rowForItem:item];
+//            if (current_index - 1 <= index && index <= current_index + 1) {
+//                return NSDragOperationNone;
+//            }
+//            [outlineView setDropItem:nil dropChildIndex:parent_index];
+            return NSDragOperationNone;
+//            return NSDragOperationMove;
         }
     }
     // dropping on search results
