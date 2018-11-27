@@ -116,7 +116,7 @@
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
                      [=]() {
-                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handleIndexesChangesInController) withObject:nil waitUntilDone:YES];
                      });
     self.transitionOptions = NSViewControllerTransitionNone;
     self.tabStyle = NSTabViewControllerTabStyleUnspecified;
@@ -187,8 +187,8 @@
     int count = last - first + 1;
     for (int i = 0; i < count; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i+first);
-        if (w->associated_frontend()) {
-            [self addChildViewControllerWithWebUI:(__bridge_transfer WebUI*)w->associated_frontend() webpage:w];
+        if (w->associated_frontend_webview_object()) {
+            [self addChildViewControllerWithWebUI:(__bridge_transfer WebUI*)w->associated_frontend_webview_object() webpage:w];
         } else {
             [self insertChildViewControllerWithWebpage:w frame:self->m_parent_view.bounds index:(i+first)];
         }
@@ -243,7 +243,7 @@
 // called when the tabs are reloaded
 // typically once at the start of the application
 // or when the page array is changed
-- (void)updateSelection
+- (void)handleIndexesChangesInController
 {
     if (self.childViewControllers.count == 0) {
         [self reload];

@@ -13,6 +13,9 @@ typedef std::shared_ptr<Webpage> Webpage_;
 typedef QList<Webpage_> Webpage_List;
 class Controller;
 class TabsModel;
+typedef std::shared_ptr<TabsModel> TabsModel_;
+class TagContainer;
+typedef QSharedPointer<TagContainer> TagContainer_;
 
 struct FindTextState
 {
@@ -32,6 +35,7 @@ class Webpage : public QObject
 //    friend class SearchDB;
     friend class SearchWorker;
     friend class Crawler;
+    friend class TagContainer;
     Q_OBJECT
 
     void findNext(QString const&);
@@ -74,8 +78,10 @@ public:
     PROP_RWN_D(uint, tab_state, 0)
     PROP_RWN_D(bool, can_go_back, false)
     PROP_RWN_D(float, load_progress, 0)
-    PROP_RWN_D(void*, associated_frontend, nullptr)
-    PROP_RN_D(void*, associated_container, nullptr)
+    PROP_RWN_D(void*, associated_frontend_webview_object, nullptr)
+    PROP_RWN_D(void*, associated_frontend_tab_object, nullptr)
+    PROP_RN_D(TabsModel*, associated_tabs_model, nullptr)
+    PROP_RN_D(TagContainer*, associated_tag_container, nullptr)
     PROP_RWN_D(bool, is_loaded, false)
     PROP_RWN_D(QString, offline_html, "")
     PROP_RWN_D(bool, should_use_offline_html, false)

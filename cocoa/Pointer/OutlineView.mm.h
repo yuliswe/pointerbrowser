@@ -97,7 +97,7 @@
 - (IBAction)searchTab:(id)sender;
 - (void)reloadIndex:(id)item;
 - (IBAction)doubleClicked:(id)sender;
-- (void)updateSelection;
+- (void)handleIndexesChangesInController;
 - (BOOL)isHeader:(id)item;
 - (NSUInteger)workspacesOffset;
 - (NSUInteger)openTabsOffset;

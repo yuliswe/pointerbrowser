@@ -69,6 +69,7 @@
 {
     self = [super init];
     self.webpage = w;
+    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
     self.title = w->title().toNSString();
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
@@ -123,6 +124,7 @@
 {
     self = [super init];
     self.webpage = w;
+    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
     self.line1 = w->title().toNSString();
     self.line2 = w->title_2().toNSString();
     self.line3 = w->title_3().toNSString();
@@ -173,6 +175,7 @@
 {
     self = [super init];
     self.webpage = w;
+    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
     self.tagContainer = container;
     self.title = w->title().toNSString();
     self.outlineView = outlineView;
@@ -404,7 +407,7 @@
                      &Controller::current_tab_webpage_changed,
                      [=](Webpage_ w, void const* sender) {
                          if (sender == (__bridge void*)self) { return; }
-                         [self performSelectorOnMainThread:@selector(updateSelection) withObject:nil waitUntilDone:YES];
+                         [self performSelectorOnMainThread:@selector(handleIndexesChangesInController) withObject:nil waitUntilDone:YES];
                      });
     
     /* initial loads */
@@ -413,35 +416,33 @@
     [self handleWorkspaceReset];
 }
 
-- (void)updateSelection
+- (void)handleIndexesChangesInController
 {
     if (Global::controller->current_tab_state() == Controller::TabStateNull) {
         [self deselectAll:self];
         return;
     }
-    int i = Global::controller->current_open_tab_highlight_index();
-    if (i >= 0) {
-        NSUInteger offset = [self rowForItem:self.open_group_item] + 1; // +1 for label
-        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(i + offset)];
+    if (Global::controller->current_tab_state() == Controller::TabStateOpen) {
+        OpenTabItem* item = (__bridge OpenTabItem*)Global::controller->current_tab_webpage()->associated_frontend_tab_object();
+        int row = [self rowForItem:item];
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(row)];
         [self selectRowIndexes:indexSet byExtendingSelection:NO];
         return;
     }
-    int j = Global::controller->current_tab_search_highlight_index();
-    int offset = Global::controller->open_tabs()->count();
-    if (j >= 0) {
-        NSUInteger offset = [self rowForItem:self.search_result_group_item] + 1; // +1 for label
-        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(j + offset)];
+    if (Global::controller->current_tab_state() == Controller::TabStatePreview) {
+        SearchResultTabItem* item = (__bridge SearchResultTabItem*)Global::controller->current_tab_webpage()->associated_frontend_tab_object();
+        int row = [self rowForItem:item];
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(row)];
         [self selectRowIndexes:indexSet byExtendingSelection:NO];
         return;
     }
-//    int offset = Global::controller->workspace_tabs()->count();
-//    if (Global::controller->current_workspace_tab_index() >= 0) {
-//        WorkspaceTabItem* item = [self numberOfChildrenOfItem:<#(nullable id)#>]
-//        NSUInteger offset = [self rowForItem:self.search_result_group_item] + 1; // +1 for label
-//        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(j + offset)];
-//        [self selectRowIndexes:indexSet byExtendingSelection:NO];
-//        return;
-//    }
+    if (Global::controller->current_tab_state() == Controller::TabStateWorkspace) {
+        WorkspaceTabItem* item = (__bridge WorkspaceTabItem*)Global::controller->current_tab_webpage()->associated_frontend_tab_object();
+        int row = [self rowForItem:item];
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(row)];
+        [self selectRowIndexes:indexSet byExtendingSelection:NO];
+        return;
+    }
 }
 
 - (NSUInteger)workspacesOffset
@@ -939,7 +940,7 @@ shouldShowOutlineCellForItem:(id)item
     if ([item isKindOfClass:WorkspaceTabItem.class]) {
         // clicked on search result
         Webpage_ w = [item webpage];
-        Global::controller->newTabAsync(0, Controller::TabStateWorkspace, w->url(),
+        Global::controller->newTabByWebpageCopyAsync(0, Controller::TabStateWorkspace, w,
                                         Controller::WhenCreatedViewNew,
                                         Controller::WhenExistsViewExisting);
         return;
@@ -1176,7 +1177,7 @@ shouldShowOutlineCellForItem:(id)item
     [super viewDidAppear];
     [self.outlineView registerForDraggedTypes:@[NSPasteboardTypeURL, @"com.pointerbrowser.pasteboarditem.tab.open", @"com.pointerbrowser.pasteboarditem.tab.searchresult", @"com.pointerbrowser.pasteboarditem.tab.workspace", @"com.pointerbrowser.pasteboarditem.group.workspace"]];
     [self.outlineView expandItem:nil expandChildren:YES];
-    [self.outlineView updateSelection];
+    [self.outlineView handleIndexesChangesInController];
 }
 
 - (void)showAddTagsPopoverForCurrentTab:(id)sender

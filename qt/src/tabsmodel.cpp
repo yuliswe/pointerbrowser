@@ -35,14 +35,14 @@ void TabsModel::replaceModel(const Webpage_List& new_pages)
 {
     emit beginResetModel();
     for (int i = _tabs.count() - 1; i >= 0; i--) {
-        if (_tabs[i]->associated_container() == this) {
-            _tabs[i]->set_associated_container(nullptr);
+        if (_tabs[i]->associated_tabs_model() == this) {
+            _tabs[i]->set_associated_tabs_model(nullptr);
             _tabs[i]->disconnect();
         }
     }
     _tabs = new_pages;
     for (int i = _tabs.count() - 1; i >= 0; i--) {
-        _tabs[i]->set_associated_container(this);
+        _tabs[i]->set_associated_tabs_model(this);
     }
     emit endResetModel();
     emit countChanged();
@@ -52,25 +52,19 @@ void TabsModel::insertWebpage_(int idx, const Webpage_ page)
 {
     if (idx < 0 || idx > _tabs.count()) { return; }
     emit beginInsertRows(QModelIndex(), idx, idx);
-    page->set_associated_container(this);
+    page->set_associated_tabs_model(this);
     _tabs.insert(idx, page);
     _tabs[idx] = page;
     emit endInsertRows();
     emit countChanged();
 }
 
-//void TabsModel::insertTab(int idx, Url const& uri)
-//{
-//    Webpage_ page = shared<Webpage>(uri);
-//    insertWebpage_(idx, page);
-//}
-
 bool TabsModel::removeTab(int row)
 {
     if (row >= _tabs.length()) { return false; }
     emit beginRemoveRows(QModelIndex(), row, row);
-    if (_tabs[row]->associated_container() == this) {
-        _tabs[row]->set_associated_container(nullptr);
+    if (_tabs[row]->associated_tabs_model() == this) {
+        _tabs[row]->set_associated_tabs_model(nullptr);
         _tabs[row]->disconnect();
     }
     _tabs.removeAt(row);
@@ -165,8 +159,8 @@ void TabsModel::clear() {
     if (_tabs.isEmpty()) { return; }
     emit beginResetModel();
     for (int i = _tabs.count() - 1; i >= 0; i--) {
-        if (_tabs[i]->associated_container() == this) {
-            _tabs[i]->set_associated_container(nullptr);
+        if (_tabs[i]->associated_tabs_model() == this) {
+            _tabs[i]->set_associated_tabs_model(nullptr);
             _tabs[i]->disconnect();
         }
     }

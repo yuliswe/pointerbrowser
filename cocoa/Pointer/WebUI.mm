@@ -38,8 +38,8 @@
     self->m_redirected_from_error = false;
     self->m_new_request_is_download = false;
     self.webpage = webpage;
-    if (! webpage->associated_frontend()) {
-        self.webpage->set_associated_frontend_async((__bridge void*)self);
+    if (! webpage->associated_frontend_webview_object()) {
+        self.webpage->set_associated_frontend_webview_object_async((__bridge void*)self);
     }
     self.UIDelegate = self;
     self.allowsBackForwardNavigationGestures = YES;
@@ -55,7 +55,7 @@
 
 - (void)dealloc
 {
-    self.webpage->set_associated_frontend_async(nullptr);
+    self.webpage->set_associated_frontend_webview_object_async(nullptr);
 }
 
 - (void)connect
@@ -273,8 +273,8 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     }
     // if request is from preview or workspace, open new window
     Webpage_ w = webView.webpage;
-    bool is_preview_tab = w->associated_container() == Global::controller->preview_tabs().get();
-    bool is_workspace_tab = w->associated_container() == Global::controller->workspace_tabs().get();
+    bool is_preview_tab = w->associated_tabs_model() == Global::controller->preview_tabs().get();
+    bool is_workspace_tab = w->associated_tabs_model() == Global::controller->workspace_tabs().get();
     bool is_loaded = w->is_loaded();
     WKNavigationType type = navigationAction.navigationType;
     if ((is_preview_tab || is_workspace_tab) && is_loaded
@@ -397,16 +397,16 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
     WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
-    new_webpage->set_associated_frontend((__bridge_retained void*)new_webview);
+    new_webpage->set_associated_frontend_webview_object((__bridge_retained void*)new_webview);
     if (m_new_request_is_download) {
         m_new_request_is_download = false;
         new_webpage->set_is_for_download(true);
     }
     new_webpage->moveToThread(Global::qCoreApplicationThread);
-    if (webView.webpage->associated_container() == Global::controller->open_tabs().get()) {
-        Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+    if (webView.webpage->associated_tabs_model() == Global::controller->open_tabs().get()) {
+        Global::controller->newTabByWebpageAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     } else {
-        Global::controller->newTabAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        Global::controller->newTabByWebpageAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
     }
     return new_webview;
 }

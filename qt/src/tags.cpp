@@ -5,7 +5,8 @@ int Controller::tagContainerInsertWebpageCopy(TagContainer_ container, int index
 {
     INFO(ControllerLogging) << container << index << w;
     set_tag_listing_last_cache(tag_listing_last_cache() + 1);
-    container->insertWebpage(shared<Webpage>(w), index);
+    Webpage_ new_page = shared<Webpage>(w);
+    container->insertWebpage(new_page, index);
     container->saveToFile();
     return true;
 }
@@ -265,6 +266,7 @@ void TagContainer::reloadFromFile()
     for (int i = contents.count() - 1; i >= 0; i--) {
         Webpage_ w = Webpage::fromQVariantMap(contents[i].value<QVariantMap>());
         w->set_tab_state(Controller::TabStateTagged);
+        w->set_associated_tag_container(this);
         out << w;
     }
     resetModel(out);
@@ -313,8 +315,9 @@ void TagContainer::insertWebpage(Webpage_ w, int i)
     if (! containsUrl(w->url()))
     {
         insert(w, i);
-        w->set_tab_state(Controller::TabStateTagged);
     }
+    w->set_tab_state(Controller::TabStateTagged);
+    w->set_associated_tag_container(this);
 }
 
 int Controller::workspacesInsertTagContainer(int index, TagContainer_ tag, void const* sender)
@@ -380,4 +383,14 @@ int Controller::workspacesMoveTagContainer(int from, int to, void const* sender)
     workspaces()->move(from, 1, to);
     saveLastOpen();
     return true;
+}
+
+int TagsCollection::indexOfTagContainer(TagContainer* container)
+{
+    for (int i = count() - 1; i >= 0; i--) {
+        if (container == get(i).get()) {
+            return i;
+        }
+    }
+    return -1;
 }

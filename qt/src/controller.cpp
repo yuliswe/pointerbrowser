@@ -26,15 +26,25 @@ int Controller::newTab(TabState state,
     return newTab(0, state, uri, newBehavior, whenExists, sender);
 }
 
-int Controller::newTab(int index,
-                       TabState state,
-                       Webpage_ webpage,
-                       WhenCreated newBehavior,
-                       WhenExists whenExists,
-                       void const* sender)
+int Controller::newTabByWebpageCopy(int index,
+                                    TabState state,
+                                    Webpage_ webpage,
+                                    WhenCreated newBehavior,
+                                    WhenExists whenExists,
+                                    void const* sender)
 {
-    qCInfo(ControllerLogging) << "BrowserController::newTab"
-                              << state
+    Webpage_ new_page = shared<Webpage>(webpage);
+    return newTabByWebpage(index, state, new_page, newBehavior, whenExists, sender);
+}
+
+int Controller::newTabByWebpage(int index,
+                                TabState state,
+                                Webpage_ webpage,
+                                WhenCreated newBehavior,
+                                WhenExists whenExists,
+                                void const* sender)
+{
+    INFO(ControllerLogging) << state
                               << webpage->url().full()
                               << newBehavior
                               << whenExists;
@@ -117,33 +127,36 @@ int Controller::newTab(int index,
                        WhenExists whenExists,
                        void const* sender)
 {
-    return newTab(index, state, shared<Webpage>(uri), newBehavior, whenExists, sender);
+    return newTabByWebpage(index, state, shared<Webpage>(uri), newBehavior, whenExists, sender);
 }
 
 int Controller::viewTab(Webpage_ webpage, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::viewTab" << webpage;
-    TabState state;
-    int index;
-    if (webpage->associated_container() == open_tabs().get())
+    TabState state = TabStateNull;
+    int index = -1;
+    if (webpage->associated_tabs_model() == open_tabs().get())
     {
         state = TabStateOpen;
         index = open_tabs()->findTabByRefOrUrl(webpage);
-    } else if (webpage->associated_container() == preview_tabs().get()
+    } else if (webpage->associated_tabs_model() == preview_tabs().get()
                || webpage->tab_state() == TabStateSearchResult)
     {
         state = TabStatePreview;
         index = preview_tabs()->findTabByRefOrUrl(webpage);
-    } else if (webpage->associated_container() == workspace_tabs().get()
+        TabsModel* model = webpage->associated_tabs_model();
+        int model_index = model->findTab(webpage->url());
+        set_current_search_result_tab_index(model_index);
+    } else if (webpage->associated_tabs_model() == workspace_tabs().get()
                || webpage->tab_state() == TabStateTagged)
     {
         state = TabStateWorkspace;
         index = workspace_tabs()->findTabByRefOrUrl(webpage);
-    } else {
-        return false;
-    }
-    if (index == -1) {
-        state = TabStateNull;
+        TagContainer* container = webpage->associated_tag_container();
+        int workspace_index = workspace_index = workspaces()->indexOfTagContainer(container);
+        set_current_workspace_index(workspace_index);
+        int workspace_tab_index = container->indexOfUrl(webpage->url());
+        set_current_workspace_tab_index(workspace_tab_index);
     }
     return viewTab(state, index, sender);
 }
@@ -181,9 +194,9 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         helperCurrentTabWebpagePropertyChanged(empty_page, nullptr, sender);
         set_current_open_tab_index(-1,sender);
         set_current_workspace_tab_index(-1,sender);
-        set_current_open_tab_highlight_index(-1,sender);
+        set_current_workspace_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
-        set_current_tab_search_highlight_index(-1,sender);
+        set_current_search_result_tab_index(-1,sender);
         set_current_tab_state(TabStateNull);
         set_current_tab_webpage(empty_page,sender);
         if (current_tab_search_word().isEmpty()) {
@@ -215,24 +228,23 @@ int Controller::viewTab(TabState state, int i, void const* sender)
     set_current_tab_state(state);
     if (state == TabStateOpen) {
         set_current_open_tab_index(i,sender);
-        set_current_open_tab_highlight_index(i,sender);
-        set_current_tab_search_highlight_index(-1,sender);
+        set_current_search_result_tab_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
         set_current_workspace_tab_index(-1,sender);
+        set_current_workspace_index(-1,sender);
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->searchForWebpageAsync(page);
         }
     } else if (state == TabStatePreview) {
         set_current_preview_tab_index(i,sender);
         set_current_open_tab_index(-1,sender);
-        set_current_open_tab_highlight_index(-1,sender);
         set_current_workspace_tab_index(-1,sender);
+        set_current_workspace_index(-1,sender);
     } else if (state == TabStateWorkspace) {
         set_current_workspace_tab_index(i,sender);
         set_current_open_tab_index(-1,sender);
-        set_current_open_tab_highlight_index(-1,sender);
         set_current_preview_tab_index(-1,sender);
-        set_current_tab_search_highlight_index(-1,sender);
+        set_current_search_result_tab_index(-1,sender);
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->searchForWebpageAsync(page);
         }
@@ -284,7 +296,7 @@ int Controller::closeTab(TabState state, int index, void const* sender)
                 open_tabs()->removeTab(index);
             }
             viewTab(next_tab_state(), next_tab_index());
-            set_current_tab_search_highlight_index(-1);
+            set_current_search_result_tab_index(-1);
             set_current_preview_tab_index(-1);
         } else {
             setNextTabStateAndIndex(current_tab_state(), current_preview_tab_index());
@@ -303,7 +315,7 @@ int Controller::closeTab(TabState state, int index, void const* sender)
         // use ctrl+w when current view is a preview. in this case we
         // assume the user wants to close all preview tabs
         clearPreviews();
-        set_current_tab_search_highlight_index(-1);
+        set_current_search_result_tab_index(-1);
         set_current_preview_tab_index(-1);
     } else if (state == TabStateWorkspace) {
         if (open_tabs()->count() > 0) {
@@ -448,10 +460,10 @@ int Controller::moveTab(Webpage_ webpage, TabState toState, int toIndex, void co
     qCInfo(ControllerLogging) << "BrowserController::moveTab" << webpage << toState << toIndex;
     TabState fromState;
     int fromIndex;
-    if (webpage->associated_container() == open_tabs().get()) {
+    if (webpage->associated_tabs_model() == open_tabs().get()) {
         fromState = TabStateOpen;
         fromIndex = open_tabs()->findTabByRefOrUrl(webpage);
-    } else if (webpage->associated_container() == preview_tabs().get()) {
+    } else if (webpage->associated_tabs_model() == preview_tabs().get()) {
         fromState = TabStatePreview;
         fromIndex = preview_tabs()->findTabByRefOrUrl(webpage);
     } else {
@@ -948,7 +960,7 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
     if (!a || w->is_is_blank_change(a)) {
         set_bookmark_page_visible(w->is_blank());
         set_current_tab_webpage_is_blank(w->is_blank());
-        if (w->associated_container() != preview_tabs().get()) {
+        if (w->associated_tabs_model() != preview_tabs().get()) {
             set_crawler_rule_table_enabled(! w->is_blank());
         } else {
             set_crawler_rule_table_enabled(false);

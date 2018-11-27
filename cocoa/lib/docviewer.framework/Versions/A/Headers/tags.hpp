@@ -40,7 +40,7 @@ class TagsCollection : public QObject, public BaseListModel<TagContainer_>
 
     PROP_DEF_BEGINS
     PROP_DEF_ENDS
-
+    int indexOfTagContainer(TagContainer*);
 //    METH_ASYNC_1(int, remove, int)
 };
 typedef QSharedPointer<TagsCollection> TagsCollection_;

@@ -64,12 +64,10 @@ public:
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
     PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
     PROP_RN_D(int, current_open_tab_index, -1)
+    PROP_RN_D(int, current_workspace_index, -1)
     PROP_RN_D(int, current_workspace_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
-    // tabs highlighting
-    PROP_RWN_D(int, current_open_tab_hovered_index, -1)
-    PROP_RN_D(int, current_open_tab_highlight_index, -1)
-    PROP_RN_D(int, current_tab_search_highlight_index, -1)
+    PROP_RN_D(int, current_search_result_tab_index, -1)
     // error page
     PROP_RN_D(bool, current_tab_webpage_is_error, false)
     // welcome page
@@ -155,7 +153,8 @@ public:
 
     METH_ASYNC_0(int, newTab)
     METH_ASYNC_4(int, newTab, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
-    METH_ASYNC_5(int, newTab, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByWebpage, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByWebpageCopy, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTab, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_1(int, viewTab, Webpage_)
     METH_ASYNC_2(int, viewTab, Controller::TabState, int)
