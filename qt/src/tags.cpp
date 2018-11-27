@@ -86,7 +86,7 @@ int Controller::indexOfTagContainerByTitle(QString const& title)
     return foundAt;
 }
 
-int Controller::createTagContainer(QString const& title, int index, Webpage_ w, void const* sender)
+int Controller::createTagContainerByWebpage(QString const& title, int index, Webpage_ w, void const* sender)
 {
     INFO(ControllerLogging) << title << index << w;
     set_tag_listing_last_cache(tag_listing_last_cache() + 1);
@@ -101,6 +101,12 @@ int Controller::createTagContainer(QString const& title, int index, Webpage_ w, 
     container->saveToFile();
     saveTagsList();
     return true;
+}
+
+int Controller::createTagContainerByWebpageCopy(QString const& title, int index, Webpage_ w, void const* sender)
+{
+    Webpage_ n = shared<Webpage>(w);
+    return createTagContainerByWebpage(title, index, n, sender);
 }
 
 int Controller::removeTagContainer(int index, void const* sender)

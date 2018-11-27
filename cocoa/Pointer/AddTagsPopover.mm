@@ -197,7 +197,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     if (search_str.length > 0)
     {
         if (self.clickedRow == 0 && self.showingCreateTagButtonRow) {
-            Global::controller->createTagContainerAsync(QString::fromNSString(search_str), 0, self->m_tags_popover_content_view_controller.webpage);
+            Global::controller->createTagContainerByWebpageCopyAsync(QString::fromNSString(search_str), 0, self->m_tags_popover_content_view_controller.webpage);
         } else {
             TagContainer_ container = objectValue.tagContainer;
             if (container->containsUrl(w->url())) {
