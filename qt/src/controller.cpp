@@ -305,6 +305,14 @@ int Controller::closeTab(TabState state, int index, void const* sender)
         clearPreviews();
         set_current_tab_search_highlight_index(-1);
         set_current_preview_tab_index(-1);
+    } else if (state == TabStateWorkspace) {
+        if (open_tabs()->count() > 0) {
+            setNextTabStateAndIndex(TabStateOpen, 0);
+        } else {
+            setNextTabStateAndIndex(TabStateNull, -1);
+        }
+        viewTab(next_tab_state(), next_tab_index());
+        set_current_workspace_tab_index(-1);
     }
     return 0;
 }
@@ -344,14 +352,16 @@ int Controller::closeTab(void const* sender)
     if (current_tab_state() == TabState::TabStateOpen)
     {
         Q_ASSERT(current_open_tab_index() >= 0);
-        closeTab(TabState::TabStateOpen, current_open_tab_index());
-        return 0;
+        return closeTab(TabState::TabStateOpen, current_open_tab_index());
     }
     if (current_tab_state() == TabState::TabStatePreview)
     {
         Q_ASSERT(current_preview_tab_index() >= 0);
-        closeTab(TabState::TabStatePreview, current_preview_tab_index());
-        return 0;
+        return closeTab(TabState::TabStatePreview, current_preview_tab_index());
+    }
+    if (current_tab_state() == TabStateWorkspace)
+    {
+        return closeTab(TabStateWorkspace, current_workspace_tab_index());
     }
     return 0;
 }
