@@ -15,6 +15,7 @@ Webpage::Webpage(Webpage_ w)
     , m_is_error(w->is_error())
     , m_can_go_forward(w->can_go_forward())
     , m_can_go_back(w->can_go_back())
+    , m_associated_frontend_tab_object(w->associated_frontend_tab_object())
     , m_associated_tabs_model(w->associated_tabs_model())
     , m_associated_tag_container(w->associated_tag_container())
 {

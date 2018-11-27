@@ -68,6 +68,7 @@ public:
     PROP_RN_D(int, current_workspace_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     PROP_RN_D(int, current_search_result_tab_index, -1)
+    PROP_RN_D(int, current_tab_webpage_associated_tabs_model_index, -1)
     // error page
     PROP_RN_D(bool, current_tab_webpage_is_error, false)
     // welcome page
@@ -113,8 +114,8 @@ public:
     METH_ASYNC_1(int, currentTabWebpageFindTextNext, QString const&)
     METH_ASYNC_1(int, currentTabWebpageFindTextPrev, QString const&)
     METH_ASYNC_0(int, currentTabWebpageBookmark)
-    METH_ASYNC_0(int, showNextOpenTab)
-    METH_ASYNC_0(int, showPrevOpenTab)
+    METH_ASYNC_0(int, cycleNextTab)
+    METH_ASYNC_0(int, cyclePrevTab)
     METH_ASYNC_1(int, searchTabs, QString const&)
     METH_ASYNC_0(int, showBookmarkPage)
     METH_ASYNC_0(int, hideBookmarkPage)

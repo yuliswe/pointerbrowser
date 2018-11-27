@@ -257,7 +257,7 @@
         int i = Global::controller->open_tabs()->count() + Global::controller->current_preview_tab_index();
         self.selectedTabViewItemIndex = i;
     } else if (Global::controller->current_tab_state() == Controller::TabStateWorkspace) {
-        int i = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count() + Global::controller->current_workspace_tab_index();
+        int i = Global::controller->open_tabs()->count() + Global::controller->preview_tabs()->count() + Global::controller->current_tab_webpage_associated_tabs_model_index();
         self.selectedTabViewItemIndex = i;
     }
 }

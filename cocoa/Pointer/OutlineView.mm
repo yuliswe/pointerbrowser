@@ -918,7 +918,8 @@ shouldShowOutlineCellForItem:(id)item
         Global::controller->newTabAsync(Controller::TabStateOpen,
                                         p->url(),
                                         Controller::WhenCreatedViewNew,
-                                        Controller::WhenExistsViewExisting);
+                                        Controller::WhenExistsViewExisting,
+                                        (__bridge void*)self);
     }
 }
 
@@ -931,18 +932,25 @@ shouldShowOutlineCellForItem:(id)item
     if ([item isKindOfClass:SearchResultTabItem.class]) {
         // clicked on search result
         Webpage_ w = [item webpage];
-        Global::controller->newTabAsync(Controller::TabStatePreview,
-                                        w->url(),
-                                        Controller::WhenCreatedViewNew,
-                                        Controller::WhenExistsViewExisting);
+        Global::controller->newTabByWebpageAsync(0,
+                                                 Controller::TabStatePreview,
+                                                 w,
+                                                 Controller::WhenCreatedViewNew,
+                                                 Controller::WhenExistsViewExisting,
+                                                 (__bridge void*)self);
         return;
     }
     if ([item isKindOfClass:WorkspaceTabItem.class]) {
         // clicked on search result
         Webpage_ w = [item webpage];
-        Global::controller->newTabByWebpageCopyAsync(0, Controller::TabStateWorkspace, w,
-                                        Controller::WhenCreatedViewNew,
-                                        Controller::WhenExistsViewExisting);
+        // a copy is needed because we don't want bookmarked tags to change url
+        // while user navigates its open webview
+        Global::controller->newTabByWebpageCopyAsync(0,
+                                                     Controller::TabStateWorkspace,
+                                                     w,
+                                                     Controller::WhenCreatedViewNew,
+                                                     Controller::WhenExistsViewExisting,
+                                                     (__bridge void*)self);
         return;
     }
     if ([item isKindOfClass:OpenTabItem.class]) {
@@ -999,13 +1007,23 @@ shouldShowOutlineCellForItem:(id)item
             // dragging search result
             else if ([item isKindOfClass:SearchResultTabItem.class]) {
                 Webpage_ w = [item webpage];
-                Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew, (__bridge void*)self);
+                Global::controller->newTabByWebpageCopyAsync(new_index,
+                                                             Controller::TabStateOpen,
+                                                             w,
+                                                             Controller::WhenCreatedViewNew,
+                                                             Controller::WhenExistsOpenNew,
+                                                             (__bridge void*)self);
             }
             // dragging workspace tab
             else if ([item isKindOfClass:WorkspaceTabItem.class]) {
                 TagContainer_ c = [item tagContainer];
                 Webpage_ w = [item webpage];
-                Global::controller->newTabAsync(new_index, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+                Global::controller->newTabByWebpageCopyAsync(new_index,
+                                                             Controller::TabStateOpen,
+                                                             w,
+                                                             Controller::WhenCreatedViewNew,
+                                                             Controller::WhenExistsViewExisting,
+                                                             (__bridge void*)self);
                 Global::controller->tagContainerRemoveWebpageAsync(c, w);
             }
         }

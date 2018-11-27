@@ -267,12 +267,12 @@
 
 - (void)menuShowNextTab:(id)sender
 {
-    Global::controller->showNextOpenTabAsync();
+    Global::controller->cycleNextTabAsync();
 }
 
 - (void)menuShowPrevTab:(id)sender
 {
-    Global::controller->showPrevOpenTabAsync();
+    Global::controller->cyclePrevTabAsync();
 }
 
 - (void)menuEditBookmarksAsJsonFile:(id)sender
