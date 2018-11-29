@@ -378,13 +378,16 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         decisionHandler(WKNavigationResponsePolicyCancel);
         return;
     }
-    if (navigationResponse.canShowMIMEType) {
-        decisionHandler(WKNavigationResponsePolicyAllow);
-    } else {
+    if (! navigationResponse.canShowMIMEType
+        || ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]
+            && ! navigationResponse.forMainFrame))
+    {
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
         Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
+    } else {
+        decisionHandler(WKNavigationResponsePolicyAllow);
     }
 }
 
