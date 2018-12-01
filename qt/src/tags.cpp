@@ -8,6 +8,7 @@ int Controller::tagContainerInsertWebpageCopy(TagContainer_ container, int index
     Webpage_ new_page = shared<Webpage>(w);
     container->insertWebpage(new_page, index);
     container->saveToFile();
+    workspacesInsertTagContainer(0, container, sender);
     return true;
 }
 
@@ -100,6 +101,7 @@ int Controller::createTagContainerByWebpage(QString const& title, int index, Web
     tags()->insert(container, index);
     container->saveToFile();
     saveTagsList();
+    workspacesInsertTagContainer(0, container, sender);
     return true;
 }
 
