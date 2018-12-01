@@ -1024,7 +1024,6 @@ shouldShowOutlineCellForItem:(id)item
                                                              Controller::WhenCreatedViewNew,
                                                              Controller::WhenExistsViewExisting,
                                                              (__bridge void*)self);
-                Global::controller->tagContainerRemoveWebpageAsync(c, w);
             }
         }
         // dropping on a workspace group
