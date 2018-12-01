@@ -69,7 +69,8 @@ Url Url::fromAmbiguousText(QString const& input)
     }
     // when a google search is needed
     if (! is_url) {
-        url.setUrl("https://www.google.com/search?q=" + input, QUrl::TolerantMode);
+        QString encoded = QUrl::toPercentEncoding(input,"","");
+        url.setUrl("https://www.google.com/search?q=" + encoded, QUrl::TolerantMode);
     } else {
         // when missing protocal
         if (url.scheme().isEmpty()) {
