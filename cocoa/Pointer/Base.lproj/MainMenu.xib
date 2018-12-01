@@ -324,13 +324,13 @@ CA
                                     <binding destination="moP-pP-G6P" name="enabled" keyPath="self.currentStateNotNull" id="Hsm-kI-Sll"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Edit Bookmarks as JSON File..." id="6am-FZ-k80">
+                            <menuItem title="Edit Bookmarks as File..." id="6am-FZ-k80">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuEditBookmarksAsJsonFile:" target="-2" id="Rv4-WT-Hmb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Reload from JSON File" id="oqb-BX-Fyw">
+                            <menuItem title="Reload from File" id="oqb-BX-Fyw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuReloadBookmarksAndTags:" target="-2" id="f2C-4j-Pry"/>
@@ -353,13 +353,13 @@ CA
                                     <binding destination="moP-pP-G6P" name="enabled" keyPath="self.currentStateNotNull" id="rWA-i0-Osc"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Edit Tags as JSON Files..." id="Fzi-Kk-YNi">
+                            <menuItem title="Edit Tags as Files..." id="Fzi-Kk-YNi">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuEditTagsAsJsonFile:" target="-2" id="rSw-uV-oX5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Reload from JSON File" id="JRu-bT-AfC">
+                            <menuItem title="Reload from File" id="JRu-bT-AfC">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuReloadBookmarksAndTags:" target="-2" id="1Hu-la-vlT"/>
