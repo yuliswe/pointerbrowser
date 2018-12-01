@@ -372,6 +372,37 @@
     return ptextview;
 }
 
+- (void)windowWillEnterFullScreen:(NSNotification *)notification
+{
+    BrowserWindow* window = notification.object;
+    BrowserWindowController* controller = window.windowController;
+    {
+        NSRect frame = controller.left_wrapper.frame;
+        frame.size.height = window.frame.size.height + 1;
+        controller.left_wrapper.frame = frame;
+    }
+    {
+        NSRect frame = controller.right_wrapper.frame;
+        frame.size.height = window.frame.size.height + 1;
+        controller.right_wrapper.frame = frame;
+    }
+}
+
+- (void)windowWillExitFullScreen:(NSNotification *)notification
+{
+    BrowserWindow* window = notification.object;
+    BrowserWindowController* controller = window.windowController;
+    {
+        NSRect frame = controller.left_wrapper.frame;
+        frame.size.height = window.frame.size.height - 16;
+        controller.left_wrapper.frame = frame;
+    }
+    {
+        NSRect frame = controller.right_wrapper.frame;
+        frame.size.height = window.frame.size.height - 16;
+        controller.right_wrapper.frame = frame;
+    }
+}
 @end
 
 @implementation GeneralTextViewDelegate

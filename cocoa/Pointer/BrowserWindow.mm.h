@@ -58,6 +58,8 @@
 @property IBOutlet BookmarksViewController* bookmarks_viewcontroller;
 @property IBOutlet NSView* bookmarks_view_container;
 @property IBOutlet NSView* tab_view_container;
+@property IBOutlet NSView* left_wrapper;
+@property IBOutlet NSView* right_wrapper;
 @end
 
 @interface GeneralTextViewDelegate : NSObject<NSTextViewDelegate>
