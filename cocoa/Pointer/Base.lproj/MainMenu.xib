@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
@@ -14,7 +13,8 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-        <customObject id="moP-pP-G6P" customClass="BookmarkMenuDelegate"/>
+        <customObject id="moP-pP-G6P" customClass="BookmarksMenuDelegate"/>
+        <customObject id="tTA-8u-6Px" customClass="TagsMenuDelegate"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
                 <menuItem title="Pointer" id="1Xt-HY-uBw">
@@ -330,6 +330,23 @@ CA
                                     <action selector="menuEditBookmarksAsJsonFile:" target="-2" id="Rv4-WT-Hmb"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Reload from JSON File" id="oqb-BX-Fyw">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuReloadBookmarksAndTags:" target="-2" id="f2C-4j-Pry"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="N2C-PC-Hgh"/>
+                        </items>
+                        <connections>
+                            <outlet property="delegate" destination="moP-pP-G6P" id="SVQ-Uf-QKy"/>
+                        </connections>
+                    </menu>
+                </menuItem>
+                <menuItem title="Tags" id="yZ1-FW-5ka">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Tags" id="xiv-Zw-QdH" userLabel="Tags">
+                        <items>
                             <menuItem title="Add Tag..." keyEquivalent="t" id="lV6-tg-eTc">
                                 <connections>
                                     <action selector="menuAddTagsForCurrentTab:" target="-1" id="aUp-Bm-u3R"/>
@@ -342,16 +359,16 @@ CA
                                     <action selector="menuEditTagsAsJsonFile:" target="-2" id="rSw-uV-oX5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Reload All from JSON File" id="oqb-BX-Fyw">
+                            <menuItem title="Reload from JSON File" id="JRu-bT-AfC">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="menuReloadBookmarksAndTags:" target="-2" id="f2C-4j-Pry"/>
+                                    <action selector="menuReloadBookmarksAndTags:" target="-2" id="1Hu-la-vlT"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="N2C-PC-Hgh"/>
+                            <menuItem isSeparatorItem="YES" id="Sgc-VW-bgQ"/>
                         </items>
                         <connections>
-                            <outlet property="delegate" destination="moP-pP-G6P" id="SVQ-Uf-QKy"/>
+                            <outlet property="delegate" destination="tTA-8u-6Px" id="3e8-2v-SvQ"/>
                         </connections>
                     </menu>
                 </menuItem>
@@ -394,20 +411,6 @@ CA
                     </menu>
                 </menuItem>
             </items>
-        </menu>
-        <menu id="bSb-Vh-jcm">
-            <items>
-                <menuItem title="Item 1" id="V8d-I7-yJ0">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="Item 2" id="ql0-ie-DsO">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="Item 3" id="P1Q-BU-9kx">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-            </items>
-            <point key="canvasLocation" x="246" y="418"/>
         </menu>
     </objects>
 </document>

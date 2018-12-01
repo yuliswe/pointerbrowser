@@ -10,14 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MainMenu : NSObject
-@end
-
-@interface BookmarkMenuItem : NSMenuItem
-@end
-
-@interface BookmarkMenuDelegate : NSObject<NSMenuDelegate>
+@interface BookmarksMenuDelegate : NSObject<NSMenuDelegate>
 @property BOOL currentStateNotNull;
 @end
 
+@interface TagsMenuDelegate : NSObject<NSMenuDelegate>
+@property BOOL currentStateNotNull;
+@end
 NS_ASSUME_NONNULL_END
