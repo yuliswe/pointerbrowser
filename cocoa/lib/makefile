@@ -33,10 +33,10 @@ docviewer.framework:
 	ln -sF Versions/Current/docviewer ./docviewer.framework/docviewer
 	ln -sF A ./docviewer.framework/Versions/Current
 
-	install_name_tool -id @rpath/docviewer.framework/Versions/A/docviewer ./docviewer.framework/docviewer
-	install_name_tool -change /usr/local/lib/libgq.dylib @executable_path/../Frameworks/libgq.dylib ./docviewer.framework/docviewer
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./docviewer.framework/docviewer
-	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/A/QtSql ./docviewer.framework/docviewer
+	install_name_tool -id @executable_path/../Frameworks/docviewer.framework/Versions/Current/docviewer ./docviewer.framework/docviewer
+	install_name_tool -change @rpath/libgumbo_query.dylib @executable_path/../Frameworks/libgumbo_query.dylib ./docviewer.framework/docviewer
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/Current/QtCore ./docviewer.framework/docviewer
+	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/Current/QtSql ./docviewer.framework/docviewer
 	
 	otool -L ./docviewer.framework/docviewer
 	ls -l ./docviewer.framework
@@ -55,8 +55,8 @@ QtCore.framework:
 	ln -sF Versions/Current/QtCore ./QtCore.framework/QtCore
 	ln -sF A ./QtCore.framework/Versions/Current
 
-	install_name_tool -id @rpath/QtCore.framework/Versions/A/QtCore ./QtCore.framework/QtCore
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./QtCore.framework/QtCore
+	install_name_tool -id @executable_path/../Frameworks/QtCore.framework/Versions/Current/QtCore ./QtCore.framework/QtCore
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/Current/QtCore ./QtCore.framework/QtCore
 	
 	otool -L ./QtCore.framework/QtCore
 	ls -l ./QtCore.framework
@@ -64,9 +64,9 @@ QtCore.framework:
 
 .PHONY: libqsqlite.dylib
 libqsqlite.dylib:
-	install_name_tool -id @rpath/libqsqlite.dylib ./libqsqlite.dylib
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./libqsqlite.dylib
-	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/A/QtSql ./libqsqlite.dylib	
+	install_name_tool -id @executable_path/../PlugIns/sqldrivers/libqsqlite.dylib ./libqsqlite.dylib
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/Current/QtCore ./libqsqlite.dylib
+	install_name_tool -change @rpath/QtSql.framework/Versions/5/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/Current/QtSql ./libqsqlite.dylib	
 
 	otool -L libqsqlite.dylib
 
@@ -82,8 +82,8 @@ QtSql.framework:
 	ln -sF Versions/Current/QtSql ./QtSql.framework/QtSql
 	ln -sF A ./QtSql.framework/Versions/Current
 
-	install_name_tool -id @rpath/QtSql.framework/Versions/A/QtSql ./QtSql.framework/QtSql
-	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/A/QtCore ./QtSql.framework/QtSql
+	install_name_tool -id @executable_path/../Frameworks/QtSql.framework/Versions/Current/QtSql ./QtSql.framework/QtSql
+	install_name_tool -change @rpath/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/Current/QtCore ./QtSql.framework/QtSql
 
 	otool -L ./QtSql.framework/QtSql
 	ls -l ./QtSql.framework
