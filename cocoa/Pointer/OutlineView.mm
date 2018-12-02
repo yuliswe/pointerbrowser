@@ -8,6 +8,7 @@
 
 #import "OutlineView.mm.h"
 #import "CppData.h"
+#import "GenericTextFieldPopover.h"
 #include <docviewer/webpage.hpp>
 #include <docviewer/global.hpp>
 #include <Carbon/Carbon.h>
@@ -225,7 +226,7 @@
     self.title = tagContainer->title().toNSString();
     self.outlineView = outlineView;
     QObject::connect(tagContainer.get(), &TagContainer::propertyChanged, [=]() {
-        [self performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
+        [outlineView performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
     });
     QObject::connect(&tagContainer->sig, &BaseListModelSignals::signal_tf_rows_inserted, [=](int index)
                      {
@@ -883,11 +884,11 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView
    shouldSelectItem:(id)item
 {
-    if ([self isHeader:item]) {
-        return false;
-    }
+//    if ([item isKindOfClass:WorkspaceGroupItem.class]) {
+//        return YES;
+//    }
     if ([item isKindOfClass:OpenTabItem.class]) {
-        return true;
+        return YES;
     }
     if ([item isKindOfClass:WorkspaceTabItem.class]) {
         return YES;
@@ -1165,10 +1166,9 @@ shouldShowOutlineCellForItem:(id)item
     NSPoint pt = [self convertPoint:p fromView:nil];
     int row = [self rowAtPoint:pt];
     id item = [self itemAtRow:row];
-    if ([self isHeader:item]) {
-        return nil;
+    if (! [self isHeader:item]) {
+        [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
     }
-    [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
     if ([item isKindOfClass:OpenTabItem.class]) {
         return self.open_tab_menu;
     }
@@ -1179,7 +1179,19 @@ shouldShowOutlineCellForItem:(id)item
         [self.workspace_tab_menu listRemoveTabOptionsForTagContainer:[item tagContainer] webpage:[item webpage]];
         return self.workspace_tab_menu;
     }
+    if ([item isKindOfClass:WorkspaceGroupItem.class]) {
+        [self.workspace_group_menu updateWithWorkspaceGroupItem:item outlineView:self];
+        return self.workspace_group_menu;
+    }
     return nil;
+}
+
+- (void)focusEditWorkspaceGroupItemTitle:(WorkspaceGroupItem*)item
+{
+    WorkspaceHeaderCellView* cellView = (WorkspaceHeaderCellView*)[self outlineView:self viewForTableColumn:self.tableColumns[0] item:item];
+//    [cellView.titleTextField performClick:self];
+    [self.window makeFirstResponder:cellView.textField];
+    [cellView.textField selectText:self];
 }
 @end
 
@@ -1229,13 +1241,6 @@ shouldShowOutlineCellForItem:(id)item
 @implementation WorkspaceTabItemMenu
 - (void)listRemoveTabOptionsForTagContainer:(TagContainer_)c webpage:(Webpage_)w
 {
-//    NSArray<NSMenuItem*>* items = self.itemArray;
-//    for (int i = 0; i < items.count; i++) {
-//        NSMenuItem* item = items[i];
-//        if ([item isKindOfClass:RemoveTagMenuItem.class]) {
-//            [self remove]
-//        }
-//    }
     if ([self.itemArray[0] isKindOfClass:RemoveTagMenuItem.class]) {
         [self removeItemAtIndex:0];
     }
@@ -1248,4 +1253,49 @@ shouldShowOutlineCellForItem:(id)item
 @end
 
 @implementation SearchResultTabItemMenu
+@end
+
+@implementation WorkspaceGroupItemMenu
+- (void)updateWithWorkspaceGroupItem:(WorkspaceGroupItem*)workspaceGroupItem outlineView:(OutlineView*)outlineView
+{
+    self.outlineView = outlineView;
+    self.workspaceGroupItem = workspaceGroupItem;
+    self.tagContainer = workspaceGroupItem.tagContainer;
+    self.unpinTag.title = [NSString stringWithFormat:@"Unpin \"%@\"", self.tagContainer->title().toNSString()];
+    self.deleteTag.title = [NSString stringWithFormat:@"Tag \"%@\"", self.tagContainer->title().toNSString()];
+//    self.renameTag.title = [NSString stringWithFormat:@"Rename \"%@\"", tagContainer->title().toNSString()];
+}
+- (IBAction)handleDeleteTag:(id)sender
+{
+    Global::controller->removeTagContainerAsync(self.tagContainer, (__bridge void*)self);
+}
+- (IBAction)handleUnpinTag:(id)sender
+{
+    Global::controller->workspacesRemoveTagContainerAsync(self.tagContainer, (__bridge void*)self);
+}
+- (IBAction)handleRenameTag:(id)sender
+{
+    OutlineView* outlineView = self.outlineView;
+    NSString* title = self.workspaceGroupItem.tagContainer->title().toNSString();
+    GenericTextFieldPopoverViewController* contentViewController = (GenericTextFieldPopoverViewController*)self.renameTagsPopover.contentViewController;
+    // setup popover title, textfield, action...
+    contentViewController.title = [NSString stringWithFormat:@"Rename Tag \"%@\" as...", title];
+    contentViewController.defaultText = title;
+    contentViewController.handleApply = @selector(handleApply:);
+    contentViewController.target = self;
+    // compute popover position
+    WorkspaceHeaderCellView* cellView = (WorkspaceHeaderCellView*)[outlineView outlineView:outlineView viewForTableColumn:outlineView.tableColumns[0] item:self.workspaceGroupItem];
+    NSRect frame = cellView.textField.frame;
+    frame.size = cellView.textField.intrinsicContentSize;
+    frame.origin.y += 3;
+    frame.size.width += 15;
+    int row = [outlineView rowForItem:self.workspaceGroupItem];
+    NSView* cell = [outlineView rowViewAtRow:row makeIfNecessary:YES];
+    [self.renameTagsPopover showRelativeToRect:frame ofView:cell preferredEdge:NSRectEdgeMaxX];
+}
+- (void)handleApply:(GenericTextFieldPopoverViewController*)popoverViewController
+{
+    NSTextField* textField = popoverViewController.textField;
+    Global::controller->renameTagContainerAsync(self.tagContainer, QString::fromNSString(textField.stringValue));
+}
 @end

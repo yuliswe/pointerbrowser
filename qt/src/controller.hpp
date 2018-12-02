@@ -180,12 +180,16 @@ public:
     METH_ASYNC_3(int, createTagContainerByWebpage, QString const&, int, Webpage_)
     METH_ASYNC_3(int, createTagContainerByWebpageCopy, QString const&, int, Webpage_)
     METH_ASYNC_1(int, removeTagContainer, int)
+    METH_ASYNC_1(int, removeTagContainer, TagContainer_)
     METH_ASYNC_2(int, moveTagContainer, int, int)
+    METH_ASYNC_2(int, moveTagContainer, TagContainer_, int)
     METH_ASYNC_2(int, renameTagContainer, TagContainer_, QString const&)
 
     METH_ASYNC_2(int, workspacesInsertTagContainer, int, TagContainer_)
     METH_ASYNC_2(int, workspacesMoveTagContainer, int, int)
+    METH_ASYNC_2(int, workspacesMoveTagContainer, TagContainer_, int)
     METH_ASYNC_1(int, workspacesRemoveTagContainer, int)
+    METH_ASYNC_1(int, workspacesRemoveTagContainer, TagContainer_)
 
     TagsCollection_ listTagsMatching(QString const&);
     std::pair<TagsCollection_,TagsCollection_> partitionTagsByUrl(Url const&);

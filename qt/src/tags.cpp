@@ -111,6 +111,12 @@ int Controller::createTagContainerByWebpageCopy(QString const& title, int index,
     return createTagContainerByWebpage(title, index, n, sender);
 }
 
+int Controller::removeTagContainer(TagContainer_ tagContainer, void const* sender)
+{
+    int index = tags()->indexOf(tagContainer);
+    removeTagContainer(index, sender);
+}
+
 int Controller::removeTagContainer(int index, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::removeTagContainer" << index;
@@ -127,6 +133,12 @@ int Controller::removeTagContainer(int index, void const* sender)
     return true;
 }
 
+int Controller::moveTagContainer(TagContainer_ tagContainer, int to, void const* sender)
+{
+    int index = tags()->indexOf(tagContainer);
+    moveTagContainer(index, to, sender);
+}
+
 int Controller::moveTagContainer(int from, int to, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::moveTagContainer" << from << to;
@@ -139,6 +151,7 @@ int Controller::moveTagContainer(int from, int to, void const* sender)
 int Controller::renameTagContainer(TagContainer_ target, QString const& name, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::renameTagContainer" << target << name;
+    if (name.isEmpty()) { return false; }
     set_tag_listing_last_cache(tag_listing_last_cache() + 1);
     target->renameFile(name);
     saveTagsList();
@@ -261,6 +274,7 @@ void TagContainer::saveToFile()
 
 void TagContainer::renameFile(QString const& name)
 {
+    if (name.isEmpty()) { return; }
     QString oldpath = filename();
     set_title(name);
     QString newpath = filename();
@@ -340,6 +354,12 @@ int Controller::workspacesInsertTagContainer(int index, TagContainer_ tag, void 
     return true;
 }
 
+int Controller::workspacesRemoveTagContainer(TagContainer_ tagContainer, void const* sender)
+{
+    int index = workspaces()->indexOf(tagContainer);
+    return workspacesRemoveTagContainer(index, sender);
+}
+
 int Controller::workspacesRemoveTagContainer(int index, void const* sender)
 {
     INFO(ControllerLogging) << "Controller::workspacesRemoveTagContainer" << index;
@@ -371,9 +391,9 @@ int Controller::workspacesRemoveTagContainer(int index, void const* sender)
                     && current_tab_state() == TabStateWorkspace)
             {
                 if (open_tabs()->count() > 0) {
-                    viewTab(TabStateOpen, 0);
+                    viewTab(TabStateOpen, 0, sender);
                 } else {
-                    viewTab(TabStateNull, -1);
+                    viewTab(TabStateNull, -1, sender);
                 }
             }
             workspace_tabs()->removeTab(index);
@@ -382,6 +402,12 @@ int Controller::workspacesRemoveTagContainer(int index, void const* sender)
     workspaces()->remove(index);
     saveLastOpen();
     return true;
+}
+
+int Controller::workspacesMoveTagContainer(TagContainer_ tagContainer, int to, void const* sender)
+{
+    int index = workspaces()->indexOf(tagContainer);
+    return workspacesMoveTagContainer(index, to, sender);
 }
 
 int Controller::workspacesMoveTagContainer(int from, int to, void const* sender)

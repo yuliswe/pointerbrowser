@@ -61,6 +61,7 @@
 @end
 
 @interface WorkspaceHeaderCellView : TrackingAreaCellView
+//@property IBOutlet NSTextField* titleTextField;
 - (IBAction)unpin:(id)sender;
 @end
 
@@ -71,6 +72,17 @@
 @interface WorkspaceTabItemMenu : NSMenu<WebpageWrapper>
 @property Webpage_ webpage;
 - (void)listRemoveTabOptionsForTagContainer:(TagContainer_)c webpage:(Webpage_)w;
+@end
+
+@interface WorkspaceGroupItemMenu : NSMenu<TagContainerWrapper>
+@property OutlineView* outlineView;
+@property WorkspaceGroupItem* workspaceGroupItem;
+@property TagContainer_ tagContainer;
+@property IBOutlet NSMenuItem* unpinTag;
+@property IBOutlet NSMenuItem* deleteTag;
+@property IBOutlet NSMenuItem* renameTag;
+@property IBOutlet NSPopover* renameTagsPopover;
+- (void)updateWithWorkspaceGroupItem:(WorkspaceGroupItem*)workspaceGroupItem outlineView:(OutlineView*)outlineView;
 @end
 
 @interface OpenTabItemMenu : NSMenu<WebpageWrapper>
@@ -90,6 +102,7 @@
 @property IBOutlet OpenTabItemMenu* open_tab_menu;
 @property IBOutlet WorkspaceTabItemMenu* workspace_tab_menu;
 @property IBOutlet SearchResultTabItemMenu* search_result_tab_menu;
+@property IBOutlet WorkspaceGroupItemMenu* workspace_group_menu;
 @property SearchResultGroupItem* search_result_group_item;
 @property OpenGroupItem* open_group_item;
 @property NSMutableArray<WorkspaceGroupItem*>* workspaces;

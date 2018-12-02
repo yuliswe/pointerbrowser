@@ -45,6 +45,9 @@
 		7AB2318E21856634005B436F /* ErrorPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB2318D21856634005B436F /* ErrorPage.xib */; };
 		7AB2319121856649005B436F /* ErrorPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319021856649005B436F /* ErrorPage.mm */; };
 		7AB2319421856A28005B436F /* PViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319321856A28005B436F /* PViewController.m */; };
+		B224988521B3460600EDAC3D /* GenericTextFieldPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */; };
+		B224988821B36D1900EDAC3D /* GenericTextFieldPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */; };
+		B224988B21B370C600EDAC3D /* PPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B224988A21B370C600EDAC3D /* PPopover.m */; };
 		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
 		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
@@ -146,6 +149,11 @@
 		7AB2319021856649005B436F /* ErrorPage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ErrorPage.mm; sourceTree = "<group>"; };
 		7AB2319221856A28005B436F /* PViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PViewController.h; sourceTree = "<group>"; };
 		7AB2319321856A28005B436F /* PViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PViewController.m; sourceTree = "<group>"; };
+		B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GenericTextFieldPopover.xib; sourceTree = "<group>"; };
+		B224988621B36D1900EDAC3D /* GenericTextFieldPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenericTextFieldPopover.h; sourceTree = "<group>"; };
+		B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GenericTextFieldPopover.mm; sourceTree = "<group>"; };
+		B224988921B370C600EDAC3D /* PPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPopover.h; sourceTree = "<group>"; };
+		B224988A21B370C600EDAC3D /* PPopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPopover.m; sourceTree = "<group>"; };
 		B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTagsPopover.xib; sourceTree = "<group>"; };
 		B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddTagsPopover.h; sourceTree = "<group>"; };
 		B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AddTagsPopover.mm; sourceTree = "<group>"; };
@@ -223,6 +231,9 @@
 				7A737409211690E10061AD5F /* OutlineView.mm */,
 				7A737408211690E10061AD5F /* OutlineView.mm.h */,
 				B2713A8121A4D12900FCF4C1 /* OutlineView.xib */,
+				B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */,
+				B224988621B36D1900EDAC3D /* GenericTextFieldPopover.h */,
+				B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */,
 				7A0CDD3D2110F15900FE35C5 /* Pointer.entitlements */,
 				7A651481211EAC2100977B87 /* TabView.mm */,
 				7A651480211EAC2100977B87 /* TabView.mm.h */,
@@ -255,6 +266,8 @@
 				7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */,
 				7AB2319221856A28005B436F /* PViewController.h */,
 				7AB2319321856A28005B436F /* PViewController.m */,
+				B224988921B370C600EDAC3D /* PPopover.h */,
+				B224988A21B370C600EDAC3D /* PPopover.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -363,6 +376,7 @@
 				7A59D52921408F0A001C082B /* CrawlerRulesPopover.xib in Resources */,
 				7A7C503121881A82007FB18C /* eula.html in Resources */,
 				7AB2318E21856634005B436F /* ErrorPage.xib in Resources */,
+				B224988521B3460600EDAC3D /* GenericTextFieldPopover.xib in Resources */,
 				7A0CDD392110F15800FE35C5 /* MainMenu.xib in Resources */,
 				7A11A575217AFD2A003E456E /* Bookmarks.xib in Resources */,
 			);
@@ -403,6 +417,7 @@
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,
+				B224988B21B370C600EDAC3D /* PPopover.m in Sources */,
 				7A4D3F62217DC1FD00C5E8A6 /* PTextView.mm in Sources */,
 				7A4D3F5D217DA6AC00C5E8A6 /* PTextField.m in Sources */,
 				7AB2319421856A28005B436F /* PViewController.m in Sources */,
@@ -414,6 +429,7 @@
 				7A7DBEF3217EC6A500C6E778 /* PView.m in Sources */,
 				7A8D32E02111A43B0066691C /* WebUI.mm in Sources */,
 				7A43E2802180F36B00E834E5 /* Downloads.mm in Sources */,
+				B224988821B36D1900EDAC3D /* GenericTextFieldPopover.mm in Sources */,
 				7A0CDD342110F15600FE35C5 /* Application.mm in Sources */,
 				7A7DBEF6217EC7DE00C6E778 /* PCollectionView.m in Sources */,
 				7A7DBEFC217ECA2600C6E778 /* MainMenu.mm in Sources */,

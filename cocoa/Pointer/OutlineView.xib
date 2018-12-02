@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="OutlineViewController">
             <connections>
-                <outlet property="add_tags_popover" destination="TFH-Fc-7cE" id="F3D-Bn-vat"/>
+                <outlet property="add_tags_popover" destination="TFH-Fc-7cE" id="PGU-hY-GD0"/>
                 <outlet property="outlineView" destination="aEp-2y-EUi" id="4gm-Ea-B3z"/>
                 <outlet property="view" destination="c22-O7-iKe" id="ACT-qd-9rf"/>
             </connections>
@@ -26,7 +25,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="252" height="487"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="1" indentationMarkerFollowsCell="NO" autoresizesOutlineColumn="YES" outlineTableColumn="Oc6-4u-3ro" id="aEp-2y-EUi" customClass="OutlineView">
+                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="1" indentationMarkerFollowsCell="NO" autoresizesOutlineColumn="YES" outlineTableColumn="Oc6-4u-3ro" id="aEp-2y-EUi" customClass="OutlineView">
                                 <rect key="frame" x="0.0" y="0.0" width="252" height="487"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -50,7 +49,7 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField identifier="HeaderTextField" autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GTp-YG-tfL">
-                                                        <rect key="frame" x="13" y="3" width="241" height="14"/>
+                                                        <rect key="frame" x="13" y="3" width="76" height="14"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" usesSingleLineMode="YES" id="312-Xc-0jG">
                                                             <font key="font" metaFont="systemMedium" size="11"/>
                                                             <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -67,7 +66,7 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="bottom" secondItem="GTp-YG-tfL" secondAttribute="bottom" constant="3" id="sGe-Zi-Ub2"/>
-                                                    <constraint firstAttribute="trailing" secondItem="GTp-YG-tfL" secondAttribute="trailing" id="t7D-yd-Gdm"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GTp-YG-tfL" secondAttribute="trailing" id="t7D-yd-Gdm"/>
                                                     <constraint firstItem="GTp-YG-tfL" firstAttribute="leading" secondItem="O27-Jf-C2b" secondAttribute="leading" constant="15" id="ylP-Du-o2h"/>
                                                 </constraints>
                                             </tableCellView>
@@ -123,9 +122,9 @@
                                                 <rect key="frame" x="0.0" y="53" width="252" height="23"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField identifier="HeaderTextField" autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bLv-EE-ggb">
-                                                        <rect key="frame" x="13" y="3" width="241" height="14"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" usesSingleLineMode="YES" id="XfP-JO-0NJ">
+                                                    <textField identifier="HeaderTextField" autoresizesSubviews="NO" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="bLv-EE-ggb">
+                                                        <rect key="frame" x="13" y="3" width="76" height="14"/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" usesSingleLineMode="YES" id="XfP-JO-0NJ">
                                                             <font key="font" metaFont="systemMedium" size="11"/>
                                                             <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -138,9 +137,9 @@
                                                             </binding>
                                                         </connections>
                                                     </textField>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ygP-xC-aII" customClass="WorkspaceHeaderCellUnpinButton">
-                                                        <rect key="frame" x="193" y="3" width="44" height="14"/>
-                                                        <buttonCell key="cell" type="inline" title="Unpin" bezelStyle="inline" alignment="center" imageScaling="proportionallyDown" inset="2" id="nI6-bT-mdO">
+                                                    <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="ygP-xC-aII" customClass="WorkspaceHeaderCellUnpinButton">
+                                                        <rect key="frame" x="201" y="3" width="36" height="14"/>
+                                                        <buttonCell key="cell" type="roundRect" title="Unpin" bezelStyle="roundedRect" alignment="center" imageScaling="proportionallyDown" inset="2" id="nI6-bT-mdO">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemMedium" size="11"/>
                                                         </buttonCell>
@@ -156,12 +155,15 @@
                                                     </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="bLv-EE-ggb" secondAttribute="bottom" constant="3" id="4mk-42-5bc"/>
-                                                    <constraint firstAttribute="trailing" secondItem="bLv-EE-ggb" secondAttribute="trailing" id="M7v-ZX-Q63"/>
+                                                    <constraint firstAttribute="bottom" secondItem="bLv-EE-ggb" secondAttribute="bottom" constant="3" id="3uu-GZ-TzX"/>
+                                                    <constraint firstItem="ygP-xC-aII" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bLv-EE-ggb" secondAttribute="trailing" constant="5" id="M7v-ZX-Q63"/>
                                                     <constraint firstItem="bLv-EE-ggb" firstAttribute="leading" secondItem="tgu-5J-cXQ" secondAttribute="leading" constant="15" id="b5Y-kP-fEj"/>
                                                     <constraint firstItem="ygP-xC-aII" firstAttribute="centerY" secondItem="bLv-EE-ggb" secondAttribute="centerY" id="jY3-cg-lOj"/>
                                                     <constraint firstAttribute="trailing" secondItem="ygP-xC-aII" secondAttribute="trailing" constant="15" id="v7Y-2J-Erv"/>
                                                 </constraints>
+                                                <connections>
+                                                    <outlet property="textField" destination="bLv-EE-ggb" id="WUF-bI-nKb"/>
+                                                </connections>
                                             </tableCellView>
                                             <tableCellView identifier="WorkspaceTabRowView" id="nFp-OP-f0b" userLabel="WorkspaceTabRowView">
                                                 <rect key="frame" x="0.0" y="76" width="252" height="30"/>
@@ -264,6 +266,7 @@
                                 <connections>
                                     <outlet property="open_tab_menu" destination="MoJ-VU-Vnd" id="QSq-xj-bj8"/>
                                     <outlet property="search_result_tab_menu" destination="6ZS-rR-INS" id="ubu-5V-8Lh"/>
+                                    <outlet property="workspace_group_menu" destination="rai-14-Sqb" id="TIa-Ac-vZ3"/>
                                     <outlet property="workspace_tab_menu" destination="do9-pq-p9y" id="Jad-zk-BR1"/>
                                 </connections>
                             </outlineView>
@@ -305,7 +308,7 @@
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-255" y="-183"/>
+            <point key="canvasLocation" x="-284" y="-204"/>
         </menu>
         <menu id="do9-pq-p9y" userLabel="Workspace Tab Menu" customClass="WorkspaceTabItemMenu">
             <items>
@@ -328,7 +331,7 @@
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-37" y="-183"/>
+            <point key="canvasLocation" x="-14" y="-204"/>
         </menu>
         <menu id="6ZS-rR-INS" userLabel="Search Result Tab Menu" customClass="SearchResultTabItemMenu">
             <items>
@@ -368,6 +371,53 @@
         <popover id="TFH-Fc-7cE" userLabel="Add Tags Popover" customClass="AddTagsPopover">
             <connections>
                 <outlet property="contentViewController" destination="zCy-o0-rVc" id="rBh-oE-lN6"/>
+            </connections>
+        </popover>
+        <menu id="rai-14-Sqb" userLabel="Workspace Group Menu" customClass="WorkspaceGroupItemMenu">
+            <items>
+                <menuItem title="Unpin &quot;Fav&quot;" id="I4d-ba-5vt">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="handleUnpinTag:" target="rai-14-Sqb" id="kmF-yK-inq"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="b9W-W8-55L"/>
+                <menuItem title="Rename Tag" id="qd4-i8-eoW">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="handleRenameTag:" target="rai-14-Sqb" id="Qkc-Hm-s1i"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Delete" id="NsA-vX-a3m">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Delete" id="tuG-ym-bcJ">
+                        <items>
+                            <menuItem title="Tag &quot;Fav&quot;" id="x1i-MQ-7uC">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="handleDeleteTag:" target="rai-14-Sqb" id="cez-kS-40t"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+            </items>
+            <connections>
+                <outlet property="deleteTag" destination="x1i-MQ-7uC" id="5dC-J8-6F6"/>
+                <outlet property="renameTag" destination="qd4-i8-eoW" id="lcQ-5X-6Da"/>
+                <outlet property="renameTagsPopover" destination="tUY-yJ-nfn" id="FUP-fM-fpT"/>
+                <outlet property="unpinTag" destination="I4d-ba-5vt" id="HmV-5g-tm3"/>
+            </connections>
+            <point key="canvasLocation" x="-312" y="114"/>
+        </menu>
+        <viewController id="fye-wX-igU" userLabel="Tag Rename Popover View Controller" customClass="GenericTextFieldPopoverViewController">
+            <connections>
+                <outlet property="popover" destination="tUY-yJ-nfn" id="psi-FB-Uis"/>
+            </connections>
+        </viewController>
+        <popover id="tUY-yJ-nfn" userLabel="Tag Rename Popover">
+            <connections>
+                <outlet property="contentViewController" destination="fye-wX-igU" id="WcF-nh-6oX"/>
             </connections>
         </popover>
     </objects>
