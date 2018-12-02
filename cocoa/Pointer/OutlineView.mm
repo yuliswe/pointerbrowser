@@ -17,7 +17,7 @@
 {
     self = [super initWithCoder:coder];
     self.hovered = NO;
-    self.tracking_area = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingMouseEnteredAndExited|NSTrackingActiveInKeyWindow|NSTrackingMouseMoved owner:self userInfo:nil];
+    self.tracking_area = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingMouseEnteredAndExited|NSTrackingActiveInKeyWindow|NSTrackingMouseMoved|NSTrackingInVisibleRect owner:self userInfo:nil];
     [self addTrackingArea:self.tracking_area];
     return self;
 }
