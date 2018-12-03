@@ -29,11 +29,16 @@
     if (! config) {
         config = [[WKWebViewConfiguration alloc] init];
     }
-    [config.preferences setValue:@YES forKey:@"developerExtrasEnabled"];
+    // when user opens a link with target=_blank, createWebViewWithConfiguration is called
+    // with the current WKWebViewConfiguration, resulting in double scriptMessageHandler,
+    // and wkwebview throws an exception. So must remove the duplicated first.
+    [config.userContentController removeScriptMessageHandlerForName:@"pointerbrowser"];
     [config.userContentController addScriptMessageHandler:self name:@"pointerbrowser"];
+    [config.preferences setValue:@YES forKey:@"developerExtrasEnabled"];
+    [config.userContentController removeAllUserScripts];
     [WebUI addUserScriptBeforeLoading:(FileManager::readQrcFileS(QString::fromNSString(@"Fullscreen.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
-    [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
+//    [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
     static WKProcessPool* processPool = [[WKProcessPool alloc] init];
     config.processPool = processPool;
     self = [super initWithFrame:frame configuration:config];
