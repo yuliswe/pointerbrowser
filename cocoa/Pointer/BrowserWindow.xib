@@ -21,6 +21,13 @@
                 <outlet property="newtab_button" destination="0YT-Gb-veT" id="Hf0-r0-roU"/>
                 <outlet property="outlineViewController" destination="mGh-zH-3H1" id="fEo-Ga-8uO"/>
                 <outlet property="right_wrapper" destination="vq5-xW-T7Y" id="Eia-Ua-sST"/>
+                <outlet property="splitView" destination="xwr-Fb-Rdj" id="Ion-i5-CTg"/>
+                <outlet property="splitViewLeftPanel" destination="RBK-6X-r4o" id="cgc-gp-Euq"/>
+                <outlet property="splitViewLeftPanelToolBar" destination="RoG-yi-wd6" id="5ou-Jq-Kud"/>
+                <outlet property="splitViewRightPanel" destination="Ws7-mG-qfj" id="zX8-JF-u0F"/>
+                <outlet property="splitViewRightPanelContent" destination="keA-0R-84v" id="epQ-Io-oMJ"/>
+                <outlet property="splitViewRightPanelContentFullscreenWrapper" destination="W2z-tk-vdB" id="gbo-ZP-5uj"/>
+                <outlet property="splitViewRightPanelToolBar" destination="OLf-qm-hYL" id="JWl-Of-UEq"/>
                 <outlet property="tab_searchfield" destination="3OF-AJ-hTf" id="Pc2-nD-uPg"/>
                 <outlet property="tab_view_container" destination="Vdr-gK-mbW" id="SXa-gn-eW8"/>
                 <outlet property="text_find_done_button" destination="9Eg-ac-gam" id="EPA-Ss-7F1"/>
@@ -103,7 +110,7 @@
                                 <subviews>
                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vq5-xW-T7Y" userLabel="Wrapper">
                                         <rect key="frame" x="0.0" y="0.0" width="507" height="534"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <box fixedFrame="YES" boxType="custom" borderType="line" title="ToolBar" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OLf-qm-hYL">
                                                 <rect key="frame" x="0.0" y="500" width="507" height="34"/>
@@ -166,86 +173,98 @@
                                                 </view>
                                                 <size key="contentViewMargins" width="7" height="0.0"/>
                                             </box>
-                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
+                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="keA-0R-84v">
                                                 <rect key="frame" x="0.0" y="0.0" width="507" height="502"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W2z-tk-vdB">
+                                                        <rect key="frame" x="0.0" y="0.0" width="507" height="502"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Xn-2Q-FkF" userLabel="Bookmarks View">
+                                                                <rect key="frame" x="0.0" y="0.0" width="507" height="502"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            </customView>
+                                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vdr-gK-mbW" userLabel="Tab View">
+                                                                <rect key="frame" x="0.0" y="0.0" width="507" height="502"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            </customView>
+                                                            <box fixedFrame="YES" boxType="custom" borderType="none" title="FindText" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IbV-je-7ev">
+                                                                <rect key="frame" x="0.0" y="472" width="507" height="30"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                                <view key="contentView" ambiguous="YES" id="tEq-93-AEm">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <subviews>
+                                                                        <visualEffectView wantsLayer="YES" fixedFrame="YES" blendingMode="withinWindow" material="popover" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q9i-bD-ITt">
+                                                                            <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
+                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                            <subviews>
+                                                                                <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RbB-uT-wnc">
+                                                                                    <rect key="frame" x="255" y="5" width="170" height="19"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                                                    <searchFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Find on this page" usesSingleLineMode="YES" bezelStyle="round" sendsWholeSearchString="YES" id="ghG-FY-t4m">
+                                                                                        <font key="font" metaFont="smallSystem"/>
+                                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                    </searchFieldCell>
+                                                                                    <connections>
+                                                                                        <action selector="performClick:" target="jnD-LX-yBO" id="q76-du-6P1"/>
+                                                                                    </connections>
+                                                                                </searchField>
+                                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Eg-ac-gam">
+                                                                                    <rect key="frame" x="436" y="4" width="60" height="19"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                                                    <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="r9C-al-CzY">
+                                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                                        <font key="font" metaFont="smallSystem"/>
+                                                                                    </buttonCell>
+                                                                                    <connections>
+                                                                                        <action selector="handleFindTextDoneButtonClicked:" target="-2" id="9ji-te-Nig"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jnD-LX-yBO">
+                                                                                    <rect key="frame" x="226.5" y="2" width="24" height="25"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                                                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSRightFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YPi-tJ-9W9">
+                                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                                        <font key="font" metaFont="system"/>
+                                                                                    </buttonCell>
+                                                                                    <connections>
+                                                                                        <action selector="handleFindTextNextButtonClicked:" target="-2" id="tfW-VC-FLc"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tWp-IK-hQI">
+                                                                                    <rect key="frame" x="203.5" y="2" width="24" height="25"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                                                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSLeftFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QA8-BN-z4u">
+                                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                                        <font key="font" metaFont="system"/>
+                                                                                    </buttonCell>
+                                                                                    <connections>
+                                                                                        <action selector="handleFindTextPrevButtonClicked:" target="-2" id="hQ2-I3-0ky"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MYh-0H-9HI">
+                                                                                    <rect key="frame" x="10" y="8" width="185" height="14"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
+                                                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Found 0 match" id="CRd-Jv-Pxa">
+                                                                                        <font key="font" metaFont="smallSystem"/>
+                                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                                    </textFieldCell>
+                                                                                </textField>
+                                                                            </subviews>
+                                                                        </visualEffectView>
+                                                                    </subviews>
+                                                                </view>
+                                                                <color key="borderColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </box>
+                                                        </subviews>
+                                                    </customView>
+                                                </subviews>
                                             </customView>
-                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vdr-gK-mbW" userLabel="Tab View">
-                                                <rect key="frame" x="0.0" y="0.0" width="507" height="502"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            </customView>
-                                            <box fixedFrame="YES" boxType="custom" borderType="none" title="FindText" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="IbV-je-7ev">
-                                                <rect key="frame" x="0.0" y="472" width="507" height="30"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <view key="contentView" ambiguous="YES" id="tEq-93-AEm">
-                                                    <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <subviews>
-                                                        <visualEffectView wantsLayer="YES" fixedFrame="YES" blendingMode="withinWindow" material="popover" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q9i-bD-ITt">
-                                                            <rect key="frame" x="0.0" y="0.0" width="507" height="30"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" mirrorLayoutDirectionWhenInternationalizing="never" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RbB-uT-wnc">
-                                                                    <rect key="frame" x="255" y="5" width="170" height="19"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                                    <searchFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Find on this page" usesSingleLineMode="YES" bezelStyle="round" sendsWholeSearchString="YES" id="ghG-FY-t4m">
-                                                                        <font key="font" metaFont="smallSystem"/>
-                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                    </searchFieldCell>
-                                                                    <connections>
-                                                                        <action selector="performClick:" target="jnD-LX-yBO" id="q76-du-6P1"/>
-                                                                    </connections>
-                                                                </searchField>
-                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Eg-ac-gam">
-                                                                    <rect key="frame" x="436" y="4" width="60" height="19"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                                    <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="r9C-al-CzY">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="smallSystem"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="handleFindTextDoneButtonClicked:" target="-2" id="9ji-te-Nig"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jnD-LX-yBO">
-                                                                    <rect key="frame" x="226.5" y="2" width="24" height="25"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSRightFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YPi-tJ-9W9">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="handleFindTextNextButtonClicked:" target="-2" id="tfW-VC-FLc"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tWp-IK-hQI">
-                                                                    <rect key="frame" x="203.5" y="2" width="24" height="25"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSLeftFacingTriangleTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QA8-BN-z4u">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="handleFindTextPrevButtonClicked:" target="-2" id="hQ2-I3-0ky"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MYh-0H-9HI">
-                                                                    <rect key="frame" x="10" y="8" width="185" height="14"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Found 0 match" id="CRd-Jv-Pxa">
-                                                                        <font key="font" metaFont="smallSystem"/>
-                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                </textField>
-                                                            </subviews>
-                                                        </visualEffectView>
-                                                    </subviews>
-                                                </view>
-                                                <color key="borderColor" name="gridColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </box>
                                         </subviews>
                                     </customView>
                                 </subviews>
@@ -322,7 +341,7 @@
                     <size key="minSize" width="25" height="25"/>
                     <size key="maxSize" width="40" height="28"/>
                     <button key="view" verticalHuggingPriority="750" id="W9N-yy-wfk">
-                        <rect key="frame" x="10" y="14" width="40" height="28"/>
+                        <rect key="frame" x="11" y="14" width="39" height="28"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSBookmarksTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="Qd2-ck-F40">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>

@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>SearchWebView.js</file>
         <file>OpenLinkInNewWindow.js</file>
+        <file>Fullscreen.js</file>
     </qresource>
 </RCC>

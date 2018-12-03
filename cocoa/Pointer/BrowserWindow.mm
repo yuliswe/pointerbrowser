@@ -48,6 +48,7 @@
     [self.outlineViewController loadView];
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     self.text_find_toolbar.hidden = YES;
+    self.fullscreenMode = NO;
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()
@@ -247,6 +248,24 @@
     Webpage_ w = Global::controller->current_tab_webpage();
     Global::controller->newTabAsync(Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
 }
+
+- (void)enterFullscreenMode
+{
+    self.splitView.hidden = YES;
+    [self.splitViewRightPanelContentFullscreenWrapper removeFromSuperviewWithoutNeedingDisplay];
+    self.splitViewRightPanelContentFullscreenWrapper.frame = self.window.contentView.bounds;
+    [self.window.contentView addSubview:self.splitViewRightPanelContentFullscreenWrapper];
+    self.fullscreenMode = YES;
+}
+
+- (void)exitFullscreenMode
+{
+    self.splitView.hidden = NO;
+    [self.splitViewRightPanelContentFullscreenWrapper removeFromSuperviewWithoutNeedingDisplay];
+    self.splitViewRightPanelContentFullscreenWrapper.frame = self.splitViewRightPanelContent.bounds;
+    [self.splitViewRightPanelContent addSubview:self.splitViewRightPanelContentFullscreenWrapper];
+    self.fullscreenMode = NO;
+}
 @end
 
 @implementation NSResponder(Pointer)
@@ -401,6 +420,10 @@
         NSRect frame = controller.right_wrapper.frame;
         frame.size.height = window.frame.size.height - 16;
         controller.right_wrapper.frame = frame;
+    }
+    // if entered full screen video mode
+    if (controller.fullscreenMode) {
+        [controller exitFullscreenMode];
     }
 }
 @end

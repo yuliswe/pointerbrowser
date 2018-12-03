@@ -43,6 +43,7 @@
         NSMenuItem* item = itemarray[i];
         if (! [item.title containsString:@"Copy"]
             && ! [item.title containsString:@"Cut"]
+            && ! [item.title containsString:@"Inspect Element"]
             && ! [item.title containsString:@"Paste"]
             && ! [item.title containsString:@"Reload"]
             && ! [item.title containsString:@"Window"]

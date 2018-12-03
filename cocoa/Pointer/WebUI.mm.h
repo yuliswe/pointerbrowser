@@ -13,7 +13,7 @@
 
 @class TabItemView;
 
-@interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate>
+@interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>
 {
     NSURL* m_erroring_url;
     bool m_redirected_from_error;
@@ -33,5 +33,6 @@
 - (void)loadUri:(NSString*)url;
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;
+- (void)disconnect;
 @end
 

@@ -43,6 +43,9 @@
 
 - (void)removeChildViewControllerAtIndex:(NSInteger)index
 {
+    NSViewController* childViewController = self.childViewControllers[index];
+    WebUI* webUI = (WebUI*)childViewController.view;
+    [webUI disconnect];
     [super removeChildViewControllerAtIndex:index];
     if (Global::controller->next_tab_state() == Controller::TabStateOpen) {
         self.selectedTabViewItemIndex = Global::controller->next_tab_index();

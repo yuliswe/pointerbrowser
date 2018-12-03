@@ -11,6 +11,7 @@
 #import "Extension/PMenu.h"
 #import "Extension/PView.h"
 #import "CppData.h"
+#import "BrowserWindow.mm.h"
 #include <docviewer/global.hpp>
 
 @implementation WebUI
@@ -28,12 +29,16 @@
     if (! config) {
         config = [[WKWebViewConfiguration alloc] init];
     }
-    config.applicationNameForUserAgent = @"Version/11.1.2 Safari/605.1.15";
+    [config.preferences setValue:@YES forKey:@"developerExtrasEnabled"];
+    [config.userContentController addScriptMessageHandler:self name:@"pointerbrowser"];
+    [WebUI addUserScriptBeforeLoading:(FileManager::readQrcFileS(QString::fromNSString(@"Fullscreen.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"SearchWebView.js"))).toNSString() controller:config.userContentController];
     [WebUI addUserScriptAfterLoaded:(FileManager::readQrcFileS(QString::fromNSString(@"OpenLinkInNewWindow.js"))).toNSString() controller:config.userContentController];
     static WKProcessPool* processPool = [[WKProcessPool alloc] init];
     config.processPool = processPool;
     self = [super initWithFrame:frame configuration:config];
+//    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0";
+    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.1 Safari/605.1.15";
     self->m_erroring_url = nil;
     self->m_redirected_from_error = false;
     self->m_new_request_is_download = false;
@@ -45,7 +50,6 @@
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
     self.navigationDelegate = self;
-    //    self.customUserAgent = @"Pointer";
     self->m_error_page_view_controller = [[ErrorPageViewController alloc] init];
     [self addSubviewAndFill:self->m_error_page_view_controller.view];
     self->m_error_page_view_controller.view.hidden = YES;
@@ -53,9 +57,14 @@
     return self;
 }
 
-- (void)dealloc
+- (void)disconnect
 {
+    self.webpage->disconnect();
     self.webpage->set_associated_frontend_webview_object_async(nullptr);
+    // script message handler causes a retain loop,
+    // see https://stackoverflow.com/questions/26383031/wkwebview-causes-my-view-controller-to-leak/26383032#26383032
+    [self.configuration.userContentController removeScriptMessageHandlerForName:@"pointerbrowser"];
+    [self loadUri:@"about:blank"];
 }
 
 - (void)connect
@@ -329,6 +338,13 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     [controller addUserScript:script];
 }
 
++ (void)addUserScriptBeforeLoading:(NSString*)js
+                      controller:(WKUserContentController*)controller
+{
+    WKUserScript* script = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+    [controller addUserScript:script];
+}
+
 - (id)validRequestorForSendType:(NSPasteboardType)sendType
                      returnType:(NSPasteboardType)returnType
 {
@@ -430,6 +446,25 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
     }];
 }
 
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message
+{
+    BrowserWindowController* windowController = self.window.windowController;
+    if ([message.body isEqualToString:@"requestFullscreen"])
+    {
+        if (! windowController.fullscreenMode) {
+            [windowController enterFullscreenMode];
+        }
+        if (!(self.window.styleMask & NSWindowStyleMaskFullScreen)) {
+            [self.window toggleFullScreen:self];
+        }
+    }
+//    if ([message.body isEqualToString:@"exitFullscreen"] &&
+//        (self.window.styleMask & NSWindowStyleMaskFullScreen))
+//    {
+//        [self.window toggleFullScreen:self];
+//    }
+}
 @end
 
 

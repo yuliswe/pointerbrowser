@@ -60,6 +60,16 @@
 @property IBOutlet NSView* tab_view_container;
 @property IBOutlet NSView* left_wrapper;
 @property IBOutlet NSView* right_wrapper;
+@property IBOutlet NSSplitView* splitView;
+@property IBOutlet NSView* splitViewLeftPanel;
+@property IBOutlet NSView* splitViewRightPanel;
+@property IBOutlet NSView* splitViewLeftPanelToolBar;
+@property IBOutlet NSView* splitViewRightPanelToolBar;
+@property IBOutlet NSView* splitViewRightPanelContent;
+@property IBOutlet NSView* splitViewRightPanelContentFullscreenWrapper;
+@property BOOL fullscreenMode;
+- (void)enterFullscreenMode;
+- (void)exitFullscreenMode;
 @end
 
 @interface GeneralTextViewDelegate : NSObject<NSTextViewDelegate>
