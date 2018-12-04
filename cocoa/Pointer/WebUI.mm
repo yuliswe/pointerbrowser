@@ -277,14 +277,14 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         return;
     }
     // change url to https
-    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
-        && navigationAction.targetFrame
-        && navigationAction.targetFrame.isMainFrame)
-    {
-        decisionHandler(WKNavigationActionPolicyCancel);
-        [webView loadUri:url.full().toNSString()];
-        return;
-    }
+//    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
+//        && navigationAction.targetFrame
+//        && navigationAction.targetFrame.isMainFrame)
+//    {
+//        decisionHandler(WKNavigationActionPolicyCancel);
+//        [webView loadUri:url.full().toNSString()];
+//        return;
+//    }
     // if request is from preview or workspace, open new window
     Webpage_ w = webView.webpage;
     bool is_preview_tab = w->associated_tabs_model() == Global::controller->preview_tabs().get();
