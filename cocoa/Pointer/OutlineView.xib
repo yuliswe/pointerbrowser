@@ -93,12 +93,12 @@
                                                             </binding>
                                                         </connections>
                                                     </button>
-                                                    <textField identifier="OpenTabRowViewText" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="4zX-Cr-OHc" userLabel="OpenTabRowViewText">
+                                                    <textField identifier="OpenTabRowViewText" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4zX-Cr-OHc" userLabel="OpenTabRowViewText">
                                                         <rect key="frame" x="18" y="7" width="221" height="16"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="dsi-cv-QzF">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="left" title="Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="dsi-cv-QzF">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
                                                             <binding destination="d41-zS-wiP" name="value" keyPath="objectValue.title" id="4Ex-mj-ylW">
@@ -124,7 +124,7 @@
                                                 <subviews>
                                                     <textField identifier="HeaderTextField" autoresizesSubviews="NO" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="bLv-EE-ggb">
                                                         <rect key="frame" x="13" y="3" width="76" height="14"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" usesSingleLineMode="YES" id="XfP-JO-0NJ">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Header Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="XfP-JO-0NJ">
                                                             <font key="font" metaFont="systemMedium" size="11"/>
                                                             <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -171,10 +171,10 @@
                                                 <subviews>
                                                     <textField identifier="OpenTabRowViewText" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="OOl-SD-xcI" userLabel="OpenTabRowViewText">
                                                         <rect key="frame" x="18" y="7" width="221" height="16"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="utx-o3-ZUb">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="utx-o3-ZUb">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
                                                             <binding destination="nFp-OP-f0b" name="value" keyPath="objectValue.title" id="6u7-qO-pxq">
@@ -198,7 +198,7 @@
                                                 <subviews>
                                                     <textField horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="rag-aL-n1F" userLabel="line1">
                                                         <rect key="frame" x="18" y="39" width="216" height="16"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="omi-Ar-ndR">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="omi-Ar-ndR">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -215,10 +215,10 @@
                                                     </textField>
                                                     <textField horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="EEy-c0-wM3" userLabel="line2">
                                                         <rect key="frame" x="18" y="22" width="216" height="16"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="mCN-DB-6Pd">
-                                                            <font key="font" metaFont="systemThin" size="12"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="mCN-DB-6Pd">
+                                                            <font key="font" metaFont="systemLight" size="12"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
                                                             <binding destination="hf8-Ij-l3T" name="value" keyPath="objectValue.line2" id="YHn-39-eLA">
@@ -232,9 +232,9 @@
                                                     </textField>
                                                     <textField horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="jeT-cT-tqi" userLabel="line3">
                                                         <rect key="frame" x="18" y="7" width="216" height="14"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" usesSingleLineMode="YES" id="aUz-rv-PBY">
-                                                            <font key="font" metaFont="systemThin" size="11"/>
-                                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" alignment="left" title="Label" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="aUz-rv-PBY">
+                                                            <font key="font" metaFont="systemUltraLight" size="11"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>

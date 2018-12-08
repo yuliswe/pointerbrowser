@@ -157,15 +157,11 @@
         Global::controller->handleWebpageUrlChangedAsync(self.webpage, dest, (__bridge void*)self);
         NSString * _Nullable title = self.title;
         if (title && title.length > 0) {
-            self.webpage->set_title_async(QString::fromNSString(title));
+            Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
         }
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString* title = self.title;
-//        if (title.length > 0) {
-            self.webpage->set_title_async(QString::fromNSString(title));
-//        } else {
-//            self.webpage->set_title_async(QString::fromNSString(self.URL.lastPathComponent));
-//        }
+        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
     } else if ([keyPath isEqualToString:@"canGoBack"]) {
         self.webpage->set_can_go_back_async(self.canGoBack);
     } else if ([keyPath isEqualToString:@"canGoForward"]) {
@@ -245,9 +241,9 @@ didFinishNavigation:(WKNavigation *)navigation {
     webView.webpage->set_is_loaded_async(true);
     NSString* title = self.title;
     if (title.length > 0) {
-        self.webpage->set_title_async(QString::fromNSString(title));
+        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
     } else {
-        self.webpage->set_title_async(QString::fromNSString(self.URL.lastPathComponent));
+        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(self.URL.lastPathComponent), (__bridge void*)self);
     }
 }
 

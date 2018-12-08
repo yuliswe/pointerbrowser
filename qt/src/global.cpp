@@ -47,6 +47,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     qRegisterMetaType<uint_least64_t>();
     qRegisterMetaType<TagContainer_>();
     qRegisterMetaType<TagsCollection_>();
+    qRegisterMetaType<RangeSet>();
 
     qCoreApplication = new QCoreApplication(argc, argv);
     qCoreApplication->moveToThread(qCoreApplicationThread);

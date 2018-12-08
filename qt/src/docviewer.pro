@@ -21,7 +21,8 @@ HEADERS += \
     file.hpp \
     filelistmodel.hpp \
     baselistmodel.hpp \
-    tags.hpp
+    tags.hpp \
+    stringutils.hpp
 
 DISTFILES += \
     defaults/dbgen.txt \
@@ -45,7 +46,8 @@ SOURCES += \
     file.cpp \
     filelistmodel.cpp \
     baselistmodel.cpp \
-    tags.cpp
+    tags.cpp \
+    stringutils.cpp
 
 RESOURCES += \
     db.qrc \

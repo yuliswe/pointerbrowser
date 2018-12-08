@@ -554,7 +554,11 @@ QList<Webpage_> SearchWorker::webpagesFromQuery(QSqlQuery& r)
         expanded_display << display_title
                          << display_symbol + display_hash + display_filename
                          << display_partial_url;
-        Webpage_ wp = shared<Webpage>(Url(url + "#" + hash), display_title, display_symbol + display_hash + display_filename, display_partial_url);
+        Webpage_ wp = shared<Webpage>(Url(url + "#" + hash));
+        wp->set_title(display_title);
+        wp->set_title_2(display_symbol + display_hash + display_filename);
+        wp->set_title_3(display_partial_url);
+        wp->highlightTitle(Global::controller->current_tab_search_word_split());
         wp->moveToThread(Global::qCoreApplicationThread);
         pages << wp;
         r.next();

@@ -71,12 +71,24 @@
     self = [super init];
     self.webpage = w;
     w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
-    self.title = w->title().toNSString();
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
-        [outlineView performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
     });
+    [self handleTitleChanged];
     return self;
+}
+- (void)handleTitleChanged
+{
+    Webpage_ w = self.webpage;
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    [new_title highlight:w->title_highlight_range()];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.lineBreakMode = NSLineBreakByTruncatingTail;
+    [new_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title.length)];
+    self.title = new_title;
+    [self.outlineView reloadItem:self];
 }
 - (IBAction)closeTab
 {
@@ -126,14 +138,30 @@
     self = [super init];
     self.webpage = w;
     w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
-    self.line1 = w->title().toNSString();
-    self.line2 = w->title_2().toNSString();
-    self.line3 = w->title_3().toNSString();
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
-        [outlineView performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
     });
+    [self handleTitleChanged];
     return self;
+}
+- (void)handleTitleChanged
+{
+    Webpage_ w = self.webpage;
+    NSMutableAttributedString* new_title_1 = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    NSMutableAttributedString* new_title_2 = [[NSMutableAttributedString alloc] initWithString:w->title_2().toNSString()];
+    NSMutableAttributedString* new_title_3 = [[NSMutableAttributedString alloc] initWithString:w->title_3().toNSString()];
+    [new_title_1 highlight:w->title_highlight_range()];
+    [new_title_2 highlight:w->title_2_highlight_range()];
+    [new_title_3 highlight:w->title_3_highlight_range()];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.lineBreakMode = NSLineBreakByTruncatingTail;
+    [new_title_1 addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title_1.length)];
+    self.line1 = new_title_1;
+    self.line2 = new_title_2;
+    self.line3 = new_title_3;
+    [self.outlineView reloadItem:self];
 }
 - (instancetype)initWithPasteboardPropertyList:(id)propertyList ofType:(NSPasteboardType)type
 {
@@ -178,12 +206,24 @@
     self.webpage = w;
     w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
     self.tagContainer = container;
-    self.title = w->title().toNSString();
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
-        [outlineView performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
     });
+    [self handleTitleChanged];
     return self;
+}
+- (void)handleTitleChanged
+{
+    Webpage_ w = self.webpage;
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    [new_title highlight:w->title_highlight_range()];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.lineBreakMode = NSLineBreakByTruncatingTail;
+    [new_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title.length)];
+    self.title = new_title;
+    [self.outlineView reloadItem:self];
 }
 - (instancetype)initWithPasteboardPropertyList:(id)propertyList ofType:(NSPasteboardType)type
 {
@@ -226,7 +266,7 @@
     self.title = tagContainer->title().toNSString();
     self.outlineView = outlineView;
     QObject::connect(tagContainer.get(), &TagContainer::propertyChanged, [=]() {
-        [outlineView performSelectorOnMainThread:@selector(handleDataChanged:) withObject:self waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&tagContainer->sig, &BaseListModelSignals::signal_tf_rows_inserted, [=](int index)
                      {
@@ -250,6 +290,12 @@
                                              waitUntilDone:YES];
                      });
     return self;
+}
+- (void)handleTitleChanged
+{
+    TagContainer_ c = self.tagContainer;
+    self.title = c->title().toNSString();
+    [self.outlineView reloadItem:self];
 }
 - (instancetype)initWithPasteboardPropertyList:(id)propertyList ofType:(NSPasteboardType)type
 {
@@ -716,22 +762,6 @@
     [self removeItemsAtIndexes:removed inParent:self.search_result_group_item withAnimation:NSTableViewAnimationEffectNone];
     [self endUpdates];
     
-}
-
-- (void)handleDataChanged:(id)item
-{
-    if ([item isKindOfClass:OpenTabItem.class]
-        || [item isKindOfClass:WorkspaceTabItem.class])
-    {
-        [item setTitle:[item webpage]->title().toNSString()];
-    } else if ([item isKindOfClass:SearchResultTabItem.class]) {
-        [item setLine1:[item webpage]->title().toNSString()];
-        [item setLine2:[item webpage]->title_2().toNSString()];
-        [item setLine3:[item webpage]->title_3().toNSString()];
-    } else if ([item isKindOfClass:WorkspaceGroupItem.class]) {
-        [item setTitle:[item tagContainer]->title().toNSString()];
-    }
-    [self reloadItem:item reloadChildren:NO];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView

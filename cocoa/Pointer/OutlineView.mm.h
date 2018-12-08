@@ -9,13 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #include <docviewer/tabsmodel.hpp>
 #include "CppData.h"
-#import "Extension/PViewController.h"
 #import "AddTagsPopover.h"
+#import "Extension/Extension.h"
 
 @class OutlineView;
 
 @interface OpenTabItem : NSObject<WebpageWrapper,NSCoding,NSPasteboardWriting,NSPasteboardReading>
-@property NSString* title;
+@property NSAttributedString* title;
 @property Webpage_ webpage;
 @property OutlineView* outlineView;
 @end
@@ -26,9 +26,9 @@
 @end
 
 @interface SearchResultTabItem : NSObject<WebpageWrapper,NSPasteboardWriting,NSPasteboardReading>
-@property NSString* line1;
-@property NSString* line2;
-@property NSString* line3;
+@property NSAttributedString* line1;
+@property NSAttributedString* line2;
+@property NSAttributedString* line3;
 @property Webpage_ webpage;
 @property OutlineView* outlineView;
 @end
@@ -39,7 +39,7 @@
 @end
 
 @interface WorkspaceTabItem : NSObject<WebpageWrapper,NSPasteboardWriting,NSPasteboardReading>
-@property NSString* title;
+@property NSAttributedString* title;
 @property TagContainer_ tagContainer;
 @property Webpage_ webpage;
 @property OutlineView* outlineView;

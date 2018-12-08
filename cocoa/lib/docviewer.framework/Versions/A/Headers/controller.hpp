@@ -79,6 +79,7 @@ public:
     PROP_RN_D(FindTextState, current_webpage_find_text_state, FindTextState{})
     // tab search
     PROP_RN_D(QString, current_tab_search_word, "")
+    PROP_RN_D(QSet<QString>, current_tab_search_word_split, QSet<QString>())
     // download
     PROP_RwN_D(bool, downloads_visible, false)
     PROP_RN_D(FileListModel_, downloading_files, FileListModel_::create())
@@ -120,6 +121,7 @@ public:
     METH_ASYNC_0(int, showBookmarkPage)
     METH_ASYNC_0(int, hideBookmarkPage)
 
+    METH_ASYNC_2(bool, handleWebpageTitleChanged, Webpage_, QString const&)
     METH_ASYNC_2(bool, handleWebpageUrlChanged, Webpage_, Url const&)
     METH_ASYNC_2(bool, updateWebpageFindTextFound, Webpage_, int)
     // downloads

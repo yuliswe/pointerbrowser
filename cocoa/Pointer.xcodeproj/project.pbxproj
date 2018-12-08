@@ -48,6 +48,7 @@
 		B224988521B3460600EDAC3D /* GenericTextFieldPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */; };
 		B224988821B36D1900EDAC3D /* GenericTextFieldPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */; };
 		B224988B21B370C600EDAC3D /* PPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B224988A21B370C600EDAC3D /* PPopover.m */; };
+		B22A79F621BC523200A7D623 /* PString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B22A79F521BC523200A7D623 /* PString.mm */; };
 		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
 		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
@@ -154,6 +155,9 @@
 		B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GenericTextFieldPopover.mm; sourceTree = "<group>"; };
 		B224988921B370C600EDAC3D /* PPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPopover.h; sourceTree = "<group>"; };
 		B224988A21B370C600EDAC3D /* PPopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPopover.m; sourceTree = "<group>"; };
+		B22A79F421BC523200A7D623 /* PString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PString.h; sourceTree = "<group>"; };
+		B22A79F521BC523200A7D623 /* PString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PString.mm; sourceTree = "<group>"; };
+		B22A79F721BC530000A7D623 /* Extension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Extension.h; sourceTree = "<group>"; };
 		B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTagsPopover.xib; sourceTree = "<group>"; };
 		B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddTagsPopover.h; sourceTree = "<group>"; };
 		B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AddTagsPopover.mm; sourceTree = "<group>"; };
@@ -268,6 +272,9 @@
 				7AB2319321856A28005B436F /* PViewController.m */,
 				B224988921B370C600EDAC3D /* PPopover.h */,
 				B224988A21B370C600EDAC3D /* PPopover.m */,
+				B22A79F421BC523200A7D623 /* PString.h */,
+				B22A79F521BC523200A7D623 /* PString.mm */,
+				B22A79F721BC530000A7D623 /* Extension.h */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -414,6 +421,7 @@
 				7A4D3F5A217DA65100C5E8A6 /* PSearchField.mm in Sources */,
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
 				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
+				B22A79F621BC523200A7D623 /* PString.mm in Sources */,
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,

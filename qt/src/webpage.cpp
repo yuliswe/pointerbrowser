@@ -1,6 +1,7 @@
 #include "webpage.hpp"
 #include <QtCore/QtCore>
 #include "global.hpp"
+#include "stringutils.hpp"
 
 QDebug& operator<<(QDebug& debug, const FindTextState& state)
 {
@@ -91,10 +92,10 @@ QString Webpage::custom_set_title(QString const& title, void const* sender)
     trimmed.replace(QRegularExpression("\\s+"), " ");
     if (trimmed.isEmpty()) {
         qCDebug(WebpageLogging) << "title is empty, use url" << url().full() << "instead";
-        return url().full();
-    } else {
-        return trimmed;
+        trimmed = url().full();
     }
+    set_title_highlight_range(RangeSet());
+    return trimmed;
 }
 
 int Webpage::go(QString const& input)
@@ -274,4 +275,11 @@ int Webpage::handleSuccess(void const* sender)
 QString Webpage::errorPageHtml(QString const& message)
 {
     return "<html><body>" + message + "</body></html>";
+}
+
+void Webpage::highlightTitle(QSet<QString> const& keywords)
+{
+    set_title_highlight_range(StringUtils::highlightWords(title(), keywords));
+    set_title_2_highlight_range(StringUtils::highlightWords(title_2(), keywords));
+    set_title_3_highlight_range(StringUtils::highlightWords(title_3(), keywords));
 }

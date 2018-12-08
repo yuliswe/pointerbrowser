@@ -6,7 +6,7 @@
 #include "url.hpp"
 #include "crawler.hpp"
 #include "logging.hpp"
-
+#include "stringutils.hpp"
 
 class Webpage;
 typedef std::shared_ptr<Webpage> Webpage_;
@@ -50,6 +50,7 @@ class Webpage : public QObject
     bool crawlerRuleTableInsertRule(CrawlerRule&);
     bool crawlerRuleTableRemoveRule(int);
     bool crawlerRuleTableReloadFromSettings();
+    void highlightTitle(QSet<QString> const&);
 
 public:
 
@@ -67,9 +68,13 @@ public:
 
     PROP_DEF_BEGINS
     PROP_R_N_D(Url, url, QString(""))
-    PROP_RwN_D(QString, title, "")
+    PROP_R_N_D(QString, title, "")
+    PROP_RN_D(RangeSet, title_highlight_range, RangeSet())
     PROP_RN_D(QString, title_2, "")
+    PROP_RN_D(RangeSet, title_2_highlight_range, RangeSet())
     PROP_RN_D(QString, title_3, "")
+    PROP_RN_D(RangeSet, title_3_highlight_range, RangeSet())
+
     PROP_RN_D(bool, is_blank, true)
     PROP_RN_D(bool, is_error, false)
     PROP_RWN_D(bool, is_for_download, false)

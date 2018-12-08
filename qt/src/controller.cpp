@@ -580,6 +580,14 @@ bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const*
     return true;
 }
 
+bool Controller::handleWebpageTitleChanged(Webpage_ p, QString const& title, void const* sender)
+{
+    INFO(ControllerLogging) << p << title << sender;
+    p->set_title(title, sender);
+    p->highlightTitle(current_tab_search_word_split());
+    return true;
+}
+
 bool Controller::updateWebpageFindTextFound(Webpage_ wp, int found, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::updateFindTextFound" << wp << found;
@@ -739,7 +747,19 @@ int Controller::searchTabs(QString const& words, void const* sender)
 {
     qCInfo(ControllerLogging) << "Controller::searchTabs" << words;
     set_current_tab_search_word(words);
+    QStringList split = words.split(QRegularExpression(" "), QString::SkipEmptyParts);
+    QSet<QString> keywords = QSet<QString>::fromList(split);
+    set_current_tab_search_word_split(keywords);
     clearPreviews();
+    for (int i = open_tabs()->count() - 1; i >= 0; i--) {
+        open_tabs()->webpage_(i)->highlightTitle(keywords);
+    }
+    for (int i = tags()->count() - 1; i >= 0; i--) {
+        TagContainer_ tag = tags()->get(i);
+        for (int j = tag->count() - 1; j >= 0; j--) {
+            tag->get(j)->highlightTitle(keywords);
+        }
+    }
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
         Global::searchDB->searchForWebpageAsync(current_tab_webpage());
         return 0;
