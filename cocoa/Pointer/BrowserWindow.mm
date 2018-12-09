@@ -123,9 +123,6 @@
     bool visible = Global::controller->bookmark_page_visible();
     self.bookmarks_view_container.hidden = ! visible;
     self.tab_view_container.hidden = visible;
-    if (self.bookmarks_view_container.hidden) {
-        [self.window makeFirstResponder:nil];
-    }
 }
 
 - (void)handle_can_go_buttons_enable_changed
