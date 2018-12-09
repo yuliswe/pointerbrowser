@@ -85,6 +85,7 @@
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystemBold"/>
                                                         </buttonCell>
+                                                        <color key="contentTintColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <connections>
                                                             <action selector="closeTab:" target="d41-zS-wiP" id="ySw-RP-xsA"/>
                                                             <binding destination="d41-zS-wiP" name="hidden" keyPath="hovered" id="kMo-az-JvE">
@@ -139,7 +140,7 @@
                                                         </connections>
                                                     </textField>
                                                     <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="ygP-xC-aII" customClass="WorkspaceHeaderCellUnpinButton">
-                                                        <rect key="frame" x="201" y="1" width="36" height="19"/>
+                                                        <rect key="frame" x="201" y="3" width="36" height="14"/>
                                                         <buttonCell key="cell" type="roundRect" title="Unpin" bezelStyle="roundedRect" alignment="center" imageScaling="proportionallyDown" inset="2" id="nI6-bT-mdO">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemMedium" size="11"/>
