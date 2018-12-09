@@ -13,7 +13,7 @@ int Controller::newTab(void const* sender)
     return Controller::newTab(0, TabStateOpen,
                               home_url(),
                               WhenCreatedViewNew,
-                              WhenExistsOpenNew,
+                              WhenExistsViewExisting,
                               sender);
 }
 
@@ -62,6 +62,10 @@ int Controller::newTabByWebpage(int index,
         } else {
             open_tabs()->insertWebpage_(idx = index, webpage);
             inserted = true;
+        }
+        if (webpage->is_blank()) {
+            moveTab(state, idx, state, 0, sender);
+            idx = 0;
         }
         if (newBehavior == WhenCreatedViewNew) {
             viewTab(state, idx);

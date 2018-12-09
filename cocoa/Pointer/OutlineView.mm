@@ -66,11 +66,13 @@
 @end
 
 @implementation OpenTabItem
-- (instancetype)initWithWebpage:(Webpage_)w outlineView:(OutlineView*)outlineView
+- (instancetype)initWithWebpage:(Webpage_)w outlineView:(OutlineView*)outlineView isTemporary:(BOOL)isTemporary
 {
     self = [super init];
     self.webpage = w;
-    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
+    if (! isTemporary) {
+        w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
+    }
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
         [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
@@ -99,7 +101,7 @@
 {
     int index = [propertyList intValue];
     Webpage_ w = Global::controller->open_tabs()->webpage_(index);
-    return [self initWithWebpage:w outlineView:nil];
+    return [self initWithWebpage:w outlineView:nil isTemporary:YES];
 }
 - (id)pasteboardPropertyListForType:(NSPasteboardType)type
 {
@@ -453,6 +455,7 @@
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_changed,
                      [=](Webpage_ w, void const* sender) {
+                         qDebug() << Global::controller->current_tab_webpage()->associated_frontend_tab_object();
                          if (sender == (__bridge void*)self) { return; }
                          [self performSelectorOnMainThread:@selector(handleIndexesChangesInController) withObject:nil waitUntilDone:YES];
                      });
@@ -635,7 +638,7 @@
     int count_open_tabs = Global::controller->open_tabs()->count();
     for (int i = 0; i < count_open_tabs; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
-        OpenTabItem* item = [[OpenTabItem alloc] initWithWebpage:w outlineView:self];
+        OpenTabItem* item = [[OpenTabItem alloc] initWithWebpage:w outlineView:self isTemporary:NO];
         [self.open_group_item.children insertObject:item atIndex:i];
     }
     NSMutableIndexSet* new_range = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, self.open_group_item.children.count)];
@@ -676,7 +679,7 @@
     
     for (int i = first; i <= last; i++) {
         Webpage_ w = Global::controller->open_tabs()->webpage_(i);
-        OpenTabItem* item = [[OpenTabItem alloc] initWithWebpage:w outlineView:self];
+        OpenTabItem* item = [[OpenTabItem alloc] initWithWebpage:w outlineView:self isTemporary:NO];
         [self.open_group_item.children insertObject:item atIndex:i];
     }
     
