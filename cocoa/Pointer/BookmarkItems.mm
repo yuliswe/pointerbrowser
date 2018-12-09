@@ -36,7 +36,11 @@
     
     if (w->title().length() > 0) {
         NSString* letter = QString(w->title()[0].toUpper()).toNSString();
-        self->m_letter.stringValue = letter;
+        NSMutableAttributedString* attrstr = [[NSMutableAttributedString alloc] initWithString:letter];
+        [attrstr addAttribute:NSBackgroundColorAttributeName
+                        value:[NSColor clearColor]
+                        range:NSMakeRange(0, attrstr.length)];
+        self->m_letter.attributedStringValue = attrstr;
     }
     
     NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
@@ -147,7 +151,7 @@
 - (void)handleTitleChanged
 {
     NSString* title = self.tagContainer->title().toNSString();
-    self->m_title.stringValue = title;
+
     if (title.length > 0) {
         QChar c = self.tagContainer->title()[0].toUpper();
         NSString* letter = QString(c).toNSString();

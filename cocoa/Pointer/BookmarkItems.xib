@@ -19,18 +19,18 @@
             <rect key="frame" x="0.0" y="0.0" width="67" height="132"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <box misplaced="YES" boxType="custom" borderWidth="0.0" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="RrS-vq-bwl">
-                    <rect key="frame" x="20" y="105" width="26" height="26"/>
+                <box boxType="custom" borderWidth="0.0" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="RrS-vq-bwl">
+                    <rect key="frame" x="20" y="105" width="27" height="27"/>
                     <view key="contentView" id="zgY-YY-a2A">
-                        <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
+                        <rect key="frame" x="0.0" y="0.0" width="27" height="27"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MJ2-LR-ghB">
-                                <rect key="frame" x="3" y="-5" width="22" height="36"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="justified" title="B" allowsEditingTextAttributes="YES" id="eeP-G6-Eb9">
+                                <rect key="frame" x="1" y="-5" width="26" height="36"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="B" drawsBackground="YES" id="eeP-G6-Eb9">
                                     <font key="font" metaFont="systemThin" size="30"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                         </subviews>

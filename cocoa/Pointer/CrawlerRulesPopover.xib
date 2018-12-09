@@ -24,11 +24,11 @@
                     <rect key="frame" x="-3" y="227" width="563" height="36"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <view key="contentView" ambiguous="YES" id="cI5-UF-MEn">
-                        <rect key="frame" x="3" y="3" width="557" height="30"/>
+                        <rect key="frame" x="2" y="2" width="559" height="32"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vo1-v4-jeC">
-                                <rect key="frame" x="64" y="6" width="402" height="18"/>
+                                <rect key="frame" x="64" y="8" width="404" height="18"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="What Discovery Should Show on &quot;https://&quot;" id="uU1-dq-dhj">
                                     <font key="font" metaFont="system"/>
@@ -37,7 +37,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FVa-F9-VLd">
-                                <rect key="frame" x="472" y="5" width="72" height="19"/>
+                                <rect key="frame" x="474" y="7" width="72" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="roundRect" title="Done" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hmk-q0-WvN">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -57,7 +57,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="557" height="233"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="24" rowSizeStyle="systemDefault" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="24" rowSizeStyle="systemDefault" headerView="eTn-mR-hVo" viewBased="YES" floatsGroupRows="NO" id="FQD-qy-A4n" userLabel="CrawlerRuleTableView" customClass="CrawlerRuleTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="557" height="210"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="0.0" height="2"/>
@@ -127,8 +127,8 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7rP-GB-wYj" customClass="CrawlerRuleTableCellTextField">
-                                                        <rect key="frame" x="-2" y="6" width="441" height="17"/>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Add expression" id="NS7-GA-6m1">
+                                                        <rect key="frame" x="0.0" y="5" width="437" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="Add expression" drawsBackground="YES" id="NS7-GA-6m1">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -147,7 +147,7 @@
                                                     </textField>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="7rP-GB-wYj" firstAttribute="centerY" secondItem="mJo-8e-puG" secondAttribute="centerY" constant="-1" id="H1b-TU-3DB"/>
+                                                    <constraint firstItem="7rP-GB-wYj" firstAttribute="centerY" secondItem="mJo-8e-puG" secondAttribute="centerY" id="H1b-TU-3DB"/>
                                                     <constraint firstItem="7rP-GB-wYj" firstAttribute="leading" secondItem="mJo-8e-puG" secondAttribute="leading" id="XTa-OP-fRx"/>
                                                     <constraint firstAttribute="trailing" secondItem="7rP-GB-wYj" secondAttribute="trailing" id="tej-XX-dlf"/>
                                                 </constraints>
@@ -215,13 +215,12 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <nil key="backgroundColor"/>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="euF-bb-OsF">
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="euF-bb-OsF">
                         <rect key="frame" x="0.0" y="217" width="557" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2dX-0w-tsK">
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="2dX-0w-tsK">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>

@@ -85,15 +85,15 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
-    QObject::connect(Global::controller,
-                     &Controller::current_tab_webpage_is_error_changed,
-                     [=]()
-                     {
-                         [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_is_error_changed) withObject:nil waitUntilDone:YES];
-                     });
-    QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
-        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:YES];
-    });
+//    QObject::connect(Global::controller,
+//                     &Controller::current_tab_webpage_is_error_changed,
+//                     [=]()
+//                     {
+//                         [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_is_error_changed) withObject:nil waitUntilDone:YES];
+//                     });
+//    QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
+//        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:YES];
+//    });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
@@ -108,19 +108,26 @@
     } else {
     }
 }
-- (void)handle_current_tab_webpage_changed
-{
-    if (Global::controller->current_tab_webpage_is_blank())
-    {
-        [self.addressbar getFocus];
-        self.addressbar.stringValue = @"";
-    } else {
-        [self.addressbar loseFocus];
-    }
-}
+//- (void)handle_current_tab_webpage_changed
+//{
+//    if (Global::controller->current_tab_webpage_is_blank())
+//    {
+//        [self.addressbar getFocus];
+//        self.addressbar.stringValue = @"";
+//    } else {
+//        [self.addressbar loseFocus];
+//    }
+//}
 - (void)handle_bookmarkpage_visible_changed
 {
     bool visible = Global::controller->bookmark_page_visible();
+//    [NSResponder inspectResponderChain];
+    if (visible) {
+        [self.window makeFirstResponder:self.addressbar];
+        self.addressbar.stringValue = @"";
+    } else {
+        [self.window makeFirstResponder:self.outlineViewController.outlineView];
+    }
     self.bookmarks_view_container.hidden = ! visible;
     self.tab_view_container.hidden = visible;
 }
@@ -347,8 +354,8 @@
 }
 
 - (BOOL)makeFirstResponder:(NSResponder *)responder {
-//    NSLog(@"%@ make first responder", responder);
-//    [NSResponder inspectResponderChain];
+    NSLog(@"make first responder: %@", responder);
+    [NSResponder inspectResponderChain];
     if (responder == nil) {
         BrowserWindowController* controller = (BrowserWindowController*)self.windowController;
         responder = controller.outlineViewController.outlineView;
@@ -366,7 +373,7 @@
             [ctl.text_find_done_button performClick:self];
             return YES;
         }
-        [self makeFirstResponder:self.initialFirstResponder];
+        [self makeFirstResponder:nil];
         return YES;
     }
     if (event.keyCode == kVK_Tab &&
