@@ -8,9 +8,9 @@ Url::Url(QString const& url)
 Url::Url(const QUrl& url)
     : QUrl(url.adjusted(NormalizePathSegments))
 {
-    if (scheme() == "http") {
-        setScheme("https");
-    }
+//    if (scheme() == "http") {
+//        setScheme("https");
+//    }
     if (fragment() == "")
     {
         setFragment(QString());
