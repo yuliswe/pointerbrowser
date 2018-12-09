@@ -428,3 +428,9 @@ int TagsCollection::indexOfTagContainer(TagContainer* container)
     }
     return -1;
 }
+
+void TagContainer::highlightTitle(QSet<QString> const& keywords)
+{
+    set_title_highlight_range(StringUtils::highlightWords(title(), keywords));
+}
+

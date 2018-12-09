@@ -16,12 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BookmarkCollectionViewItem : NSCollectionViewItem<WebpageWrapper, NSPasteboardWriting, NSPasteboardReading>
 {
-    Webpage_ m_webpage;
     IBOutlet NSTextField* m_letter;
     IBOutlet NSTextField* m_title;
 }
 @property Webpage_ webpage;
-- (void)connect;
+- (void)connect:(Webpage_)webpage;
 - (IBAction)menu_delete:(id)sender;
 - (IBAction)menu_edit:(id)sender;
 - (IBAction)handle_title_edit_done:(id)sender;;
@@ -57,12 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TagCollectionViewItem : NSCollectionViewItem<TagContainerWrapper, NSPasteboardWriting, NSPasteboardReading>
 {
-    TagContainer_ m_tagContainer;
     IBOutlet NSTextField* m_letter;
     IBOutlet NSTextField* m_title;
 }
 @property TagContainer_ tagContainer;
-- (void)connect;
+- (void)connect:(TagContainer_)tagContainer;
 - (IBAction)menu_delete:(id)sender;
 - (IBAction)menu_edit:(id)sender;
 - (IBAction)handle_title_edit_done:(id)sender;;

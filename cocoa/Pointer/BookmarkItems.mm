@@ -7,30 +7,45 @@
 //
 
 #import "BookmarkItems.mm.h"
+#import "Extension/Extension.h"
 
 /********************************* Bookmarks **********************************/
 
 @implementation BookmarkCollectionViewItem
-@synthesize webpage = m_webpage;
-
 - (NSNibName)nibName
 {
     return @"BookmarkItems";
 }
 
-- (void)connect
+- (void)connect:(Webpage_)webpage
 {
-    NSString* title = self->m_webpage->title().toNSString();
-    self->m_title.stringValue = title;
-    if (self->m_webpage->title().length() > 0) {
-        NSString* letter = QString(self->m_webpage->title()[0].toUpper()).toNSString();
-        self->m_letter.stringValue = letter;
-    }
+    self.webpage = webpage;
+    NSString* title = webpage->title().toNSString();
+    
     [(BookmarkCollectionViewItemRootView*)self.view setWebpage:self.webpage];
     ((BookmarkCollectionViewItemRootView*)self.view).bookmark_collectionviewitem = self;
     QObject::connect(self.webpage.get(), &Webpage::propertyChanged, [=]() {
-        [self.collectionView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
     });
+    [self handleTitleChanged];
+}
+
+- (void)handleTitleChanged
+{
+    Webpage_ w = self.webpage;
+    
+    if (w->title().length() > 0) {
+        NSString* letter = QString(w->title()[0].toUpper()).toNSString();
+        self->m_letter.stringValue = letter;
+    }
+    
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    [new_title highlight:w->title_highlight_range()];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.alignment = NSTextAlignmentCenter;
+    [new_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title.length)];
+    self->m_title.attributedStringValue = new_title;
 }
 
 - (void)menu_delete:(id)sender
@@ -58,7 +73,6 @@
     int index = [propertyList intValue];
     Webpage_ w = Global::controller->bookmarks()->webpage_(index);
     self.webpage = w;
-    [self connect];
     return self;
 }
 - (id)pasteboardPropertyListForType:(NSPasteboardType)type
@@ -111,21 +125,33 @@
 /********************************* Tags **********************************/
 
 @implementation TagCollectionViewItem
-@synthesize tagContainer = m_tagContainer;
 
 - (NSNibName)nibName
 {
     return @"BookmarkItems";
 }
 
-- (void)connect
+- (void)connect:(TagContainer_)tagContainer
 {
-    NSString* title = self->m_tagContainer->title().toNSString();
+    self.tagContainer = tagContainer;
+    BookmarkCollectionViewItemRootView* view = (BookmarkCollectionViewItemRootView*)self.view;
+    view.is_tag = YES;
+    view.tagContainer = tagContainer;
+    view.tag_collectionviewitem = self;
+    QObject::connect(self.tagContainer.get(), &TagContainer::propertyChanged, [=]() {
+        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
+    });
+    [self handleTitleChanged];
+}
+
+- (void)handleTitleChanged
+{
+    NSString* title = self.tagContainer->title().toNSString();
     self->m_title.stringValue = title;
     if (title.length > 0) {
-        QChar c = self->m_tagContainer->title()[0].toUpper();
+        QChar c = self.tagContainer->title()[0].toUpper();
         NSString* letter = QString(c).toNSString();
-        NSString* digits = QString::number(self->m_tagContainer->count()).toNSString();
+        NSString* digits = QString::number(self.tagContainer->count()).toNSString();
         NSMutableAttributedString* title = [[NSMutableAttributedString alloc] initWithString:letter];
         NSMutableAttributedString* sups = [[NSMutableAttributedString alloc] initWithString:digits];
         if (QString("INMEKHXZJ").indexOf(c) >= 0) {
@@ -142,19 +168,20 @@
         }
         NSMutableAttributedString* finally = [[NSMutableAttributedString alloc] initWithAttributedString:sups];
         [finally addAttribute:NSForegroundColorAttributeName
-                         value:[NSColor clearColor]
+                        value:[NSColor clearColor]
                         range:NSMakeRange(0, finally.length)];
         [title appendAttributedString:sups];
         [finally appendAttributedString:title];
         self->m_letter.attributedStringValue = finally;
     }
-    BookmarkCollectionViewItemRootView* view = (BookmarkCollectionViewItemRootView*)self.view;
-    view.is_tag = YES;
-    view.tagContainer = self.tagContainer;
-    view.tag_collectionviewitem = self;
-    QObject::connect(self.tagContainer.get(), &TagContainer::propertyChanged, [=]() {
-        [self.collectionView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-    });
+    
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:self.tagContainer->title().toNSString()];
+    [new_title highlight:self.tagContainer->title_highlight_range()];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.alignment = NSTextAlignmentCenter;
+    [new_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title.length)];
+    self->m_title.attributedStringValue = new_title;
 }
 
 - (void)menu_delete:(id)sender
@@ -182,7 +209,6 @@
     int index = [propertyList intValue];
     TagContainer_ c = Global::controller->tags()->get(index);
     self.tagContainer = c;
-    [self connect];
     return self;
 }
 - (id)pasteboardPropertyListForType:(NSPasteboardType)type

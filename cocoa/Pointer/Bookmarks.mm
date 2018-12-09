@@ -84,15 +84,13 @@
     if (indexPath.section == 0) {
         Webpage_ w = Global::controller->bookmarks()->webpage_(indexPath.item);
         BookmarkCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"BookmarksCollectionViewItem" forIndexPath:indexPath];
-        item.webpage = w;
-        [item connect];
+        [item connect:w];
         return item;
     }
     if (indexPath.section == 1) {
         TagContainer_ c = Global::controller->tags()->get(indexPath.item);
         TagCollectionViewItem* item = [collectionView makeItemWithIdentifier:@"TagsCollectionViewItem" forIndexPath:indexPath];
-        item.tagContainer = c;
-        [item connect];
+        [item connect:c];
         return item;
     }
     return nil;

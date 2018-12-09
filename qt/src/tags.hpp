@@ -6,7 +6,7 @@
 #include "webpage.hpp"
 #include "filemanager.hpp"
 #include "baselistmodel.hpp"
-
+#include "stringutils.hpp"
 
 class TagContainer : public QObject, public BaseListModel<Webpage_>
 {
@@ -15,7 +15,10 @@ class TagContainer : public QObject, public BaseListModel<Webpage_>
 
     PROP_DEF_BEGINS
     PROP_RN_D(QString, title, "")
+    PROP_RN_D(RangeSet, title_highlight_range, RangeSet())
     PROP_DEF_ENDS
+
+    void highlightTitle(QSet<QString> const&);
 
     public: TagContainer() = default;
     TagContainer(QString const&);

@@ -749,7 +749,7 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
 
 int Controller::searchTabs(QString const& words, void const* sender)
 {
-    qCInfo(ControllerLogging) << "Controller::searchTabs" << words;
+    INFO(ControllerLogging) << words;
     set_current_tab_search_word(words);
     QStringList split = words.split(QRegularExpression(" "), QString::SkipEmptyParts);
     QSet<QString> keywords = QSet<QString>::fromList(split);
@@ -760,9 +760,13 @@ int Controller::searchTabs(QString const& words, void const* sender)
     }
     for (int i = tags()->count() - 1; i >= 0; i--) {
         TagContainer_ tag = tags()->get(i);
+        tag->highlightTitle(keywords);
         for (int j = tag->count() - 1; j >= 0; j--) {
             tag->get(j)->highlightTitle(keywords);
         }
+    }
+    for (int i = bookmarks()->count() - 1; i >= 0; i--) {
+        bookmarks()->webpage_(i)->highlightTitle(keywords);
     }
     if (words.isEmpty() && current_tab_webpage() != nullptr) {
         Global::searchDB->searchForWebpageAsync(current_tab_webpage());
