@@ -1035,9 +1035,19 @@ shouldShowOutlineCellForItem:(id)item
             if ([item isKindOfClass:OpenTabItem.class]) {
                 Webpage_ w = [item webpage];
                 int index = Global::controller->open_tabs()->findTab(w);
-                Global::controller->moveTabAsync(Controller::TabStateOpen, index, Controller::TabStateOpen, new_index, (__bridge void*)self);
+                // copy iff option key is pressed
+                if (info.draggingSourceOperationMask == NSDragOperationCopy) {
+                    Global::controller->newTabByWebpageCopyAsync(new_index,
+                                                                 Controller::TabStateOpen,
+                                                                 w,
+                                                                 Controller::WhenCreatedViewNew,
+                                                                 Controller::WhenExistsOpenNew,
+                                                                 (__bridge void*)self);
+                } else {
+                    Global::controller->moveTabAsync(Controller::TabStateOpen, index, Controller::TabStateOpen, new_index, (__bridge void*)self);
+                }
             }
-            // dragging search result
+            // dragging a search result tab, copy
             else if ([item isKindOfClass:SearchResultTabItem.class]) {
                 Webpage_ w = [item webpage];
                 Global::controller->newTabByWebpageCopyAsync(new_index,
@@ -1047,7 +1057,7 @@ shouldShowOutlineCellForItem:(id)item
                                                              Controller::WhenExistsOpenNew,
                                                              (__bridge void*)self);
             }
-            // dragging workspace tab
+            // dragging a workspace tab, copy
             else if ([item isKindOfClass:WorkspaceTabItem.class]) {
                 TagContainer_ c = [item tagContainer];
                 Webpage_ w = [item webpage];
@@ -1061,28 +1071,43 @@ shouldShowOutlineCellForItem:(id)item
         }
         // dropping on a workspace group
         else if ([dropLocation isKindOfClass:WorkspaceGroupItem.class]) {
+            // dragging an open tab to a workspace group
+            if ([item isKindOfClass:OpenTabItem.class]) {
+                Webpage_ w = [item webpage];
+                TagContainer_ p = [dropLocation tagContainer];
+                Global::controller->tagContainerInsertWebpageCopyAsync(p, new_index, w);
+                if (info.draggingSourceOperationMask != NSDragOperationCopy) {
+                    Global::controller->closeTabAsync(Controller::TabStateOpen, w);
+                }
+            }
             // dragging search result or open tab
-            if ([item isKindOfClass:SearchResultTabItem.class] || [item isKindOfClass:OpenTabItem.class])
+            else if ([item isKindOfClass:SearchResultTabItem.class])
             {
                 TagContainer_ c = [dropLocation tagContainer];
                 Webpage_ w = [item webpage];
                 Global::controller->tagContainerInsertWebpageCopyAsync(c, new_index, w);
             }
-            // dragging a workpace item
+            // dragging a workpace tab
             else if ([item isKindOfClass:WorkspaceTabItem.class]) {
                 Webpage_ w = [item webpage];
-                if ([item tagContainer] == [dropLocation tagContainer]) {
-                    // within the same container, move
-                    TagContainer_ c = [item tagContainer];
-                    int old_index = c->indexOfUrl(w->url());
-                    if (old_index == new_index || new_index == old_index + 1) {
-                        // ignore
-                        return;
-                    }
-                    Global::controller->tagContainerMoveWebpageAsync(c, old_index, new_index);
-                } else {
-                    // otherwise copy
+                if (info.draggingSourceOperationMask == NSDragOperationCopy) {
                     Global::controller->tagContainerInsertWebpageCopyAsync([dropLocation tagContainer], new_index, w);
+                } else {
+                    TagContainer_ c = [item tagContainer];
+                    TagContainer_ p = [dropLocation tagContainer];
+                    // if the same container, move
+                    if (c == p) {
+                        int old_index = c->indexOfUrl(w->url());
+                        if (old_index == new_index || new_index == old_index + 1) {
+                            // ignore
+                            return;
+                        }
+                        Global::controller->tagContainerMoveWebpageAsync(c, old_index, new_index);
+                    } else {
+                        Webpage_ w = [item webpage];
+                        Global::controller->tagContainerInsertWebpageCopyAsync(p, new_index, w);
+                        Global::controller->tagContainerRemoveWebpageAsync(c, w);
+                    }
                 }
             }
         }
@@ -1098,14 +1123,6 @@ shouldShowOutlineCellForItem:(id)item
     NSPasteboard* pasteboard = info.draggingPasteboard;
     // dropping on root
     if (parent == nil) {
-//        // dragging a workspace around
-//        if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
-//            if (index < 1) {
-//                int offset = self.searchResultsOffset;
-//                [outlineView setDropItem:nil dropChildIndex:offset];
-//            }
-//            return NSDragOperationMove;
-//        }
         return NSDragOperationNone;
     }
     // dropping on open tab group
@@ -1115,14 +1132,18 @@ shouldShowOutlineCellForItem:(id)item
             if (index < 0) {
                 [outlineView setDropItem:parent dropChildIndex:0];
             }
-            return NSDragOperationMove;
+            if (info.draggingSourceOperationMask == NSDragOperationCopy) {
+                return NSDragOperationCopy;
+            } else {
+                return NSDragOperationMove;
+            }
         }
         // moving workspace tab to open tab group
         if ([pasteboard canReadObjectForClasses:@[WorkspaceTabItem.class] options:nil]) {
             if (index < 0) {
                 [outlineView setDropItem:parent dropChildIndex:0];
             }
-            return NSDragOperationDelete;
+            return NSDragOperationCopy;
         }
         // dragging a workspace around, redirect
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
@@ -1144,15 +1165,25 @@ shouldShowOutlineCellForItem:(id)item
             if (index < 0) {
                 [outlineView setDropItem:parent dropChildIndex:0];
             }
-            WorkspaceTabItem* item = [pasteboard readObjectsForClasses:@[WorkspaceTabItem.class] options:nil][0];
-            if ([parent tagContainer] == [item tagContainer]) {
-                return NSDragOperationMove;
-            } else {
+            if (info.draggingSourceOperationMask == NSDragOperationCopy) {
                 return NSDragOperationCopy;
+            } else {
+                return NSDragOperationMove;
             }
         }
         // dragging a open tab around
-        if ([pasteboard canReadObjectForClasses:@[OpenTabItem.class, SearchResultTabItem.class] options:nil]) {
+        if ([pasteboard canReadObjectForClasses:@[OpenTabItem.class] options:nil]) {
+            if (index < 0) {
+                [outlineView setDropItem:parent dropChildIndex:0];
+            }
+            if (info.draggingSourceOperationMask == NSDragOperationCopy) {
+                return NSDragOperationCopy;
+            } else {
+                return NSDragOperationMove;
+            }
+        }
+        // dragging search result tab, redirect
+        if ([pasteboard canReadObjectForClasses:@[SearchResultTabItem.class] options:nil]) {
             if (index < 0) {
                 [outlineView setDropItem:parent dropChildIndex:0];
             }
@@ -1160,19 +1191,12 @@ shouldShowOutlineCellForItem:(id)item
         }
         // dragging a workspace around, redirect
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
-//            WorkspaceGroupItem* item = [pasteboard readObjectsForClasses:@[WorkspaceGroupItem.class] options:nil][0];
-//            int parent_index = [outlineView childIndexForItem:parent];
-//            int current_index = [self rowForItem:item];
-//            if (current_index - 1 <= index && index <= current_index + 1) {
-//                return NSDragOperationNone;
-//            }
-//            [outlineView setDropItem:nil dropChildIndex:parent_index];
             return NSDragOperationNone;
-//            return NSDragOperationMove;
         }
     }
     // dropping on search results
     else if ([parent isKindOfClass:SearchResultGroupItem.class]) {
+        // moving workspace around, redirect
         if ([pasteboard canReadObjectForClasses:@[WorkspaceGroupItem.class] options:nil]) {
             int parent_index = [outlineView childIndexForItem:parent];
             [outlineView setDropItem:nil dropChildIndex:parent_index];
