@@ -13,6 +13,9 @@
 
 @class TabItemView;
 
+@interface LegacyWebView : WebView<WebFrameLoadDelegate>
+@end
+
 @interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>
 {
     NSURL* m_erroring_url;
@@ -25,6 +28,7 @@
 }
 
 @property Webpage_ webpage;
+@property LegacyWebView* legacyWebView;
 
 - (instancetype)initWithWebpage:(Webpage_)webpage
                           frame:(NSRect)frame
@@ -34,5 +38,8 @@
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;
 - (void)disconnect;
+- (void)print;
+- (void)downloadAsWebArchive;
+- (void)downloadAsPDF;
 @end
 

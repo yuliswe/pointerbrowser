@@ -21,5 +21,7 @@
 }
 
 @property AddressBar* address_bar;
-
+- (void)print;
+- (void)downloadAsWebArchive;
+- (void)downloadAsPDF;
 @end

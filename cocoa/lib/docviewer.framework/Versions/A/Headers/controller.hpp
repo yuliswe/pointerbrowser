@@ -63,6 +63,7 @@ public:
     PROP_RWN_D(bool, current_tab_webpage_can_go_back, false)
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
     PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
+    PROP_RWN_D(bool, current_tab_webpage_is_pdf, false)
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_workspace_index, -1)
     PROP_RN_D(int, current_workspace_tab_index, -1)
@@ -129,6 +130,8 @@ public:
     METH_ASYNC_1(int, handleFileDownloadFinished, File_)
     METH_ASYNC_1(int, handleFileDownloadStopped, File_)
     METH_ASYNC_2(File_, downloadFileFromUrlAndRename, Url, QString const&)
+    METH_ASYNC_1(int, saveWebArchiveAsDownloadFile, Webpage_)
+    METH_ASYNC_1(int, handleSaveWebArchiveFinished, File_)
 
     // close tab
     PROP_RN_D(TabState, next_tab_state, TabStateNull)

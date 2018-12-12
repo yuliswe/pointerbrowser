@@ -20,6 +20,16 @@ File_& FileListModel::null()
     return m_null;
 }
 
+int FileListModel::indexOfDownloadUrl(Url url)
+{
+    for (int i = 0; i < count(); i++) {
+        if (get(i)->download_url() == url) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 //File_ FileListModel::get(int row)
 //{
 //    qvariant(row).value<File_>();

@@ -29,6 +29,7 @@
                 <outlet property="splitViewRightPanelContent" destination="keA-0R-84v" id="epQ-Io-oMJ"/>
                 <outlet property="splitViewRightPanelContentFullscreenWrapper" destination="W2z-tk-vdB" id="gbo-ZP-5uj"/>
                 <outlet property="splitViewRightPanelToolBar" destination="OLf-qm-hYL" id="JWl-Of-UEq"/>
+                <outlet property="tabViewController" destination="Eh5-II-hEm" id="pSv-YK-tcP"/>
                 <outlet property="tab_searchfield" destination="3OF-AJ-hTf" id="Pc2-nD-uPg"/>
                 <outlet property="tab_view_container" destination="Vdr-gK-mbW" id="SXa-gn-eW8"/>
                 <outlet property="text_find_done_button" destination="9Eg-ac-gam" id="EPA-Ss-7F1"/>

@@ -105,3 +105,24 @@
     Global::controller->workspacesInsertTagContainerAsync(0, c);
 }
 @end
+
+@implementation FileMenuDelegate
+- (instancetype)init
+{
+    self = [super init];
+    QObject::connect(&Global::sig, &GlobalSignals::signal_tf_global_objects_initialized, [=]() {
+        [self performSelectorOnMainThread:@selector(connect) withObject:nil waitUntilDone:YES];
+    });
+    return self;
+}
+- (void)connect
+{
+    QObject::connect(Global::controller, &Controller::current_tab_webpage_is_pdf_changed, [=]() {
+        [self performSelectorOnMainThread:@selector(handleCurrentTabWebpageIsPdfChanged) withObject:nil waitUntilDone:YES];
+    });
+}
+- (void)handleCurrentTabWebpageIsPdfChanged
+{
+    self.currentWebpageIsPDF = Global::controller->current_tab_webpage_is_pdf();
+}
+@end

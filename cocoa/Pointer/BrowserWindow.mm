@@ -253,6 +253,21 @@
     Global::controller->newTabAsync(Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
 }
 
+- (IBAction)menuPrint:(id)sender
+{
+    [self.tabViewController print];
+}
+
+- (IBAction)menuDownloadAsWebArchive:(id)sender
+{
+    [self.tabViewController downloadAsWebArchive];
+}
+
+- (IBAction)menuDownloadAsPDF:(id)sender
+{
+    [self.tabViewController downloadAsPDF];
+}
+
 - (void)enterFullscreenMode
 {
     self.splitView.hidden = YES;

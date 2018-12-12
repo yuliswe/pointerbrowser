@@ -977,7 +977,11 @@ File_ Controller::downloadFileFromUrlAndRename(Url url, QString const& filename,
     qCDebug(ControllerLogging) << "Downloading new file" << filename;
     File_ file = File_::create();
     file->set_download_url(url);
-    file->set_save_as_filename(filename);
+    if (filename.isEmpty()) {
+        file->set_save_as_filename(url.fileName());
+    } else {
+        file->set_save_as_filename(filename);
+    }
     file->set_downloading(true);
     file->set_percentage(0);
     downloading_files()->insert(file);
@@ -1006,6 +1010,31 @@ int Controller::handleFileDownloadStopped(File_ file, void const* sender)
     file->set_downloading(false);
     file->emit_tf_download_stop();
     downloading_files()->remove(file);
+    set_downloads_visible(true);
+    return true;
+}
+
+int Controller::saveWebArchiveAsDownloadFile(Webpage_ webpage, void const* sender)
+{
+    INFO(ControllerLogging) << webpage->title() << sender;
+    File_ file = File_::create();
+    file->set_save_as_filename(webpage->title() + ".webarchive", sender);
+    file->set_percentage(0, sender);
+    file->set_downloading(true, sender);
+    file->set_download_url(webpage->url(), sender);
+    downloading_files()->insert(file);
+    set_downloads_visible(true, sender);
+    return true;
+}
+
+int Controller::handleSaveWebArchiveFinished(File_ tmpfile, void const* sender)
+{
+    QString save_as_filename = tmpfile->save_as_filename();
+    while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
+    {
+        save_as_filename.prepend("New ");
+    }
+    downloading_files()->remove(tmpfile);
     set_downloads_visible(true);
     return true;
 }
@@ -1055,6 +1084,7 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
     if (!a || w->is_can_go_back_change(a)) { set_current_tab_webpage_can_go_back(w->can_go_back()); }
     if (!a || w->is_can_go_forward_change(a)) { set_current_tab_webpage_can_go_forward(w->can_go_forward()); }
     if (!a || w->is_is_error_change(a)) { set_current_tab_webpage_is_error(w->is_error()); }
+    if (!a || w->is_is_pdf_change(a)) { set_current_tab_webpage_is_pdf(w->is_pdf()); }
 }
 
 void Controller::setNextTabStateAndIndex(TabState state, int index)

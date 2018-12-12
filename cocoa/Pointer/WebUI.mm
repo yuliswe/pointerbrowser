@@ -59,6 +59,7 @@
     [self addSubviewAndFill:self->m_error_page_view_controller.view];
     self->m_error_page_view_controller.view.hidden = YES;
     [self connect];
+    self.legacyWebView = [[LegacyWebView alloc] initWithFrame:self.frame];
     return self;
 }
 
@@ -159,6 +160,7 @@
         if (title && title.length > 0) {
             Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
         }
+        [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:dest]]];
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString* title = self.title;
         Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
@@ -405,6 +407,9 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         Global::controller->downloadFileFromUrlAndRenameAsync(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
     } else {
         decisionHandler(WKNavigationResponsePolicyAllow);
+        if ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]) {
+            webView.webpage->set_is_pdf_async(true);
+        }
     }
 }
 
@@ -476,6 +481,35 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
     CFRelease (exceptions);
     completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
 }
+
+- (void)downloadAsWebArchive
+{
+    WebArchive* arhive = self.legacyWebView.mainFrame.dataSource.webArchive;
+    QString tmpfile = Global::controller->downloads_dirpath() + "/" + QUrl::toPercentEncoding(QString::fromNSString(self.title).replace('/', ' ').simplified()) + ".webarchive";
+    NSData* data = arhive.data;
+    NSError* error;
+    [arhive.data writeToURL:QUrl("file://" + tmpfile).toNSURL() options:NSDataWritingAtomic error:&error];
+    Global::controller->set_downloads_visible_async(true);
+}
+
+- (void)downloadAsPDF
+{
+    Global::controller->downloadFileFromUrlAndRenameAsync(Url(QUrl::fromNSURL(self.URL)), QString::fromNSString(self.title));
+}
+
+- (void)print
+{
+    NSPrintOperation* printOP = [NSPrintOperation printOperationWithView:self.legacyWebView.mainFrame.frameView.documentView];
+    [printOP runOperation];
+}
 @end
 
-
+@implementation LegacyWebView
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    self.frameLoadDelegate = self;
+    self.shouldUpdateWhileOffscreen = NO;
+    return self;
+}
+@end

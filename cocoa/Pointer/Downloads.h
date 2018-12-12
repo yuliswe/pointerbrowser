@@ -17,7 +17,7 @@
 - (File_)file;
 @end
 
-@interface WebUIURLSessionDownloadTaskDelegate : NSObject<NSURLSessionDownloadDelegate>
+@interface WebUIURLSessionDownloadTaskDelegate : NSObject<NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 
 @end
 

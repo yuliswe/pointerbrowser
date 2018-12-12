@@ -15,6 +15,7 @@ class FileListModel : public QObject, public BaseListModel<File_>
     Q_OBJECT
 public:
     METH_ASYNC_1(int, loadDirectoryContents, QString const&)
+    int indexOfDownloadUrl(Url url);
 };
 
 typedef QSharedPointer<FileListModel> FileListModel_;

@@ -76,9 +76,6 @@
             // not implemented
         }) waitUntilDone:YES];
     });
-    if (f->downloading()) {
-        [task resume];
-    }
 }
 
 - (void)resizePopover
@@ -242,6 +239,19 @@ didFinishDownloadingToURL:(NSURL *)location
     File_ f = downloadTask.file;
     f->setFile(QString::fromNSString(location.path));
     Global::controller->handleFileDownloadFinishedBlocking(f);
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+ completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+{
+    NSLog(@"Allowing all");
+    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+    CFDataRef exceptions = SecTrustCopyExceptions (serverTrust);
+    SecTrustSetExceptions (serverTrust, exceptions);
+    CFRelease (exceptions);
+    completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
 }
 @end
 

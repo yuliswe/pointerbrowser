@@ -17,4 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TagsMenuDelegate : NSObject<NSMenuDelegate>
 @property BOOL currentStateNotNull;
 @end
+
+@interface FileMenuDelegate : NSObject<NSMenuDelegate>
+@property BOOL currentWebpageIsPDF;
+@end
+
 NS_ASSUME_NONNULL_END

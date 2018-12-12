@@ -33,12 +33,16 @@
 - (IBAction)menuAddTagsForCurrentTab:(id)sender;
 - (IBAction)menuEditTagsAsJsonFile:(id)sender;
 - (IBAction)menuKeepCurrentTabOpen:(id)sender;
+- (IBAction)menuPrint:(id)sender;
+- (IBAction)menuDownloadAsWebArchive:(id)sender;
+- (IBAction)menuDownloadAsPDF:(id)sender;
 + (void)inspectResponderChain;
 @end
 
 
 @interface BrowserWindowController : NSWindowController
 @property IBOutlet OutlineViewController* outlineViewController;
+@property IBOutlet TabViewController* tabViewController;
 @property IBOutlet NSBox* text_find_toolbar;
 @property IBOutlet NSSearchField* text_find_searchfield;
 @property IBOutlet NSSearchField* tab_searchfield;
