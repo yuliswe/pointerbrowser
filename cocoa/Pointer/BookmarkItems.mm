@@ -158,18 +158,18 @@
         NSString* digits = QString::number(self.tagContainer->count()).toNSString();
         NSMutableAttributedString* title = [[NSMutableAttributedString alloc] initWithString:letter];
         NSMutableAttributedString* sups = [[NSMutableAttributedString alloc] initWithString:digits];
-        if (QString("INMEKHXZJ").indexOf(c) >= 0) {
-            NSMutableAttributedString* spaced = [[NSMutableAttributedString alloc] initWithString:@" "];
-            [spaced appendAttributedString:sups];
-            sups = spaced;
-        }
+//        if (QString("INMEKHXZJ").indexOf(c) >= 0) {
+//            NSMutableAttributedString* spaced = [[NSMutableAttributedString alloc] initWithString:@" "];
+//            [spaced appendAttributedString:sups];
+//            sups = spaced;
+//        }
         NSFont* font = [NSFont fontWithDescriptor:[[NSFontDescriptor alloc] fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitCondensed] size:9];
         [sups addAttribute:NSFontAttributeName value:font range:NSRange{0,sups.length}];
-        if (QString("FTYPZVJWU").indexOf(c) >= 0) {
-            [sups addAttribute:NSBaselineOffsetAttributeName value:@-5 range:NSRange{0,sups.length}];
-        } else {
+//        if (QString("FTYPZVJWU").indexOf(c) >= 0) {
+//            [sups addAttribute:NSBaselineOffsetAttributeName value:@-5 range:NSRange{0,sups.length}];
+//        } else {
             [sups addAttribute:NSBaselineOffsetAttributeName value:@22 range:NSRange{0,sups.length}];
-        }
+//        }
         NSMutableAttributedString* finally = [[NSMutableAttributedString alloc] initWithAttributedString:sups];
         [finally addAttribute:NSForegroundColorAttributeName
                         value:[NSColor clearColor]
