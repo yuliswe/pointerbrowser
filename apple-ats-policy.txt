@@ -1,0 +1,21 @@
+Hello,
+
+In this letter we explain why we needed to enable the NSAllowArbitraryLoad setting for Pointer, in other words, allowing HTTP connection in addition to HTTPS conntion. We will explain why HTTP connection is neccessary for Pointer to function as a browser and thereby ask the apple app review team to make an exception for our app.
+
+We understand that in order to create a better user experience and secure app environment, Apple wants developers to avoid using the HTTP protocol, which transfers data as plain text over the internet. We see that this policy is benifical for apps that connect to their own servers, because the policy generates an incentive for developers to switch to safer protocals as long as it's possible.
+
+However, because our app is a web browser, we have no control over the servers that our user might visit. We feel that disabling HTTP connection does not help improve the user experience at the moment. Although most of the internet is HTTPS, there are still a number of website and resources using HTTP only. 
+
+For example, one of our app's target user base is academic professionals such as students and professors. We found out websites they frequently visit, such as public libraries, university resources and publishment, mailing lists, are using HTTP. Our users would like to view and download articles on these sites.
+
+Note that in such cases, simply enabling NSAllowArbitraryLoadInWebContent is not enough, because downloading a file involves NSURLSessionDownloadTask, which still requires enabling NSAllowArbitraryLoad to function over HTTP.
+
+We are forced to make a choice. We feel that flat out banning HTTP would make Pointer unusable for our users. Meanwhile, we see the risk of exposing users to the hostile open internet. We believe in this case, we should give back our users the power of making the choice. 
+
+Our solution is as follows: when user visits an HTTP url, Pointer first tries to redirect the url to HTTPS. If that fails, Pointer will display a warning telling our user that they are connecting to the website using unencrypted traffic, and ask them if they want to proceed. Pointer will only proceed with the connect if the user agrees. Same thing happens when user attempts to download a file over HTTP. Pointer will warn and ask users if they want to proceed.
+
+An app that does nothing is secure but is useless. In our case, we must find a balance between utility and security. We noticed that Safari behaves similarly in this regard. We look forward to the day when all internet traffic is encrypted. But unitl then, we choose to support HTTP sites with caution.
+
+Cheers,
+Pointer Team
+
