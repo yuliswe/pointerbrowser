@@ -85,6 +85,13 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_search_word_changed,
+                     [=](QString const& val, void const* sender)
+                     {
+                         if (sender == (__bridge void*)self.tab_searchfield) { return; }
+                         [self performSelectorOnMainThread:@selector(handle_current_tab_search_word_changed) withObject:nil waitUntilDone:YES];
+                     });
 //    QObject::connect(Global::controller,
 //                     &Controller::current_tab_webpage_is_error_changed,
 //                     [=]()
@@ -107,6 +114,11 @@
     {
     } else {
     }
+}
+
+- (void)handle_current_tab_search_word_changed
+{
+    self.tab_searchfield.stringValue = Global::controller->current_tab_search_word().toNSString();
 }
 //- (void)handle_current_tab_webpage_changed
 //{
@@ -244,7 +256,7 @@
 
 - (IBAction)searchTab:(id)sender
 {
-    Global::controller->searchTabsAsync(QString::fromNSString(self.tab_searchfield.stringValue));
+    Global::controller->searchTabsAsync(QString::fromNSString(self.tab_searchfield.stringValue), (__bridge void*)self.tab_searchfield);
 }
 
 - (IBAction)menuKeepCurrentTabOpen:(id)sender
@@ -387,6 +399,8 @@
             BrowserWindowController* ctl = self.windowController;
             [ctl.text_find_done_button performClick:self];
             return YES;
+        } else if (! Global::controller->current_tab_search_word().isEmpty()) {
+            Global::controller->searchTabsAsync("");
         }
         [self makeFirstResponder:nil];
         return YES;
