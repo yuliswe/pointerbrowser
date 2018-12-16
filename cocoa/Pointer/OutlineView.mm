@@ -80,11 +80,28 @@
     [self handleTitleChanged];
     return self;
 }
+
 - (void)handleTitleChanged
+{
+    [self handleTitleChanged:[self.outlineView itemAtRow:self.outlineView.selectedRow] == self];
+}
+
+
+- (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
     NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
-    [new_title highlight:w->title_highlight_range()];
+    if (@available(macOS 10.14, *)) {
+        [new_title highlight:w->title_highlight_range()];
+    } else {
+        if (self.outlineView.window.firstResponder == self.outlineView
+            && isSelected)
+        {
+            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+        } else {
+            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+        }
+    }
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -147,15 +164,35 @@
     [self handleTitleChanged];
     return self;
 }
+
 - (void)handleTitleChanged
+{
+    [self handleTitleChanged:[self.outlineView itemAtRow:self.outlineView.selectedRow] == self];
+}
+
+
+- (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
     NSMutableAttributedString* new_title_1 = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
     NSMutableAttributedString* new_title_2 = [[NSMutableAttributedString alloc] initWithString:w->title_2().toNSString()];
     NSMutableAttributedString* new_title_3 = [[NSMutableAttributedString alloc] initWithString:w->title_3().toNSString()];
-    [new_title_1 highlight:w->title_highlight_range()];
-    [new_title_2 highlight:w->title_2_highlight_range()];
-    [new_title_3 highlight:w->title_3_highlight_range()];
+    if (@available(macOS 10.14, *)) {
+        [new_title_1 highlight:w->title_highlight_range()];
+        [new_title_2 highlight:w->title_2_highlight_range()];
+        [new_title_3 highlight:w->title_3_highlight_range()];
+    } else {
+        if (self.outlineView.window.firstResponder == self.outlineView && isSelected)
+        {
+            [new_title_1 highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+            [new_title_2 highlightWithColor:w->title_2_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+            [new_title_3 highlightWithColor:w->title_3_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+        } else {
+            [new_title_1 highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+            [new_title_2 highlightWithColor:w->title_2_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+            [new_title_3 highlightWithColor:w->title_3_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+        }
+    }
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -210,16 +247,32 @@
     self.tagContainer = container;
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
-        [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(handleTitleChanged:) withObject:nil waitUntilDone:YES];
     });
     [self handleTitleChanged];
     return self;
 }
+
 - (void)handleTitleChanged
+{
+    [self handleTitleChanged:[self.outlineView itemAtRow:self.outlineView.selectedRow] == self];
+}
+
+- (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
     NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
-    [new_title highlight:w->title_highlight_range()];
+    if (@available(macOS 10.14, *)) {
+        [new_title highlight:w->title_highlight_range()];
+    } else {
+        if (self.outlineView.window.firstResponder == self.outlineView
+            && isSelected)
+        {
+            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+        } else {
+            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+        }
+    }
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -335,6 +388,9 @@
     self.workspaces = [[NSMutableArray alloc] init];
     self.delegate = self;
     self.dataSource = self;
+    if (! @available(macOS 10.14, *)) {
+        [self addObserver:self forKeyPath:@"window.firstResponder" options:NSKeyValueObservingOptionNew context:nil];
+    }
     [self connect];
     return self;
 }
@@ -793,6 +849,29 @@
     return nil;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(void *)context
+{
+    if (! @available(macOS 10.14, *)) {
+        if (object == self && keyPath == @"window.firstResponder") {
+            // in macOS 10.13, there is a bug that when a row is highlighted (blue)
+            // the text does not turn white
+            if (self.selectedRow >= 0) {
+                id item = [self itemAtRow:self.selectedRow];
+                if ([item isKindOfClass:OpenTabItem.class]
+                    || [item isKindOfClass:SearchResultTabItem.class]
+                    || [item isKindOfClass:WorkspaceTabItem.class])
+                {
+                    [item handleTitleChanged];
+                }
+            }
+        }
+    }
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
 - (NSView *)outlineView:(NSOutlineView *)outlineView
      viewForTableColumn:(NSTableColumn *)tableColumn
                    item:(id)item
@@ -954,6 +1033,31 @@ shouldShowOutlineCellForItem:(id)item
                                         Controller::WhenExistsViewExisting,
                                         (__bridge void*)self);
     }
+}
+
+- (void)selectRowIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
+{
+    if (! @available(macOS 10.14, *)) {
+        [self.selectedRowIndexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+            id item = [self itemAtRow:idx];
+            if ([item isKindOfClass:OpenTabItem.class]
+                || [item isKindOfClass:SearchResultTabItem.class]
+                || [item isKindOfClass:WorkspaceTabItem.class])
+            {
+                [item handleTitleChanged:NO];
+            }
+        }];
+        [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+            id item = [self itemAtRow:idx];
+            if ([item isKindOfClass:OpenTabItem.class]
+                || [item isKindOfClass:SearchResultTabItem.class]
+                || [item isKindOfClass:WorkspaceTabItem.class])
+            {
+                [item handleTitleChanged:YES];
+            }
+        }];
+    }
+    [super selectRowIndexes:indexes byExtendingSelection:extend];
 }
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
@@ -1242,13 +1346,6 @@ shouldShowOutlineCellForItem:(id)item
     return nil;
 }
 
-- (void)focusEditWorkspaceGroupItemTitle:(WorkspaceGroupItem*)item
-{
-    WorkspaceHeaderCellView* cellView = (WorkspaceHeaderCellView*)[self outlineView:self viewForTableColumn:self.tableColumns[0] item:item];
-//    [cellView.titleTextField performClick:self];
-    [self.window makeFirstResponder:cellView.textField];
-    [cellView.textField selectText:self];
-}
 @end
 
 @implementation OutlineViewController

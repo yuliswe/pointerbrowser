@@ -57,11 +57,12 @@
 @property NSTrackingArea* tracking_area;
 @property id item;
 @property OutlineView* outlineView;
+//@property NSObject* objectValue;
 - (IBAction)closeTab:(id)sender;
 @end
 
 @interface WorkspaceHeaderCellView : TrackingAreaCellView
-//@property IBOutlet NSTextField* titleTextField;
+//@property IBOutlet NSTextField* textField;
 - (IBAction)unpin:(id)sender;
 @end
 
