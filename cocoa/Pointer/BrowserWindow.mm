@@ -48,7 +48,7 @@
     [self.outlineViewController loadView];
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     self.text_find_toolbar.hidden = YES;
-    self.fullscreenMode = NO;
+    self.isFullscreenMode = NO;
     QObject::connect(Global::controller,
                      &Controller::current_webpage_find_text_state_changed,
                      [=]()
@@ -286,7 +286,7 @@
     [self.splitViewRightPanelContentFullscreenWrapper removeFromSuperviewWithoutNeedingDisplay];
     self.splitViewRightPanelContentFullscreenWrapper.frame = self.window.contentView.bounds;
     [self.window.contentView addSubview:self.splitViewRightPanelContentFullscreenWrapper];
-    self.fullscreenMode = YES;
+    self.isFullscreenMode = YES;
 }
 
 - (void)exitFullscreenMode
@@ -295,7 +295,7 @@
     [self.splitViewRightPanelContentFullscreenWrapper removeFromSuperviewWithoutNeedingDisplay];
     self.splitViewRightPanelContentFullscreenWrapper.frame = self.splitViewRightPanelContent.bounds;
     [self.splitViewRightPanelContent addSubview:self.splitViewRightPanelContentFullscreenWrapper];
-    self.fullscreenMode = NO;
+    self.isFullscreenMode = NO;
 }
 @end
 
@@ -395,9 +395,13 @@
 {
     if (event.keyCode == kVK_Escape)
     {
+        BrowserWindowController* ctl = self.windowController;
         if (Global::controller->current_webpage_find_text_state().visiable) {
-            BrowserWindowController* ctl = self.windowController;
             [ctl.text_find_done_button performClick:self];
+        } else if ([self.windowController isFullscreenMode]) {
+            WebUI* web = (WebUI*)ctl.tabViewController.currentWebUI;
+            [self makeFirstResponder:web];
+            [super performKeyEquivalent:event];
             return YES;
         } else if (! Global::controller->current_tab_search_word().isEmpty()) {
             Global::controller->searchTabsAsync("");
@@ -455,9 +459,11 @@
         controller.right_wrapper.frame = frame;
     }
     // if entered full screen video mode
-    if (controller.fullscreenMode) {
+    if (controller.isFullscreenMode) {
+        [controller.tabViewController.currentWebUI exitVideoFullscreen];
         [controller exitFullscreenMode];
     }
+    
 }
 @end
 

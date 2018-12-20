@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #include <docviewer/tabsmodel.hpp>
 #include "AddressBar.mm.h"
+#include "WebUI.mm.h"
 
 @class WebUI;
 @class TabViewController;
@@ -24,4 +25,5 @@
 - (void)print;
 - (void)downloadAsWebArchive;
 - (void)downloadAsPDF;
+- (WebUI*)currentWebUI;
 @end

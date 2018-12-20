@@ -71,7 +71,7 @@
 @property IBOutlet NSView* splitViewRightPanelToolBar;
 @property IBOutlet NSView* splitViewRightPanelContent;
 @property IBOutlet NSView* splitViewRightPanelContentFullscreenWrapper;
-@property BOOL fullscreenMode;
+@property BOOL isFullscreenMode;
 - (void)enterFullscreenMode;
 - (void)exitFullscreenMode;
 @end

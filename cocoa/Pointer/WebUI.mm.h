@@ -41,5 +41,6 @@
 - (void)print;
 - (void)downloadAsWebArchive;
 - (void)downloadAsPDF;
+- (void)exitVideoFullscreen;
 @end
 

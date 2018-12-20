@@ -262,8 +262,18 @@ didFinishNavigation:(WKNavigation *)navigation {
     }
 }
 
+- (void)exitVideoFullscreen
+{
+    [self evaluateJavaScript:@"document.exitFullscreen()" completionHandler:^(id _Nullable, NSError * _Nullable error) {
+        // none
+    }];
+}
+
 - (void)webView:(WKWebView *)webView
 didCommitNavigation:(WKNavigation *)navigation {
+    if ([self.window.windowController isFullscreenMode]) {
+        [self.window.windowController exitFullscreenMode];
+    }
 }
 
 - (void)webView:(WebUI *)webView
@@ -471,18 +481,22 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
     BrowserWindowController* windowController = self.window.windowController;
     if ([message.body isEqualToString:@"requestFullscreen"])
     {
-        if (! windowController.fullscreenMode) {
+        if (! windowController.isFullscreenMode) {
             [windowController enterFullscreenMode];
         }
         if (!(self.window.styleMask & NSWindowStyleMaskFullScreen)) {
             [self.window toggleFullScreen:self];
         }
     }
-//    if ([message.body isEqualToString:@"exitFullscreen"] &&
-//        (self.window.styleMask & NSWindowStyleMaskFullScreen))
-//    {
-//        [self.window toggleFullScreen:self];
-//    }
+    if ([message.body isEqualToString:@"exitFullscreen"])
+    {
+        if (windowController.isFullscreenMode) {
+            [windowController exitFullscreenMode];
+        }
+        if (self.window.styleMask & NSWindowStyleMaskFullScreen) {
+            [self.window toggleFullScreen:self];
+        }
+    }
 }
 
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler

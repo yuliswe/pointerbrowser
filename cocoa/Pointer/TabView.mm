@@ -13,6 +13,7 @@
 #include <docviewer/tabsmodel.hpp>
 #include <docviewer/global.hpp>
 #include <QtCore/QObject>
+#include "BrowserWindow.mm.h"
 
 @implementation TabViewController
 
@@ -251,6 +252,11 @@
     if (self.childViewControllers.count == 0) {
         [self reload];
     }
+    // if entered full screen video mode
+    if ([self.view.window.windowController isFullscreenMode]) {
+        [self.currentWebUI exitVideoFullscreen];
+        [self.view.window.windowController exitFullscreenMode];
+    }
     if (Global::controller->current_tab_state() == Controller::TabStateNull) {
         self.selectedTabViewItemIndex = -1;
     } else if (Global::controller->current_tab_state() == Controller::TabStateOpen) {
@@ -309,5 +315,10 @@
     NSViewController* controller = self.childViewControllers[idx];
     WebUI* webUI = (WebUI*)controller.view;
     [webUI downloadAsPDF];
+}
+
+- (WebUI*)currentWebUI
+{
+    return (WebUI*)self.childViewControllers[self.selectedTabViewItemIndex].view;
 }
 @end
