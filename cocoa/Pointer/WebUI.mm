@@ -149,6 +149,19 @@
     } else if ([keyPath isEqualToString:@"URL"]) {
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
+        // in a single page application, url changes without triggering decidePolicyForNavigationAction
+        // here we need to make url change in preview mode open new pages for SPAs
+        if (self.webpage->associated_tabs_model()
+            && self.webpage->url() != Url(QUrl::fromNSURL(url))
+            && self.webpage->is_loaded()
+            && self.webpage->associated_tabs_model() != Global::controller->open_tabs().get()
+            && self.canGoBack)
+        {
+            Global::controller->newTabAsync(Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+            self.webpage->set_is_loaded_unsafe(false);
+            [self loadUri:self.webpage->url().full().toNSString()];
+            return;
+        }
         QString dest;
         if ([url.absoluteString hasPrefix:@"about:error:"]) {
             dest = QString::fromNSString([url.absoluteString substringFromIndex:12]);
