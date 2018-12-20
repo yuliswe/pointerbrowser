@@ -285,7 +285,7 @@ void TagContainer::reloadFromFile()
 {
     QVariantList contents = FileManager::readDataJsonFileA(filename());
     QList<Webpage_> out;
-    for (int i = contents.count() - 1; i >= 0; i--) {
+    for (int i = 0; i < contents.count(); i++) {
         Webpage_ w = Webpage::fromQVariantMap(contents[i].value<QVariantMap>());
         w->set_tab_state(Controller::TabStateTagged);
         w->set_associated_tag_container(this);
