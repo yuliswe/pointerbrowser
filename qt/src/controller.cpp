@@ -1085,6 +1085,7 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
     if (!a || w->is_can_go_forward_change(a)) { set_current_tab_webpage_can_go_forward(w->can_go_forward()); }
     if (!a || w->is_is_error_change(a)) { set_current_tab_webpage_is_error(w->is_error()); }
     if (!a || w->is_is_pdf_change(a)) { set_current_tab_webpage_is_pdf(w->is_pdf()); }
+    if (!a || w->is_is_secure_change(a)) { set_current_tab_webpage_is_secure(w->is_secure()); }
 }
 
 void Controller::setNextTabStateAndIndex(TabState state, int index)

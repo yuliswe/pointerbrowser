@@ -77,6 +77,7 @@ public:
 
     PROP_RN_D(bool, is_blank, true)
     PROP_RN_D(bool, is_error, false)
+    PROP_RWN_D(bool, is_secure, true)
     PROP_RWN_D(bool, is_pdf, false)
     PROP_RWN_D(bool, is_for_download, false)
     PROP_RN_D(QString, error, "")

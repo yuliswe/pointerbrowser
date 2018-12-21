@@ -80,6 +80,7 @@
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:@"hasOnlySecureContent" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     QObject::connect(self.webpage.get(), &Webpage::url_changed,
                      [=](const Url& url, void const* sender)
     {
@@ -181,6 +182,8 @@
         self.webpage->set_can_go_back_async(self.canGoBack);
     } else if ([keyPath isEqualToString:@"canGoForward"]) {
         self.webpage->set_can_go_forward_async(self.canGoForward);
+    } else if ([keyPath isEqualToString:@"hasOnlySecureContent"]) {
+        self.webpage->set_is_secure_unsafe(self.hasOnlySecureContent);
     }
 }
 

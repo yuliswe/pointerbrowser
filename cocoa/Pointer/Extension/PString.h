@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSMutableAttributedString(Pointer)
 - (void)highlight:(RangeSet const&)ranges;
+- (void)highlightWithColor:(RangeSet const&)ranges highlight:(NSColor*)highlight;
 - (void)highlightWithColor:(RangeSet const&)ranges normal:(NSColor*)normal highlight:(NSColor*)highlight;
 @end
 

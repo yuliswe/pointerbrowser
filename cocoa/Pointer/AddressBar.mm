@@ -15,8 +15,6 @@
 
 @implementation AddressBarSurface
 
-@synthesize refresh_button = m_refresh_button;
-
 - (instancetype)initWithAddressBar:(AddressBar*)bar
 {
     self = [super initWithFrame:bar.bounds];
@@ -43,77 +41,165 @@
 
 - (void)addButtons
 {
-    RefreshButton* refresh = [[RefreshButton alloc] init];
-    
-    NSRect rect = self.bounds;
-    rect.size.width = 25;
-    [refresh setFrame:rect];
-    
-    [self addSubview:refresh];
-    
-    [NSLayoutConstraint
-     constraintWithItem:refresh
-     attribute:NSLayoutAttributeTrailing
-     relatedBy:NSLayoutRelationEqual
-     toItem:self
-     attribute:NSLayoutAttributeTrailing
-     multiplier:1
-     constant:0].active = YES;
-    
-    [NSLayoutConstraint
-     constraintWithItem:refresh
-     attribute:NSLayoutAttributeCenterY
-     relatedBy:NSLayoutRelationEqual
-     toItem:self
-     attribute:NSLayoutAttributeCenterY
-     multiplier:1
-     constant:0].active = YES;
-    
-    refresh.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    self->m_refresh_button = refresh;
-    
-    QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
-        if (Global::controller->current_tab_state() != Controller::TabStateNull) {
-            [self performSelectorOnMainThread:@selector(showButtons) withObject:nil waitUntilDone:YES];
-        } else {
-            [self performSelectorOnMainThread:@selector(hideButtons) withObject:nil waitUntilDone:YES];
-        }
-    });
-    
-    if (Global::controller->current_tab_state() == Controller::TabStateNull)
     {
-        [self hideButtons];
+        RefreshButton* refreshButton = [[RefreshButton alloc] init];
+        self.refresh_button = refreshButton;
+        [self addSubview:refreshButton];
+        [NSLayoutConstraint
+         constraintWithItem:refreshButton
+         attribute:NSLayoutAttributeTrailing
+         relatedBy:NSLayoutRelationEqual
+         toItem:self
+         attribute:NSLayoutAttributeTrailing
+         multiplier:1
+         constant:-4].active = YES;
+        [NSLayoutConstraint
+         constraintWithItem:refreshButton
+         attribute:NSLayoutAttributeCenterY
+         relatedBy:NSLayoutRelationEqual
+         toItem:self
+         attribute:NSLayoutAttributeCenterY
+         multiplier:1
+         constant:0].active = YES;
+        [NSLayoutConstraint
+         constraintWithItem:refreshButton
+         attribute:NSLayoutAttributeWidth
+         relatedBy:NSLayoutRelationEqual
+         toItem:nil
+         attribute:NSLayoutAttributeNotAnAttribute
+         multiplier:1
+         constant:23].active = YES;
+        refreshButton.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    {
+        TrustButton* trustButton = [[TrustButton alloc] init];
+        self.trust_button = trustButton;
+        [self addSubview:trustButton];
+        [NSLayoutConstraint
+         constraintWithItem:trustButton
+         attribute:NSLayoutAttributeLeading
+         relatedBy:NSLayoutRelationEqual
+         toItem:self
+         attribute:NSLayoutAttributeLeading
+         multiplier:1
+         constant:10].active = YES;
+        [NSLayoutConstraint
+         constraintWithItem:trustButton
+         attribute:NSLayoutAttributeCenterY
+         relatedBy:NSLayoutRelationEqual
+         toItem:self
+         attribute:NSLayoutAttributeCenterY
+         multiplier:1
+         constant:0].active = YES;
+        [NSLayoutConstraint
+         constraintWithItem:trustButton
+         attribute:NSLayoutAttributeWidth
+         relatedBy:NSLayoutRelationEqual
+         toItem:nil
+         attribute:NSLayoutAttributeNotAnAttribute
+         multiplier:1
+         constant:56].active = YES;
+        [NSLayoutConstraint
+         constraintWithItem:trustButton
+         attribute:NSLayoutAttributeHeight
+         relatedBy:NSLayoutRelationEqual
+         toItem:nil
+         attribute:NSLayoutAttributeNotAnAttribute
+         multiplier:1
+         constant:20].active = YES;
+        trustButton.translatesAutoresizingMaskIntoConstraints = NO;
     }
 }
 
-- (void)hideButtons
+- (void)hideRefreshButton
 {
     self.refresh_button.hidden = YES;
 }
 
-- (void)showButtons
+- (void)showRefreshButton
 {
     self.refresh_button.hidden = NO;
 }
 
-//- (BOOL)performKeyEquivalent:(NSEvent *)event
-//{
-//    if ((event.modifierFlags & NSEventModifierFlagCommand)
-//        && (event.keyCode == kVK_ANSI_R))
-//    {
-//        [self.refresh_button refresh];
-//        return YES;
-//    }
-//    if ((event.modifierFlags & NSEventModifierFlagCommand)
-//        && (event.keyCode == kVK_ANSI_E))
-//    {
-//        [m_bar getFocus];
-//        return YES;
-//    }
-//    return NO;
-//}
+- (void)hideTrustButton
+{
+    self.trust_button.hidden = YES;
+}
 
+- (void)showTrustButton
+{
+    self.trust_button.hidden = NO;
+}
+@end
+
+@implementation TrustButton
+- (instancetype)init
+{
+    self = [super init];
+    [self showTrusted];
+    self.bezelStyle = NSBezelStyleRounded;
+    self.bordered = NO;
+    self.buttonType = NSButtonTypeMomentaryPushIn;
+    self.imageScaling = NSImageScaleProportionallyDown;
+    self.imagePosition = NSImageLeft;
+    self.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+    self.action = @selector(handleClicked);
+    return self;
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [super drawRect:dirtyRect];
+    NSString *osxMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+    NSColor* color;
+    if ([osxMode isEqualToString:@"Dark"]) {
+        color = [NSColor colorWithRed:0.25 green:0.25 blue:0.25 alpha:1];
+    } else {
+        color = [NSColor colorWithRed:0.75 green:0.75 blue:0.75 alpha:1];
+    }
+    [color set];
+    NSRectFill(NSMakeRect(self.bounds.size.width - 1, 5, 1, self.bounds.size.height - 9));
+}
+
+- (void)showTrusted
+{
+    NSImage* img = [NSImage namedImageWithTintColor:NSImageNameLockLockedTemplate color:NSColor.systemGrayColor];
+    NSSize size = img.size;
+    size.height = 11;
+    size.width = 9;
+    img.size = size;
+    self.image = img;
+    NSMutableAttributedString* astr = [[NSMutableAttributedString alloc] initWithString:@"Secure"];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.alignment = NSTextAlignmentLeft;
+    style.firstLineHeadIndent = 2;
+    [astr addAttributes:@{NSForegroundColorAttributeName:NSColor.systemGrayColor,
+                          NSParagraphStyleAttributeName:style}
+                  range:NSMakeRange(0,astr.length)];
+    self.attributedTitle = astr;
+}
+- (void)showUntrusted
+{
+    NSImage* img = [NSImage namedImageWithTintColor:NSImageNameLockUnlockedTemplate color:NSColor.systemRedColor];
+    NSSize size = img.size;
+    size.height = 11;
+    size.width = 9;
+    img.size = size;
+    self.image = img;
+    NSMutableAttributedString* astr = [[NSMutableAttributedString alloc] initWithString:@"Unsafe"];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
+    style.alignment = NSTextAlignmentLeft;
+    style.firstLineHeadIndent = 2;
+    [astr addAttributes:@{NSForegroundColorAttributeName:NSColor.systemRedColor,
+                          NSParagraphStyleAttributeName:style}
+                  range:NSMakeRange(0,astr.length)];
+    self.attributedTitle = astr;
+}
+- (void)handleClicked
+{
+}
 @end
 
 @implementation ProgressCALayer
@@ -196,7 +282,6 @@
 @synthesize title = m_title;
 @synthesize focus = m_focus;
 @synthesize progress_layer = m_progress_layer;
-@synthesize surface = m_surface;
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -208,7 +293,7 @@
     self.title = Global::controller->address_bar_title().toNSString();
     self.url = Global::controller->address_bar_url().full().toNSString();
     self.stringValue = self.title;
-    self->m_surface = [[AddressBarSurface alloc] initWithAddressBar:self];
+    self.surface = [[AddressBarSurface alloc] initWithAddressBar:self];
     return self;
 }
 
@@ -222,6 +307,29 @@
         [self performSelectorOnMainThread:@selector(updateTitle:) withObject:title.toNSString() waitUntilDone:YES];
     });
     
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_webpage_is_blank_changed,
+                     [=](bool blank)
+    {
+        if (blank) {
+            [self.surface performSelectorOnMainThread:@selector(hideRefreshButton) withObject:nil waitUntilDone:YES];
+            [self.surface performSelectorOnMainThread:@selector(hideTrustButton) withObject:nil waitUntilDone:YES];
+        } else {
+            [self.surface performSelectorOnMainThread:@selector(showRefreshButton) withObject:nil waitUntilDone:YES];
+            [self.surface performSelectorOnMainThread:@selector(showTrustButton) withObject:nil waitUntilDone:YES];
+        }
+    });
+    
+    QObject::connect(Global::controller,
+                     &Controller::current_tab_webpage_is_secure_changed,
+                     [=](bool secure)
+                     {
+                         if (secure) {
+                             [self.surface.trust_button performSelectorOnMainThread:@selector(showTrusted) withObject:nil waitUntilDone:YES];
+                         } else {
+                             [self.surface.trust_button performSelectorOnMainThread:@selector(showUntrusted) withObject:nil waitUntilDone:YES];
+                         }
+                     });
 }
 
 - (void)updateProgress:(NSNumber*)num
@@ -235,14 +343,6 @@
         [self.surface.refresh_button showCancel];
     }
 }
-
-//- (void)updateUrl:(NSString*)url
-//{
-//    self.url = url;
-//    if (self.focus) {
-//        self.stringValue = self.url;
-//    }
-//}
 
 - (void)updateTitle:(NSString*)title
 {
@@ -262,10 +362,8 @@
 
 - (void)getFocus
 {
-//    m_surface.hidden = NO;
     [self.window makeFirstResponder:self];
     self.stringValue = Global::controller->address_bar_url().full().toNSString();
-//    self.focus = true;
 }
 
 - (void)loseFocus
@@ -280,7 +378,6 @@
 - (void)textDidEndEditing:(NSNotification *)notification
 {
     [self loseFocus];
-//    [self resignFirstResponder];
     [super textDidEndEditing:notification];
 }
 
@@ -303,11 +400,8 @@
     // This gives pretty generous margins, suitable for a large font size.
     // If you're using the default font size, it would probably be better to cut the inset values in half.
     // You could also propertize a CGFloat from which to derive the inset values, and set it per the font size used at any given time.
-//    if (! self->m_address_bar.focus) {
-        NSRect rectInset = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width - 20.0f, rect.size.height);
-        return [super drawingRectForBounds:rectInset];
-//    }
-//    return [super drawingRectForBounds:rect];
+    NSRect rectInset = NSMakeRect(rect.origin.x + 60.f, rect.origin.y, rect.size.width - 80.0f, rect.size.height);
+    return [super drawingRectForBounds:rectInset];
 }
 @end
 
@@ -321,18 +415,19 @@
     self.bezelStyle = NSBezelStyleRounded;
     self.transparent = YES;
     self.buttonType = NSButtonTypeMomentaryPushIn;
+    self.imageScaling = NSImageScaleProportionallyDown;
     self.action = @selector(handleClicked);
     return self;
 }
 
 - (void)showCancel
 {
-    self.image = [NSImage imageNamed:NSImageNameStopProgressTemplate];
+    self.image = [NSImage namedImageWithTintColor:NSImageNameStopProgressTemplate color:NSColor.darkGrayColor];
 }
 
 - (void)showRefresh
 {
-    self.image = [NSImage imageNamed:NSImageNameRefreshTemplate];
+    self.image = [NSImage namedImageWithTintColor:NSImageNameRefreshTemplate color:NSColor.darkGrayColor];
 }
 
 - (void)mouseDown:(NSEvent *)event

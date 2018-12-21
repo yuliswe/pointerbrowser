@@ -52,6 +52,7 @@
 		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
 		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
+		B2ADF2B321CC33EA00E3D81A /* PImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2ADF2B221CC33EA00E3D81A /* PImage.mm */; };
 		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -162,6 +163,8 @@
 		B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddTagsPopover.h; sourceTree = "<group>"; };
 		B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AddTagsPopover.mm; sourceTree = "<group>"; };
 		B2713A8121A4D12900FCF4C1 /* OutlineView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OutlineView.xib; sourceTree = "<group>"; };
+		B2ADF2B121CC33EA00E3D81A /* PImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PImage.h; sourceTree = "<group>"; };
+		B2ADF2B221CC33EA00E3D81A /* PImage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PImage.mm; sourceTree = "<group>"; };
 		B2F6648B219676850069F547 /* libgumbo_query.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo_query.dylib; path = lib/libgumbo_query.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -275,6 +278,8 @@
 				B22A79F421BC523200A7D623 /* PString.h */,
 				B22A79F521BC523200A7D623 /* PString.mm */,
 				B22A79F721BC530000A7D623 /* Extension.h */,
+				B2ADF2B121CC33EA00E3D81A /* PImage.h */,
+				B2ADF2B221CC33EA00E3D81A /* PImage.mm */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -422,6 +427,7 @@
 				7A651485211FD47B00977B87 /* AddressBar.mm in Sources */,
 				7A02768B217B89BB004A09F6 /* BookmarkItems.mm in Sources */,
 				B22A79F621BC523200A7D623 /* PString.mm in Sources */,
+				B2ADF2B321CC33EA00E3D81A /* PImage.mm in Sources */,
 				7A73740A211690E10061AD5F /* OutlineView.mm in Sources */,
 				7A19D94621180D0300A75028 /* CppData.mm in Sources */,
 				7A4D3F65217DC4A100C5E8A6 /* PMenu.m in Sources */,

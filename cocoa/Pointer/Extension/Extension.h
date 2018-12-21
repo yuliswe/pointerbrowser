@@ -18,5 +18,6 @@
 #import "PTextView.h"
 #import "PSearchField.h"
 #import "PTextField.h"
+#import "PImage.h"
 
 #endif /* Extension_h */

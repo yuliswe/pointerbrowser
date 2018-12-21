@@ -63,6 +63,7 @@ public:
     PROP_RWN_D(bool, current_tab_webpage_can_go_back, false)
     PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
     PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
+    PROP_RWN_D(bool, current_tab_webpage_is_secure, true)
     PROP_RWN_D(bool, current_tab_webpage_is_pdf, false)
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_workspace_index, -1)

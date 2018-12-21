@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-//#import "Subclass/PTextField.h"
+#import "Extension/Extension.h"
 
 @interface GoBackButton : NSButton
 {}
@@ -18,9 +18,14 @@
 @end
 
 @interface RefreshButton : NSButton
-{}
 - (void)showRefresh;
 - (void)showCancel;
+- (void)handleClicked;
+@end
+
+@interface TrustButton : NSButton
+- (void)showTrusted;
+- (void)showUntrusted;
 - (void)handleClicked;
 @end
 
@@ -29,12 +34,11 @@
 @interface AddressBarSurface : NSButton
 {
     AddressBar* m_bar;
-    RefreshButton* m_refresh_button;
 }
 - (instancetype)initWithAddressBar:(AddressBar*)bar;
 
 @property RefreshButton* refresh_button;
-
+@property TrustButton* trust_button;
 @end
 
 @interface ProgressCALayer : CALayer
@@ -54,7 +58,6 @@
     NSString* m_uri;
     NSString* m_title;
     ProgressCALayer* m_progress_layer;
-    AddressBarSurface* m_surface;
 }
 @property AddressBarSurface* surface;
 @property ProgressCALayer* progress_layer;
