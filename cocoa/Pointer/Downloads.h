@@ -22,16 +22,13 @@
 @end
 
 @interface DownloadTableItem : NSObject
-{
-    NSImage* m_thumbnail;
-    NSString* m_filename;
-    NSString* m_filesize;
-    NSURL* m_filepath;
-}
+@property File_ file;
 @property NSString* filename;
 @property NSURL* filepath;
 @property NSString* filesize;
 @property NSImage* thumbnail;
+@property BOOL requireHttpConscent;
+@property NSTableView* tableView;
 @end
 
 @interface DownloadTableViewDelegate : NSObject<NSTableViewDelegate>
@@ -44,12 +41,11 @@
 {
     IBOutlet NSButton* m_show_in_finder_button;
     IBOutlet NSButton* m_move_all_to_finder_button;
-    IBOutlet NSTableView* m_tableview;
     IBOutlet DownloadTableViewDataSource* m_datasource;
     IBOutlet NSPopover* m_popover;
 }
 
-@property NSTableView* tableview;
+@property IBOutlet NSTableView* tableView;
 @end
 
 #endif /* Downloads_h */

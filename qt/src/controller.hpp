@@ -128,9 +128,13 @@ public:
     METH_ASYNC_2(bool, updateWebpageFindTextFound, Webpage_, int)
     // downloads
     PROP_RWN_D(QString, downloads_dirpath, "")
-    METH_ASYNC_1(int, handleFileDownloadFinished, File_)
-    METH_ASYNC_1(int, handleFileDownloadStopped, File_)
-    METH_ASYNC_2(File_, downloadFileFromUrlAndRename, Url, QString const&)
+    METH_ASYNC_1(int, deleteFileDownload, File_)
+    METH_ASYNC_1(int, finishFileDownload, File_)
+    METH_ASYNC_1(int, pauseFileDownload, File_)
+    METH_ASYNC_2(File_, createFileDownloadFromUrl, Url, QString const&)
+    METH_ASYNC_1(int, conscentHttpFileDownload, File_)
+    METH_ASYNC_1(int, failFileDownload, File_)
+    METH_ASYNC_1(int, startFileDownload, File_)
     METH_ASYNC_1(int, saveWebArchiveAsDownloadFile, Webpage_)
     METH_ASYNC_1(int, handleSaveWebArchiveFinished, File_)
 

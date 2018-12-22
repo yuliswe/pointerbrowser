@@ -939,20 +939,16 @@ bool Controller::custom_set_downloads_visible(const bool& visible, void const* s
     return visible;
 }
 
-File_ Controller::downloadFileFromUrlAndRename(Url url, QString const& filename, void const* sender)
+File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, void const* sender)
 {
-    qCInfo(ControllerLogging) << "Controller::downloadFileFromUrlAndRename" << url << filename;
-    if (url.scheme() == "http") {
-        url.setScheme("https");
-    }
+    INFO(ControllerLogging) << url << filename;
     // check if already downloaded
     for (int i = 0; i < download_files()->count(); i++)
     {
         File_ file = download_files()->get(i);
         if (file->download_url() == url)
         {
-            qCCritical(ControllerLogging) << "Already downloaded" << filename;
-            set_downloads_visible(true);
+            DEBUG(ControllerLogging) << "Found in downloaded" << filename;
             return file;
         }
     }
@@ -962,54 +958,90 @@ File_ Controller::downloadFileFromUrlAndRename(Url url, QString const& filename,
         File_ file = downloading_files()->get(i);
         if (file->download_url() == url)
         {
-            if (file->downloading()) {
-                set_downloads_visible(true);
-                qCDebug(ControllerLogging) << "Already downloading" << filename;
-                return file;
-            }
-            file->set_downloading(true);
-            set_downloads_visible(true);
-            file->emit_tf_download_resume();
-            qCDebug(ControllerLogging) << "Resuming file download" << filename;
+            DEBUG(ControllerLogging) << "Found in downloading." << filename;
             return file;
         }
     }
-    qCDebug(ControllerLogging) << "Downloading new file" << filename;
     File_ file = File_::create();
+    file->set_state(DownloadStatePending);
     file->set_download_url(url);
     if (filename.isEmpty()) {
         file->set_save_as_filename(url.fileName());
     } else {
         file->set_save_as_filename(filename);
     }
-    file->set_downloading(true);
-    file->set_percentage(0);
-    downloading_files()->insert(file);
-    set_downloads_visible(true);
-    file->emit_tf_download_resume();
-    qCDebug(ControllerLogging) << "Download started." << filename;
     return file;
 }
 
-int Controller::handleFileDownloadFinished(File_ tmpfile, void const* sender)
+int Controller::conscentHttpFileDownload(File_ file, void const* sender)
 {
-    qCInfo(ControllerLogging) << "handleFileDownloadFinished" << tmpfile;
+    file->set_allow_http(true, sender);
+    return true;
+}
+
+int Controller::startFileDownload(File_ file, void const* sender)
+{
+    INFO(ControllerLogging) << file->save_as_filename();
+//    if (file->state() == DownloadStateStarted) {
+//        CRIT(ControllerLogging) << file->save_as_filename() << "already started";
+//        set_downloads_visible(true, sender);
+//        return false;
+//    }
+    if (file->download_url().scheme() == "http" && ! file->allow_http()) {
+        file->set_state(DownloadStateHttpUserConscentRequired);
+    } else {
+        file->set_retry_times(file->retry_times() + 1, sender);
+        file->set_state(DownloadStateStarted, sender);
+        INFO(ControllerLogging) << file->save_as_filename() << "started";
+    }
+    if (downloading_files()->indexOf(file) == -1) {
+        downloading_files()->insert(file);
+    }
+    if (file->state() == DownloadStateStarted) {
+        file->emit_tf_download_resume();
+    }
+    set_downloads_visible(true, sender);
+    return true;
+}
+
+int Controller::deleteFileDownload(File_ tmpfile, void const* sender)
+{
+    INFO(ControllerLogging) << tmpfile->save_as_filename();
+    downloading_files()->remove(tmpfile);
+    tmpfile->emit_tf_download_stop(sender);
+    set_downloads_visible(true);
+    return true;
+}
+
+int Controller::finishFileDownload(File_ tmpfile, void const* sender)
+{
+    INFO(ControllerLogging) << tmpfile->save_as_filename();
     QString save_as_filename = tmpfile->save_as_filename();
     while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
     {
         save_as_filename.prepend("New ");
     }
     downloading_files()->remove(tmpfile);
+    tmpfile->set_state(DownloadStateLocal);
+    tmpfile->emit_tf_download_stop(sender);
     set_downloads_visible(true);
     return true;
 }
 
-int Controller::handleFileDownloadStopped(File_ file, void const* sender)
+int Controller::pauseFileDownload(File_ file, void const* sender)
 {
-    qCInfo(ControllerLogging) << "handleFileDownloadStopped" << file;
-    file->set_downloading(false);
+    INFO(ControllerLogging) << file->save_as_filename();
+    file->set_state(DownloadStatePaused);
+    file->emit_tf_download_pause();
+    set_downloads_visible(true);
+    return true;
+}
+
+int Controller::failFileDownload(File_ file, void const* sender)
+{
+    INFO(ControllerLogging) << file->save_as_filename();
+    file->set_state(DownloadStateFailed);
     file->emit_tf_download_stop();
-    downloading_files()->remove(file);
     set_downloads_visible(true);
     return true;
 }
@@ -1020,7 +1052,7 @@ int Controller::saveWebArchiveAsDownloadFile(Webpage_ webpage, void const* sende
     File_ file = File_::create();
     file->set_save_as_filename(webpage->title() + ".webarchive", sender);
     file->set_percentage(0, sender);
-    file->set_downloading(true, sender);
+    file->set_state(DownloadStateStarted, sender);
     file->set_download_url(webpage->url(), sender);
     downloading_files()->insert(file);
     set_downloads_visible(true, sender);

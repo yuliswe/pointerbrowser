@@ -28,7 +28,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vo1-v4-jeC">
-                                <rect key="frame" x="64" y="6" width="402" height="18"/>
+                                <rect key="frame" x="66" y="6" width="402" height="18"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="What Discovery Should Show on &quot;https://&quot;" id="uU1-dq-dhj">
                                     <font key="font" metaFont="system"/>

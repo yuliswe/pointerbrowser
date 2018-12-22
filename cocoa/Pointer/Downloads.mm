@@ -12,11 +12,10 @@
 #import <objc/runtime.h>
 
 @implementation DownloadsViewController
-@synthesize tableview = m_tableview;
 
 //- (void)viewDidAppear
 //{
-//    NSUInteger nrows = [m_datasource numberOfRowsInTableView:m_tableview];
+//    NSUInteger nrows = [m_datasource numberOfRowsInTableView:self.tableView];
 //    NSRect frame = self.view.frame;
 //    frame.size.height = 50 * nrows + 100;
 //    self.view.frame = frame;
@@ -26,7 +25,7 @@
 {
     self = [super initWithCoder:coder];
     QObject::connect(&Global::controller->download_files()->sig, &BaseListModelSignals::signal_tf_model_reset, [=]() {
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&Global::controller->downloading_files()->sig, &BaseListModelSignals::signal_tf_rows_inserted, [=](int row, int count)
@@ -36,23 +35,23 @@
             id item = [QSharedPointerWrapper wrap:f.staticCast<QObject>()];
             [self performSelectorOnMainThread:@selector(handle_downloading_files_inserted:) withObject:item waitUntilDone:YES];
         }
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&Global::controller->download_files()->sig, &BaseListModelSignals::signal_tf_rows_removed, [=]() {
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&Global::controller->downloading_files()->sig, &BaseListModelSignals::signal_tf_model_reset, [=]() {
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&Global::controller->downloading_files()->sig, &BaseListModelSignals::signal_tf_rows_inserted, [=]() {
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     QObject::connect(&Global::controller->downloading_files()->sig, &BaseListModelSignals::signal_tf_rows_removed, [=]() {
-        [m_tableview performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         [self performSelectorOnMainThread:@selector(resizePopover) withObject:nil waitUntilDone:YES];
     });
     return self;
@@ -80,16 +79,18 @@
 
 - (void)resizePopover
 {
-    int nrows = [self->m_datasource numberOfRowsInTableView:self->m_tableview];
-    NSSize size = self->m_popover.contentSize;
-    size.height = MIN(53 * nrows + 60, 500);
+    int nrows = [self->m_datasource numberOfRowsInTableView:self.tableView];
+    NSSize size = self.tableView.intrinsicContentSize;
+//    NSSize size = self->m_popover.contentSize;
+    size.height += 60;
+    size.width = 430;
     self->m_popover.contentSize = size;
 }
 
 - (void)viewWillAppear
 {
     [self resizePopover];
-    [m_tableview reloadData];
+    [self.tableView reloadData];
 }
 
 - (IBAction)moveAllToTrash:(id)sender
@@ -116,12 +117,12 @@
 
 - (IBAction)delete:(id)sender
 {
-    NSIndexSet* rows = self->m_tableview.selectedRowIndexes;
+    NSIndexSet* rows = self.tableView.selectedRowIndexes;
     [rows enumerateIndexesUsingBlock:^(NSUInteger row, BOOL * _Nonnull stop) { 
         int offset = Global::controller->downloading_files()->count();
         if (row < offset) {
             File_ f = Global::controller->downloading_files()->get(row);
-            Global::controller->handleFileDownloadStoppedAsync(f);
+            Global::controller->deleteFileDownloadAsync(f);
         } else {
             File_ f = Global::controller->download_files()->get(row - offset);
             NSURL* url = [NSURL fileURLWithPath:f->absoluteFilePath().toNSString()];
@@ -133,7 +134,7 @@
 
 - (IBAction)openDownloadedFile:(id)sender
 {
-    int row = self->m_tableview.selectedRow - Global::controller->downloading_files()->count();
+    int row = self.tableView.selectedRow - Global::controller->downloading_files()->count();
     if (row >= 0) {
         File_ f = Global::controller->download_files()->get(row);
         [[NSWorkspace sharedWorkspace] openFile:f->absoluteFilePath().toNSString()];
@@ -143,10 +144,46 @@
 @end
 
 @implementation DownloadTableItem
-@synthesize thumbnail = m_thumbnail;
-@synthesize filename = m_filename;
-@synthesize filepath = m_filepath;
-@synthesize filesize = m_filesize;
+- (instancetype)initWithFile:(File_)file tableView:(NSTableView*)tableView;
+{
+    self = [super init];
+    self.tableView = tableView;
+    self.file = file;
+    self.filepath = [NSURL URLWithString:file->absoluteFilePath().toNSString()];
+    if (file->state() == DownloadStateLocal) {
+        self.filesize = file->filesize().toNSString();
+        self.filename = file->fileName().toNSString();
+    } else {
+        self.filesize = file->downloadProgress().toNSString();
+        self.filename = file->save_as_filename().toNSString();
+    }
+    self.requireHttpConscent = file->state() == DownloadStateHttpUserConscentRequired;
+    if (file->exists()) {
+        self.thumbnail = [NSWorkspace.sharedWorkspace iconForFile:file->absoluteFilePath().toNSString()];
+    } else {
+        self.thumbnail = [NSWorkspace.sharedWorkspace iconForFileType:@""];
+    }
+    file->replaceConnection("HandleDownloadFilePropertyChanged", QObject::connect(file.get(), &File::propertyChanged, [=]() {
+        [self performSelectorOnMainThread:@selector(reloadItem) withObject:nil waitUntilDone:YES];
+    }));
+    return self;
+}
+- (void)reloadItem
+{
+    int index = Global::controller->download_files()->indexOf(self.file) + Global::controller->downloading_files()->indexOf(self.file) + 1; // one of them is -1
+    NSIndexSet* currentSelection = self.tableView.selectedRowIndexes;
+    [self.tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+    [self.tableView selectRowIndexes:currentSelection byExtendingSelection:NO];
+}
+- (void)conscentHttp
+{
+    Global::controller->conscentHttpFileDownloadAsync(self.file);
+    Global::controller->startFileDownloadAsync(self.file);
+}
+- (void)declineHttp
+{
+    Global::controller->deleteFileDownloadAsync(self.file);
+}
 @end
 
 @implementation DownloadTableViewDataSource
@@ -162,7 +199,6 @@
 objectValueForTableColumn:(NSTableColumn *)tableColumn
             row:(NSInteger)row
 {
-    DownloadTableItem* item = [[DownloadTableItem alloc] init];
     File_ f;
     int offset = Global::controller->downloading_files()->count();
     if (row < offset) {
@@ -170,23 +206,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     } else {
         f = Global::controller->download_files()->get(row - offset);
     }
-    
-    item.filepath = [NSURL URLWithString:f->absoluteFilePath().toNSString()];
-    if (f->downloading()) {
-        item.filesize = f->downloadProgress().toNSString();
-        item.filename = f->save_as_filename().toNSString();
-    } else {
-        item.filesize = f->filesize().toNSString();
-        item.filename = f->fileName().toNSString();
-    }
-    if (f->exists()) {
-        item.thumbnail = [NSWorkspace.sharedWorkspace iconForFile:f->absoluteFilePath().toNSString()];
-    } else {
-        item.thumbnail = [NSWorkspace.sharedWorkspace iconForFileType:@""];
-    }
-    f->replaceConnection("HandleDownloadFilePropertyChanged", QObject::connect(f.get(), &File::propertyChanged, [=]() {
-        [self performSelectorOnMainThread:@selector(reloadRow:) withObject:@{@"table":tableView, @"row":[NSNumber numberWithInt:row]} waitUntilDone:YES];
-    }));
+    DownloadTableItem* item = [[DownloadTableItem alloc] initWithFile:f tableView:tableView];
     return item;
 }
 
@@ -238,19 +258,7 @@ didFinishDownloadingToURL:(NSURL *)location
 {
     File_ f = downloadTask.file;
     f->setFile(QString::fromNSString(location.path));
-    Global::controller->handleFileDownloadFinishedBlocking(f);
-}
-
-- (void)URLSession:(NSURLSession *)session
-didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
-    NSLog(@"Allowing all");
-    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
-    CFDataRef exceptions = SecTrustCopyExceptions (serverTrust);
-    SecTrustSetExceptions (serverTrust, exceptions);
-    CFRelease (exceptions);
-    completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+    Global::controller->finishFileDownloadBlocking(f);
 }
 @end
 
