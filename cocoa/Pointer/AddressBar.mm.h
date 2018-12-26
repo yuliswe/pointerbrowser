@@ -66,6 +66,7 @@
 @property bool focus;
 - (IBAction)getFocus;
 - (void)loseFocus;
+- (void)commit;
 @end
 
 @interface AddressBarCell : NSTextFieldCell

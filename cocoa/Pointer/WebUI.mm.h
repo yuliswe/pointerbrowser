@@ -18,23 +18,22 @@
 
 @interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>
 {
-    NSURL* m_erroring_url;
-    bool m_redirected_from_error;
     bool m_new_request_is_download;
     id m_wkwebview_menu_target_for_open_in_new_window;
     SEL m_wkwebview_menu_action_for_open_in_new_window;
     NSMenuItem* m_wkwebview_menu_open_in_new_window_clone;
-    ErrorPageViewController* m_error_page_view_controller;
 }
-
+@property ErrorPageViewController* error_page_view_controller;
+@property BOOL is_pesudo_url;
 @property Webpage_ webpage;
 @property LegacyWebView* legacyWebView;
+@property BOOL m_redirected_from_error;
 
 - (instancetype)initWithWebpage:(Webpage_)webpage
                           frame:(NSRect)frame
                          config:(WKWebViewConfiguration*)config;
 
-- (void)loadUri:(NSString*)url;
+- (void)loadUrlString:(NSString*)url;
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;
 - (void)disconnect;

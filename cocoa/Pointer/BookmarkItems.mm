@@ -108,7 +108,7 @@
     NSInteger button = event.buttonNumber;
     if (button == 0) {
         if (self.is_tag) {
-            if (Global::controller->current_tab_webpage()->is_blank()) {
+            if (Global::controller->current_tab_webpage_loading_state() == Webpage::LoadingStateBlank) {
                 Global::controller->closeTabAsync();
             }
             Global::controller->workspacesInsertTagContainerAsync(0, self.tagContainer);

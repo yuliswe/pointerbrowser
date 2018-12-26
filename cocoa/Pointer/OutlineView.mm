@@ -71,7 +71,7 @@
     self = [super init];
     self.webpage = w;
     if (! isTemporary) {
-        w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
+        w->set_associated_frontend_tab_object_direct((__bridge void*)self);
     }
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
@@ -156,7 +156,7 @@
 {
     self = [super init];
     self.webpage = w;
-    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
+    w->set_associated_frontend_tab_object_direct((__bridge void*)self);
     self.outlineView = outlineView;
     w->replaceConnection("SearchResultTabItem_handleTitleChanged", QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {
         [self performSelectorOnMainThread:@selector(handleTitleChanged) withObject:nil waitUntilDone:YES];
@@ -243,7 +243,7 @@
 {
     self = [super init];
     self.webpage = w;
-    w->set_associated_frontend_tab_object_unsafe((__bridge void*)self);
+    w->set_associated_frontend_tab_object_direct((__bridge void*)self);
     self.tagContainer = container;
     self.outlineView = outlineView;
     QObject::connect(w.get(), &Webpage::propertyChanged, [=]() {

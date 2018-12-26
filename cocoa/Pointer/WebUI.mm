@@ -44,8 +44,7 @@
     self = [super initWithFrame:frame configuration:config];
 //    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0";
     self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.1 Safari/605.1.15";
-    self->m_erroring_url = nil;
-    self->m_redirected_from_error = false;
+    self.is_pesudo_url = false;
     self->m_new_request_is_download = false;
     self.webpage = webpage;
     if (! webpage->associated_frontend_webview_object()) {
@@ -55,9 +54,9 @@
     self.allowsBackForwardNavigationGestures = YES;
     self.allowsMagnification = YES;
     self.navigationDelegate = self;
-    self->m_error_page_view_controller = [[ErrorPageViewController alloc] init];
-    [self addSubviewAndFill:self->m_error_page_view_controller.view];
-    self->m_error_page_view_controller.view.hidden = YES;
+    self.error_page_view_controller = [[ErrorPageViewController alloc] init];
+    [self addSubviewAndFill:self.error_page_view_controller.view];
+    [self.error_page_view_controller hide];
     [self connect];
     self.legacyWebView = [[LegacyWebView alloc] initWithFrame:self.frame];
     return self;
@@ -70,7 +69,7 @@
     // script message handler causes a retain loop,
     // see https://stackoverflow.com/questions/26383031/wkwebview-causes-my-view-controller-to-leak/26383032#26383032
     [self.configuration.userContentController removeScriptMessageHandlerForName:@"pointerbrowser"];
-    [self loadUri:@"about:blank"];
+    [self loadUrlString:@"about:blank"];
 }
 
 - (void)connect
@@ -81,13 +80,11 @@
     [self addObserver:self forKeyPath:@"canGoBack" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"canGoForward" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"hasOnlySecureContent" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew context:nil];
-    QObject::connect(self.webpage.get(), &Webpage::url_changed,
-                     [=](const Url& url, void const* sender)
+    QObject::connect(self.webpage.get(), &Webpage::signal_tf_load,
+                     [=](Url const& url)
     {
-        if ((__bridge void*)self != sender) {
-            NSString* u = url.full().toNSString();
-            [self performSelectorOnMainThread:@selector(loadUri:) withObject:u waitUntilDone:YES];
-        }
+        NSString* u = url.full().toNSString();
+        [self performSelectorOnMainThread:@selector(loadUrlString:) withObject:u waitUntilDone:YES];
     });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_refresh,
@@ -133,9 +130,9 @@
                          [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
-                     &Webpage::is_error_changed,
-                     [=](int idx) {
-                         [self performSelectorOnMainThread:@selector(handle_is_error_changed) withObject:nil waitUntilDone:YES];
+                     &Webpage::loading_state_changed,
+                     [=]() {
+                         [self performSelectorOnMainThread:@selector(handle_loading_state_changed) withObject:nil waitUntilDone:YES];
                      });
 }
 
@@ -150,26 +147,32 @@
     } else if ([keyPath isEqualToString:@"URL"]) {
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
-        // in a single page application, url changes without triggering decidePolicyForNavigationAction
-        // here we need to make url change in preview mode open new pages for SPAs
+        /* is_pesudo_url should be ignored by the backend */
+        if (self.is_pesudo_url) {
+            return;
+        }
+        /* in a single page application, url changes without triggering decidePolicyForNavigationAction
+            here we need to make url change in preview mode open new pages for SPAs */
         if (self.webpage->associated_tabs_model()
             && self.webpage->url() != Url(QUrl::fromNSURL(url))
-            && self.webpage->is_loaded()
+            && self.webpage->loading_state() == Webpage::LoadingStateLoaded
             && self.webpage->associated_tabs_model() != Global::controller->open_tabs().get()
             && self.canGoBack)
         {
             Global::controller->newTabAsync(Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
-            self.webpage->set_is_loaded_unsafe(false);
-            [self loadUri:self.webpage->url().full().toNSString()];
+            self.webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
+            [self loadUrlString:self.webpage->url().full().toNSString()];
             return;
         }
-        QString dest;
-        if ([url.absoluteString hasPrefix:@"about:error:"]) {
-            dest = QString::fromNSString([url.absoluteString substringFromIndex:12]);
+        NSString* dest;
+        if ([url.absoluteString hasPrefix:[self errorPesudoUrlPrefix]]) {
+            dest = [[self errorPesudoUrlPrefix] substringFromIndex:[self errorPesudoUrlPrefix].length];
+        } else if ([url.absoluteString hasPrefix:[self httpWarningPesudoUrlPrefix]]) {
+            dest = [[self httpWarningPesudoUrlPrefix] substringFromIndex:[self httpWarningPesudoUrlPrefix].length];
         } else {
-            dest = QString::fromNSString(url.absoluteString);
+            dest = url.absoluteString;
         }
-        Global::controller->handleWebpageUrlChangedAsync(self.webpage, dest, (__bridge void*)self);
+        Global::controller->handleWebpageUrlDidChange(self.webpage, QString::fromNSString(dest));
         NSString * _Nullable title = self.title;
         if (title && title.length > 0) {
             Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
@@ -183,23 +186,31 @@
     } else if ([keyPath isEqualToString:@"canGoForward"]) {
         self.webpage->set_can_go_forward_async(self.canGoForward);
     } else if ([keyPath isEqualToString:@"hasOnlySecureContent"]) {
-        self.webpage->set_is_secure_unsafe(self.hasOnlySecureContent);
+        self.webpage->set_is_secure_async(self.hasOnlySecureContent);
     }
 }
 
-- (void)handle_is_error_changed
+- (void)reload
 {
-    bool is_error = self.webpage->is_error();
-    NSString* msg = self.webpage->error().toNSString();
-    if (is_error) {
-        self->m_error_page_view_controller.error_msg = msg;
-        self->m_error_page_view_controller.view.hidden = NO;
-    } else {
-        self->m_error_page_view_controller.view.hidden = YES;
+    [super reload];
+    [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:self.URL]];
+}
+
+- (void)handle_loading_state_changed
+{
+    if (self.webpage->loading_state() == Webpage::LoadingStateError)
+    {
+        self.is_pesudo_url = true;
+        [self loadUrlString:("about:error:"+self.webpage->url().full()).toNSString()];
+    } else if (self.webpage->loading_state() == Webpage::LoadingStateHttpUserConscentRequired)
+    {
+        self.is_pesudo_url = true;
+        NSString* urlstr = ("about:http-warning:"+self.webpage->url().full()).toNSString();
+        [self loadUrlString:urlstr];
     }
 }
 
-- (void)loadUri:(NSString*)url
+- (void)loadUrlString:(NSString*)url
 {
     NSURL* u = [[NSURL alloc] initWithString:url];
     NSURLRequest* r = [[NSURLRequest alloc] initWithURL:u];
@@ -211,17 +222,15 @@ didFailProvisionalNavigation:(WKNavigation *)navigation
       withError:(NSError *)error
 {
     if (error.code == 102) {
-        // Frame Load Interrupted
+        /* Frame Load Interrupted */
         return;
     }
     if (error.code == -999) {
-        // Too many requests
+        /* Too many requests */
         return;
     }
     Url u = self.webpage->url();
     NSURL* url = u.toNSURL();
-    self->m_erroring_url = url;
-    self->m_redirected_from_error = true;
     QString desc = QString::fromNSString(error.localizedDescription);
     QString reason = QString::fromNSString(error.localizedFailureReason);
     QString suggest = QString::fromNSString(error.localizedRecoverySuggestion);
@@ -232,18 +241,20 @@ didFailProvisionalNavigation:(WKNavigation *)navigation
     if (! reason.isEmpty()) {
         message += reason + " ";
     }
-//    if (! suggest.isEmpty()) {
-//        message += suggest + " ";
-//    }
+    /* webpage.loading_state will be set to LoadStateError,
+     then the loading_state_changed listener will make webView load a pesudo URL */
+    self.is_pesudo_url = true;
+    /* When navigation fails, the URL will be set to the previous URL by cocoa.
+     In case this happens before is_pesudo_url flag is set, here we manually set the webpage.url.
+     Otherwise webpage.url would be wrong. */
+    Global::controller->handleWebpageUrlDidChange(self.webpage, u.full());
     self.webpage->handleErrorAsync(message);
-    NSURL* redirect = [NSURL URLWithString:("about:error:" + u.full()).toNSString()];
-    [webView loadRequest:[NSURLRequest requestWithURL:redirect]];
 }
 
 - (void)webView:(WebUI *)webView
 didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
 {
-    webView.webpage->set_is_loaded_async(false);
+    self.webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
 }
 
 - (void)webView:(WKWebView *)webView
@@ -256,13 +267,14 @@ didStartProvisionalNavigation:(WKNavigation *)navigation {
 
 - (void)webView:(WebUI *)webView
 didFinishNavigation:(WKNavigation *)navigation {
-    webView.webpage->set_is_loaded_async(true);
     NSString* title = self.title;
     if (title.length > 0) {
         Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
-    } else {
-        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(self.URL.lastPathComponent), (__bridge void*)self);
     }
+    if (! self.is_pesudo_url) {
+        self.webpage->handleSuccessAsync();
+    }
+    self.is_pesudo_url = false;
 }
 
 - (void)exitVideoFullscreen
@@ -279,42 +291,95 @@ didCommitNavigation:(WKNavigation *)navigation {
     }
 }
 
+- (void)conscentWebpageHttpUrlThenReload
+{
+    Global::controller->conscentHttpWebpageUrlChange(self.webpage);
+    /* Due to the way we implemented this, there's a bug that I'm not sure whether is fixable:
+     when user conscent HTTP url, the page refreshes, leaving the about:warning-http:url in the
+     back-forward-list. User cannot go back to previous pages anymore. We need to be able to edit
+     the back-forward-list to fix this, which currently has no API. */
+    [self reload];
+}
+
+- (NSString*)errorPesudoUrlPrefix
+{
+    return @"about:error:";
+}
+
+- (NSString*)httpWarningPesudoUrlPrefix
+{
+    return @"about:http-warning:";
+}
+
 - (void)webView:(WebUI *)webView
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    // Only want to handle main frame requests
+    /* Only want to handle main frame requests */
     if (navigationAction.targetFrame && ! navigationAction.targetFrame.isMainFrame) {
         decisionHandler(WKNavigationActionPolicyAllow);
         return;
     }
-    Url url(QUrl::fromNSURL(navigationAction.request.URL));
-    // is url from error?
-    if (url.full().indexOf("about:error:") == 0) {
-        if (self->m_redirected_from_error) {
-            self->m_redirected_from_error = false;
+    NSURL* nsurl = navigationAction.request.URL;
+    Url url(QUrl::fromNSURL(nsurl));
+    QString urlfullstr = url.full();
+    /* is this a pesudo url? */
+    NSString* errorPesudoUrlPrefix = self.errorPesudoUrlPrefix;
+    NSString* httpWarningPesudoUrlPrefix = self.httpWarningPesudoUrlPrefix;
+    BOOL isError = [nsurl.absoluteString hasPrefix:errorPesudoUrlPrefix];
+    BOOL isHttpWarning = [nsurl.absoluteString hasPrefix:httpWarningPesudoUrlPrefix];
+    if (isError || isHttpWarning) {
+        if (self.is_pesudo_url) {
             decisionHandler(WKNavigationActionPolicyAllow);
+            if (isError) {
+                [self.error_page_view_controller showWithTitle:@"Pointer Could Not Open the Page" message:self.webpage->error().toNSString() yesTarget:self yesSelector:nil noTarget:nil noSelector:nil];
+            } else if (isHttpWarning) {
+                [self.error_page_view_controller showWithTitle:@"Connection Is Not Secure" message:@"You are about to visit a website via unencrypted HTTP connection. Everyone in the network may be able to see your sent and received data as plain text. You should use HTTPS whenever possible. Do you still want to visit this page?" yesTarget:self yesSelector:@selector(conscentWebpageHttpUrlThenReload) noTarget:self noSelector:@selector(goBack)];
+            }
+            return;
         } else {
+            /* User visits the pesudo url directly, for example, on goBack event */
+            /* Whenever WKNavigationActionPolicyCancel is used, URL is reset to its previous state.
+             Set the is_pesudo_url flag so that the url change listener does not pick up the reset.
+             Then manually set the new URL on weboage. */
+            self.is_pesudo_url = true;
             decisionHandler(WKNavigationActionPolicyCancel);
-            [webView loadUri:url.full().mid(12).toNSString()];
+            NSString* modifiedUrlStr;
+            if (isError) {
+                modifiedUrlStr = [nsurl.absoluteString substringFromIndex:errorPesudoUrlPrefix.length];
+            } else if (isHttpWarning) {
+                modifiedUrlStr = [nsurl.absoluteString substringFromIndex:httpWarningPesudoUrlPrefix.length];
+            }
+            Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
+            Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
+            /* Due to the way this is implemented, there's a bug that's not fixable without APIs that
+             allows us to edit the back-forward-list. When user visits a about:warning-http:url page directly
+             via back/forward/refresh, the about:warning-http:url page is left in the back-forward-list, and
+             everything that page is hit by back/forward/refresh, a new page with the original url is opened,
+             overwriting later histories. */
+            [self loadUrlString:modifiedUrlStr];
+            return;
         }
-        return;
     }
-    // change url to https
-//    if ([navigationAction.request.URL.scheme isEqualToString:@"http"]
-//        && navigationAction.targetFrame
-//        && navigationAction.targetFrame.isMainFrame)
-//    {
-//        decisionHandler(WKNavigationActionPolicyCancel);
-//        [webView loadUri:url.full().toNSString()];
-//        return;
-//    }
-    // if request is from preview or workspace, open new window
+    /* reset */
+    [self.error_page_view_controller hide];
+    self.is_pesudo_url = false;
     Webpage_ w = webView.webpage;
     bool is_preview_tab = w->associated_tabs_model() == Global::controller->preview_tabs().get();
     bool is_workspace_tab = w->associated_tabs_model() == Global::controller->workspace_tabs().get();
-    bool is_loaded = w->is_loaded();
+    bool is_loaded = w->loading_state() == Webpage::LoadingStateLoaded;
     WKNavigationType type = navigationAction.navigationType;
+    /* If the this is a HTTP request on a page not newly created, open new window */
+    if (url.scheme() == "http" && (self.webpage->loading_state() == Webpage::LoadingStateLoaded || self.webpage->loading_state() == Webpage::LoadingStateLoading)
+        && type == WKNavigationTypeLinkActivated)
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        Webpage_ new_webpage = shared<Webpage>(url);
+        new_webpage->set_show_bookmark_on_blank_direct(false);
+        Global::controller->newTabByWebpageCopyAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        return;
+    }
+    /* if request is from preview or workspace, open new window */
     if ((is_preview_tab || is_workspace_tab) && is_loaded
         && type != WKNavigationTypeReload)
     {
@@ -322,17 +387,28 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
-    // made sure request is from open tab
-    self.webpage->handleSuccessAsync();
+    /* made sure request is from open tab */
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand
         && navigationAction.buttonNumber == 1)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ w = [(WebUI*)webView webpage];
         Global::controller->newTabAsync(Controller::TabStateOpen, url, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
-    } else {
-        decisionHandler(WKNavigationActionPolicyAllow);
+        return;
     }
+    Controller::UrlChangeDecision decision = Global::controller->handleWebpageUrlWillChange(self.webpage, url);
+    if (decision == Controller::UrlChangeDecisionRequreUserHttpConscent) {
+        /* loading_state listener will now make webView load about:http-warning:url,
+         but before that, self.URL is temporarily reset to the previous URL.
+         We set the is_pesudo_url so that the URL listener ignores this URL change. */
+        self.is_pesudo_url = true;
+        decisionHandler(WKNavigationActionPolicyCancel);
+        /* In case this happens before is_pesudo_url flag is set, here we manually set the webpage.url.
+         Otherwise webpage.url would be wrong. */
+        Global::controller->handleWebpageUrlDidChange(self.webpage, urlfullstr);
+        return;
+    }
+    decisionHandler(WKNavigationActionPolicyAllow);
+    self.webpage->handleLoadingDidStartAsync();
 }
 
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str
@@ -449,19 +525,18 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     // javascript requested window
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
-    WebUI* new_webview = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
-    new_webpage->set_associated_frontend_webview_object((__bridge_retained void*)new_webview);
+    new_webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
+    new_webpage->set_show_bookmark_on_blank_direct(false);
+    Global::controller->conscentHttpWebpageUrlChange(new_webpage);
+    WebUI* new_webUI = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
+    new_webpage->set_associated_frontend_webview_object_direct((__bridge_retained void*)new_webUI);
     if (m_new_request_is_download) {
         m_new_request_is_download = false;
-        new_webpage->set_is_for_download(true);
+        new_webpage->set_is_for_download_direct(true);
     }
     new_webpage->moveToThread(Global::qCoreApplicationThread);
-    if (webView.webpage->associated_tabs_model() == Global::controller->open_tabs().get()) {
-        Global::controller->newTabByWebpageAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
-    } else {
-        Global::controller->newTabByWebpageAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
-    }
-    return new_webview;
+    Global::controller->newTabByWebpageAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+    return new_webUI;
 }
 
 - (void)webView:(WKWebView *)webView

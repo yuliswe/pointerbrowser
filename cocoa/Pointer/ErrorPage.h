@@ -13,20 +13,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ErrorObjectController : NSObjectController
-{
-    NSString* m_error_msg;
-}
-@property NSString* error_msg;
-@end
-
 @interface ErrorPageViewController : PViewController
-{
-    NSString* m_error_msg;
-    IBOutlet ErrorObjectController* m_object_controller;
-}
-@property NSString* error_msg;
-//- (void)setErrorMessage:(NSString*)msg;
+@property IBOutlet NSButton* yesButton;
+@property IBOutlet NSButton* noButton;
+@property IBOutlet NSTextField* titleTextField;
+@property IBOutlet NSTextField* messageTextField;
+- (void)showWithTitle:(NSString*)title
+              message:(NSString*)message
+            yesTarget:(id)yesTarget
+          yesSelector:(SEL)yesSelector
+             noTarget:(id)noTarget
+           noSelector:(SEL)noSelector;
+- (void)hide;
 @end
 
 NS_ASSUME_NONNULL_END

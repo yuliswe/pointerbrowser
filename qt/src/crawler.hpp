@@ -14,6 +14,7 @@ class Controller;
 class CrawlerRule : public QObject
 {
     friend class Crawler;
+    friend class Webpage;
     friend class CrawlerRuleTable;
     Q_OBJECT
 

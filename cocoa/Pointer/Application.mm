@@ -22,7 +22,7 @@
     QObject::connect(&Global::sig, &GlobalSignals::signal_tf_everything_loaded, [=]() {
         NSArray* urls = [[NSFileManager defaultManager] URLsForDirectory:NSDownloadsDirectory inDomains:NSUserDomainMask];
         NSURL* downloads_url = urls[0];
-        Global::controller->set_downloads_dirpath(QString::fromNSString(downloads_url.path));
+        Global::controller->set_downloads_dirpath_direct(QString::fromNSString(downloads_url.path));
         [self.browserWindowController performSelectorOnMainThread:@selector(showWindow:) withObject:self waitUntilDone:YES];
     });
     Global::startQCoreApplicationThread(argc, argv);

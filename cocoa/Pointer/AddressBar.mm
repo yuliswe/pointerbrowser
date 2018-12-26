@@ -289,11 +289,11 @@
     self.wantsLayer = YES;
     self.progress_layer = [[ProgressCALayer alloc] initWithAddressBar:self];
     [self.progress_layer setNeedsDisplay];
-    [self connect];
     self.title = Global::controller->address_bar_title().toNSString();
     self.url = Global::controller->address_bar_url().full().toNSString();
     self.stringValue = self.title;
     self.surface = [[AddressBarSurface alloc] initWithAddressBar:self];
+    [self connect];
     return self;
 }
 
@@ -308,17 +308,12 @@
     });
     
     QObject::connect(Global::controller,
-                     &Controller::current_tab_webpage_is_blank_changed,
-                     [=](bool blank)
+                     &Controller::current_tab_webpage_loading_state_changed,
+                     [=](Webpage::LoadingState state)
     {
-        if (blank) {
-            [self.surface performSelectorOnMainThread:@selector(hideRefreshButton) withObject:nil waitUntilDone:YES];
-            [self.surface performSelectorOnMainThread:@selector(hideTrustButton) withObject:nil waitUntilDone:YES];
-        } else {
-            [self.surface performSelectorOnMainThread:@selector(showRefreshButton) withObject:nil waitUntilDone:YES];
-            [self.surface performSelectorOnMainThread:@selector(showTrustButton) withObject:nil waitUntilDone:YES];
-        }
+        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_loading_state_changed) withObject:nil waitUntilDone:YES];
     });
+    [self handle_current_tab_webpage_loading_state_changed];
     
     QObject::connect(Global::controller,
                      &Controller::current_tab_webpage_is_secure_changed,
@@ -330,6 +325,17 @@
                              [self.surface.trust_button performSelectorOnMainThread:@selector(showUntrusted) withObject:nil waitUntilDone:YES];
                          }
                      });
+}
+
+- (void)handle_current_tab_webpage_loading_state_changed
+{
+    if (Global::controller->current_tab_webpage_loading_state() == Webpage::LoadingStateBlank) {
+        [self.surface performSelectorOnMainThread:@selector(hideRefreshButton) withObject:nil waitUntilDone:YES];
+        [self.surface performSelectorOnMainThread:@selector(hideTrustButton) withObject:nil waitUntilDone:YES];
+    } else {
+        [self.surface performSelectorOnMainThread:@selector(showRefreshButton) withObject:nil waitUntilDone:YES];
+        [self.surface performSelectorOnMainThread:@selector(showTrustButton) withObject:nil waitUntilDone:YES];
+    }
 }
 
 - (void)updateProgress:(NSNumber*)num
@@ -381,13 +387,18 @@
     [super textDidEndEditing:notification];
 }
 
+- (void)commit
+{
+    NSString* u = self.url;
+    Global::controller->currentTabWebpageGoAsync(QString::fromNSString(u));
+    [self loseFocus];
+}
+
 - (void)keyUp:(NSEvent *)event
 {
     int code = event.keyCode;
     if (event.keyCode == kVK_Return) {
-        NSString* u = self.url;
-        Global::controller->currentTabWebpageGoAsync(QString::fromNSString(u));
-        [self loseFocus];
+        [self commit];
     }
     [super keyUp:event];
 }

@@ -29,7 +29,7 @@
         NSString* eula = [NSString stringWithContentsOfFile:eula_path encoding:NSUTF8StringEncoding error:nil];
         [webui loadHTMLString:eula baseURL:webpage->url().toNSURL()];
     } else {
-        [webui loadUri:webpage->url().full().toNSString()];
+        [webui loadUrlString:webpage->url().full().toNSString()];
     }
     [self insertChildViewController:childViewController atIndex:index];
 }

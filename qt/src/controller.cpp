@@ -63,7 +63,7 @@ int Controller::newTabByWebpage(int index,
             open_tabs()->insertWebpage_(idx = index, webpage);
             inserted = true;
         }
-        if (webpage->is_blank()) {
+        if (webpage->loading_state() == Webpage::LoadingStateBlank) {
             moveTab(state, idx, state, 0, sender);
             idx = 0;
         }
@@ -211,6 +211,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         set_current_tab_state(TabStateNull);
         set_current_tab_webpage(empty_page,sender);
         set_current_tab_webpage_associated_tabs_model_index(-1, sender);
+        showBookmarkPage();
         if (current_tab_search_word().isEmpty()) {
             Global::searchDB->search_result()->clear();
         }
@@ -489,13 +490,20 @@ int Controller::moveTab(Webpage_ webpage, TabState toState, int toIndex, void co
 int Controller::currentTabWebpageGo(QString const& u, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
+    Webpage_ p = current_tab_webpage();
+    webpageGo(p, u, sender);
+    return 0;
+}
+
+int Controller::webpageGo(Webpage_ p, QString const& u, void const* sender)
+{
+    qCInfo(ControllerLogging) << "BrowserController::currentTabWebpageGo" << u;
     closeAllPopovers();
     if (u.isEmpty()) { return false; }
-    Webpage_ p = current_tab_webpage();
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
     } else {
-        newTab(TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew);
+        newTab(TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew, sender);
     }
     saveLastOpen();
     return 0;
@@ -557,7 +565,7 @@ int Controller::currentTabWebpageRefresh(void const* sender)
     closeAllPopovers();
     Webpage_ p = current_tab_webpage();
     if (p.get()) {
-        emit p->emit_tf_refresh();
+        p->emit_tf_refresh();
         p->findClear();
         Global::crawler->crawlAsync(UrlNoHash(p->url()));
         if (current_tab_search_word().isEmpty() && current_tab_state() == TabStateOpen) {
@@ -569,10 +577,26 @@ int Controller::currentTabWebpageRefresh(void const* sender)
     return 0;
 }
 
-bool Controller::handleWebpageUrlChanged(Webpage_ p, Url const& url, void const* sender)
+Controller::UrlChangeDecision Controller::handleWebpageUrlWillChange(Webpage_ p, Url const& url)
 {
-    qCInfo(ControllerLogging) << "Controller::handleWebpageUrlChanged" << p << url;
-    p->handleUrlChanged(url, sender);
+    INFO(ControllerLogging) << p << url;
+    if (url.scheme() == "http" && ! p->allow_http()) {
+        p->set_url(url);
+        p->set_loading_state(Webpage::LoadingStateHttpUserConscentRequired);
+        return UrlChangeDecisionRequreUserHttpConscent;
+    }
+    return UrlChangeDecisionAllow;
+}
+
+void Controller::conscentHttpWebpageUrlChange(Webpage_ p)
+{
+    p->set_allow_http(true);
+}
+
+bool Controller::handleWebpageUrlDidChange(Webpage_ p, Url const& url)
+{
+    INFO(ControllerLogging) << p << url;
+    p->handleUrlDidChange(url);
     Global::crawler->crawlAsync(UrlNoHash(p->url()));
     Webpage_ w = current_tab_webpage();
     if (p == w && current_tab_search_word().isEmpty()
@@ -634,7 +658,7 @@ int Controller::currentTabWebpageFindTextPrev(QString const& txt, void const* se
 int Controller::currentTabWebpageFindTextShow(void const* sender)
 {
     if (current_tab_webpage()) {
-        if (current_tab_webpage()->is_blank()) {
+        if (current_tab_webpage()->loading_state() == Webpage::LoadingStateBlank) {
             qCInfo(ControllerLogging) << "tab page is blank";
             return -1;
         }
@@ -724,7 +748,7 @@ bool Controller::custom_set_crawler_rule_table_visible(bool const& visible, void
             qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable no current tab";
             return false;
         }
-        if (current_tab_webpage()->is_blank()) {
+        if (current_tab_webpage()->loading_state() == Webpage::LoadingStateBlank) {
             qCritical(ControllerLogging) << "Controller::showCrawlerRuleTable current tab is blank";
             return false;
         }
@@ -1099,25 +1123,23 @@ void Controller::helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* 
         }
         set_current_webpage_crawler_rule_table(w->crawler_rule_table());
     }
-    if (!a || w->is_is_blank_change(a)) {
-        set_bookmark_page_visible(w->is_blank());
-        set_current_tab_webpage_is_blank(w->is_blank());
-        if (w->associated_tabs_model() != preview_tabs().get()) {
-            set_crawler_rule_table_enabled(! w->is_blank());
-        } else {
-            set_crawler_rule_table_enabled(false);
-        }
-        if (w->is_blank()) {
+    if (!a || w->is_can_go_back_change(a)) { set_current_tab_webpage_can_go_back(w->can_go_back()); }
+    if (!a || w->is_can_go_forward_change(a)) { set_current_tab_webpage_can_go_forward(w->can_go_forward()); }
+    if (!a || w->is_is_pdf_change(a)) { set_current_tab_webpage_is_pdf(w->is_pdf()); }
+    if (!a || w->is_is_secure_change(a)) { set_current_tab_webpage_is_secure(w->is_secure()); }
+    if (!a || w->is_loading_state_change(a)) {
+        set_current_tab_webpage_loading_state(w->loading_state());
+        if (w->loading_state() == Webpage::LoadingStateBlank && w->show_bookmark_on_blank()) {
             showBookmarkPage();
         } else {
             hideBookmarkPage();
         }
+        if (w->associated_tabs_model() != preview_tabs().get()) {
+            set_crawler_rule_table_enabled(! (w->loading_state() == Webpage::LoadingStateBlank));
+        } else {
+            set_crawler_rule_table_enabled(false);
+        }
     }
-    if (!a || w->is_can_go_back_change(a)) { set_current_tab_webpage_can_go_back(w->can_go_back()); }
-    if (!a || w->is_can_go_forward_change(a)) { set_current_tab_webpage_can_go_forward(w->can_go_forward()); }
-    if (!a || w->is_is_error_change(a)) { set_current_tab_webpage_is_error(w->is_error()); }
-    if (!a || w->is_is_pdf_change(a)) { set_current_tab_webpage_is_pdf(w->is_pdf()); }
-    if (!a || w->is_is_secure_change(a)) { set_current_tab_webpage_is_secure(w->is_secure()); }
 }
 
 void Controller::setNextTabStateAndIndex(TabState state, int index)

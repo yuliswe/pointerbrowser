@@ -30,6 +30,7 @@ QDebug& operator<<(QDebug&, const FindTextState&);
 
 class Webpage : public QObject
 {
+
     friend class Controller;
     friend class TabsModel;
 //    friend class SearchDB;
@@ -45,7 +46,7 @@ class Webpage : public QObject
     int updateFindTextFound(int);
 
     int go(QString const&);
-    int handleUrlChanged(Url const&, void const* = nullptr);
+    int handleUrlDidChange(Url const&, void const* = nullptr);
     bool crawlerRuleTableModifyRule(int, CrawlerRule&);
     bool crawlerRuleTableInsertRule(CrawlerRule&);
     bool crawlerRuleTableRemoveRule(int);
@@ -54,6 +55,16 @@ class Webpage : public QObject
 
 public:
 
+    enum LoadingState
+    {
+        LoadingStateBlank,
+        LoadingStateError,
+        LoadingStateLoaded,
+        LoadingStateLoading,
+        LoadingStateHttpUserConscentRequired
+    };
+    Q_ENUM(LoadingState)
+
     virtual ~Webpage();
     Webpage() = default;
     Webpage(Webpage_);
@@ -61,6 +72,7 @@ public:
     Webpage(Url const& url);
     Webpage(Url const& uri, QString const& title, QString const& title_2, QString const& title_3);
     explicit Webpage(const QVariantMap&);
+    void loadUrl(Url const&);
 
     QVariantMap toQVariantMap();
     static Webpage_ fromQVariantMap(const QVariantMap&);
@@ -75,9 +87,10 @@ public:
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(RangeSet, title_3_highlight_range, RangeSet())
 
-    PROP_RN_D(bool, is_blank, true)
-    PROP_RN_D(bool, is_error, false)
+    PROP_RWN_D(Webpage::LoadingState, loading_state, Webpage::LoadingStateBlank)
     PROP_RWN_D(bool, is_secure, true)
+    PROP_RWN_D(bool, show_bookmark_on_blank, true)
+    PROP_RN_D(bool, allow_http, false)
     PROP_RWN_D(bool, is_pdf, false)
     PROP_RWN_D(bool, is_for_download, false)
     PROP_RN_D(QString, error, "")
@@ -89,7 +102,6 @@ public:
     PROP_RWN_D(void*, associated_frontend_tab_object, nullptr)
     PROP_RN_D(TabsModel*, associated_tabs_model, nullptr)
     PROP_RN_D(TagContainer*, associated_tag_container, nullptr)
-    PROP_RWN_D(bool, is_loaded, false)
     PROP_RWN_D(QString, offline_html, "")
     PROP_RWN_D(bool, should_use_offline_html, false)
     PROP_RN_D(FindTextState, find_text_state, FindTextState{})
@@ -98,12 +110,14 @@ public:
 
     METH_ASYNC_1(int, handleError, QString const&)
     METH_ASYNC_0(int, handleSuccess)
+    METH_ASYNC_0(int, handleLoadingDidStart)
 
     // tells frontend (tf) to...
     SIG_TF_0(back)
     SIG_TF_0(forward)
     SIG_TF_0(refresh)
     SIG_TF_0(stop)
+    SIG_TF_1(load, Url const&)
     SIG_TF_1(find_scroll_to_next_highlight, int)
     SIG_TF_1(find_scroll_to_prev_highlight, int)
     SIG_TF_0(find_clear)
@@ -112,4 +126,5 @@ public:
 
 Q_DECLARE_METATYPE(Webpage*)
 Q_DECLARE_METATYPE(Webpage_)
+Q_DECLARE_METATYPE(Webpage::LoadingState)
 #endif // WEBPAGE_H

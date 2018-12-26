@@ -92,44 +92,17 @@
                          if (sender == (__bridge void*)self.tab_searchfield) { return; }
                          [self performSelectorOnMainThread:@selector(handle_current_tab_search_word_changed) withObject:nil waitUntilDone:YES];
                      });
-//    QObject::connect(Global::controller,
-//                     &Controller::current_tab_webpage_is_error_changed,
-//                     [=]()
-//                     {
-//                         [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_is_error_changed) withObject:nil waitUntilDone:YES];
-//                     });
-//    QObject::connect(Global::controller, &Controller::current_tab_webpage_changed, [=]() {
-//        [self performSelectorOnMainThread:@selector(handle_current_tab_webpage_changed) withObject:nil waitUntilDone:YES];
-//    });
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
     [self handle_crawler_rule_table_enabled_changed];
-    [self handle_current_tab_webpage_is_error_changed];
 }
 
-- (void)handle_current_tab_webpage_is_error_changed
-{
-    if (Global::controller->current_tab_webpage_is_error())
-    {
-    } else {
-    }
-}
 
 - (void)handle_current_tab_search_word_changed
 {
     self.tab_searchfield.stringValue = Global::controller->current_tab_search_word().toNSString();
 }
-//- (void)handle_current_tab_webpage_changed
-//{
-//    if (Global::controller->current_tab_webpage_is_blank())
-//    {
-//        [self.addressbar getFocus];
-//        self.addressbar.stringValue = @"";
-//    } else {
-//        [self.addressbar loseFocus];
-//    }
-//}
 - (void)handle_bookmarkpage_visible_changed
 {
     bool visible = Global::controller->bookmark_page_visible();
@@ -393,9 +366,9 @@
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {
+    BrowserWindowController* ctl = self.windowController;
     if (event.keyCode == kVK_Escape)
     {
-        BrowserWindowController* ctl = self.windowController;
         if (Global::controller->current_webpage_find_text_state().visiable) {
             [ctl.text_find_done_button performClick:self];
         } else if ([self.windowController isFullscreenMode]) {
@@ -408,6 +381,12 @@
         }
         [self makeFirstResponder:nil];
         return YES;
+    }
+    if (event.keyCode == kVK_Return) {
+        if (self.firstResponder == ctl.addressbar) {
+            [ctl.addressbar commit];
+            return YES;
+        }
     }
     if (event.keyCode == kVK_Tab &&
         (event.modifierFlags & NSEventModifierFlagControl))

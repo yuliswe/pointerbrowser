@@ -8,18 +8,31 @@
 
 #import "ErrorPage.h"
 #include <docviewer/docviewer.h>
-@implementation ErrorObjectController
-@synthesize error_msg = m_error_msg;
-@end
 
 @implementation ErrorPageViewController
-@synthesize error_msg = m_error_msg;
 - (NSNibName)nibName
 {
     return @"ErrorPage";
 }
-- (void)setErrorMessage:(NSString*)msg
+- (void)showWithTitle:(NSString*)title
+              message:(NSString*)message
+            yesTarget:(id)yesTarget
+          yesSelector:(SEL)yesSelector
+             noTarget:(id)noTarget
+           noSelector:(SEL)noSelector
 {
-    self->m_object_controller.error_msg = msg;
+    self.titleTextField.stringValue = title;
+    self.messageTextField.stringValue = message;
+    self.yesButton.hidden = ! (yesTarget && yesSelector);
+    self.noButton.hidden = ! (noTarget && noSelector);
+    self.yesButton.target = yesTarget;
+    self.yesButton.action = yesSelector;
+    self.noButton.target = noTarget;
+    self.noButton.action = noSelector;
+    self.view.hidden = NO;
+}
+- (void)hide
+{
+    self.view.hidden = YES;
 }
 @end

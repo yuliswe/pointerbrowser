@@ -12,8 +12,8 @@ QDebug& operator<<(QDebug& debug, const FindTextState& state)
 Webpage::Webpage(Webpage_ w)
     : m_url(w->url())
     , m_title(w->title())
-    , m_is_blank(w->is_blank())
-    , m_is_error(w->is_error())
+    , m_loading_state(w->loading_state())
+    , m_show_bookmark_on_blank(w->show_bookmark_on_blank())
     , m_can_go_forward(w->can_go_forward())
     , m_can_go_back(w->can_go_back())
     , m_associated_frontend_tab_object(w->associated_frontend_tab_object())
@@ -70,7 +70,9 @@ Url Webpage::custom_set_url(Url const& url, void const* sender)
     if (! url.isEmpty()) {
         set_title(url.full());
     }
-    set_is_blank(url.isBlank());
+    if (url.isBlank()) {
+        set_loading_state(Webpage::LoadingStateBlank);
+    }
     return url;
 }
 
@@ -98,18 +100,33 @@ QString Webpage::custom_set_title(QString const& title, void const* sender)
     return trimmed;
 }
 
+void Webpage::loadUrl(Url const& url)
+{
+    INFO(WebpageLogging) << url;
+    handleUrlDidChange(url);
+    emit_tf_load(url);
+}
+
 int Webpage::go(QString const& input)
 {
-    qCInfo(WebpageLogging) << "Webpage::go" << input;
-    handleUrlChanged(Url::fromAmbiguousText(input));
+    INFO(WebpageLogging) << input;
+    loadUrl(Url::fromAmbiguousText(input));
     return 0;
 }
 
-int Webpage::handleUrlChanged(Url const& url, void const* sender)
+int Webpage::handleLoadingDidStart(void const* sender)
 {
-    qCInfo(WebpageLogging) << "handleUrlChanged" << url;
+    if (! url().isBlank()) {
+        set_loading_state(Webpage::LoadingStateLoading);
+    }
+    return true;
+}
+
+int Webpage::handleUrlDidChange(Url const& url, void const* sender)
+{
+    INFO(WebpageLogging) << url;
     set_url(url, sender);
-    if (is_blank() || is_error()) {
+    if (loading_state() == LoadingStateBlank) {
         findClear();
     }
     return 0;
@@ -260,15 +277,19 @@ int Webpage::handleError(QString const& error, void const* sender)
 {
     qCInfo(WebpageLogging) << "handleError" << error;
     set_error(error);
-    set_is_error(true);
+    set_loading_state(Webpage::LoadingStateError);
     return true;
 }
 
 int Webpage::handleSuccess(void const* sender)
 {
     qCInfo(WebpageLogging) << "handleSuccess";
-    set_error("Unknown");
-    set_is_error(false);
+    set_error("");
+    if (url().isBlank()) {
+        set_loading_state(Webpage::LoadingStateBlank);
+    } else {
+        set_loading_state(Webpage::LoadingStateLoaded);
+    }
     return true;
 }
 

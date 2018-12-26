@@ -208,7 +208,7 @@
     } else {
         CrawlerRule rule = CrawlerRule::fromString(QString::fromNSString(data.pattern));
 //        if (rule.valid()) {
-            rule.set_enabled(data.enabled);
+            rule.set_enabled_direct(data.enabled);
             Global::controller->currentTabWebpageCrawlerRuleTableModifyRuleAsync(row, rule);
 //        } else {
 //            NSTableRowView* rowview = [self rowViewAtRow:row makeIfNecessary:NO];

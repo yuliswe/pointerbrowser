@@ -46,6 +46,14 @@ public:
     };
     Q_ENUM(CurrentPageSearchState)
 
+    enum UrlChangeDecision
+    {
+        UrlChangeDecisionAllow,
+        UrlChangeDecisionCancel,
+        UrlChangeDecisionRequreUserHttpConscent
+    };
+    Q_ENUM(UrlChangeDecision)
+
     PROP_DEF_BEGINS
     // tabs
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
@@ -60,19 +68,17 @@ public:
     // current tab
     PROP_RN_D(TabState, current_tab_state, TabStateNull)
     PROP_RN_D(Webpage_, current_tab_webpage, nullptr)
-    PROP_RWN_D(bool, current_tab_webpage_can_go_back, false)
-    PROP_RWN_D(bool, current_tab_webpage_can_go_forward, false)
-    PROP_RWN_D(bool, current_tab_webpage_is_blank, true)
-    PROP_RWN_D(bool, current_tab_webpage_is_secure, true)
-    PROP_RWN_D(bool, current_tab_webpage_is_pdf, false)
+    PROP_RN_D(bool, current_tab_webpage_can_go_back, false)
+    PROP_RN_D(bool, current_tab_webpage_can_go_forward, false)
+    PROP_RN_D(bool, current_tab_webpage_is_secure, true)
+    PROP_RN_D(bool, current_tab_webpage_is_pdf, false)
+    PROP_RN_D(Webpage::LoadingState, current_tab_webpage_loading_state, Webpage::LoadingStateBlank)
     PROP_RN_D(int, current_open_tab_index, -1)
     PROP_RN_D(int, current_workspace_index, -1)
     PROP_RN_D(int, current_workspace_tab_index, -1)
     PROP_RN_D(int, current_preview_tab_index, -1)
     PROP_RN_D(int, current_search_result_tab_index, -1)
     PROP_RN_D(int, current_tab_webpage_associated_tabs_model_index, -1)
-    // error page
-    PROP_RN_D(bool, current_tab_webpage_is_error, false)
     // welcome page
     PROP_RN_D(bool, welcome_page_visible, true)
     // bookmark page
@@ -108,6 +114,7 @@ public:
     // UI calls these methods to inform controller user input
     // these can be used for UI code that's not awared of the global state
     METH_ASYNC_1(int, currentTabWebpageGo, QString const&)
+    METH_ASYNC_2(int, webpageGo, Webpage_, QString const&)
     METH_ASYNC_0(int, currentTabWebpageStop)
     METH_ASYNC_0(int, currentTabWebpageBack)
     METH_ASYNC_0(int, currentTabWebpageForward)
@@ -124,7 +131,9 @@ public:
     METH_ASYNC_0(int, hideBookmarkPage)
 
     METH_ASYNC_2(bool, handleWebpageTitleChanged, Webpage_, QString const&)
-    METH_ASYNC_2(bool, handleWebpageUrlChanged, Webpage_, Url const&)
+    bool handleWebpageUrlDidChange(Webpage_, Url const&);
+    UrlChangeDecision handleWebpageUrlWillChange(Webpage_, Url const&);
+    void conscentHttpWebpageUrlChange(Webpage_);
     METH_ASYNC_2(bool, updateWebpageFindTextFound, Webpage_, int)
     // downloads
     PROP_RWN_D(QString, downloads_dirpath, "")
