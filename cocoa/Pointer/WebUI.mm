@@ -375,7 +375,6 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     {
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ new_webpage = shared<Webpage>(url);
-        new_webpage->set_show_bookmark_on_blank_direct(false);
         Global::controller->newTabByWebpageCopyAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
@@ -526,7 +525,6 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
     Webpage_ new_webpage = shared<Webpage>(url);
     new_webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
-    new_webpage->set_show_bookmark_on_blank_direct(false);
     Global::controller->conscentHttpWebpageUrlChange(new_webpage);
     WebUI* new_webUI = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];
     new_webpage->set_associated_frontend_webview_object_direct((__bridge_retained void*)new_webUI);

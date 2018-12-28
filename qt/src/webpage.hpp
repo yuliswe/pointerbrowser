@@ -89,7 +89,7 @@ public:
 
     PROP_RWN_D(Webpage::LoadingState, loading_state, Webpage::LoadingStateBlank)
     PROP_RWN_D(bool, is_secure, true)
-    PROP_RWN_D(bool, show_bookmark_on_blank, true)
+    PROP_RN_D(bool, show_bookmark_on_blank, false)
     PROP_RN_D(bool, allow_http, false)
     PROP_RWN_D(bool, is_pdf, false)
     PROP_RWN_D(bool, is_for_download, false)

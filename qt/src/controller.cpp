@@ -10,11 +10,14 @@ Controller::Controller()
 
 int Controller::newTab(void const* sender)
 {
-    return Controller::newTab(0, TabStateOpen,
-                              home_url(),
-                              WhenCreatedViewNew,
-                              WhenExistsViewExisting,
-                              sender);
+    Webpage_ new_page = shared<Webpage>(home_url());
+    new_page->set_show_bookmark_on_blank(true);
+    return Controller::newTabByWebpage(0,
+                                       TabStateOpen,
+                                       new_page,
+                                       WhenCreatedViewNew,
+                                       WhenExistsViewExisting,
+                                       sender);
 }
 
 int Controller::newTab(TabState state,
