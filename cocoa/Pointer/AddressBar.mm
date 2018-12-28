@@ -53,14 +53,27 @@
          attribute:NSLayoutAttributeTrailing
          multiplier:1
          constant:-4].active = YES;
-        [NSLayoutConstraint
-         constraintWithItem:refreshButton
-         attribute:NSLayoutAttributeCenterY
-         relatedBy:NSLayoutRelationEqual
-         toItem:self
-         attribute:NSLayoutAttributeCenterY
-         multiplier:1
-         constant:0].active = YES;
+        if (@available(macOS 10.14, *)) {
+            /* if >= 10.14 */
+            [NSLayoutConstraint
+             constraintWithItem:refreshButton
+             attribute:NSLayoutAttributeCenterY
+             relatedBy:NSLayoutRelationEqual
+             toItem:self
+             attribute:NSLayoutAttributeCenterY
+             multiplier:1
+             constant:0].active = YES;
+        } else {
+            /* if < 10.14 */
+            [NSLayoutConstraint
+             constraintWithItem:refreshButton
+             attribute:NSLayoutAttributeCenterY
+             relatedBy:NSLayoutRelationEqual
+             toItem:self
+             attribute:NSLayoutAttributeCenterY
+             multiplier:1
+             constant:-1].active = YES;
+        }
         [NSLayoutConstraint
          constraintWithItem:refreshButton
          attribute:NSLayoutAttributeWidth
@@ -165,7 +178,13 @@
 {
     NSImage* img = [NSImage namedImageWithTintColor:NSImageNameLockLockedTemplate color:NSColor.systemGrayColor];
     NSSize size = img.size;
-    size.height = 11;
+    if (@available(macOS 10.14, *)) {
+        /* if >= 10.14 */
+        size.height = 11;
+    } else {
+        /* if < 10.14 */
+        size.height = 12;
+    }
     size.width = 9;
     img.size = size;
     self.image = img;
@@ -177,13 +196,23 @@
     [astr addAttributes:@{NSForegroundColorAttributeName:NSColor.systemGrayColor,
                           NSParagraphStyleAttributeName:style}
                   range:NSMakeRange(0,astr.length)];
+    if (! @available(macOS 10.14, *)) {
+        /* if < 10.14 */
+        [astr addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11] range:NSMakeRange(0,astr.length)];
+    }
     self.attributedTitle = astr;
 }
 - (void)showUntrusted
 {
     NSImage* img = [NSImage namedImageWithTintColor:NSImageNameLockUnlockedTemplate color:NSColor.systemRedColor];
     NSSize size = img.size;
-    size.height = 11;
+    if (@available(macOS 10.14, *)) {
+        /* if >= 10.14 */
+        size.height = 11;
+    } else {
+        /* if < 10.14 */
+        size.height = 12;
+    }
     size.width = 9;
     img.size = size;
     self.image = img;
@@ -195,6 +224,10 @@
     [astr addAttributes:@{NSForegroundColorAttributeName:NSColor.systemRedColor,
                           NSParagraphStyleAttributeName:style}
                   range:NSMakeRange(0,astr.length)];
+    if (! @available(macOS 10.14, *)) {
+        /* if < 10.14 */
+        [astr addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11] range:NSMakeRange(0,astr.length)];
+    }
     self.attributedTitle = astr;
 }
 - (void)handleClicked
