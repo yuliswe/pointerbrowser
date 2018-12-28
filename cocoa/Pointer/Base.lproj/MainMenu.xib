@@ -67,7 +67,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="File" id="iZ5-sk-WYw" userLabel="File">
                         <items>
-                            <menuItem title="Download as Web Archive" id="56e-l1-OYf">
+                            <menuItem title="Save as Web Archive" id="56e-l1-OYf">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuDownloadAsWebArchive:" target="-1" id="EMj-4t-3bJ"/>
@@ -78,17 +78,11 @@
                                     </binding>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download as PDF" id="dQQ-0T-Cbs">
+                            <menuItem title="Download PDF" id="dQQ-0T-Cbs">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="menuDownloadAsPDF:" target="-1" id="N3B-d2-kQc"/>
                                     <binding destination="ilb-gF-bai" name="enabled" keyPath="self.currentWebpageIsPDF" id="ydo-bw-KFj"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="Kbn-BV-1sG"/>
-                            <menuItem title="Print..." keyEquivalent="p" id="Rpq-aP-x07">
-                                <connections>
-                                    <action selector="menuPrint:" target="-1" id="KcJ-PV-p34"/>
                                 </connections>
                             </menuItem>
                         </items>

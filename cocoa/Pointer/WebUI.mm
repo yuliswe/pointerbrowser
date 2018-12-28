@@ -605,7 +605,12 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
 
 - (void)print
 {
-    NSPrintOperation* printOP = [NSPrintOperation printOperationWithView:self.legacyWebView.mainFrame.frameView.documentView];
+    NSPrintInfo* printInfo = [[NSPrintInfo alloc] init];
+    printInfo.leftMargin = 0;
+    printInfo.rightMargin = 0;
+    printInfo.topMargin = 0;
+    printInfo.bottomMargin = 0;
+    NSPrintOperation* printOP = [NSPrintOperation printOperationWithView:self.legacyWebView.mainFrame.frameView.documentView printInfo:printInfo];
     [printOP runOperation];
 }
 @end
