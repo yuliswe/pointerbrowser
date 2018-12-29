@@ -10,6 +10,7 @@ Controller::Controller()
 
 int Controller::newTab(void const* sender)
 {
+    DEBUG(ControllerLogging) << sender;
     Webpage_ new_page = shared<Webpage>(home_url());
     new_page->set_show_bookmark_on_blank(true);
     return Controller::newTabByWebpage(0,
@@ -21,12 +22,13 @@ int Controller::newTab(void const* sender)
 }
 
 int Controller::newTab(TabState state,
-                       Url const& uri,
+                       Url const& url,
                        WhenCreated newBehavior,
                        WhenExists whenExists,
                        void const* sender)
 {
-    return newTab(0, state, uri, newBehavior, whenExists, sender);
+    DEBUG(ControllerLogging) << state << url << newBehavior << whenExists << sender;
+    return newTab(0, state, url, newBehavior, whenExists, sender);
 }
 
 int Controller::newTabByWebpageCopy(int index,
@@ -36,6 +38,7 @@ int Controller::newTabByWebpageCopy(int index,
                                     WhenExists whenExists,
                                     void const* sender)
 {
+    DEBUG(ControllerLogging) << index << state << webpage->url() << newBehavior << whenExists << sender;
     Webpage_ new_page = shared<Webpage>(webpage);
     return newTabByWebpage(index, state, new_page, newBehavior, whenExists, sender);
 }
@@ -132,12 +135,13 @@ int Controller::newTabByWebpage(int index,
 
 int Controller::newTab(int index,
                        TabState state,
-                       Url const& uri,
+                       Url const& url,
                        WhenCreated newBehavior,
                        WhenExists whenExists,
                        void const* sender)
 {
-    return newTabByWebpage(index, state, shared<Webpage>(uri), newBehavior, whenExists, sender);
+    DEBUG(ControllerLogging) << index << state << url << newBehavior << whenExists << sender;
+    return newTabByWebpage(index, state, shared<Webpage>(url), newBehavior, whenExists, sender);
 }
 
 int Controller::viewTab(Webpage_ webpage, void const* sender)
