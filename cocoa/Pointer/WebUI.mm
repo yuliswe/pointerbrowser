@@ -145,6 +145,10 @@
         float p = (float)[self estimatedProgress];
         self.webpage->set_load_progress_async(p);
     } else if ([keyPath isEqualToString:@"URL"]) {
+        /* Only SPAs need to be handled here */
+        if (self.webpage->loading_state() != Webpage::LoadingStateLoaded) {
+            return;
+        }
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
         /* is_pesudo_url should be ignored by the backend */
@@ -164,13 +168,13 @@
             [self loadUrlString:self.webpage->url().full().toNSString()];
             return;
         }
-        NSString* dest;
-        if ([url.absoluteString hasPrefix:[self errorPesudoUrlPrefix]]) {
-            dest = [[self errorPesudoUrlPrefix] substringFromIndex:[self errorPesudoUrlPrefix].length];
-        } else if ([url.absoluteString hasPrefix:[self httpWarningPesudoUrlPrefix]]) {
-            dest = [[self httpWarningPesudoUrlPrefix] substringFromIndex:[self httpWarningPesudoUrlPrefix].length];
-        } else {
-            dest = url.absoluteString;
+        NSString* dest = url.absoluteString;
+        NSString* errorPesudoUrlPrefix = self.errorPesudoUrlPrefix;
+        NSString* httpWarningPesudoUrlPrefix = self.httpWarningPesudoUrlPrefix;
+        if ([dest hasPrefix:errorPesudoUrlPrefix]) {
+            dest = [dest substringFromIndex:errorPesudoUrlPrefix.length];
+        } else if ([dest hasPrefix:httpWarningPesudoUrlPrefix]) {
+            dest = [dest substringFromIndex:httpWarningPesudoUrlPrefix.length];
         }
         Global::controller->handleWebpageUrlDidChange(self.webpage, QString::fromNSString(dest));
         NSString * _Nullable title = self.title;
@@ -349,6 +353,8 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
                 modifiedUrlStr = [nsurl.absoluteString substringFromIndex:errorPesudoUrlPrefix.length];
             } else if (isHttpWarning) {
                 modifiedUrlStr = [nsurl.absoluteString substringFromIndex:httpWarningPesudoUrlPrefix.length];
+            } else {
+                modifiedUrlStr = nsurl.absoluteString;
             }
             Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
             Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
@@ -407,6 +413,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         return;
     }
     decisionHandler(WKNavigationActionPolicyAllow);
+    Global::controller->handleWebpageUrlDidChange(self.webpage, urlfullstr);
     self.webpage->handleLoadingDidStartAsync();
 }
 
