@@ -168,14 +168,7 @@
             [self loadUrlString:self.webpage->url().full().toNSString()];
             return;
         }
-        NSString* dest = url.absoluteString;
-        NSString* errorPesudoUrlPrefix = self.errorPesudoUrlPrefix;
-        NSString* httpWarningPesudoUrlPrefix = self.httpWarningPesudoUrlPrefix;
-        if ([dest hasPrefix:errorPesudoUrlPrefix]) {
-            dest = [dest substringFromIndex:errorPesudoUrlPrefix.length];
-        } else if ([dest hasPrefix:httpWarningPesudoUrlPrefix]) {
-            dest = [dest substringFromIndex:httpWarningPesudoUrlPrefix.length];
-        }
+        NSString* dest = [self removePesudoUrlPrefix:url];
         Global::controller->handleWebpageUrlDidChange(self.webpage, QString::fromNSString(dest));
         NSString * _Nullable title = self.title;
         if (title && title.length > 0) {
@@ -192,6 +185,23 @@
     } else if ([keyPath isEqualToString:@"hasOnlySecureContent"]) {
         self.webpage->set_is_secure_async(self.hasOnlySecureContent);
     }
+}
+
+- (NSString*)removePesudoUrlPrefix:(NSURL*)nsurl
+{
+    Url url(QString::fromNSString([nsurl.absoluteString stringByRemovingPercentEncoding]));
+    QString base = url.base();
+    QString errorPesudoUrlPrefix = QString::fromNSString(self.errorPesudoUrlPrefix);
+    QString httpWarningPesudoUrlPrefix = QString::fromNSString(self.httpWarningPesudoUrlPrefix);
+    if (base.indexOf(errorPesudoUrlPrefix) == 0) {
+        base = base.mid(errorPesudoUrlPrefix.length());
+    } else if (base.indexOf(httpWarningPesudoUrlPrefix) == 0) {
+        base = base.mid(httpWarningPesudoUrlPrefix.length());
+    }
+    if (! url.hash().isEmpty()) {
+        base += "#" + url.hash();
+    }
+    return base.toNSString();
 }
 
 - (void)reload
@@ -348,14 +358,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
              Then manually set the new URL on weboage. */
             self.is_pesudo_url = true;
             decisionHandler(WKNavigationActionPolicyCancel);
-            NSString* modifiedUrlStr;
-            if (isError) {
-                modifiedUrlStr = [nsurl.absoluteString substringFromIndex:errorPesudoUrlPrefix.length];
-            } else if (isHttpWarning) {
-                modifiedUrlStr = [nsurl.absoluteString substringFromIndex:httpWarningPesudoUrlPrefix.length];
-            } else {
-                modifiedUrlStr = nsurl.absoluteString;
-            }
+            NSString* modifiedUrlStr = [self removePesudoUrlPrefix:nsurl];
             Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
             Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
             /* Due to the way this is implemented, there's a bug that's not fixable without APIs that
@@ -515,7 +518,7 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
-        File_ file = Global::controller->createFileDownloadFromUrlBlocking(QString::fromNSString(url.absoluteString), QString::fromNSString(filename));
+        File_ file = Global::controller->createFileDownloadFromUrlBlocking(Url(QUrl::fromNSURL(url)), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
     } else {
         decisionHandler(WKNavigationResponsePolicyAllow);
