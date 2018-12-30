@@ -108,8 +108,7 @@
     bool visible = Global::controller->bookmark_page_visible();
 //    [NSResponder inspectResponderChain];
     if (visible) {
-        [self.window makeFirstResponder:self.addressbar];
-        self.addressbar.stringValue = @"";
+        [self.addressbar getFocus];
     } else {
         [self.window makeFirstResponder:self.outlineViewController.outlineView];
     }

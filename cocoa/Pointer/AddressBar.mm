@@ -401,8 +401,15 @@
 
 - (void)getFocus
 {
+    if (self.window.firstResponder == self.currentEditor) { return; }
     [self.window makeFirstResponder:self];
-    self.stringValue = Global::controller->address_bar_url().full().toNSString();
+    if (Global::controller->address_bar_url().isBlank()
+        || Global::controller->bookmark_page_visible())
+    {
+        self.stringValue = @"";
+    } else {
+        self.stringValue = Global::controller->address_bar_url().full().toNSString();
+    }
 }
 
 - (void)loseFocus
