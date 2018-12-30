@@ -26,7 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)handle_title_edit_done:(id)sender;;
 @end
 
-@interface BookmarkCollectionViewItemRootView: NSView
+@class BookmarkCollectionViewItemRootView;
+
+@interface BookmarkCollectionViewItemThumbnailView : NSView
+@property IBOutlet BookmarkCollectionViewItemRootView* rootView;
+@end
+
+@interface BookmarkCollectionViewItemRootView : NSView
 {
     Webpage_ m_webpage;
     NSCollectionView* m_bookmark_collectionview;

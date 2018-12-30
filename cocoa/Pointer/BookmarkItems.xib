@@ -21,7 +21,7 @@
             <subviews>
                 <box boxType="custom" borderWidth="0.0" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="RrS-vq-bwl">
                     <rect key="frame" x="20" y="105" width="27" height="27"/>
-                    <view key="contentView" id="zgY-YY-a2A">
+                    <view key="contentView" id="zgY-YY-a2A" customClass="BookmarkCollectionViewItemThumbnailView">
                         <rect key="frame" x="0.0" y="0.0" width="27" height="27"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -38,6 +38,9 @@
                             <constraint firstItem="MJ2-LR-ghB" firstAttribute="centerX" secondItem="zgY-YY-a2A" secondAttribute="centerX" id="Pu2-r5-YhD"/>
                             <constraint firstItem="MJ2-LR-ghB" firstAttribute="centerY" secondItem="zgY-YY-a2A" secondAttribute="centerY" constant="1" id="nwG-BX-rMH"/>
                         </constraints>
+                        <connections>
+                            <outlet property="rootView" destination="JWJ-8O-oP5" id="cPc-HO-OwO"/>
+                        </connections>
                     </view>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="RrS-vq-bwl" secondAttribute="height" multiplier="1:1" id="wwS-Nm-Ezw"/>

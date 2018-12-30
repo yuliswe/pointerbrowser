@@ -98,25 +98,27 @@
 }
 @end
 
+@implementation BookmarkCollectionViewItemThumbnailView
+- (void)mouseUp:(NSEvent*)event
+{
+    NSInteger button = event.buttonNumber;
+    if (button == 0) {
+        if (self.rootView.is_tag) {
+            if (Global::controller->current_tab_webpage_loading_state() == Webpage::LoadingStateBlank) {
+                Global::controller->closeTabAsync();
+            }
+            Global::controller->workspacesInsertTagContainerAsync(0, self.rootView.tagContainer);
+        } else {
+            Global::controller->currentTabWebpageGoAsync(self.rootView.webpage->url().full());
+        }
+    }
+}
+@end
 
 @implementation BookmarkCollectionViewItemRootView
 @synthesize webpage = m_webpage;
 @synthesize bookmark_collectionview = m_bookmark_collectionview;
 @synthesize bookmark_collectionviewitem = m_bookmark_collectionviewitem;
-- (void)mouseUp:(NSEvent*)event
-{
-    NSInteger button = event.buttonNumber;
-    if (button == 0) {
-        if (self.is_tag) {
-            if (Global::controller->current_tab_webpage_loading_state() == Webpage::LoadingStateBlank) {
-                Global::controller->closeTabAsync();
-            }
-            Global::controller->workspacesInsertTagContainerAsync(0, self.tagContainer);
-        } else {
-            Global::controller->currentTabWebpageGoAsync(self.webpage->url().full());
-        }
-    }
-}
 @end
 
 @implementation BookmarkItemMenuDelegate
