@@ -376,7 +376,9 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     bool is_loaded = w->loading_state() == Webpage::LoadingStateLoaded;
     WKNavigationType type = navigationAction.navigationType;
     /* If the this is a HTTP request on a page not newly created, open new window */
-    if (url.scheme() == "http" && (self.webpage->loading_state() == Webpage::LoadingStateLoaded || self.webpage->loading_state() == Webpage::LoadingStateLoading)
+    if (url.scheme() == "http"
+        && (self.webpage->url().scheme() != "http" || ! self.webpage->allow_http())
+        && (self.webpage->loading_state() == Webpage::LoadingStateLoaded || self.webpage->loading_state() == Webpage::LoadingStateLoading)
         && type == WKNavigationTypeLinkActivated)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
