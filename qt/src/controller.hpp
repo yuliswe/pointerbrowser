@@ -140,7 +140,7 @@ public:
     METH_ASYNC_1(int, deleteFileDownload, File_)
     METH_ASYNC_1(int, finishFileDownload, File_)
     METH_ASYNC_1(int, pauseFileDownload, File_)
-    METH_ASYNC_2(File_, createFileDownloadFromUrl, Url, QString const&)
+    File_ createFileDownloadFromUrl(Url, QString const&, void const* sender = nullptr);
     METH_ASYNC_1(int, conscentHttpFileDownload, File_)
     METH_ASYNC_1(int, failFileDownload, File_)
     METH_ASYNC_1(int, startFileDownload, File_)

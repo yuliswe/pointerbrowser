@@ -980,6 +980,7 @@ File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, vo
         if (file->download_url() == url)
         {
             DEBUG(ControllerLogging) << "Found in downloaded" << filename;
+            file->moveToThread(Global::qCoreApplicationThread);
             return file;
         }
     }
@@ -990,6 +991,7 @@ File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, vo
         if (file->download_url() == url)
         {
             DEBUG(ControllerLogging) << "Found in downloading." << filename;
+            file->moveToThread(Global::qCoreApplicationThread);
             return file;
         }
     }
@@ -1001,6 +1003,7 @@ File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, vo
     } else {
         file->set_save_as_filename(filename);
     }
+    file->moveToThread(Global::qCoreApplicationThread);
     return file;
 }
 

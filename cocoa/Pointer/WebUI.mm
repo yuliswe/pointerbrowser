@@ -505,7 +505,7 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
     if (webView.webpage->is_for_download()) {
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
-        File_ file = Global::controller->createFileDownloadFromUrlBlocking(webView.webpage->url(), QString::fromNSString(filename));
+        File_ file = Global::controller->createFileDownloadFromUrl(webView.webpage->url(), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
         Global::controller->closeTabAsync(Controller::TabStateOpen, webView.webpage);
         decisionHandler(WKNavigationResponsePolicyCancel);
@@ -518,7 +518,7 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
-        File_ file = Global::controller->createFileDownloadFromUrlBlocking(Url(QUrl::fromNSURL(url)), QString::fromNSString(filename));
+        File_ file = Global::controller->createFileDownloadFromUrl(Url(QUrl::fromNSURL(url)), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
     } else {
         decisionHandler(WKNavigationResponsePolicyAllow);
@@ -611,7 +611,7 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
 
 - (void)downloadAsPDF
 {
-    File_ file = Global::controller->createFileDownloadFromUrlBlocking(Url(QUrl::fromNSURL(self.URL)), QString::fromNSString(self.title));
+    File_ file = Global::controller->createFileDownloadFromUrl(Url(QUrl::fromNSURL(self.URL)), QString::fromNSString(self.title));
     Global::controller->startFileDownloadAsync(file);
 }
 
