@@ -223,7 +223,7 @@
 
 - (IBAction)menuShowEULA:(id)sender
 {
-    Global::controller->newTabAsync(Controller::TabStateOpen, Url("about:eula"), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+    Global::controller->newTabByUrlAsync(0, Controller::TabStateOpen, Url("about:eula"), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
 }
 
 - (IBAction)searchTab:(id)sender
@@ -234,7 +234,7 @@
 - (IBAction)menuKeepCurrentTabOpen:(id)sender
 {
     Webpage_ w = Global::controller->current_tab_webpage();
-    Global::controller->newTabAsync(Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+    Global::controller->newTabByUrlAsync(w, Controller::TabStateOpen, w->url(), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
 }
 
 - (IBAction)menuPrint:(id)sender

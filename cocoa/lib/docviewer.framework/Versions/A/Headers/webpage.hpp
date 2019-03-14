@@ -9,7 +9,7 @@
 #include "stringutils.hpp"
 
 class Webpage;
-typedef std::shared_ptr<Webpage> Webpage_;
+typedef QSharedPointer<Webpage> Webpage_;
 typedef QList<Webpage_> Webpage_List;
 class Controller;
 class TabsModel;
@@ -79,13 +79,15 @@ public:
     static QString errorPageHtml(QString const& message);
 
     PROP_DEF_BEGINS
-    PROP_R_N_D(Url, url, QString(""))
+    PROP_RwN_D(Url, url, QString(""))
     PROP_R_N_D(QString, title, "")
     PROP_RN_D(RangeSet, title_highlight_range, RangeSet())
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(RangeSet, title_2_highlight_range, RangeSet())
     PROP_RN_D(QString, title_3, "")
     PROP_RN_D(RangeSet, title_3_highlight_range, RangeSet())
+    PROP_RN_D(QWeakPointer<Webpage>, referred_by, QWeakPointer<Webpage>())
+    PROP_RN_D(Url, back_url, Url())
 
     PROP_RWN_D(Webpage::LoadingState, loading_state, Webpage::LoadingStateBlank)
     PROP_RWN_D(bool, is_secure, true)

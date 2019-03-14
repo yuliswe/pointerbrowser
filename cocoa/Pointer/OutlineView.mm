@@ -1027,7 +1027,7 @@ shouldShowOutlineCellForItem:(id)item
     if (index >= 0) {
         // clicked on search result
         Webpage_ p = Global::searchDB->search_result()->webpage_(static_cast<int>(index));
-        Global::controller->newTabAsync(Controller::TabStateOpen,
+        Global::controller->newTabByUrlAsync(p, Controller::TabStateOpen,
                                         p->url(),
                                         Controller::WhenCreatedViewNew,
                                         Controller::WhenExistsViewExisting,

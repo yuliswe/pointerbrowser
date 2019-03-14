@@ -7,9 +7,11 @@
 //
 
 #import <WebKit/WebKit.h>
+#import <Quartz/Quartz.h>
 #include <docviewer/docviewer.h>
 #include "TabView.mm.h"
 #import "ErrorPage.h"
+#import "WebPDF.h" 
 
 @class TabItemView;
 
@@ -28,6 +30,7 @@
 @property Webpage_ webpage;
 @property LegacyWebView* legacyWebView;
 @property BOOL m_redirected_from_error;
+@property WebPDF* pdfView;
 
 - (instancetype)initWithWebpage:(Webpage_)webpage
                           frame:(NSRect)frame

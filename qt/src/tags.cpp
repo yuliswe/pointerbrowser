@@ -5,7 +5,7 @@ int Controller::tagContainerInsertWebpageCopy(TagContainer_ container, int index
 {
     INFO(ControllerLogging) << container << index << w;
     set_tag_listing_last_cache(tag_listing_last_cache() + 1);
-    Webpage_ new_page = shared<Webpage>(w);
+    Webpage_ new_page = Webpage_::create(w);
     container->insertWebpage(new_page, index);
     container->saveToFile();
     workspacesInsertTagContainer(0, container, sender);
@@ -107,7 +107,7 @@ int Controller::createTagContainerByWebpage(QString const& title, int index, Web
 
 int Controller::createTagContainerByWebpageCopy(QString const& title, int index, Webpage_ w, void const* sender)
 {
-    Webpage_ n = shared<Webpage>(w);
+    Webpage_ n = Webpage_::create(w);
     return createTagContainerByWebpage(title, index, n, sender);
 }
 

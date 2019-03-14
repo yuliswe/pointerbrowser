@@ -6,6 +6,7 @@
 //  Copyright © 2018 Yu Li. All rights reserved.
 //
 #import <WebKit/WebKit.h>
+#import <Quartz/Quartz.h>
 #import "WebUI.mm.h"
 #import "TabView.mm.h"
 #import "Extension/PMenu.h"
@@ -20,6 +21,7 @@
 {
     Global::controller->closeAllPopoversAsync();
     [super mouseDown:event];
+    
 }
 
 - (instancetype)initWithWebpage:(Webpage_)webpage
@@ -109,24 +111,36 @@
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_highlight_all,
                      [=](const QString& keyword) {
-                        NSString* txt = keyword.toNSString();
+                         NSString* txt = keyword.toNSString();
+                         if (self.webpage->is_pdf() && self.pdfView) {
+                             return [self.pdfView performSelectorOnMainThread:@selector(findHighlightAll:) withObject:txt waitUntilDone:YES];
+                         }
                          [self performSelectorOnMainThread:@selector(highlightAllOccurencesOfString:) withObject:txt waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_clear,
                      [=]() {
+                         if (self.webpage->is_pdf() && self.pdfView) {
+                             return [self.pdfView performSelectorOnMainThread:@selector(findClear) withObject:nil waitUntilDone:YES];
+                         }
                          [self performSelectorOnMainThread:@selector(removeAllHighlights) withObject:nil waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_next_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
+                         if (self.webpage->is_pdf() && self.pdfView) {
+                             return [self.pdfView performSelectorOnMainThread:@selector(findScrollToNextHighlight) withObject:nil waitUntilDone:YES];
+                         }
                          [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
                      &Webpage::signal_tf_find_scroll_to_prev_highlight,
                      [=](int idx) {
                          NSNumber* n = [NSNumber numberWithInt:idx];
+                         if (self.webpage->is_pdf() && self.pdfView) {
+                             return [self.pdfView performSelectorOnMainThread:@selector(findScrollToPreviousHighlight) withObject:nil waitUntilDone:YES];
+                         }
                          [self performSelectorOnMainThread:@selector(scrollToNthHighlight:) withObject:n waitUntilDone:YES];
                      });
     QObject::connect(self.webpage.get(),
@@ -163,7 +177,7 @@
             && self.webpage->associated_tabs_model() != Global::controller->open_tabs().get()
             && self.canGoBack)
         {
-            Global::controller->newTabAsync(Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+            Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
             self.webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
             [self loadUrlString:self.webpage->url().full().toNSString()];
             return;
@@ -385,24 +399,46 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         && type == WKNavigationTypeLinkActivated)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ new_webpage = shared<Webpage>(url);
-        Global::controller->newTabByWebpageCopyAsync(0, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        Webpage_ new_webpage = Webpage_::create(url);
+        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
+            new_webpage->set_is_pdf_direct(true);
+        }
+        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
     /* if request is from preview or workspace, open new window */
     if ((is_preview_tab || is_workspace_tab) && is_loaded
         && type != WKNavigationTypeReload)
     {
-        Global::controller->newTabAsync(0, Controller::TabStateOpen, url, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
+        Webpage_ new_webpage = Webpage_::create(url);
+        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
+            new_webpage->set_is_pdf_direct(true);
+        }
+        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
-    /* made sure request is from open tab */
+    /* open new tab if command + click link */
     if (navigationAction.modifierFlags & NSEventModifierFlagCommand
         && navigationAction.buttonNumber == 1)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Global::controller->newTabAsync(Controller::TabStateOpen, url, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        Webpage_ new_webpage = Webpage_::create(url);
+        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
+            new_webpage->set_is_pdf_direct(true);
+        }
+        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        return;
+    }
+    /* open new tab if link is to a pdf */
+    if ([nsurl.absoluteString hasSuffix:@".pdf"] && ! self.webpage->is_pdf())
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        Webpage_ new_webpage = Webpage_::create(url);
+        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
+            new_webpage->set_is_pdf_direct(true);
+        }
+        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
     Controller::UrlChangeDecision decision = Global::controller->handleWebpageUrlWillChange(self.webpage, url);
@@ -515,17 +551,26 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         || ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]
             && ! navigationResponse.forMainFrame))
     {
-        decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
         File_ file = Global::controller->createFileDownloadFromUrl(Url(QUrl::fromNSURL(url)), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
-    } else {
-        decisionHandler(WKNavigationResponsePolicyAllow);
-        if ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]) {
-            webView.webpage->set_is_pdf_async(true);
+        decisionHandler(WKNavigationResponsePolicyCancel);
+        return;
+    } else if ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]) {
+        if (! self.pdfView) {
+            self.pdfView = [[WebPDF alloc] initWithWebUI:self];
         }
+        self.pdfView.document = [[PDFDocument alloc] initWithURL:self.URL];
+        [self addSubviewAndFill:self.pdfView];
+        self.pdfView.hidden = NO;
+        decisionHandler(WKNavigationResponsePolicyAllow);
+        return;
     }
+    if (self.pdfView) {
+        self.pdfView.hidden = YES;
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 - (WKWebView *)webView:(WebUI *)webView
@@ -535,7 +580,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 {
     // javascript requested window
     Url url = Url(QUrl::fromNSURL(navigationAction.request.URL));
-    Webpage_ new_webpage = shared<Webpage>(url);
+    Webpage_ new_webpage = Webpage_::create(url);
     new_webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
     Global::controller->conscentHttpWebpageUrlChange(new_webpage);
     WebUI* new_webUI = [[WebUI alloc] initWithWebpage:new_webpage frame:self.bounds config:configuration];

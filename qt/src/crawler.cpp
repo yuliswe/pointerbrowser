@@ -360,7 +360,7 @@ void Crawler::processParseResult(const UrlNoHash& base, QString title, const QSe
                 if (linktxt.isEmpty()) {
                     linktxt = link.url.authority();
                 }
-                Webpage_ w = shared<Webpage>(link.url.base());
+                Webpage_ w = Webpage_::create(link.url.base());
                 // guess a fine title with link text and url
                 w->set_title(linktxt + " [Found in "+ title +"]");
                 new_pages << w;

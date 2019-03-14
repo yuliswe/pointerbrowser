@@ -283,7 +283,7 @@ bool UpdateWorker::addWebpages(QSet<UrlNoHash> const& s, void const* sender)
     QList<Webpage_> ls;
     for (auto i = s.begin(); i != s.end(); i++)
     {
-        Webpage_ w = shared<Webpage>(i->base());
+        Webpage_ w = Webpage_::create(i->base());
         ls << w;
         qCDebug(SearchDBLogging) << "UpdateWorker::addWebpages add" << w->url();
     }
@@ -554,7 +554,7 @@ QList<Webpage_> SearchWorker::webpagesFromQuery(QSqlQuery& r)
         expanded_display << display_title
                          << display_symbol + display_hash + display_filename
                          << display_partial_url;
-        Webpage_ wp = shared<Webpage>(Url(url + "#" + hash));
+        Webpage_ wp = Webpage_::create(Url(url + "#" + hash));
         wp->set_title(display_title);
         wp->set_title_2(display_symbol + display_hash + display_filename);
         wp->set_title_3(display_partial_url);

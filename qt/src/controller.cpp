@@ -11,7 +11,7 @@ Controller::Controller()
 int Controller::newTab(void const* sender)
 {
     DEBUG(ControllerLogging) << sender;
-    Webpage_ new_page = shared<Webpage>(home_url());
+    Webpage_ new_page = Webpage_::create(home_url());
     new_page->set_show_bookmark_on_blank(true);
     return Controller::newTabByWebpage(0,
                                        TabStateOpen,
@@ -19,16 +19,6 @@ int Controller::newTab(void const* sender)
                                        WhenCreatedViewNew,
                                        WhenExistsViewExisting,
                                        sender);
-}
-
-int Controller::newTab(TabState state,
-                       Url const& url,
-                       WhenCreated newBehavior,
-                       WhenExists whenExists,
-                       void const* sender)
-{
-    DEBUG(ControllerLogging) << state << url << newBehavior << whenExists << sender;
-    return newTab(0, state, url, newBehavior, whenExists, sender);
 }
 
 int Controller::newTabByWebpageCopy(int index,
@@ -39,8 +29,41 @@ int Controller::newTabByWebpageCopy(int index,
                                     void const* sender)
 {
     DEBUG(ControllerLogging) << index << state << webpage->url() << newBehavior << whenExists << sender;
-    Webpage_ new_page = shared<Webpage>(webpage);
+    Webpage_ new_page = Webpage_::create(webpage);
     return newTabByWebpage(index, state, new_page, newBehavior, whenExists, sender);
+}
+
+int Controller::newTabByWebpageCopy(Webpage_ parent,
+                                    TabState state,
+                                    Webpage_ webpage,
+                                    WhenCreated newBehavior,
+                                    WhenExists whenExists,
+                                    void const* sender)
+{
+    DEBUG(ControllerLogging) << parent << state << webpage->url() << newBehavior << whenExists << sender;
+    Webpage_ new_page = Webpage_::create(webpage);
+    return newTabByWebpage(parent, state, new_page, newBehavior, whenExists, sender);
+}
+
+int Controller::newTabByWebpage(Webpage_ parent,
+                                TabState state,
+                                Webpage_ webpage,
+                                WhenCreated newBehavior,
+                                WhenExists whenExists,
+                                void const* sender)
+{
+    DEBUG(ControllerLogging) << parent << state << webpage->url() << newBehavior << whenExists << sender;
+    webpage->set_referred_by(parent);
+    int idx;
+    if (state == TabStateOpen) {
+        idx = open_tabs()->findTabByRefOrUrl(parent);
+        if (idx == -1) {
+            idx = 0;
+        }
+    } else {
+        idx = 0;
+    }
+    return newTabByWebpage(idx, state, webpage, newBehavior, whenExists, sender);
 }
 
 int Controller::newTabByWebpage(int index,
@@ -50,13 +73,13 @@ int Controller::newTabByWebpage(int index,
                                 WhenExists whenExists,
                                 void const* sender)
 {
-    INFO(ControllerLogging) << sender
+    INFO(ControllerLogging) << index
                             << state
                             << webpage->url().full()
                             << newBehavior
-                            << whenExists;
+                            << whenExists
+                            << sender;
     int idx = 0;
-    webpage->set_tab_state(state);
     if (state == TabStateOpen) {
         bool inserted = false;
         if (whenExists == WhenExistsViewExisting) {
@@ -69,7 +92,7 @@ int Controller::newTabByWebpage(int index,
             open_tabs()->insertWebpage_(idx = index, webpage);
             inserted = true;
         }
-        if (webpage->loading_state() == Webpage::LoadingStateBlank) {
+        if (webpage->url().isBlank()) {
             moveTab(state, idx, state, 0, sender);
             idx = 0;
         }
@@ -133,15 +156,26 @@ int Controller::newTabByWebpage(int index,
     return idx;
 }
 
-int Controller::newTab(int index,
-                       TabState state,
-                       Url const& url,
-                       WhenCreated newBehavior,
-                       WhenExists whenExists,
-                       void const* sender)
+int Controller::newTabByUrl(int index,
+                            TabState state,
+                            Url const& url,
+                            WhenCreated newBehavior,
+                            WhenExists whenExists,
+                            void const* sender)
 {
     DEBUG(ControllerLogging) << index << state << url << newBehavior << whenExists << sender;
-    return newTabByWebpage(index, state, shared<Webpage>(url), newBehavior, whenExists, sender);
+    return newTabByWebpage(index, state, Webpage_::create(url), newBehavior, whenExists, sender);
+}
+
+int Controller::newTabByUrl(Webpage_ parent,
+                            TabState state,
+                            Url const& url,
+                            WhenCreated newBehavior,
+                            WhenExists whenExists,
+                            void const* sender)
+{
+    DEBUG(ControllerLogging) << parent << state << url << newBehavior << whenExists << sender;
+    return newTabByWebpage(parent, state, Webpage_::create(url), newBehavior, whenExists, sender);
 }
 
 int Controller::viewTab(Webpage_ webpage, void const* sender)
@@ -207,7 +241,7 @@ int Controller::viewTab(TabState state, int i, void const* sender)
         old_page = nullptr;
     }
     if (state == TabStateNull) {
-        Webpage_ empty_page = shared<Webpage>();
+        Webpage_ empty_page = Webpage_::create();
         old_page = nullptr;
         helperCurrentTabWebpagePropertyChanged(empty_page, nullptr, sender);
         set_current_open_tab_index(-1,sender);
@@ -409,7 +443,11 @@ int Controller::loadLastOpen()
 
     Webpage_List tabs;
     for (const QVariant& item : open_tabs_encoded) {
-        tabs << Webpage::fromQVariantMap(item.value<QVariantMap>());
+        Webpage_ w = Webpage::fromQVariantMap(item.value<QVariantMap>());
+        if (w->url().isBlank()) {
+            w->set_show_bookmark_on_blank(true);
+        }
+        tabs << w;
     }
     open_tabs()->replaceModel(tabs);
     if (open_tabs()->count() > 0) {
@@ -510,7 +548,7 @@ int Controller::webpageGo(Webpage_ p, QString const& u, void const* sender)
     if (p.get() && current_tab_state() == TabStateOpen) {
         p->go(u);
     } else {
-        newTab(TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew, sender);
+        newTabByUrl(p, TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew, sender);
     }
     saveLastOpen();
     return 0;
