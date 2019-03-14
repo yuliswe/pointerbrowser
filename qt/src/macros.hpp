@@ -57,6 +57,7 @@
     protected: type custom_set_##prop(type const& val, void const* sender = nullptr); \
     protected: type m_##prop = defv; \
     protected: Q_INVOKABLE type set_##prop(type const& val, void const* sender = nullptr) { qCInfo(MacroLogging) << STRING(set_##prop) << val; Q_ASSERT(thread() == QThread::currentThread()); type const& newval = custom_set_##prop(val,sender); lock_##prop##_for_read_write(); m_##prop = newval; unlock_##prop##_for_read_write(); emit prop##_changed(newval, sender); emit propertyChanged(&m_##prop,sender); return newval; } \
+    public: Q_INVOKABLE type const& set_##prop##_direct(type const& val, void const* sender = nullptr) { qCInfo(MacroLogging) << STRING(set_##prop##_direct) << val; lock_##prop##_for_read_write(); m_##prop = val; unlock_##prop##_for_read_write(); emit prop##_changed(val, sender); emit propertyChanged(&m_##prop,sender); return val; } \
     public: void set_##prop##_async(type const& val, void const* sender = nullptr) { qCDebug(MacroLogging) << this << STRING(set_##prop##_async) << val; QMetaObject::invokeMethod(this, STRING(set_##prop), Qt::QueuedConnection, Q_ARG(type const&,val), Q_ARG(void const*,sender)); } \
     public: Q_SIGNAL void prop##_changed(type, void const* sender = nullptr); \
     public: bool is_##prop##_change(void const* address) { return &m_##prop == address; }

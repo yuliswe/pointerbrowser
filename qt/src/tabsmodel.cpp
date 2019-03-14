@@ -26,7 +26,7 @@ Webpage_ TabsModel::webpage_(int i) const
 {
     if (i < 0 || i >= _tabs.length()) {
         qCritical(WebpageLogging) << "array index out of range" << i << "/" << count();
-        return shared<Webpage>();
+        return Webpage_::create();
     }
     return _tabs[i];
 }

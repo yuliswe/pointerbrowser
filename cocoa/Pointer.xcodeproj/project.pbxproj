@@ -48,6 +48,8 @@
 		B224988521B3460600EDAC3D /* GenericTextFieldPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */; };
 		B224988821B36D1900EDAC3D /* GenericTextFieldPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */; };
 		B224988B21B370C600EDAC3D /* PPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B224988A21B370C600EDAC3D /* PPopover.m */; };
+		B226AFE622399ED1004FB689 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B226AFE522399ED1004FB689 /* Quartz.framework */; };
+		B226AFE9223BF114004FB689 /* WebPDF.mm in Sources */ = {isa = PBXBuildFile; fileRef = B226AFE8223BF114004FB689 /* WebPDF.mm */; };
 		B22A79F621BC523200A7D623 /* PString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B22A79F521BC523200A7D623 /* PString.mm */; };
 		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
@@ -156,6 +158,9 @@
 		B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GenericTextFieldPopover.mm; sourceTree = "<group>"; };
 		B224988921B370C600EDAC3D /* PPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPopover.h; sourceTree = "<group>"; };
 		B224988A21B370C600EDAC3D /* PPopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPopover.m; sourceTree = "<group>"; };
+		B226AFE522399ED1004FB689 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		B226AFE7223BF114004FB689 /* WebPDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebPDF.h; sourceTree = "<group>"; };
+		B226AFE8223BF114004FB689 /* WebPDF.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WebPDF.mm; sourceTree = "<group>"; };
 		B22A79F421BC523200A7D623 /* PString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PString.h; sourceTree = "<group>"; };
 		B22A79F521BC523200A7D623 /* PString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PString.mm; sourceTree = "<group>"; };
 		B22A79F721BC530000A7D623 /* Extension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Extension.h; sourceTree = "<group>"; };
@@ -173,6 +178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B226AFE622399ED1004FB689 /* Quartz.framework in Frameworks */,
 				7A8A42B121904A7000E5D117 /* WebKit.framework in Frameworks */,
 				7A8A42AD219049E800E5D117 /* docviewer.framework in Frameworks */,
 				7A8A42A7219049E800E5D117 /* QtCore.framework in Frameworks */,
@@ -246,6 +252,8 @@
 				7A651480211EAC2100977B87 /* TabView.mm.h */,
 				7A8D32DE2111A43B0066691C /* WebUI.mm.h */,
 				7A8D32DF2111A43B0066691C /* WebUI.mm */,
+				B226AFE7223BF114004FB689 /* WebPDF.h */,
+				B226AFE8223BF114004FB689 /* WebPDF.mm */,
 				7A43E27E2180F35600E834E5 /* Downloads.h */,
 				7A43E27F2180F36B00E834E5 /* Downloads.mm */,
 				7A43E2812180F7C200E834E5 /* Downloads.xib */,
@@ -287,6 +295,7 @@
 		7A788812211C969100675101 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B226AFE522399ED1004FB689 /* Quartz.framework */,
 				7A6514862120632100977B87 /* QuartzCore.framework */,
 				7A65147B211EAB1D00977B87 /* WebKit.framework */,
 			);
@@ -421,6 +430,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B226AFE9223BF114004FB689 /* WebPDF.mm in Sources */,
 				7A0CDD472110F3D400FE35C5 /* BrowserWindow.mm in Sources */,
 				7AB2319121856649005B436F /* ErrorPage.mm in Sources */,
 				7A4D3F5A217DA65100C5E8A6 /* PSearchField.mm in Sources */,

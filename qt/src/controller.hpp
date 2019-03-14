@@ -64,7 +64,7 @@ public:
     PROP_RN_D(TagsCollection_, workspaces, TagsCollection_::create())
 
     PROP_RN_D(QString, home_url, "about:blank")
-    PROP_RN_D(Webpage_, welcome_page, shared<Webpage>(QString("https://Welcome")))
+    PROP_RN_D(Webpage_, welcome_page, Webpage_::create(QString("https://Welcome")))
     // current tab
     PROP_RN_D(TabState, current_tab_state, TabStateNull)
     PROP_RN_D(Webpage_, current_tab_webpage, nullptr)
@@ -172,10 +172,12 @@ public:
     Controller();
 
     METH_ASYNC_0(int, newTab)
-    METH_ASYNC_4(int, newTab, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByUrl, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByUrl, Webpage_, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTabByWebpage, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByWebpage, Webpage_, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_5(int, newTabByWebpageCopy, int, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
-    METH_ASYNC_5(int, newTab, int, Controller::TabState, Url const&, Controller::WhenCreated, Controller::WhenExists)
+    METH_ASYNC_5(int, newTabByWebpageCopy, Webpage_, Controller::TabState, Webpage_, Controller::WhenCreated, Controller::WhenExists)
     METH_ASYNC_1(int, viewTab, Webpage_)
     METH_ASYNC_2(int, viewTab, Controller::TabState, int)
     METH_ASYNC_4(int, moveTab, Controller::TabState, int, Controller::TabState, int)

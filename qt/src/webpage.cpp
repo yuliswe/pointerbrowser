@@ -14,13 +14,15 @@ Webpage::Webpage(Webpage_ w)
     , m_title(w->title())
 //    , m_loading_state(w->loading_state())
     , m_show_bookmark_on_blank(w->show_bookmark_on_blank())
+    , m_is_pdf(w->is_pdf())
     , m_can_go_forward(w->can_go_forward())
     , m_can_go_back(w->can_go_back())
     , m_associated_frontend_tab_object(w->associated_frontend_tab_object())
     , m_associated_tabs_model(w->associated_tabs_model())
     , m_associated_tag_container(w->associated_tag_container())
 {
-
+    set_url(w->url());
+    set_title(w->title());
 }
 
 Webpage::Webpage(QString const& url)
@@ -47,7 +49,8 @@ Webpage::Webpage(Url const& url,
 Webpage::Webpage(const QVariantMap& map)
 {
     set_url(Url(map["url"].value<QString>()));
-    set_title(QString(map["title"].value<QString>()));
+    set_title(map["title"].value<QString>());
+//    set_is_pdf(map["is_pdf"].value<bool>());
 }
 
 Webpage::~Webpage() {}
@@ -55,18 +58,22 @@ Webpage::~Webpage() {}
 QVariantMap Webpage::toQVariantMap()
 {
     QVariantMap map;
-    map.insert("title", title());
     map.insert("url", url().full());
+    map.insert("title", title());
+//    map.insert("is_pdf", is_pdf());
     return map;
 }
 
 Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
 {
-    return shared<Webpage>(map); // use constructor
+    return Webpage_::create(map); // use constructor
 }
 
 Url Webpage::custom_set_url(Url const& url, void const* sender)
 {
+    if (url.full().endsWith(".pdf")) {
+        set_is_pdf(true);
+    }
     if (! url.isEmpty()) {
         set_title(url.full());
     }
@@ -122,10 +129,11 @@ int Webpage::handleLoadingDidStart(void const* sender)
     return true;
 }
 
-int Webpage::handleUrlDidChange(Url const& url, void const* sender)
+int Webpage::handleUrlDidChange(Url const& u, void const* sender)
 {
-    INFO(WebpageLogging) << url;
-    set_url(url, sender);
+    INFO(WebpageLogging) << u;
+    set_back_url(url());
+    set_url(u, sender);
     if (loading_state() == LoadingStateBlank) {
         findClear();
     }
