@@ -107,10 +107,11 @@
 {
     bool visible = Global::controller->bookmark_page_visible();
 //    [NSResponder inspectResponderChain];
-    if (visible) {
+    if (visible && self.window.firstResponder != [self.window.windowController tab_searchfield].currentEditor)
+    {
         [self.addressbar getFocus];
     } else {
-        [self.window makeFirstResponder:self.outlineViewController.outlineView];
+        [self.window makeFirstResponder:nil];
     }
     self.bookmarks_view_container.hidden = ! visible;
     self.tab_view_container.hidden = visible;
@@ -353,10 +354,12 @@
 }
 
 - (BOOL)makeFirstResponder:(NSResponder *)responder {
-//    NSLog(@"make first responder: %@", responder);
-//    [NSResponder inspectResponderChain];
+    BrowserWindowController* controller = (BrowserWindowController*)self.windowController;
+//    NSLog(@"make first responder: %@ %@ %@", responder, self.firstResponder, controller.tab_searchfield.currentEditor);
     if (responder == nil) {
-        BrowserWindowController* controller = (BrowserWindowController*)self.windowController;
+        if (self.firstResponder == controller.tab_searchfield.currentEditor) {
+            return NO;
+        }
         responder = controller.outlineViewController.outlineView;
     }
     BOOL rt = [super makeFirstResponder:responder];
