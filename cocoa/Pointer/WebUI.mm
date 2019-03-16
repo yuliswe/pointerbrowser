@@ -203,19 +203,14 @@
 
 - (NSString*)removePesudoUrlPrefix:(NSURL*)nsurl
 {
-    Url url(QString::fromNSString([nsurl.absoluteString stringByRemovingPercentEncoding]));
-    QString base = url.base();
-    QString errorPesudoUrlPrefix = QString::fromNSString(self.errorPesudoUrlPrefix);
-    QString httpWarningPesudoUrlPrefix = QString::fromNSString(self.httpWarningPesudoUrlPrefix);
-    if (base.indexOf(errorPesudoUrlPrefix) == 0) {
-        base = base.mid(errorPesudoUrlPrefix.length());
-    } else if (base.indexOf(httpWarningPesudoUrlPrefix) == 0) {
-        base = base.mid(httpWarningPesudoUrlPrefix.length());
+    NSString* decoded = [nsurl.absoluteString stringByRemovingPercentEncoding];
+    if ([decoded hasPrefix:self.errorPesudoUrlPrefix]) {
+        return [decoded substringFromIndex:self.errorPesudoUrlPrefix.length];
     }
-    if (! url.hash().isEmpty()) {
-        base += "#" + url.hash();
+    if ([decoded hasPrefix:self.httpWarningPesudoUrlPrefix]) {
+        return [decoded substringFromIndex:self.httpWarningPesudoUrlPrefix.length];
     }
-    return base.toNSString();
+    return decoded;
 }
 
 - (void)reload
@@ -326,7 +321,7 @@ didCommitNavigation:(WKNavigation *)navigation {
      when user conscent HTTP url, the page refreshes, leaving the about:warning-http:url in the
      back-forward-list. User cannot go back to previous pages anymore. We need to be able to edit
      the back-forward-list to fix this, which currently has no API. */
-    [self reload];
+    [self loadUrlString:self.webpage->url().full().toNSString()];
 }
 
 - (NSString*)errorPesudoUrlPrefix
@@ -357,7 +352,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     BOOL isError = [nsurl.absoluteString hasPrefix:errorPesudoUrlPrefix];
     BOOL isHttpWarning = [nsurl.absoluteString hasPrefix:httpWarningPesudoUrlPrefix];
     if (isError || isHttpWarning) {
-        if (self.is_pesudo_url) {
+//        if (self.is_pesudo_url) {
             decisionHandler(WKNavigationActionPolicyAllow);
             if (isError) {
                 [self.error_page_view_controller showWithTitle:@"Pointer Could Not Open the Page" message:self.webpage->error().toNSString() yesTarget:self yesSelector:nil noTarget:nil noSelector:nil];
@@ -365,24 +360,24 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
                 [self.error_page_view_controller showWithTitle:@"Connection Is Not Secure" message:@"You are about to visit a website via unencrypted HTTP connection. Everyone in the network may be able to see your sent and received data as plain text. You should use HTTPS whenever possible. Do you still want to visit this page?" yesTarget:self yesSelector:@selector(conscentWebpageHttpUrlThenReload) noTarget:self noSelector:@selector(goBack)];
             }
             return;
-        } else {
+//        } else {
             /* User visits the pesudo url directly, for example, on goBack event */
             /* Whenever WKNavigationActionPolicyCancel is used, URL is reset to its previous state.
              Set the is_pesudo_url flag so that the url change listener does not pick up the reset.
              Then manually set the new URL on weboage. */
-            self.is_pesudo_url = true;
-            decisionHandler(WKNavigationActionPolicyCancel);
-            NSString* modifiedUrlStr = [self removePesudoUrlPrefix:nsurl];
-            Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
-            Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
+//            self.is_pesudo_url = true;
+//            decisionHandler(WKNavigationActionPolicyAllow);
+//            NSString* modifiedUrlStr = [self removePesudoUrlPrefix:nsurl];
+//            Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
+//            Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
             /* Due to the way this is implemented, there's a bug that's not fixable without APIs that
              allows us to edit the back-forward-list. When user visits a about:warning-http:url page directly
              via back/forward/refresh, the about:warning-http:url page is left in the back-forward-list, and
              everything that page is hit by back/forward/refresh, a new page with the original url is opened,
              overwriting later histories. */
-            [self loadUrlString:modifiedUrlStr];
-            return;
-        }
+//            [self loadUrlString:modifiedUrlStr];
+//            return;
+//        }
     }
     /* reset */
     [self.error_page_view_controller hide];
