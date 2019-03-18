@@ -55,6 +55,7 @@
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
 		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
 		B2ADF2B321CC33EA00E3D81A /* PImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2ADF2B221CC33EA00E3D81A /* PImage.mm */; };
+		B2AEA748223D81D100AB83A8 /* WebFindText.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2AEA747223D81D100AB83A8 /* WebFindText.mm */; };
 		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -170,6 +171,8 @@
 		B2713A8121A4D12900FCF4C1 /* OutlineView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OutlineView.xib; sourceTree = "<group>"; };
 		B2ADF2B121CC33EA00E3D81A /* PImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PImage.h; sourceTree = "<group>"; };
 		B2ADF2B221CC33EA00E3D81A /* PImage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PImage.mm; sourceTree = "<group>"; };
+		B2AEA746223D81D100AB83A8 /* WebFindText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebFindText.h; sourceTree = "<group>"; };
+		B2AEA747223D81D100AB83A8 /* WebFindText.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WebFindText.mm; sourceTree = "<group>"; };
 		B2F6648B219676850069F547 /* libgumbo_query.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo_query.dylib; path = lib/libgumbo_query.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -260,6 +263,8 @@
 				7AB2318D21856634005B436F /* ErrorPage.xib */,
 				7AB2319021856649005B436F /* ErrorPage.mm */,
 				7AB2318F21856649005B436F /* ErrorPage.h */,
+				B2AEA746223D81D100AB83A8 /* WebFindText.h */,
+				B2AEA747223D81D100AB83A8 /* WebFindText.mm */,
 			);
 			path = Pointer;
 			sourceTree = "<group>";
@@ -454,6 +459,7 @@
 				7A8D32E02111A43B0066691C /* WebUI.mm in Sources */,
 				7A43E2802180F36B00E834E5 /* Downloads.mm in Sources */,
 				B224988821B36D1900EDAC3D /* GenericTextFieldPopover.mm in Sources */,
+				B2AEA748223D81D100AB83A8 /* WebFindText.mm in Sources */,
 				7A0CDD342110F15600FE35C5 /* Application.mm in Sources */,
 				7A7DBEF6217EC7DE00C6E778 /* PCollectionView.m in Sources */,
 				7A7DBEFC217ECA2600C6E778 /* MainMenu.mm in Sources */,

@@ -21,6 +21,12 @@
     return self;
 }
 
+- (void)mouseDown:(NSEvent *)event
+{
+    Global::controller->closeAllPopoversAsync();
+    return [super mouseDown:event];
+}
+
 - (void)drawHighlightOnFindText {
     [self setHighlightedSelections:nil];
     self.current_find_highlights = [self.document findString:self.current_find_text withOptions:NSCaseInsensitiveSearch];

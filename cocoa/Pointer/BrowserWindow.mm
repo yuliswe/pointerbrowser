@@ -137,17 +137,14 @@
     FindTextState state = Global::controller->current_webpage_find_text_state();
     if (state.visiable) {
         self.text_find_toolbar.hidden = NO;
-        [self.window makeFirstResponder:self.text_find_searchfield];
+        if (self.window.firstResponder != self.text_find_searchfield.currentEditor) {
+            [self.window makeFirstResponder:self.text_find_searchfield];
+        }
     } else {
         self.text_find_toolbar.hidden = YES;
     }
     self.text_find_searchfield.stringValue = state.text.toNSString();
-    self.text_find_label.hidden = (state.found == -1);
-    if (state.found > 0) {
-        self.text_find_label.stringValue = [NSString stringWithFormat:@"Found %d matches",state.found];
-    } else {
-        self.text_find_label.stringValue = @"Found 0 match";
-    }
+    [self.text_find_searchfield updateLabel:state.found];
 }
 
 - (IBAction)handleFindTextDoneButtonClicked:(id)sender

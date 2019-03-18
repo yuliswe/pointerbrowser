@@ -16,6 +16,7 @@
 #import "ErrorPage.h"
 #import "AddTagsPopover.h"
 #import "OutlineView.mm.h"
+#import "WebFindText.h"
 
 @interface NSResponder(Pointer)
 - (IBAction)menuNewTab:(id)sender;
@@ -44,7 +45,7 @@
 @property IBOutlet OutlineViewController* outlineViewController;
 @property IBOutlet TabViewController* tabViewController;
 @property IBOutlet NSBox* text_find_toolbar;
-@property IBOutlet NSSearchField* text_find_searchfield;
+@property IBOutlet WebFindText* text_find_searchfield;
 @property IBOutlet NSSearchField* tab_searchfield;
 @property IBOutlet AddressBar* addressbar;
 @property IBOutlet NSButton* newtab_button;
