@@ -217,22 +217,23 @@ int Controller::viewTab(Webpage_ webpage, void const* sender)
 int Controller::viewTab(TabState state, int i, void const* sender)
 {
     qCInfo(ControllerLogging) << "BrowserController::viewTab" << state << i << sender;
-    if (current_tab_state() == state
-            && state == TabStateOpen
-            && 0 <= i && i < open_tabs()->count()
-            && current_tab_webpage().get() == open_tabs()->webpage_(i).get()
-            && current_open_tab_index() == i)
-    {
-        return 0;
-    }
-    if (current_tab_state() == state
-            && state == TabStatePreview
-            && 0 <= i && i < preview_tabs()->count()
-            && current_tab_webpage().get() == preview_tabs()->webpage_(i).get()
-            && current_preview_tab_index() == i)
-    {
-        return 0;
-    }
+    // 忽略重复的viewTab, 有必要吗？
+//    if (current_tab_state() == state
+//            && state == TabStateOpen
+//            && 0 <= i && i < open_tabs()->count()
+//            && current_tab_webpage().get() == open_tabs()->webpage_(i).get()
+//            && current_open_tab_index() == i)
+//    {
+//        return 0;
+//    }
+//    if (current_tab_state() == state
+//            && state == TabStatePreview
+//            && 0 <= i && i < preview_tabs()->count()
+//            && current_tab_webpage().get() == preview_tabs()->webpage_(i).get()
+//            && current_preview_tab_index() == i)
+//    {
+//        return 0;
+//    }
     static Webpage_ old_page = nullptr;
     //    closeAllPopovers();
     // disconnect from old
