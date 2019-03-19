@@ -387,6 +387,15 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     bool is_workspace_tab = w->associated_tabs_model() == Global::controller->workspace_tabs().get();
     bool is_loaded = w->loading_state() == Webpage::LoadingStateLoaded;
     WKNavigationType type = navigationAction.navigationType;
+    /* open new tab if command + click link */
+    if (navigationAction.modifierFlags & NSEventModifierFlagCommand
+        && navigationAction.buttonNumber == 1)
+    {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        Webpage_ new_webpage = Webpage_::create(url);
+        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        return;
+    }
     /* If the this is a HTTP request on a page not newly created, open new window */
     if (url.scheme() == "http"
         && (self.webpage->url().scheme() != "http" || ! self.webpage->allow_http())
@@ -395,9 +404,6 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     {
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ new_webpage = Webpage_::create(url);
-        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
-            new_webpage->set_is_pdf_direct(true);
-        }
         Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
@@ -406,23 +412,8 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         && type != WKNavigationTypeReload)
     {
         Webpage_ new_webpage = Webpage_::create(url);
-        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
-            new_webpage->set_is_pdf_direct(true);
-        }
         Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
         decisionHandler(WKNavigationActionPolicyCancel);
-        return;
-    }
-    /* open new tab if command + click link */
-    if (navigationAction.modifierFlags & NSEventModifierFlagCommand
-        && navigationAction.buttonNumber == 1)
-    {
-        decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ new_webpage = Webpage_::create(url);
-        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
-            new_webpage->set_is_pdf_direct(true);
-        }
-        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
         return;
     }
     /* open new tab if link is to a pdf */
@@ -430,9 +421,6 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     {
         decisionHandler(WKNavigationActionPolicyCancel);
         Webpage_ new_webpage = Webpage_::create(url);
-        if ([nsurl.absoluteString hasSuffix:@".pdf"]) {
-            new_webpage->set_is_pdf_direct(true);
-        }
         Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
