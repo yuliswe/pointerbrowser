@@ -352,7 +352,7 @@
                      &Controller::current_tab_webpage_is_secure_changed,
                      [=](bool secure)
                      {
-                         if (secure) {
+                         if (secure || Global::controller->current_tab_webpage_is_pdf()) {
                              [self.surface.trust_button performSelectorOnMainThread:@selector(showTrusted) withObject:nil waitUntilDone:YES];
                          } else {
                              [self.surface.trust_button performSelectorOnMainThread:@selector(showUntrusted) withObject:nil waitUntilDone:YES];
