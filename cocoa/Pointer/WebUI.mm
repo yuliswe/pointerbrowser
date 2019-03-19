@@ -158,6 +158,9 @@
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
         float p = (float)[self estimatedProgress];
         self.webpage->set_load_progress_async(p);
+    } else if ([keyPath isEqualToString:@"progress.fractionCompleted"]) {
+        NSProgress* p = [(NSURLSessionDownloadTask*)object progress];
+        self.webpage->set_load_progress_async(p.fractionCompleted);
     } else if ([keyPath isEqualToString:@"URL"]) {
         /* Only SPAs need to be handled here */
         if (self.webpage->loading_state() != Webpage::LoadingStateLoaded) {
@@ -215,8 +218,12 @@
 
 - (void)reload
 {
-    [super reload];
-    [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:self.URL]];
+    if (self.webpage->is_pdf()) {
+        [self loadUrlString:self.webpage->url().full().toNSString()];
+    } else {
+        [super reload];
+        [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:self.URL]];
+    }
 }
 
 - (void)handle_loading_state_changed
@@ -544,10 +551,15 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         if (! self.pdfView) {
             self.pdfView = [[WebPDF alloc] initWithWebUI:self];
         }
-        self.pdfView.document = [[PDFDocument alloc] initWithURL:self.URL];
         [self addSubviewAndFill:self.pdfView];
         self.pdfView.hidden = NO;
-        decisionHandler(WKNavigationResponsePolicyAllow);
+        NSURLSession* pdf_session = [NSURLSession sharedSession];
+        NSURLSessionDataTask* data_session = [pdf_session dataTaskWithURL:self.URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            [self.pdfView performSelectorOnMainThread:@selector(setDocument:) withObject:[[PDFDocument alloc] initWithData:data] waitUntilDone:YES];
+        }];
+        [data_session addObserver:self forKeyPath:@"progress.fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
+        [data_session resume];
+        decisionHandler(WKNavigationResponsePolicyCancel);
         return;
     }
     if (self.pdfView) {
@@ -639,7 +651,7 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
 
 - (void)downloadAsPDF
 {
-    File_ file = Global::controller->createFileDownloadFromUrl(Url(QUrl::fromNSURL(self.URL)), QString::fromNSString(self.title));
+    File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), QString::fromNSString(self.title));
     Global::controller->startFileDownloadAsync(file);
 }
 
