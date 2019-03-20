@@ -299,15 +299,6 @@
     [webUI downloadAsWebArchive];
 }
 
-- (void)print
-{
-    int idx = self.selectedTabViewItemIndex;
-    if (idx == -1) { return; }
-    NSViewController* controller = self.childViewControllers[idx];
-    WebUI* webUI = (WebUI*)controller.view;
-    [webUI print];
-}
-
 - (void)downloadAsPDF
 {
     int idx = self.selectedTabViewItemIndex;

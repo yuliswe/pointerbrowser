@@ -141,11 +141,12 @@ public:
     METH_ASYNC_1(int, finishFileDownload, File_)
     METH_ASYNC_1(int, pauseFileDownload, File_)
     File_ createFileDownloadFromUrl(Url, QString const&, void const* sender = nullptr);
+    File_ createWebArchiveDownloadFromUrl(Url, QString const&, void const* sender = nullptr);
     METH_ASYNC_1(int, conscentHttpFileDownload, File_)
     METH_ASYNC_1(int, failFileDownload, File_)
     METH_ASYNC_1(int, startFileDownload, File_)
-    METH_ASYNC_1(int, saveWebArchiveAsDownloadFile, Webpage_)
-    METH_ASYNC_1(int, handleSaveWebArchiveFinished, File_)
+    METH_ASYNC_1(int, startWebArchiveDownload, File_)
+    METH_ASYNC_1(int, finishWebArchiveDownload, File_)
 
     // close tab
     PROP_RN_D(TabState, next_tab_state, TabStateNull)

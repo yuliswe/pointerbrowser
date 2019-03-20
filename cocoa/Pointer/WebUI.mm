@@ -60,7 +60,6 @@
     [self addSubviewAndFill:self.error_page_view_controller.view];
     [self.error_page_view_controller hide];
     [self connect];
-    self.legacyWebView = [[LegacyWebView alloc] initWithFrame:self.frame];
     return self;
 }
 
@@ -168,17 +167,14 @@
         }
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
-        /* is_pesudo_url should be ignored by the backend */
-        if (self.is_pesudo_url) {
-            return;
-        }
         /* in a single page application, url changes without triggering decidePolicyForNavigationAction
             here we need to make url change in preview mode open new pages for SPAs */
         if (self.webpage->associated_tabs_model()
             && self.webpage->url() != Url(QUrl::fromNSURL(url))
             && self.webpage->loading_state() == Webpage::LoadingStateLoaded
             && self.webpage->associated_tabs_model() != Global::controller->open_tabs().get()
-            && self.canGoBack)
+            && self.canGoBack
+            && ! self.is_pesudo_url)
         {
             Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, Url(QUrl::fromNSURL(url)), Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
             self.webpage->set_loading_state_direct(Webpage::LoadingStateLoading);
@@ -191,7 +187,6 @@
         if (title && title.length > 0) {
             Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
         }
-        [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:dest]]];
     } else if ([keyPath isEqualToString:@"title"]) {
         NSString* title = self.title;
         Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
@@ -222,7 +217,6 @@
         [self loadUrlString:self.webpage->url().full().toNSString()];
     } else {
         [super reload];
-        [self.legacyWebView.mainFrame loadRequest:[NSURLRequest requestWithURL:self.URL]];
     }
 }
 
@@ -641,38 +635,46 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
 
 - (void)downloadAsWebArchive
 {
-    WebArchive* arhive = self.legacyWebView.mainFrame.dataSource.webArchive;
-    QString tmpfile = Global::controller->downloads_dirpath() + "/" + QUrl::toPercentEncoding(QString::fromNSString(self.title).replace('/', ' ').simplified()) + ".webarchive";
-    NSData* data = arhive.data;
-    NSError* error;
-    [arhive.data writeToURL:QUrl("file://" + tmpfile).toNSURL() options:NSDataWritingAtomic error:&error];
-    Global::controller->set_downloads_visible_async(true);
+    NSString* filename;
+    if (self.title && self.title.length > 0) {
+        filename = [self.title stringByAppendingString:@".webarchive"];
+    } else if (! self.webpage->url().fileName().isEmpty()) {
+        filename = (self.webpage->url().fileName() + ".webarchive").toNSString();
+    } else {
+        filename = (self.webpage->url().full() + ".webarchive").toNSString();
+    }
+    [[LegacyWebArchiver alloc] initWithFrame:self.frame UrlDownload:self.webpage->url().toNSURL() filename:filename];
 }
 
 - (void)downloadAsPDF
 {
-    File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), QString::fromNSString(self.title));
+    QString filename = self.webpage->url().fileName();
+    File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), filename);
     Global::controller->startFileDownloadAsync(file);
-}
-
-- (void)print
-{
-    NSPrintInfo* printInfo = [[NSPrintInfo alloc] init];
-    printInfo.leftMargin = 0;
-    printInfo.rightMargin = 0;
-    printInfo.topMargin = 0;
-    printInfo.bottomMargin = 0;
-    NSPrintOperation* printOP = [NSPrintOperation printOperationWithView:self.legacyWebView.mainFrame.frameView.documentView printInfo:printInfo];
-    [printOP runOperation];
 }
 @end
 
-@implementation LegacyWebView
-- (instancetype)initWithFrame:(NSRect)frameRect
+@implementation LegacyWebArchiver
+- (instancetype)initWithFrame:(NSRect)frame UrlDownload:(NSURL*)url filename:(NSString*)filename
 {
-    self = [super initWithFrame:frameRect];
+    self = [super initWithFrame:frame];
     self.frameLoadDelegate = self;
     self.shouldUpdateWhileOffscreen = NO;
+    self.frameLoadDelegate = self;
+    [self.mainFrame loadRequest:[NSURLRequest requestWithURL:url]];
+    self.file = Global::controller->createWebArchiveDownloadFromUrl(Url(QUrl::fromNSURL(url)), FileManager::makeFilename(QString::fromNSString(filename)));
+    // http blocking not implemented
+    Global::controller->conscentHttpFileDownloadAsync(self.file);
+    Global::controller->startWebArchiveDownloadAsync(self.file);
     return self;
+}
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+    WebArchive* archive = frame.dataSource.webArchive;
+    NSError* error;
+    NSURL* fpath = [NSURL fileURLWithPath:self.file->absoluteFilePath().toNSString()];
+    [archive.data writeToURL:fpath options:NSDataWritingAtomic error:&error];
+    Global::controller->finishWebArchiveDownloadAsync(self.file);
 }
 @end

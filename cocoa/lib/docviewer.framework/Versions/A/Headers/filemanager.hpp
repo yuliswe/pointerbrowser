@@ -44,7 +44,7 @@ public:
         static QList<QFileInfo> readDirContents(QString const& dir);
         static bool copyDirContents(QString const& from, QString const& to, WhenExists);
         static int moveFileToDir(QString const& filepath, QString const& dirpath, QString const& newfilename = "");
-
+        static QString makeFilename(QString filename);
 
         static void removeDataDir(QString const&);
         static void makeDataDir(QString const&);
