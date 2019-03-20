@@ -15,7 +15,9 @@
 
 @class TabItemView;
 
-@interface LegacyWebView : WebView<WebFrameLoadDelegate>
+@interface LegacyWebArchiver : WebView<WebFrameLoadDelegate>
+@property File_ file;
+- (instancetype)initWithFrame:(NSRect)frame UrlDownload:(NSURL*)url filename:(NSString*)filename;
 @end
 
 @interface WebUI : WKWebView<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>
@@ -28,7 +30,6 @@
 @property ErrorPageViewController* error_page_view_controller;
 @property BOOL is_pesudo_url;
 @property Webpage_ webpage;
-@property LegacyWebView* legacyWebView;
 @property BOOL m_redirected_from_error;
 @property WebPDF* pdfView;
 
@@ -40,7 +41,6 @@
 - (NSInteger)highlightAllOccurencesOfString:(NSString*)str;
 - (void)removeAllHighlights;
 - (void)disconnect;
-- (void)print;
 - (void)downloadAsWebArchive;
 - (void)downloadAsPDF;
 - (void)exitVideoFullscreen;

@@ -53,6 +53,10 @@ QString FileManager::searchDBPath()
 //    return ":memory:";
 }
 
+QString FileManager::makeFilename(QString filename)
+{
+    return QUrl::toPercentEncoding(filename, " |_-()[]{}");
+}
 
 QString FileManager::dataPath()
 {
@@ -213,6 +217,9 @@ int FileManager::moveFileToDir(QString const& filepath,
         destfile = destdir.filePath(originalfile.fileName());
     } else {
         destfile = destdir.filePath(newfilename);
+    }
+    if (destfile == originalfile) {
+        return true;
     }
     if (! originalfile.exists())
     {

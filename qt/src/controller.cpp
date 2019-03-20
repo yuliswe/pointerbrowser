@@ -1009,6 +1009,11 @@ bool Controller::custom_set_downloads_visible(const bool& visible, void const* s
     return visible;
 }
 
+File_ Controller::createWebArchiveDownloadFromUrl(Url url, QString const& filename, void const* sender)
+{
+    return createFileDownloadFromUrl(url, filename, sender);
+}
+
 File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, void const* sender)
 {
     INFO(ControllerLogging) << url << filename;
@@ -1042,6 +1047,7 @@ File_ Controller::createFileDownloadFromUrl(Url url, QString const& filename, vo
     } else {
         file->set_save_as_filename(filename);
     }
+    file->setFile(QDir(Global::controller->downloads_dirpath()).absoluteFilePath(filename));
     file->moveToThread(Global::qCoreApplicationThread);
     return file;
 }
@@ -1052,14 +1058,27 @@ int Controller::conscentHttpFileDownload(File_ file, void const* sender)
     return true;
 }
 
+int Controller::startWebArchiveDownload(File_ file, void const* sender)
+{
+
+    INFO(ControllerLogging) << file->save_as_filename();
+    if (file->download_url().scheme() == "http" && ! file->allow_http()) {
+        file->set_state(DownloadStateHttpUserConscentRequired);
+    } else {
+        file->set_retry_times(file->retry_times() + 1, sender);
+        file->set_state(DownloadStateStarted, sender);
+        INFO(ControllerLogging) << file->save_as_filename() << "started";
+    }
+    if (downloading_files()->indexOf(file) == -1) {
+        downloading_files()->insert(file);
+    }
+    set_downloads_visible(true, sender);
+    return true;
+}
+
 int Controller::startFileDownload(File_ file, void const* sender)
 {
     INFO(ControllerLogging) << file->save_as_filename();
-//    if (file->state() == DownloadStateStarted) {
-//        CRIT(ControllerLogging) << file->save_as_filename() << "already started";
-//        set_downloads_visible(true, sender);
-//        return false;
-//    }
     if (file->download_url().scheme() == "http" && ! file->allow_http()) {
         file->set_state(DownloadStateHttpUserConscentRequired);
     } else {
@@ -1082,6 +1101,20 @@ int Controller::deleteFileDownload(File_ tmpfile, void const* sender)
     INFO(ControllerLogging) << tmpfile->save_as_filename();
     downloading_files()->remove(tmpfile);
     tmpfile->emit_tf_download_stop(sender);
+    set_downloads_visible(true);
+    return true;
+}
+
+int Controller::finishWebArchiveDownload(File_ tmpfile, void const* sender)
+{
+    INFO(ControllerLogging) << tmpfile->save_as_filename();
+    QString save_as_filename = tmpfile->save_as_filename();
+    while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
+    {
+        save_as_filename.prepend("New ");
+    }
+    downloading_files()->remove(tmpfile);
+    tmpfile->set_state(DownloadStateLocal);
     set_downloads_visible(true);
     return true;
 }
@@ -1115,31 +1148,6 @@ int Controller::failFileDownload(File_ file, void const* sender)
     INFO(ControllerLogging) << file->save_as_filename();
     file->set_state(DownloadStateFailed);
     file->emit_tf_download_stop();
-    set_downloads_visible(true);
-    return true;
-}
-
-int Controller::saveWebArchiveAsDownloadFile(Webpage_ webpage, void const* sender)
-{
-    INFO(ControllerLogging) << webpage->title() << sender;
-    File_ file = File_::create();
-    file->set_save_as_filename(webpage->title() + ".webarchive", sender);
-    file->set_percentage(0, sender);
-    file->set_state(DownloadStateStarted, sender);
-    file->set_download_url(webpage->url(), sender);
-    downloading_files()->insert(file);
-    set_downloads_visible(true, sender);
-    return true;
-}
-
-int Controller::handleSaveWebArchiveFinished(File_ tmpfile, void const* sender)
-{
-    QString save_as_filename = tmpfile->save_as_filename();
-    while (FileManager::moveFileToDir(tmpfile->absoluteFilePath(), downloads_dirpath(), save_as_filename) == 2)
-    {
-        save_as_filename.prepend("New ");
-    }
-    downloading_files()->remove(tmpfile);
     set_downloads_visible(true);
     return true;
 }
