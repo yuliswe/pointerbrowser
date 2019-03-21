@@ -66,6 +66,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         FileManager::mkRootDataDir();
         initGlobalObjects();
         Global::sig.emit_tf_global_objects_initialized();
+        controller->reloadUserSettings();
         searchDB->connect();
         controller->reloadBookmarks();
         controller->reloadAllTags();

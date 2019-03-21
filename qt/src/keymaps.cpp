@@ -40,7 +40,7 @@ void KeyMaps::sync() {
     qInfo() << "KeyMaps::sync starts";
     // load default settings
     loadOverwrite(FileManager::readQrcJsonFileM("settings/keymaps.json"));
-    if (FileManager::dataFile("keymaps.json")->exists()) {
+    if (FileManager::dataFile("keymaps.json").exists()) {
         loadOverwrite(FileManager::readDataJsonFileM("keymaps.json"));
     }
     // load user settings
