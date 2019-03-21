@@ -884,7 +884,7 @@
     }
     if ([item isKindOfClass:SearchResultGroupItem.class]) {
         NSTableCellView *result = [outlineView makeViewWithIdentifier:@"HeaderRowView" owner:self];
-        result.objectValue = @"Discoveries";
+        result.objectValue = @"Found in Index";
         result.hidden = (Global::searchDB->search_result()->count() == 0);
         return result;
     }

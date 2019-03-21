@@ -355,9 +355,9 @@ CA
                         </connections>
                     </menu>
                 </menuItem>
-                <menuItem title="Discovery" id="lrN-pE-9Ui">
+                <menuItem title="Index" id="lrN-pE-9Ui">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Discovery" id="2nT-Jv-go1">
+                    <menu key="submenu" title="Index" id="2nT-Jv-go1">
                         <items>
                             <menuItem title="Edit Rules as JSON File..." id="cRf-l2-ID1">
                                 <modifierMask key="keyEquivalentModifierMask"/>
