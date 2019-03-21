@@ -191,6 +191,7 @@
 
 - (IBAction)handleNewTabButtonClicked:(id)sender
 {
+    Global::controller->closeAllPopoversAsync();
     Global::controller->newTabAsync();
 }
 
