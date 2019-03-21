@@ -21,25 +21,35 @@ public:
         void static mkRootDataDir();
         void static rmRootDataDir();
 
+        Q_DECL_DEPRECATED static QString bookmarksFileName;
+        Q_DECL_DEPRECATED static QString userSettingsFileName;
+        Q_DECL_DEPRECATED static QString crawlerRulesFileName;
+        Q_DECL_DEPRECATED static QString searchDBFileName;
+
     public slots:
         static QString dataPath();
         static QString dataPath(QString const& file);
         static QString qrcPath(QString const& file);
-        static QFile_ dataFile(QString const& file);
+        static QFileInfo dataFile(QString const& file);
         static QFile_ qrcFile(QString const& file);
         static QString readQrcFileS(QString const& file);
         static QByteArray readQrcFileB(QString const& file);
         static QVariantMap readQrcJsonFileM(QString const& file);
-        static void writeDataFileB(QString const& file, const QByteArray& contents);
-        static void writeDataFileS(QString const& file, QString const& contents);
-        static void writeDataJsonFileM(QString const& file, const QVariantMap& contents);
-        static void writeDataJsonFileA(QString const& file, const QVariantList& contents);
-        static void appendDataFileB(QString const& file, const QByteArray& contents);
-        static void appendDataFileS(QString const& file, QString const& contents);
-        static QString readDataFileS(QString const& file);
-        static QVariantMap readDataJsonFileM(QString const& file);
-        static QVariantList readDataJsonFileA(QString const& file);
-        static QByteArray readDataFileB(QString const& file);
+
+        static void writeFileB(QFileInfo const& file, const QByteArray& contents);
+        static QByteArray readFileB(QFileInfo const& file);
+        static void writeJsonFileM(QFileInfo const& file, const QVariantMap& contents);
+        static QVariantMap readJsonFileM(QFileInfo const& file);
+
+        Q_DECL_DEPRECATED static void writeDataFileB(QString const& file, const QByteArray& contents);
+        Q_DECL_DEPRECATED static void writeDataFileS(QString const& file, QString const& contents);
+        Q_DECL_DEPRECATED static void writeDataJsonFileM(QString const& file, const QVariantMap& contents);
+        Q_DECL_DEPRECATED static void writeDataJsonFileA(QString const& file, const QVariantList& contents);
+        Q_DECL_DEPRECATED static QString readDataFileS(QString const& file);
+        Q_DECL_DEPRECATED static QVariantMap readDataJsonFileM(QString const& file);
+        Q_DECL_DEPRECATED static QVariantList readDataJsonFileA(QString const& file);
+        Q_DECL_DEPRECATED static QByteArray readDataFileB(QString const& file);
+
         static void defaultOpenUrl(QString const& file);
         static QList<QFileInfo> readDirContents(QString const& dir);
         static bool copyDirContents(QString const& from, QString const& to, WhenExists);
@@ -53,9 +63,10 @@ public:
         static void removeDataFile(QString const&);
         static void renameDataFile(QString const& oldname, QString const& newname);
 
-        static QString bookmarksPath();
-        static QString crawlerRulesPath();
-        static QString searchDBPath();
+        Q_DECL_DEPRECATED static QString bookmarksPath();
+        static QFileInfo userSettingsFile();
+        Q_DECL_DEPRECATED static QString crawlerRulesPath();
+        Q_DECL_DEPRECATED static QString searchDBPath();
 };
 
 #endif // FILEMANAGER_H

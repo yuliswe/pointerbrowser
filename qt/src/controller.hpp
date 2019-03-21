@@ -9,6 +9,7 @@
 #include "crawler.hpp"
 #include "logging.hpp"
 #include "tags.hpp"
+#include "usersettings.hpp"
 
 class Controller : public QObject
 {
@@ -55,6 +56,10 @@ public:
     Q_ENUM(UrlChangeDecision)
 
     PROP_DEF_BEGINS
+
+    // user settings
+    PROP_RN_D(UserSettings_, user_settings, UserSettings_::create())
+
     // tabs
     PROP_RN_D(TabsModel_, open_tabs, shared<TabsModel>())
     PROP_RN_D(TabsModel_, preview_tabs, shared<TabsModel>())
@@ -163,6 +168,7 @@ public:
     void helperCurrentTabWebpagePropertyChanged(Webpage_ w, void const* address, void const* sender);
     void setNextTabStateAndIndex(TabState state, int index);
 
+    void reloadUserSettings();
     int loadLastOpen();
     int saveLastOpen();
     void clearPreviews();

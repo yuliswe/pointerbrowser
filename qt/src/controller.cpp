@@ -626,7 +626,7 @@ int Controller::currentTabWebpageRefresh(void const* sender)
 Controller::UrlChangeDecision Controller::handleWebpageUrlWillChange(Webpage_ p, Url const& url)
 {
     INFO(ControllerLogging) << p << url;
-    if (url.scheme() == "http" && ! p->allow_http()) {
+    if (user_settings()->warn_http() && url.scheme() == "http" && ! p->allow_http()) {
         p->set_url(url);
         p->set_loading_state(Webpage::LoadingStateHttpUserConscentRequired);
         return UrlChangeDecisionRequreUserHttpConscent;
@@ -1062,7 +1062,7 @@ int Controller::startWebArchiveDownload(File_ file, void const* sender)
 {
 
     INFO(ControllerLogging) << file->save_as_filename();
-    if (file->download_url().scheme() == "http" && ! file->allow_http()) {
+    if (user_settings()->warn_http() && file->download_url().scheme() == "http" && ! file->allow_http()) {
         file->set_state(DownloadStateHttpUserConscentRequired);
     } else {
         file->set_retry_times(file->retry_times() + 1, sender);
@@ -1079,7 +1079,7 @@ int Controller::startWebArchiveDownload(File_ file, void const* sender)
 int Controller::startFileDownload(File_ file, void const* sender)
 {
     INFO(ControllerLogging) << file->save_as_filename();
-    if (file->download_url().scheme() == "http" && ! file->allow_http()) {
+    if (user_settings()->warn_http() && file->download_url().scheme() == "http" && ! file->allow_http()) {
         file->set_state(DownloadStateHttpUserConscentRequired);
     } else {
         file->set_retry_times(file->retry_times() + 1, sender);
@@ -1203,4 +1203,11 @@ void Controller::setNextTabStateAndIndex(TabState state, int index)
 {
     set_next_tab_state(state);
     set_next_tab_index(index);
+}
+
+void Controller::reloadUserSettings()
+{
+    INFO(ControllerLogging);
+    set_user_settings(UserSettings::readUserSettingsFromFile(FileManager::userSettingsFile()));
+    user_settings()->saveUserSettingsToFile(FileManager::userSettingsFile());
 }

@@ -29,6 +29,7 @@
 - (IBAction)menuShowNextTab:(id)sender;
 - (IBAction)menuShowPrevTab:(id)sender;
 - (IBAction)menuEditBookmarksAsJsonFile:(id)sender;
+- (IBAction)menuEditUserSettingsAsJsonFile:(id)sender;
 - (IBAction)menuEditCrawlerRules:(id)sender;
 - (IBAction)menuShowEULA:(id)sender;
 - (IBAction)menuAddTagsForCurrentTab:(id)sender;

@@ -20,10 +20,10 @@ void FileManager::rmRootDataDir()
     dir.removeRecursively();
 }
 
-QFile_ FileManager::dataFile(QString const& filename)
+QFileInfo FileManager::dataFile(QString const& filename)
 {
     QString path = FileManager::dataPath(filename);
-    return QFile_::create(path);
+    return QFileInfo(path);
 }
 
 QString FileManager::qrcPath(QString const& filename)
@@ -36,20 +36,30 @@ QFile_ FileManager::qrcFile(QString const& filename)
     return QFile_::create(":/" + filename);
 }
 
+QString FileManager::userSettingsFileName = "settings.json";
+QString FileManager::bookmarksFileName = "bookmarks.json";
+QString FileManager::crawlerRulesFileName = "discovery-rules.json";
+QString FileManager::searchDBFileName = "search.db";
+
+QFileInfo FileManager::userSettingsFile()
+{
+    return FileManager::dataFile(FileManager::userSettingsFileName);
+}
+
 
 QString FileManager::bookmarksPath()
 {
-    return FileManager::dataPath("bookmarks.json");
+    return FileManager::dataPath(FileManager::bookmarksFileName);
 }
 
 QString FileManager::crawlerRulesPath()
 {
-    return FileManager::dataPath("discovery-rules.json");
+    return FileManager::dataPath(FileManager::crawlerRulesFileName);
 }
 
 QString FileManager::searchDBPath()
 {
-    return FileManager::dataPath("search.db");
+    return FileManager::dataPath(FileManager::searchDBFileName);
 //    return ":memory:";
 }
 
@@ -99,33 +109,29 @@ QVariantMap FileManager::readQrcJsonFileM(const QString &file)
 
 void FileManager::writeDataFileB(QString const& filename, const QByteArray& contents)
 {
-    QFile_ file = FileManager::dataFile(filename);
-    QFileInfo info(dataPath(filename));
-    info.dir().mkpath(info.dir().absolutePath());
-    file->open(QIODevice::WriteOnly | QIODevice::Text);
-    file->write(contents);
-    file->close();
+    return writeFileB(dataFile(filename), contents);
 }
 
-void FileManager::appendDataFileB(QString const& filename, const QByteArray& contents)
+void FileManager::writeFileB(QFileInfo const& file, const QByteArray& contents)
 {
-    QFile_ file = FileManager::dataFile(filename);
-    file->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
-    file->write(contents);
-    file->close();
+    QFile handler(file.absoluteFilePath());
+    QDir().mkpath(file.absolutePath());
+    handler.open(QIODevice::WriteOnly | QIODevice::Text);
+    handler.write(contents);
+    handler.close();
 }
-
 
 void FileManager::writeDataFileS(QString const& filename, QString const& contents)
 {
     FileManager::writeDataFileB(filename, contents.toUtf8());
 }
 
-void FileManager::appendDataFileS(QString const& filename, QString const& contents)
+void FileManager::writeJsonFileM(QFileInfo const& file, const QVariantMap& map)
 {
-    FileManager::appendDataFileB(filename, contents.toUtf8());
+    QJsonObject jobj = QJsonObject::fromVariantMap(map);
+    QJsonDocument doc{jobj};
+    FileManager::writeFileB(file, doc.toJson());
 }
-
 
 void FileManager::writeDataJsonFileM(QString const& file, const QVariantMap& map)
 {
@@ -152,6 +158,18 @@ QString FileManager::readDataFileS(QString const& filename)
     return file.readAll();
 }
 
+QByteArray FileManager::readFileB(QFileInfo const& file)
+{
+    QFile handler(file.absoluteFilePath());
+    if (! handler.open(QIODevice::ReadOnly)) {
+        handler.open(QIODevice::ReadWrite);
+    }
+    qCInfo(FileLogging) << "readDataFileB: reading file " << file;
+    QByteArray content = handler.readAll();
+    handler.close();
+    return content;
+}
+
 QByteArray FileManager::readDataFileB(QString const& filename)
 {
     QString path = FileManager::dataPath(filename);
@@ -163,13 +181,26 @@ QByteArray FileManager::readDataFileB(QString const& filename)
     return file.readAll();
 }
 
+QVariantMap FileManager::readJsonFileM(QFileInfo const& file)
+{
+    QByteArray contents = FileManager::readFileB(file);
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(contents, &error);
+    if (doc.isNull()) {
+        CRIT(FileLogging) << error.errorString() << "at" << error.offset << endl << contents;
+        return QVariantMap();
+    }
+    QJsonObject jobj = doc.object();
+    return jobj.toVariantMap();
+}
+
 QVariantMap FileManager::readDataJsonFileM(const QString &file)
 {
     QByteArray contents = FileManager::readDataFileB(file);
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(contents, &error);
     if (doc.isNull()) {
-        CRIT(FileLogging) << error.errorString() << "at" << error.offset;
+        CRIT(FileLogging) << error.errorString() << "at" << error.offset << endl << contents;
         return QVariantMap();
     }
     QJsonObject jobj = doc.object();

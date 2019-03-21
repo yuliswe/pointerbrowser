@@ -300,6 +300,11 @@
     [[NSWorkspace sharedWorkspace] openFile:FileManager::bookmarksPath().toNSString()];
 }
 
+- (void)menuEditUserSettingsAsJsonFile:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openFile:FileManager::userSettingsFile().absoluteFilePath().toNSString()];
+}
+
 - (void)menuEditTagsAsJsonFile:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openFile:FileManager::dataPath("tags").toNSString()];
