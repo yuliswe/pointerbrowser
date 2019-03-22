@@ -32,6 +32,7 @@
 @property Webpage_ webpage;
 @property BOOL m_redirected_from_error;
 @property WebPDF* pdfView;
+@property NSURLSessionDataTask* pdf_session_task;
 
 - (instancetype)initWithWebpage:(Webpage_)webpage
                           frame:(NSRect)frame

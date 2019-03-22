@@ -21,6 +21,9 @@
 
 @end
 
+@interface DownloadTable : NSTableView
+@end
+
 @interface DownloadTableItem : NSObject
 @property File_ file;
 @property NSString* filename;

@@ -31,6 +31,7 @@ protected:
     QList<T> m_list;
     T m_null;
     QSemaphore m_semaphore{100};
+public:
     void lock_for_read() { m_semaphore.acquire(1); }
     void unlock_for_read() { m_semaphore.release(1); }
     void lock_for_read_write() { m_semaphore.acquire(100); }
