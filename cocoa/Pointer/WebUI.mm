@@ -549,7 +549,19 @@ decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
         self.pdfView.hidden = NO;
         NSURLSession* pdf_session = [NSURLSession sharedSession];
         NSURLSessionDataTask* data_session = [pdf_session dataTaskWithURL:self.URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            [self.pdfView performSelectorOnMainThread:@selector(setDocument:) withObject:[[PDFDocument alloc] initWithData:data] waitUntilDone:YES];
+            if (error) {
+                throw error;
+            } else {
+                // 如果不能正常打开pdf, 下载
+                PDFDocument* doc = [[PDFDocument alloc] initWithData:data];
+                if (doc == nil) {
+                    NSString* filename = navigationResponse.response.suggestedFilename;
+                    File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), QString::fromNSString(filename));
+                    Global::controller->startFileDownloadAsync(file);
+                } else {
+                    [self.pdfView performSelectorOnMainThread:@selector(setDocument:) withObject:doc waitUntilDone:YES];
+                }
+            }
         }];
         [data_session addObserver:self forKeyPath:@"progress.fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
         [data_session resume];

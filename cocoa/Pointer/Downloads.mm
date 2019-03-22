@@ -11,6 +11,29 @@
 #import "CppData.h"
 #import <objc/runtime.h>
 
+@implementation DownloadTable
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    Global::controller->download_files()->lock_for_read();
+    Global::controller->downloading_files()->lock_for_read();
+    DownloadTable* rt = [super initWithCoder:coder];
+    Global::controller->downloading_files()->unlock_for_read();
+    Global::controller->download_files()->unlock_for_read();
+    return rt;
+}
+
+- (void)reloadData
+{
+    Global::controller->download_files()->lock_for_read();
+    Global::controller->downloading_files()->lock_for_read();
+    [super reloadData];
+    Global::controller->downloading_files()->unlock_for_read();
+    Global::controller->download_files()->unlock_for_read();
+}
+
+@end
+
 @implementation DownloadsViewController
 
 //- (void)viewDidAppear
@@ -89,6 +112,7 @@
 
 - (void)viewWillAppear
 {
+    [super viewWillAppear];
     [self resizePopover];
     [self.tableView reloadData];
 }

@@ -181,8 +181,8 @@
 {
     if (Global::controller->downloads_visible()) {
         [self.downloads_popover showRelativeToRect:[self.downloads_button bounds]
-                                               ofView:self.downloads_button
-                                        preferredEdge:NSRectEdgeMaxY];
+                                            ofView:self.downloads_button
+                                     preferredEdge:NSRectEdgeMaxY];
     } else {
         [self.downloads_popover close];
     }
