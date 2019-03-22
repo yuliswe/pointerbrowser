@@ -452,9 +452,9 @@ int SearchWorker::searchForWebpage(Webpage_ w, int search_limit, void const* sen
     query.prepare("SELECT id FROM webpage WHERE url = :url");
     query.bindValue(":url", w->url().base());
     if (! query.exec() || ! query.first() || !query.isValid()) {
-        qCCritical(SearchDBLogging) << "SearchWorker::searchForWebpage didn't find the webpage" << w->url()
-                                    << query.executedQuery()
-                                    << query.lastError();
+        DEBUG(SearchDBLogging) << "didn't find the webpage" << w->url()
+                               << query.executedQuery()
+                               << query.lastError();
         set_is_reading(false);
         return false;
     }
