@@ -191,13 +191,9 @@
         }
         NSString* dest = [self removePesudoUrlPrefix:url];
         Global::controller->handleWebpageUrlDidChange(self.webpage, QString::fromNSString(dest));
-        NSString * _Nullable title = self.title;
-        if (title && title.length > 0) {
-            Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
-        }
+        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(self.title), (__bridge void*)self);
     } else if ([keyPath isEqualToString:@"title"]) {
-        NSString* title = self.title;
-        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
+        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(self.title), (__bridge void*)self);
     } else if ([keyPath isEqualToString:@"canGoBack"]) {
         self.webpage->set_can_go_back_async(self.canGoBack);
     } else if ([keyPath isEqualToString:@"canGoForward"]) {
@@ -297,12 +293,9 @@ didStartProvisionalNavigation:(WKNavigation *)navigation {
 {
 }
 
+/* didFinishNavigation is called when page loads, reloads, goes back/forward, but is not called in SPA. */
 - (void)webView:(WebUI *)webView
 didFinishNavigation:(WKNavigation *)navigation {
-    NSString* title = self.title;
-    if (title.length > 0) {
-        Global::controller->handleWebpageTitleChangedAsync(self.webpage, QString::fromNSString(title), (__bridge void*)self);
-    }
     if (! self.is_pesudo_url) {
         self.webpage->handleSuccessAsync();
     }
@@ -417,13 +410,9 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
          We set the is_pesudo_url so that the URL listener ignores this URL change. */
         self.is_pesudo_url = true;
         decisionHandler(WKNavigationActionPolicyCancel);
-        /* In case this happens before is_pesudo_url flag is set, here we manually set the webpage.url.
-         Otherwise webpage.url would be wrong. */
-        Global::controller->handleWebpageUrlDidChange(self.webpage, urlfullstr);
         return;
     }
     decisionHandler(WKNavigationActionPolicyAllow);
-    Global::controller->handleWebpageUrlDidChange(self.webpage, urlfullstr);
     self.webpage->handleLoadingDidStartAsync();
 }
 
