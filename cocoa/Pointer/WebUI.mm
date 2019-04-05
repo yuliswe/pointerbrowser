@@ -164,8 +164,10 @@
         float p = (float)[self estimatedProgress];
         self.webpage->set_load_progress_async(p);
     } else if ([keyPath isEqualToString:@"progress.fractionCompleted"]) {
-        NSProgress* p = [(NSURLSessionDownloadTask*)object progress];
-        self.webpage->set_load_progress_async(p.fractionCompleted);
+        if (object && [object isKindOfClass:NSURLSessionDataTask.class]) {
+            NSProgress* p = [(NSURLSessionDataTask*)object progress];
+            self.webpage->set_load_progress_async(p.fractionCompleted);
+        }
     } else if ([keyPath isEqualToString:@"URL"]) {
         /* Only SPAs need to be handled here */
         if (self.webpage->loading_state() != Webpage::LoadingStateLoaded) {
@@ -359,32 +361,13 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
     BOOL isError = [nsurl.absoluteString hasPrefix:errorPesudoUrlPrefix];
     BOOL isHttpWarning = [nsurl.absoluteString hasPrefix:httpWarningPesudoUrlPrefix];
     if (isError || isHttpWarning) {
-//        if (self.is_pesudo_url) {
-            decisionHandler(WKNavigationActionPolicyAllow);
-            if (isError) {
-                [self.error_page_view_controller showWithTitle:@"Pointer Could Not Open the Page" message:self.webpage->error().toNSString() yesTarget:self yesSelector:nil noTarget:nil noSelector:nil];
-            } else if (isHttpWarning) {
-                [self.error_page_view_controller showWithTitle:@"Connection Is Not Secure" message:@"You are about to visit a website via unencrypted HTTP connection. Everyone in the network may be able to see your sent and received data as plain text. You should use HTTPS whenever possible. Do you still want to visit this page?" yesTarget:self yesSelector:@selector(conscentWebpageHttpUrlThenReload) noTarget:self noSelector:@selector(goBack)];
-            }
-            return;
-//        } else {
-            /* User visits the pesudo url directly, for example, on goBack event */
-            /* Whenever WKNavigationActionPolicyCancel is used, URL is reset to its previous state.
-             Set the is_pesudo_url flag so that the url change listener does not pick up the reset.
-             Then manually set the new URL on weboage. */
-//            self.is_pesudo_url = true;
-//            decisionHandler(WKNavigationActionPolicyAllow);
-//            NSString* modifiedUrlStr = [self removePesudoUrlPrefix:nsurl];
-//            Url modifiedUrl(QString::fromNSString(modifiedUrlStr));
-//            Global::controller->handleWebpageUrlDidChange(self.webpage, modifiedUrl);
-            /* Due to the way this is implemented, there's a bug that's not fixable without APIs that
-             allows us to edit the back-forward-list. When user visits a about:warning-http:url page directly
-             via back/forward/refresh, the about:warning-http:url page is left in the back-forward-list, and
-             everything that page is hit by back/forward/refresh, a new page with the original url is opened,
-             overwriting later histories. */
-//            [self loadUrlString:modifiedUrlStr];
-//            return;
-//        }
+        decisionHandler(WKNavigationActionPolicyAllow);
+        if (isError) {
+            [self.error_page_view_controller showWithTitle:@"Pointer Could Not Open the Page" message:self.webpage->error().toNSString() yesTarget:self yesSelector:nil noTarget:nil noSelector:nil];
+        } else if (isHttpWarning) {
+            [self.error_page_view_controller showWithTitle:@"Connection Is Not Secure" message:@"You are about to visit a website via unencrypted HTTP connection. Everyone in the network may be able to see your sent and received data as plain text. You should use HTTPS whenever possible. Do you still want to visit this page?" yesTarget:self yesSelector:@selector(conscentWebpageHttpUrlThenReload) noTarget:self noSelector:@selector(goBack)];
+        }
+        return;
     }
     /* reset */
     [self.error_page_view_controller hide];
@@ -399,8 +382,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         && navigationAction.buttonNumber == 1)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ new_webpage = Webpage_::create(url);
-        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
+        Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, url, Controller::WhenCreatedViewCurrent, Controller::WhenExistsViewExisting);
         return;
     }
     /* If the this is a HTTP request on a page not newly created, open new window */
@@ -410,25 +392,22 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
         && type == WKNavigationTypeLinkActivated)
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ new_webpage = Webpage_::create(url);
-        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, url, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
     /* if request is from preview or workspace, open new window */
     if ((is_preview_tab || is_workspace_tab) && is_loaded
         && type != WKNavigationTypeReload)
     {
-        Webpage_ new_webpage = Webpage_::create(url);
-        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
         decisionHandler(WKNavigationActionPolicyCancel);
+        Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, url, Controller::WhenCreatedViewNew, Controller::WhenExistsOpenNew);
         return;
     }
     /* open new tab if link is to a pdf */
     if ([nsurl.absoluteString hasSuffix:@".pdf"] && ! self.webpage->is_pdf())
     {
         decisionHandler(WKNavigationActionPolicyCancel);
-        Webpage_ new_webpage = Webpage_::create(url);
-        Global::controller->newTabByWebpageCopyAsync(self.webpage, Controller::TabStateOpen, new_webpage, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
+        Global::controller->newTabByUrlAsync(self.webpage, Controller::TabStateOpen, url, Controller::WhenCreatedViewNew, Controller::WhenExistsViewExisting);
         return;
     }
     Controller::UrlChangeDecision decision = Global::controller->handleWebpageUrlWillChange(self.webpage, url);
@@ -529,60 +508,83 @@ decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
 decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 {
     if (webView.webpage->is_for_download()) {
+        decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
         File_ file = Global::controller->createFileDownloadFromUrl(webView.webpage->url(), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
         Global::controller->closeTabAsync(Controller::TabStateOpen, webView.webpage);
-        decisionHandler(WKNavigationResponsePolicyCancel);
         return;
     }
     if (! navigationResponse.canShowMIMEType
         || ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]
             && ! navigationResponse.forMainFrame))
     {
+        decisionHandler(WKNavigationResponsePolicyCancel);
         NSURL* url = navigationResponse.response.URL;
         NSString* filename = navigationResponse.response.suggestedFilename;
         File_ file = Global::controller->createFileDownloadFromUrl(Url(QUrl::fromNSURL(url)), QString::fromNSString(filename));
         Global::controller->startFileDownloadAsync(file);
-        decisionHandler(WKNavigationResponsePolicyCancel);
         return;
     } else if ([navigationResponse.response.MIMEType isEqualToString:@"application/pdf"]) {
+        decisionHandler(WKNavigationResponsePolicyCancel);
         if (! self.pdfView) {
             self.pdfView = [[WebPDF alloc] initWithWebUI:self];
         }
         [self addSubviewAndFill:self.pdfView];
         self.pdfView.hidden = NO;
-        NSURLSession* pdf_session = [NSURLSession sharedSession];
-        NSURLSessionDataTask* pdf_data_session = [pdf_session dataTaskWithURL:self.URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            [pdf_data_session removeObserver:self forKeyPath:@"progress.fractionCompleted" context:nil];
-            if (error) {
-                NSLog(@"%@", error);
-            } else {
-                // 如果不能正常打开pdf, 下载
-                PDFDocument* doc = [[PDFDocument alloc] initWithData:data];
-                if (doc == nil) {
-                    NSString* filename = navigationResponse.response.suggestedFilename;
-                    File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), QString::fromNSString(filename));
-                    Global::controller->startFileDownloadAsync(file);
-                } else {
-                    [self.pdfView performSelectorOnMainThread:@selector(setDocument:) withObject:doc waitUntilDone:YES];
-                }
+        NSString* filename = navigationResponse.response.suggestedFilename;
+        __block NSURLSessionDataTask* pdf_task = [NSURLSession.sharedSession dataTaskWithURL:self.URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+        {
+            NSMutableDictionary* context = [[NSMutableDictionary alloc] init];
+            context[@"task"] = pdf_task;
+            if (data) {
+                context[@"data"] = data;
             }
+            if (error) {
+                context[@"error"] = error;
+            }
+            if (filename) {
+                context[@"filename"] = filename;
+            }
+            [self performSelectorOnMainThread:@selector(pdfSessionDataCompletionHandler:) withObject:context waitUntilDone:YES];
         }];
+        [pdf_task addObserver:self forKeyPath:@"progress.fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
+        [pdf_task resume];
         if (self.pdf_session_task) {
             [self.pdf_session_task cancel];
         }
-        self.pdf_session_task = pdf_data_session;
-        [pdf_data_session addObserver:self forKeyPath:@"progress.fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
-        [pdf_data_session resume];
-        decisionHandler(WKNavigationResponsePolicyCancel);
+        self.pdf_session_task = pdf_task;
         return;
     }
     if (self.pdfView) {
         self.pdfView.hidden = YES;
     }
     decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+- (void)pdfSessionDataCompletionHandler:(NSDictionary*)context
+{
+    NSURLSessionDataTask* task = context[@"task"];
+    NSData* data = context[@"data"];
+    NSError* error = context[@"error"];
+    NSString* filename = context[@"filename"];
+    [task removeObserver:self forKeyPath:@"progress.fractionCompleted" context:nil];
+    if (error) {
+        NSLog(@"%@", error);
+    } else {
+        // 如果不能正常打开pdf, 下载
+        PDFDocument* doc = [[PDFDocument alloc] initWithData:data];
+        if (doc == nil) {
+            File_ file = Global::controller->createFileDownloadFromUrl(self.webpage->url(), QString::fromNSString(filename));
+            Global::controller->startFileDownloadAsync(file);
+        } else {
+            self.pdfView.document = doc;
+        }
+    }
+    if (self.pdf_session_task == task) {
+        self.pdf_session_task = nil;
+    }
 }
 
 - (WKWebView *)webView:(WebUI *)webView
