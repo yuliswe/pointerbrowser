@@ -169,10 +169,6 @@
             self.webpage->set_load_progress_async(p.fractionCompleted);
         }
     } else if ([keyPath isEqualToString:@"URL"]) {
-        /* Only SPAs need to be handled here */
-        if (self.webpage->loading_state() != Webpage::LoadingStateLoaded) {
-            return;
-        }
         NSURL * _Nullable url = self.URL;
         if (url == nil) { return; }
         /* in a single page application, url changes without triggering decidePolicyForNavigationAction

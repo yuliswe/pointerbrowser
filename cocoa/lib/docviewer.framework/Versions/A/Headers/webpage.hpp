@@ -81,7 +81,8 @@ public:
     PROP_DEF_BEGINS
     PROP_RwN_D(Url, url, QString(""))
     PROP_R_N_D(QString, title, "")
-    PROP_RN_D(RangeSet, title_highlight_range, RangeSet())
+    PROP_RN_D(QString, title_1, "")
+    PROP_RN_D(RangeSet, title_1_highlight_range, RangeSet())
     PROP_RN_D(QString, title_2, "")
     PROP_RN_D(RangeSet, title_2_highlight_range, RangeSet())
     PROP_RN_D(QString, title_3, "")

@@ -90,23 +90,24 @@
 - (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
-    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    NSString* title = w->title_1().toNSString();
+    NSMutableAttributedString* colored_title = [[NSMutableAttributedString alloc] initWithString:title];
     if (@available(macOS 10.14, *)) {
-        [new_title highlight:w->title_highlight_range()];
+        [colored_title highlight:w->title_1_highlight_range()];
     } else {
         if (self.outlineView.window.firstResponder == self.outlineView
             && isSelected)
         {
-            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+            [colored_title highlightWithColor:w->title_1_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
         } else {
-            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+            [colored_title highlightWithColor:w->title_1_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
         }
     }
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.lineBreakMode = NSLineBreakByTruncatingTail;
-    [new_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, new_title.length)];
-    self.title = new_title;
+    [colored_title addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, colored_title.length)];
+    self.title = colored_title;
     [self.outlineView reloadItem:self];
 }
 - (IBAction)closeTab
@@ -174,21 +175,21 @@
 - (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
-    NSMutableAttributedString* new_title_1 = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    NSMutableAttributedString* new_title_1 = [[NSMutableAttributedString alloc] initWithString:w->title_1().toNSString()];
     NSMutableAttributedString* new_title_2 = [[NSMutableAttributedString alloc] initWithString:w->title_2().toNSString()];
     NSMutableAttributedString* new_title_3 = [[NSMutableAttributedString alloc] initWithString:w->title_3().toNSString()];
     if (@available(macOS 10.14, *)) {
-        [new_title_1 highlight:w->title_highlight_range()];
+        [new_title_1 highlight:w->title_1_highlight_range()];
         [new_title_2 highlight:w->title_2_highlight_range()];
         [new_title_3 highlight:w->title_3_highlight_range()];
     } else {
         if (self.outlineView.window.firstResponder == self.outlineView && isSelected)
         {
-            [new_title_1 highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+            [new_title_1 highlightWithColor:w->title_1_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
             [new_title_2 highlightWithColor:w->title_2_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
             [new_title_3 highlightWithColor:w->title_3_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
         } else {
-            [new_title_1 highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+            [new_title_1 highlightWithColor:w->title_1_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
             [new_title_2 highlightWithColor:w->title_2_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
             [new_title_3 highlightWithColor:w->title_3_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
         }
@@ -261,16 +262,16 @@
 - (void)handleTitleChanged:(BOOL)isSelected
 {
     Webpage_ w = self.webpage;
-    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title_1().toNSString()];
     if (@available(macOS 10.14, *)) {
-        [new_title highlight:w->title_highlight_range()];
+        [new_title highlight:w->title_1_highlight_range()];
     } else {
         if (self.outlineView.window.firstResponder == self.outlineView
             && isSelected)
         {
-            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
+            [new_title highlightWithColor:w->title_1_highlight_range() normal:NSColor.whiteColor highlight:NSColor.systemPinkColor];
         } else {
-            [new_title highlightWithColor:w->title_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
+            [new_title highlightWithColor:w->title_1_highlight_range() normal:NSColor.controlTextColor highlight:NSColor.systemPinkColor];
         }
     }
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];

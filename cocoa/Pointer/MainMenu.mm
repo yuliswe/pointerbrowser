@@ -44,7 +44,7 @@
     int nbooks = Global::controller->bookmarks()->count();
     for (int i = 0; i < nbooks; i++) {
         Webpage_ w = Global::controller->bookmarks()->webpage_(i);
-        NSMenuItem* item = [menu insertItemWithTitle:w->title().toNSString() action:@selector(handle_bookmark_clicked:) keyEquivalent:@"" atIndex:i+self.bookmarkListOffset];
+        NSMenuItem* item = [menu insertItemWithTitle:w->title_1().toNSString() action:@selector(handle_bookmark_clicked:) keyEquivalent:@"" atIndex:i+self.bookmarkListOffset];
         item.target = self;
     }
 }

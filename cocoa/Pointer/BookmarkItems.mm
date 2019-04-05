@@ -20,7 +20,6 @@
 - (void)connect:(Webpage_)webpage
 {
     self.webpage = webpage;
-    NSString* title = webpage->title().toNSString();
     
     [(BookmarkCollectionViewItemRootView*)self.view setWebpage:self.webpage];
     ((BookmarkCollectionViewItemRootView*)self.view).bookmark_collectionviewitem = self;
@@ -34,8 +33,8 @@
 {
     Webpage_ w = self.webpage;
     
-    if (w->title().length() > 0) {
-        NSString* letter = QString(w->title()[0].toUpper()).toNSString();
+    if (w->title_1().length() > 0) {
+        NSString* letter = QString(w->title_1()[0].toUpper()).toNSString();
         NSMutableAttributedString* attrstr = [[NSMutableAttributedString alloc] initWithString:letter];
         [attrstr addAttribute:NSBackgroundColorAttributeName
                         value:[NSColor clearColor]
@@ -43,8 +42,8 @@
         self->m_letter.attributedStringValue = attrstr;
     }
     
-    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title().toNSString()];
-    [new_title highlight:w->title_highlight_range()];
+    NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:w->title_1().toNSString()];
+    [new_title highlight:w->title_1_highlight_range()];
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.alignment = NSTextAlignmentCenter;
@@ -182,7 +181,7 @@
     }
     
     NSMutableAttributedString* new_title = [[NSMutableAttributedString alloc] initWithString:self.tagContainer->title().toNSString()];
-    [new_title highlight:self.tagContainer->title_highlight_range()];
+    [new_title highlight:self.tagContainer->title_1_highlight_range()];
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setParagraphStyle:NSParagraphStyle.defaultParagraphStyle];
     style.alignment = NSTextAlignmentCenter;

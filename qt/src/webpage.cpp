@@ -71,14 +71,15 @@ Webpage_ Webpage::fromQVariantMap(const QVariantMap& map)
 
 Url Webpage::custom_set_url(Url const& url, void const* sender)
 {
-    if (url.full().endsWith(".pdf")) {
-        set_is_pdf(true);
-    }
     if (! url.isEmpty()) {
         set_title(url.full());
     }
     if (url.isBlank()) {
         set_loading_state(Webpage::LoadingStateBlank);
+    }
+    if (url.full().endsWith(".pdf")) {
+        set_is_pdf(true);
+        set_title_1(url.fileName() + " - " + url.full());
     }
     return url;
 }
@@ -99,11 +100,14 @@ QString Webpage::custom_set_title(QString const& title, void const* sender)
 {
     QString trimmed = title;
     trimmed.replace(QRegularExpression("\\s+"), " ");
+    trimmed = trimmed.trimmed();
     if (trimmed.isEmpty()) {
-        qCDebug(WebpageLogging) << "title is empty, use url" << url().full() << "instead";
         trimmed = url().full();
     }
-    set_title_highlight_range(RangeSet());
+    set_title_1_highlight_range(RangeSet());
+    if (! is_pdf()) {
+        set_title_1(trimmed);
+    }
     return trimmed;
 }
 
@@ -308,7 +312,7 @@ QString Webpage::errorPageHtml(QString const& message)
 
 void Webpage::highlightTitle(QSet<QString> const& keywords)
 {
-    set_title_highlight_range(StringUtils::highlightWords(title(), keywords));
+    set_title_1_highlight_range(StringUtils::highlightWords(title_1(), keywords));
     set_title_2_highlight_range(StringUtils::highlightWords(title_2(), keywords));
     set_title_3_highlight_range(StringUtils::highlightWords(title_3(), keywords));
 }

@@ -15,7 +15,7 @@ class TagContainer : public QObject, public BaseListModel<Webpage_>
 
     PROP_DEF_BEGINS
     PROP_RN_D(QString, title, "")
-    PROP_RN_D(RangeSet, title_highlight_range, RangeSet())
+    PROP_RN_D(RangeSet, title_1_highlight_range, RangeSet())
     PROP_DEF_ENDS
 
     void highlightTitle(QSet<QString> const&);
