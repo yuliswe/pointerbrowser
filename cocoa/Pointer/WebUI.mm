@@ -162,11 +162,18 @@
 {
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
         float p = (float)[self estimatedProgress];
-        self.webpage->set_load_progress_async(p);
+        float p25 = 25*(int(p*100)/25)/100.;
+        if (self.webpage->load_progress() != p25) {
+            self.webpage->set_load_progress_async(p25);
+        }
     } else if ([keyPath isEqualToString:@"progress.fractionCompleted"]) {
         if (object && [object isKindOfClass:NSURLSessionDataTask.class]) {
-            NSProgress* p = [(NSURLSessionDataTask*)object progress];
-            self.webpage->set_load_progress_async(p.fractionCompleted);
+            NSProgress* prog = [(NSURLSessionDataTask*)object progress];
+            float p = prog.fractionCompleted;
+            float p25 = 25*(int(p*100)/25)/100.;
+            if (self.webpage->load_progress() != p25) {
+                self.webpage->set_load_progress_async(p25);
+            }
         }
     } else if ([keyPath isEqualToString:@"URL"]) {
         NSURL * _Nullable url = self.URL;
