@@ -644,6 +644,9 @@ completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
 {
     NSLog(@"Allowing all");
     SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+    if (! serverTrust) {
+        return;
+    }
     CFDataRef exceptions = SecTrustCopyExceptions (serverTrust);
     SecTrustSetExceptions (serverTrust, exceptions);
     CFRelease (exceptions);
