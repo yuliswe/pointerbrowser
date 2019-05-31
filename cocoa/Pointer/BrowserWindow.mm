@@ -85,6 +85,8 @@
                      {
                          [self performSelectorOnMainThread:@selector(handle_can_go_buttons_enable_changed) withObject:nil waitUntilDone:YES];
                      });
+/* This is considered not user friendly, I will comment this out for now.
+    If the removal does not cause any issue then we can remove the code.
     QObject::connect(Global::controller,
                      &Controller::current_tab_search_word_changed,
                      [=](QString const& val, void const* sender)
@@ -92,6 +94,7 @@
                          if (sender == (__bridge void*)self.tab_searchfield) { return; }
                          [self performSelectorOnMainThread:@selector(handle_current_tab_search_word_changed) withObject:nil waitUntilDone:YES];
                      });
+*/
     [self handle_bookmarkpage_visible_changed];
     [self handle_can_go_buttons_enable_changed];
     [self handle_downloads_visible_changed];
@@ -143,7 +146,9 @@
     } else {
         self.text_find_toolbar.hidden = YES;
     }
+/* This is perhaps not user friendly
     self.text_find_searchfield.stringValue = state.text.toNSString();
+*/
     [self.text_find_searchfield updateLabel:state.found];
 }
 
