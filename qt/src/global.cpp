@@ -8,10 +8,11 @@
 #include "keymaps.hpp"
 #include "url.hpp"
 #include "crawler.hpp"
-
 #ifdef Q_OS_MACOS
 #include "mac_crawler.hpp"
 #endif
+
+Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 
 void dumpLibraryInfo()
 {

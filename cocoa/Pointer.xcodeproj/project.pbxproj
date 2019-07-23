@@ -34,13 +34,10 @@
 		7A7DBEF6217EC7DE00C6E778 /* PCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */; };
 		7A7DBEFC217ECA2600C6E778 /* MainMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */; };
 		7A8A42A7219049E800E5D117 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A1219049E700E5D117 /* QtCore.framework */; };
-		7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A1219049E700E5D117 /* QtCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A2219049E800E5D117 /* QtSql.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A3219049E800E5D117 /* libgumbo.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		7A8A42AD219049E800E5D117 /* docviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A5219049E800E5D117 /* docviewer.framework */; };
-		7A8A42AE219049E800E5D117 /* docviewer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8A42A5219049E800E5D117 /* docviewer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks (5 items) */ = {isa = PBXBuildFile; fileRef = 7A8A42A1219049E700E5D117 /* QtCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks (5 items) */ = {isa = PBXBuildFile; fileRef = 7A8A42A2219049E800E5D117 /* QtSql.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks (5 items) */ = {isa = PBXBuildFile; fileRef = 7A8A42A3219049E800E5D117 /* libgumbo.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7A8A42B121904A7000E5D117 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A65147B211EAB1D00977B87 /* WebKit.framework */; };
-		7A8A42B321909F8600E5D117 /* libqsqlite.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7A788819211CBB5300675101 /* libqsqlite.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7A8D32E02111A43B0066691C /* WebUI.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7A8D32DF2111A43B0066691C /* WebUI.mm */; };
 		7AB2318E21856634005B436F /* ErrorPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AB2318D21856634005B436F /* ErrorPage.xib */; };
 		7AB2319121856649005B436F /* ErrorPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2319021856649005B436F /* ErrorPage.mm */; };
@@ -51,39 +48,31 @@
 		B226AFE622399ED1004FB689 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B226AFE522399ED1004FB689 /* Quartz.framework */; };
 		B226AFE9223BF114004FB689 /* WebPDF.mm in Sources */ = {isa = PBXBuildFile; fileRef = B226AFE8223BF114004FB689 /* WebPDF.mm */; };
 		B22A79F621BC523200A7D623 /* PString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B22A79F521BC523200A7D623 /* PString.mm */; };
+		B24746C222E778A700B43A38 /* libdocviewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B24746BB22E776CD00B43A38 /* libdocviewer.dylib */; };
+		B24746C322E778B400B43A38 /* libdocviewer.dylib in Embed Frameworks (5 items) */ = {isa = PBXBuildFile; fileRef = B24746BB22E776CD00B43A38 /* libdocviewer.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B2713A7B219D135C00FCF4C1 /* AddTagsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */; };
 		B2713A7E219D13AF00FCF4C1 /* AddTagsPopover.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */; };
 		B2713A8221A4D12900FCF4C1 /* OutlineView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2713A8121A4D12900FCF4C1 /* OutlineView.xib */; };
 		B2ADF2B321CC33EA00E3D81A /* PImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2ADF2B221CC33EA00E3D81A /* PImage.mm */; };
 		B2AEA748223D81D100AB83A8 /* WebFindText.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2AEA747223D81D100AB83A8 /* WebFindText.mm */; };
-		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks (5 items) */ = {isa = PBXBuildFile; fileRef = B2F6648B219676850069F547 /* libgumbo_query.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		7A8A42B0219049E800E5D117 /* Embed Frameworks */ = {
+		7A8A42B0219049E800E5D117 /* Embed Frameworks (5 items) */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks */,
-				7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks */,
-				7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks */,
-				B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks */,
-				7A8A42AE219049E800E5D117 /* docviewer.framework in Embed Frameworks */,
+				B24746C322E778B400B43A38 /* libdocviewer.dylib in Embed Frameworks (5 items) */,
+				7A8A42AA219049E800E5D117 /* QtSql.framework in Embed Frameworks (5 items) */,
+				7A8A42AB219049E800E5D117 /* libgumbo.dylib in Embed Frameworks (5 items) */,
+				7A8A42A8219049E800E5D117 /* QtCore.framework in Embed Frameworks (5 items) */,
+				B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks (5 items) */,
 			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7A8A42B221909F7C00E5D117 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = sqldrivers;
-			dstSubfolderSpec = 13;
-			files = (
-				7A8A42B321909F8600E5D117 /* libqsqlite.dylib in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
+			name = "Embed Frameworks (5 items)";
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -141,12 +130,9 @@
 		7A7DBEF5217EC7DE00C6E778 /* PCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCollectionView.m; sourceTree = "<group>"; };
 		7A7DBEFA217ECA2600C6E778 /* MainMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainMenu.h; sourceTree = "<group>"; };
 		7A7DBEFB217ECA2600C6E778 /* MainMenu.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MainMenu.mm; sourceTree = "<group>"; };
-		7A8A428A219040C400E5D117 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A8A42A1219049E700E5D117 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = lib/QtCore.framework; sourceTree = "<group>"; };
 		7A8A42A2219049E800E5D117 /* QtSql.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtSql.framework; path = lib/QtSql.framework; sourceTree = "<group>"; };
 		7A8A42A3219049E800E5D117 /* libgumbo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgumbo.dylib; path = lib/libgumbo.dylib; sourceTree = "<group>"; };
-		7A8A42A5219049E800E5D117 /* docviewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = docviewer.framework; path = lib/docviewer.framework; sourceTree = "<group>"; };
-		7A8A42A6219049E800E5D117 /* libqsqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsqlite.dylib; path = lib/libqsqlite.dylib; sourceTree = "<group>"; };
 		7A8D32DE2111A43B0066691C /* WebUI.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebUI.mm.h; sourceTree = "<group>"; };
 		7A8D32DF2111A43B0066691C /* WebUI.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WebUI.mm; sourceTree = "<group>"; };
 		7AB2318D21856634005B436F /* ErrorPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ErrorPage.xib; sourceTree = "<group>"; };
@@ -165,6 +151,7 @@
 		B22A79F421BC523200A7D623 /* PString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PString.h; sourceTree = "<group>"; };
 		B22A79F521BC523200A7D623 /* PString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PString.mm; sourceTree = "<group>"; };
 		B22A79F721BC530000A7D623 /* Extension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Extension.h; sourceTree = "<group>"; };
+		B24746BB22E776CD00B43A38 /* libdocviewer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdocviewer.dylib; path = ../../../../../usr/local/lib/libdocviewer.dylib; sourceTree = "<group>"; };
 		B2713A7A219D135C00FCF4C1 /* AddTagsPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddTagsPopover.xib; sourceTree = "<group>"; };
 		B2713A7C219D139300FCF4C1 /* AddTagsPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddTagsPopover.h; sourceTree = "<group>"; };
 		B2713A7D219D13AF00FCF4C1 /* AddTagsPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AddTagsPopover.mm; sourceTree = "<group>"; };
@@ -181,9 +168,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B24746C222E778A700B43A38 /* libdocviewer.dylib in Frameworks */,
 				B226AFE622399ED1004FB689 /* Quartz.framework in Frameworks */,
 				7A8A42B121904A7000E5D117 /* WebKit.framework in Frameworks */,
-				7A8A42AD219049E800E5D117 /* docviewer.framework in Frameworks */,
 				7A8A42A7219049E800E5D117 /* QtCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,12 +182,9 @@
 			isa = PBXGroup;
 			children = (
 				B2F6648B219676850069F547 /* libgumbo_query.dylib */,
-				7A8A428A219040C400E5D117 /* libqsqlite.dylib */,
-				7A8A42A5219049E800E5D117 /* docviewer.framework */,
 				7A7C503621894730007FB18C /* libgumbo.dylib */,
 				7A788819211CBB5300675101 /* libqsqlite.dylib */,
 				7A8A42A3219049E800E5D117 /* libgumbo.dylib */,
-				7A8A42A6219049E800E5D117 /* libqsqlite.dylib */,
 				7A8A42A1219049E700E5D117 /* QtCore.framework */,
 				7A8A42A2219049E800E5D117 /* QtSql.framework */,
 				7A7C503021881A81007FB18C /* eula.html */,
@@ -300,6 +284,7 @@
 		7A788812211C969100675101 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B24746BB22E776CD00B43A38 /* libdocviewer.dylib */,
 				B226AFE522399ED1004FB689 /* Quartz.framework */,
 				7A6514862120632100977B87 /* QuartzCore.framework */,
 				7A65147B211EAB1D00977B87 /* WebKit.framework */,
@@ -317,9 +302,8 @@
 				7A0CDD2B2110F15600FE35C5 /* Sources */,
 				7A0CDD2C2110F15600FE35C5 /* Frameworks */,
 				7A0CDD2D2110F15600FE35C5 /* Resources */,
-				7A8A42B0219049E800E5D117 /* Embed Frameworks */,
-				7A8A42B221909F7C00E5D117 /* CopyFiles */,
-				B24A4A2A21B2FC520042113F /* ShellScript */,
+				7A8A42B0219049E800E5D117 /* Embed Frameworks (5 items) */,
+				B24A4A2A21B2FC520042113F /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -411,20 +395,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B24A4A2A21B2FC520042113F /* ShellScript */ = {
+		B24A4A2A21B2FC520042113F /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/bash;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nPLIST=\"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nPLB=/usr/libexec/PlistBuddy\nLAST_NUMBER=$($PLB -c \"Print CFBundleVersion\" \"$PLIST\")\nNEW_VERSION=$(($LAST_NUMBER + 1))\n$PLB -c \"Set :CFBundleVersion $NEW_VERSION\" \"$PLIST\"\n";
 		};
@@ -624,20 +609,26 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				IBC_NOTICES = YES;
 				IBC_WARNINGS = YES;
 				INFOPLIST_FILE = Pointer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
+					/usr/local/lib,
 					"@executable_path/../Frameworks",
+					/Users/yuli/lab/docviewer/cocoa/lib,
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/lib",
+					"/usr/local/lib/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				OTHER_CODE_SIGN_FLAGS = "";
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				REEXPORTED_LIBRARY_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -673,21 +664,27 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				IBC_NOTICES = YES;
 				IBC_WARNINGS = YES;
 				INFOPLIST_FILE = Pointer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
+					/usr/local/lib,
 					"@executable_path/../Frameworks",
+					/Users/yuli/lab/docviewer/cocoa/lib,
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/lib",
+					"/usr/local/lib/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CODE_SIGN_FLAGS = "";
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				REEXPORTED_LIBRARY_PATHS = "";
 			};
 			name = Release;
 		};
