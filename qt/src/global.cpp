@@ -52,9 +52,7 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
     qRegisterMetaType<Webpage::LoadingState const&>();
 
     qCoreApplication = new QCoreApplication(argc, argv);
-    qCoreApplication->moveToThread(qCoreApplicationThread);
-
-    QObject::connect(qCoreApplicationThread, &QThread::started, [=]() {
+    qCoreApplicationThread = QThread::create([&]() {
         dumpLibraryInfo();
 
         QString currV = FileManager::readQrcFileS("defaults/version");
@@ -73,7 +71,11 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
         controller->reloadAllTags();
         controller->loadLastOpen();
         Global::sig.emit_tf_everything_loaded();
+        /* enter main eventloop and block thread */
+        qCoreApplication->exec();
     });
+
+    qCoreApplication->moveToThread(qCoreApplicationThread);
 
     QObject::connect(qCoreApplicationThread, &QThread::finished, [=]() {
         searchDB->disconnect();
@@ -84,20 +86,18 @@ void Global::startQCoreApplicationThread(int argc, char** argv) {
 
 void Global::stopQCoreApplicationThread()
 {
+    qCoreApplication->exit();
     qCoreApplicationThread->quit();
     qCoreApplicationThread->wait();
 }
 
 QCoreApplication* Global::qCoreApplication = nullptr;
-QThread* const Global::qCoreApplicationThread = new QThread();
+QThread* Global::qCoreApplicationThread = nullptr;
 
 GlobalSignals Global::sig;
-//FileManager* Global::fileManager = new FileManager();
 SearchDB* Global::searchDB = nullptr;
 Controller* Global::controller = nullptr;
 Crawler* Global::crawler = nullptr;
-//KeyMaps* Global::keyMaps = new KeyMaps();
-//SettingsModel* Global::settingsModel = new SettingsModel();
 
 void Global::initGlobalObjects()
 {
