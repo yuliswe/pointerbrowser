@@ -61,7 +61,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		7A8A42B0219049E800E5D117 /* Embed Frameworks (5 items) */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
@@ -72,12 +72,11 @@
 				B2F6648C219676850069F547 /* libgumbo_query.dylib in Embed Frameworks (5 items) */,
 			);
 			name = "Embed Frameworks (5 items)";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7A027687217AFED3004A09F6 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pointer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A027688217B89BB004A09F6 /* BookmarkItems.mm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BookmarkItems.mm.h; sourceTree = "<group>"; };
 		7A027689217B89BB004A09F6 /* BookmarkItems.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BookmarkItems.mm; sourceTree = "<group>"; };
 		7A02768A217B89BB004A09F6 /* BookmarkItems.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BookmarkItems.xib; sourceTree = "<group>"; };
@@ -140,6 +139,7 @@
 		7AB2319021856649005B436F /* ErrorPage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ErrorPage.mm; sourceTree = "<group>"; };
 		7AB2319221856A28005B436F /* PViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PViewController.h; sourceTree = "<group>"; };
 		7AB2319321856A28005B436F /* PViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PViewController.m; sourceTree = "<group>"; };
+		B20D636022E816DF009C5E32 /* Pointer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pointer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B224988421B3460600EDAC3D /* GenericTextFieldPopover.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GenericTextFieldPopover.xib; sourceTree = "<group>"; };
 		B224988621B36D1900EDAC3D /* GenericTextFieldPopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenericTextFieldPopover.h; sourceTree = "<group>"; };
 		B224988721B36D1900EDAC3D /* GenericTextFieldPopover.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GenericTextFieldPopover.mm; sourceTree = "<group>"; };
@@ -192,7 +192,7 @@
 				7A78880A211C965300675101 /* QtSql.framework */,
 				7A788812211C969100675101 /* Frameworks */,
 				7A0CDD312110F15600FE35C5 /* Pointer */,
-				7A027687217AFED3004A09F6 /* Pointer.app */,
+				B20D636022E816DF009C5E32 /* Pointer.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -311,7 +311,7 @@
 			);
 			name = Pointer;
 			productName = Pointer;
-			productReference = 7A027687217AFED3004A09F6 /* Pointer.app */;
+			productReference = B20D636022E816DF009C5E32 /* Pointer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -615,16 +615,14 @@
 				INFOPLIST_FILE = Pointer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/lib,
 					"@executable_path/../Frameworks",
-					/Users/yuli/lab/docviewer/cocoa/lib,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/lib",
 					"/usr/local/lib/**",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
+				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -670,9 +668,7 @@
 				INFOPLIST_FILE = Pointer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/lib,
 					"@executable_path/../Frameworks",
-					/Users/yuli/lab/docviewer/cocoa/lib,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/lib",
@@ -680,7 +676,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
+				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pointerbrowser.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
