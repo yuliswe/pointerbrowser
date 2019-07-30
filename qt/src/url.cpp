@@ -50,8 +50,12 @@ QString Url::filePath() const
     return adjusted(RemoveQuery|RemoveFragment).toString(QUrl::FullyEncoded);
 }
 
-Url Url::fromAmbiguousText(QString const& input)
+Url Url::fromAmbiguousText(
+    QString const& input,
+    QString const& search_engine
+)
 {
+    /* try parsing */
     QUrl url(input, QUrl::StrictMode);
     /* 1. if input contains a space, it is not url
      * 2. if contains no dot and it has no scheme, it is not url
@@ -65,10 +69,31 @@ Url Url::fromAmbiguousText(QString const& input)
         is_url = false;
     }
     // when a google search is needed
-    if (! is_url) {
+    if (! is_url)
+    {
         QString encoded = QUrl::toPercentEncoding(input,"","");
-        url.setUrl("https://www.google.com/search?q=" + encoded, QUrl::TolerantMode);
-    } else {
+        if (search_engine.compare("google", Qt::CaseInsensitive) == 0)
+        {
+            url.setUrl("https://www.google.com/search?q=" + encoded, QUrl::TolerantMode);
+        }
+        else if (search_engine.compare("yahoo", Qt::CaseInsensitive) == 0)
+        {
+            url.setUrl("https://search.yahoo.com/search?q=" + encoded, QUrl::TolerantMode);
+        }
+        else if (search_engine.compare("bing", Qt::CaseInsensitive) == 0)
+        {
+            url.setUrl("https://www.bing.com/search?q=" + encoded, QUrl::TolerantMode);
+        }
+        else
+        {
+            /* assume custom search engine */
+            QString custom_url = search_engine;
+            custom_url.replace("{}", encoded);
+            url.setUrl(custom_url, QUrl::TolerantMode);
+        }
+    }
+    else
+    {
         // when missing protocal
         if (url.scheme().isEmpty()) {
            url.setUrl("https://" + input, QUrl::TolerantMode);
