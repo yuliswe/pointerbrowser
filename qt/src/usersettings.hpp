@@ -18,7 +18,6 @@ class UserSettings : public QObject
 
 public:
     UserSettings();
-    UserSettings(UserSettings const& other);
     void saveUserSettingsToFile(QFileInfo const& filepath);
     QVariantMap toQVariantMap();
     static UserSettings_ readUserSettingsFromFile(QFileInfo const& filepath);

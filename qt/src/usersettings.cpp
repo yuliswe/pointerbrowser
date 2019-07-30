@@ -5,17 +5,6 @@ UserSettings::UserSettings()
 
 }
 
-UserSettings::UserSettings(UserSettings const& other)
-    : m_warn_http(other.m_warn_http)
-{
-}
-
-//UserSettings& UserSettings::operator=(UserSettings const& other)
-//{
-//    set_warn_http(other.m_warn_http);
-//    return other;
-//}
-
 UserSettings_ UserSettings::fromQVariantMap(QVariantMap const& map)
 {
     UserSettings_ default_settings = UserSettings_::create();
