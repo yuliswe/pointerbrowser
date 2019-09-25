@@ -45,7 +45,7 @@
     config.processPool = processPool;
     self = [super initWithFrame:frame configuration:config];
 //    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0";
-    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.1 Safari/605.1.15";
+    self.customUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15";
     self.is_pesudo_url = false;
     self->m_new_request_is_download = false;
     self.webpage = webpage;
@@ -343,9 +343,17 @@ didCommitNavigation:(WKNavigation *)navigation {
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    /* Only want to handle main frame requests */
+    NSURLRequest * _Nonnull request = navigationAction.request;
+    /* Let go iframe requests */
     if (navigationAction.targetFrame && ! navigationAction.targetFrame.isMainFrame) {
-        decisionHandler(WKNavigationActionPolicyAllow);
+        NSString * _Nullable request_host = request.URL.host;
+        NSString * _Nullable current_host = webView.URL.host;
+        /* forbid cross-origin requests, which cause white-screen of death since safari v13.0.0 */
+        if (! [request_host isEqualToString:current_host]) {
+            decisionHandler(WKNavigationActionPolicyCancel);
+        } else {
+            decisionHandler(WKNavigationActionPolicyAllow);
+        }
         return;
     }
     NSURL* nsurl = navigationAction.request.URL;
