@@ -25,11 +25,6 @@ Webpage::Webpage(Webpage_ w)
     set_title(w->title());
 }
 
-Webpage::Webpage(QString const& url)
-{
-    go(url);
-}
-
 Webpage::Webpage(Url const& url)
 {
     set_url(url);
@@ -116,13 +111,6 @@ void Webpage::loadUrl(Url const& url)
     INFO(WebpageLogging) << url;
     handleUrlDidChange(url);
     emit_tf_load(url);
-}
-
-int Webpage::go(QString const& input)
-{
-    INFO(WebpageLogging) << input;
-    loadUrl(Url::fromAmbiguousText(input));
-    return 0;
 }
 
 int Webpage::handleLoadingDidStart(void const* sender)

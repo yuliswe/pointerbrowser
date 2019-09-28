@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <docviewer/docviewer.h>
+#include <docviewer/docviewer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

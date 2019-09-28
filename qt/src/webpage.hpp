@@ -45,7 +45,6 @@ class Webpage : public QObject
 
     int updateFindTextFound(int);
 
-    int go(QString const&);
     int handleUrlDidChange(Url const&, void const* = nullptr);
     bool crawlerRuleTableModifyRule(int, CrawlerRule&);
     bool crawlerRuleTableInsertRule(CrawlerRule&);
@@ -68,7 +67,6 @@ public:
     virtual ~Webpage();
     Webpage() = default;
     Webpage(Webpage_);
-    Webpage(QString const& url);
     Webpage(Url const& url);
     Webpage(Url const& uri, QString const& title, QString const& title_2, QString const& title_3);
     explicit Webpage(const QVariantMap&);

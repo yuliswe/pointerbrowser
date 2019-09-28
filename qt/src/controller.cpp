@@ -547,9 +547,21 @@ int Controller::webpageGo(Webpage_ p, QString const& u, void const* sender)
     closeAllPopovers();
     if (u.isEmpty()) { return false; }
     if (p.get() && current_tab_state() == TabStateOpen) {
-        p->go(u);
+        p->loadUrl(
+            Url::fromAmbiguousText(u, user_settings()->search_engine())
+        );
     } else {
-        newTabByUrl(p, TabStateOpen, Url::fromAmbiguousText(u), WhenCreatedViewNew, WhenExistsOpenNew, sender);
+        newTabByUrl(
+            p,
+            TabStateOpen,
+            Url::fromAmbiguousText(
+                u,
+                user_settings()->search_engine()
+            ),
+            WhenCreatedViewNew,
+            WhenExistsOpenNew,
+            sender
+        );
     }
     saveLastOpen();
     return 0;

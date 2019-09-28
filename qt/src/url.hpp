@@ -21,7 +21,10 @@ public:
     bool isBlank() const;
 //    bool isError();
     virtual ~Url() = default;
-    static Url fromAmbiguousText(QString const&);
+    static Url fromAmbiguousText(
+        QString const& input,
+        QString const& search_engine
+    );
 };
 
 class UrlNoHash : public QUrl

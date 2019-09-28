@@ -1,0 +1,38 @@
+Inputs:
+
+goBack/goForward
+loadUrl(https://url)
+loadUrl(http://url)
+refresh
+succeed
+fail
+
+Interested in:
+state of webpage url: one of [about:blank, http:_, https:_] 
+state of webUI url: one of [about:blank, http:_, https:_, about:warning-http:_]
+
+valid combination 00,11,22,13
+additional: none, -backable, -forwardable, -both
+
+Total states: 12
+
+inputs: load(http:_), load(https:_), load(about:blank), back, forward, conscent
+
+00 <- load(http:_) = 13-backable
+00 <- load(https:_) = 22-backable
+
+13-backable <- back = 00-forwardable
+13-backable <- conscent = 11-backable
+
+22-backable <- back = 00-forwardable
+
+11-backable <-
+
+
+state: LOADING LOADED
+START <- loadUrl(https://url0) = LOADING(https://url0)
+LOADING(https://url0) <- succeed = LOADED(https://url0, BACKABLE)
+LOADED(https://url0, BACKABLE) <- goBack = LOADED(url0, FORWARDABLE)
+START <- loadUrl(http://url0) = loadUrl(ABOUT:HTTP-WARNING:url)
+
+PESUDO <- loadUrl(good) = 
